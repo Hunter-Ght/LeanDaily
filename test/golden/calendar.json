@@ -1,0 +1,595 @@
+{
+ "mondayOf": [
+  [
+   "2026-10-15",
+   "2026-10-12"
+  ],
+  [
+   "2026-10-12",
+   "2026-10-12"
+  ],
+  [
+   "2026-10-18",
+   "2026-10-12"
+  ],
+  [
+   "2026-01-01",
+   "2025-12-29"
+  ]
+ ],
+ "weekDays": [
+  {
+   "iso": "2026-10-12",
+   "num": 12,
+   "future": false,
+   "today": false,
+   "out": false,
+   "train": false,
+   "meal": false
+  },
+  {
+   "iso": "2026-10-13",
+   "num": 13,
+   "future": false,
+   "today": false,
+   "out": false,
+   "train": true,
+   "meal": false
+  },
+  {
+   "iso": "2026-10-14",
+   "num": 14,
+   "future": false,
+   "today": false,
+   "out": false,
+   "train": false,
+   "meal": false
+  },
+  {
+   "iso": "2026-10-15",
+   "num": 15,
+   "future": false,
+   "today": true,
+   "out": false,
+   "train": false,
+   "meal": true
+  },
+  {
+   "iso": "2026-10-16",
+   "num": 16,
+   "future": true,
+   "today": false,
+   "out": false,
+   "train": false,
+   "meal": false
+  },
+  {
+   "iso": "2026-10-17",
+   "num": 17,
+   "future": true,
+   "today": false,
+   "out": false,
+   "train": false,
+   "meal": false
+  },
+  {
+   "iso": "2026-10-18",
+   "num": 18,
+   "future": true,
+   "today": false,
+   "out": false,
+   "train": false,
+   "meal": false
+  }
+ ],
+ "monthGrid": {
+  "month": "2026-10-01",
+  "title": "2026年10月",
+  "rows": [
+   [
+    {
+     "iso": "2026-09-28",
+     "num": 28,
+     "future": false,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-09-29",
+     "num": 29,
+     "future": false,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-09-30",
+     "num": 30,
+     "future": false,
+     "today": false,
+     "out": true,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-01",
+     "num": 1,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-02",
+     "num": 2,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-03",
+     "num": 3,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-04",
+     "num": 4,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    }
+   ],
+   [
+    {
+     "iso": "2026-10-05",
+     "num": 5,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": true
+    },
+    {
+     "iso": "2026-10-06",
+     "num": 6,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-07",
+     "num": 7,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-08",
+     "num": 8,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-09",
+     "num": 9,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-10",
+     "num": 10,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-11",
+     "num": 11,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    }
+   ],
+   [
+    {
+     "iso": "2026-10-12",
+     "num": 12,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-13",
+     "num": 13,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-14",
+     "num": 14,
+     "future": false,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-15",
+     "num": 15,
+     "future": false,
+     "today": true,
+     "out": false,
+     "train": false,
+     "meal": true
+    },
+    {
+     "iso": "2026-10-16",
+     "num": 16,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-17",
+     "num": 17,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-18",
+     "num": 18,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    }
+   ],
+   [
+    {
+     "iso": "2026-10-19",
+     "num": 19,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-20",
+     "num": 20,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-21",
+     "num": 21,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-22",
+     "num": 22,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-23",
+     "num": 23,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-24",
+     "num": 24,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-25",
+     "num": 25,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": true
+    }
+   ],
+   [
+    {
+     "iso": "2026-10-26",
+     "num": 26,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-27",
+     "num": 27,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-28",
+     "num": 28,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-29",
+     "num": 29,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-30",
+     "num": 30,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-10-31",
+     "num": 31,
+     "future": true,
+     "today": false,
+     "out": false,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-01",
+     "num": 1,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    }
+   ],
+   [
+    {
+     "iso": "2026-11-02",
+     "num": 2,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-03",
+     "num": 3,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": true,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-04",
+     "num": 4,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-05",
+     "num": 5,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": true
+    },
+    {
+     "iso": "2026-11-06",
+     "num": 6,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-07",
+     "num": 7,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    },
+    {
+     "iso": "2026-11-08",
+     "num": 8,
+     "future": true,
+     "today": false,
+     "out": true,
+     "train": false,
+     "meal": false
+    }
+   ]
+  ]
+ },
+ "rowOf": [
+  [
+   "2026-10-01",
+   0
+  ],
+  [
+   "2026-10-15",
+   2
+  ],
+  [
+   "2026-10-31",
+   4
+  ]
+ ],
+ "stepWeek": [
+  [
+   "2026-10-08",
+   1,
+   "2026-10-15"
+  ],
+  [
+   "2026-10-15",
+   -1,
+   "2026-10-08"
+  ],
+  [
+   "2026-10-15",
+   1,
+   null
+  ],
+  [
+   "2026-10-06",
+   1,
+   "2026-10-13"
+  ],
+  [
+   "2026-10-09",
+   1,
+   "2026-10-15"
+  ]
+ ],
+ "stepMonth": [
+  [
+   "2026-03-31",
+   -1,
+   "2026-10-15",
+   "2026-02-28"
+  ],
+  [
+   "2024-01-31",
+   1,
+   "2024-12-31",
+   "2024-02-29"
+  ],
+  [
+   "2026-09-30",
+   1,
+   "2026-10-15",
+   "2026-10-15"
+  ],
+  [
+   "2026-10-15",
+   1,
+   "2026-10-15",
+   null
+  ],
+  [
+   "2026-10-15",
+   -1,
+   "2026-10-15",
+   "2026-09-15"
+  ]
+ ],
+ "shiftMonth": [
+  [
+   "2026-12-15",
+   1,
+   "2027-01-01"
+  ],
+  [
+   "2026-01-31",
+   -1,
+   "2025-12-01"
+  ],
+  [
+   "2026-03-31",
+   -13,
+   "2025-02-01"
+  ]
+ ],
+ "monthsApart": [
+  [
+   "2026-12-31",
+   "2027-01-01",
+   1
+  ],
+  [
+   "2026-10-01",
+   "2025-10-31",
+   -12
+  ]
+ ],
+ "daysApart": [
+  [
+   "2026-10-12",
+   "2026-10-19",
+   7
+  ],
+  [
+   "2026-10-19",
+   "2026-10-12",
+   -7
+  ]
+ ]
+}

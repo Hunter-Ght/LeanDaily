@@ -1,0 +1,3790 @@
+[
+  {
+    "name": "米饭",
+    "aliases": [
+      "白米饭",
+      "熟米饭"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 116,
+    "protein100": 3,
+    "carbs100": 26,
+    "fat100": 0
+  },
+  {
+    "name": "糙米饭",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 110,
+    "protein100": 3,
+    "carbs100": 23,
+    "fat100": 1
+  },
+  {
+    "name": "杂粮饭",
+    "aliases": [
+      "五谷饭"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 120,
+    "protein100": 3,
+    "carbs100": 25,
+    "fat100": 1
+  },
+  {
+    "name": "小米粥",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 46,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "大米粥",
+    "aliases": [
+      "白粥",
+      "稀饭"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 46,
+    "protein100": 1,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "燕麦粥",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 68,
+    "protein100": 2,
+    "carbs100": 12,
+    "fat100": 1
+  },
+  {
+    "name": "八宝粥",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 80,
+    "protein100": 2,
+    "carbs100": 16,
+    "fat100": 1
+  },
+  {
+    "name": "绿豆粥",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 65,
+    "protein100": 2,
+    "carbs100": 13,
+    "fat100": 0
+  },
+  {
+    "name": "馒头",
+    "aliases": [
+      "白馒头"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 223,
+    "protein100": 7,
+    "carbs100": 47,
+    "fat100": 1
+  },
+  {
+    "name": "花卷",
+    "aliases": [],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 80,
+    "kcal100": 217,
+    "protein100": 6,
+    "carbs100": 45,
+    "fat100": 1
+  },
+  {
+    "name": "全麦馒头",
+    "aliases": [],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 220,
+    "protein100": 8,
+    "carbs100": 43,
+    "fat100": 2
+  },
+  {
+    "name": "玉米窝头",
+    "aliases": [
+      "窝窝头"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 80,
+    "kcal100": 220,
+    "protein100": 6,
+    "carbs100": 46,
+    "fat100": 2
+  },
+  {
+    "name": "白面条（煮）",
+    "aliases": [
+      "面条",
+      "清水面"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 4,
+    "carbs100": 23,
+    "fat100": 0
+  },
+  {
+    "name": "荞麦面（煮）",
+    "aliases": [
+      "荞麦面"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 4,
+    "carbs100": 22,
+    "fat100": 1
+  },
+  {
+    "name": "米粉（煮）",
+    "aliases": [
+      "米线",
+      "米粉"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 2,
+    "carbs100": 25,
+    "fat100": 0
+  },
+  {
+    "name": "河粉（熟）",
+    "aliases": [
+      "河粉"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 2,
+    "carbs100": 25,
+    "fat100": 0
+  },
+  {
+    "name": "红薯（蒸）",
+    "aliases": [
+      "地瓜",
+      "番薯"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 100,
+    "protein100": 1,
+    "carbs100": 23,
+    "fat100": 0
+  },
+  {
+    "name": "紫薯（蒸）",
+    "aliases": [
+      "紫薯"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 105,
+    "protein100": 2,
+    "carbs100": 23,
+    "fat100": 0
+  },
+  {
+    "name": "土豆（蒸）",
+    "aliases": [
+      "马铃薯",
+      "土豆"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 80,
+    "protein100": 2,
+    "carbs100": 17,
+    "fat100": 0
+  },
+  {
+    "name": "山药（蒸）",
+    "aliases": [
+      "山药"
+    ],
+    "category": "主食",
+    "unit": "根",
+    "gramsPerUnit": 150,
+    "kcal100": 60,
+    "protein100": 2,
+    "carbs100": 12,
+    "fat100": 0
+  },
+  {
+    "name": "芋头（蒸）",
+    "aliases": [
+      "芋头"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 80,
+    "kcal100": 80,
+    "protein100": 2,
+    "carbs100": 17,
+    "fat100": 0
+  },
+  {
+    "name": "玉米（煮，可食部）",
+    "aliases": [
+      "玉米",
+      "苞米"
+    ],
+    "category": "主食",
+    "unit": "根",
+    "gramsPerUnit": 150,
+    "kcal100": 110,
+    "protein100": 4,
+    "carbs100": 22,
+    "fat100": 1
+  },
+  {
+    "name": "南瓜（蒸）",
+    "aliases": [
+      "南瓜"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 30,
+    "protein100": 1,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "贝贝南瓜（蒸）",
+    "aliases": [
+      "贝贝南瓜"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 250,
+    "kcal100": 70,
+    "protein100": 2,
+    "carbs100": 15,
+    "fat100": 0
+  },
+  {
+    "name": "白吐司",
+    "aliases": [
+      "面包",
+      "吐司"
+    ],
+    "category": "主食",
+    "unit": "片",
+    "gramsPerUnit": 30,
+    "kcal100": 270,
+    "protein100": 9,
+    "carbs100": 49,
+    "fat100": 4
+  },
+  {
+    "name": "全麦吐司",
+    "aliases": [
+      "全麦面包"
+    ],
+    "category": "主食",
+    "unit": "片",
+    "gramsPerUnit": 30,
+    "kcal100": 250,
+    "protein100": 10,
+    "carbs100": 43,
+    "fat100": 4
+  },
+  {
+    "name": "法棍",
+    "aliases": [],
+    "category": "主食",
+    "unit": "片",
+    "gramsPerUnit": 30,
+    "kcal100": 280,
+    "protein100": 9,
+    "carbs100": 56,
+    "fat100": 2
+  },
+  {
+    "name": "贝果（原味）",
+    "aliases": [
+      "贝果"
+    ],
+    "category": "主食",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 260,
+    "protein100": 10,
+    "carbs100": 50,
+    "fat100": 2
+  },
+  {
+    "name": "苏打饼干",
+    "aliases": [],
+    "category": "主食",
+    "unit": "片",
+    "gramsPerUnit": 6,
+    "kcal100": 430,
+    "protein100": 9,
+    "carbs100": 70,
+    "fat100": 13
+  },
+  {
+    "name": "燕麦片（干）",
+    "aliases": [
+      "燕麦片",
+      "即食燕麦"
+    ],
+    "category": "主食",
+    "unit": "勺",
+    "gramsPerUnit": 15,
+    "kcal100": 380,
+    "protein100": 13,
+    "carbs100": 62,
+    "fat100": 7
+  },
+  {
+    "name": "大米（生）",
+    "aliases": [],
+    "category": "主食",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 345,
+    "protein100": 7,
+    "carbs100": 77,
+    "fat100": 1
+  },
+  {
+    "name": "糙米（生）",
+    "aliases": [],
+    "category": "主食",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 350,
+    "protein100": 8,
+    "carbs100": 73,
+    "fat100": 3
+  },
+  {
+    "name": "小米（生）",
+    "aliases": [],
+    "category": "主食",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 360,
+    "protein100": 9,
+    "carbs100": 75,
+    "fat100": 3
+  },
+  {
+    "name": "藜麦（生）",
+    "aliases": [],
+    "category": "主食",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 370,
+    "protein100": 14,
+    "carbs100": 64,
+    "fat100": 6
+  },
+  {
+    "name": "荞麦（生）",
+    "aliases": [],
+    "category": "主食",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 335,
+    "protein100": 9,
+    "carbs100": 70,
+    "fat100": 2
+  },
+  {
+    "name": "薏米（生）",
+    "aliases": [
+      "薏仁"
+    ],
+    "category": "主食",
+    "unit": "袋",
+    "gramsPerUnit": 100,
+    "kcal100": 350,
+    "protein100": 12,
+    "carbs100": 70,
+    "fat100": 3
+  },
+  {
+    "name": "糯米饭",
+    "aliases": [],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 116,
+    "protein100": 3,
+    "carbs100": 26,
+    "fat100": 0
+  },
+  {
+    "name": "年糕",
+    "aliases": [],
+    "category": "主食",
+    "unit": "片",
+    "gramsPerUnit": 30,
+    "kcal100": 220,
+    "protein100": 4,
+    "carbs100": 50,
+    "fat100": 1
+  },
+  {
+    "name": "粉丝（泡发）",
+    "aliases": [
+      "粉丝"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 85,
+    "protein100": 0,
+    "carbs100": 21,
+    "fat100": 0
+  },
+  {
+    "name": "凉皮（原味）",
+    "aliases": [
+      "凉皮"
+    ],
+    "category": "主食",
+    "unit": "碗",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 4,
+    "carbs100": 23,
+    "fat100": 0
+  },
+  {
+    "name": "鸡胸肉（生，去皮）",
+    "aliases": [
+      "鸡胸",
+      "鸡胸肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 150,
+    "kcal100": 120,
+    "protein100": 23,
+    "carbs100": 0,
+    "fat100": 3
+  },
+  {
+    "name": "鸡胸肉（水煮，去皮）",
+    "aliases": [
+      "水煮鸡胸",
+      "熟鸡胸"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 120,
+    "kcal100": 165,
+    "protein100": 31,
+    "carbs100": 0,
+    "fat100": 4
+  },
+  {
+    "name": "鸡腿肉（生，去皮）",
+    "aliases": [
+      "鸡腿肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 100,
+    "kcal100": 130,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 6
+  },
+  {
+    "name": "鸡腿（烤，带皮）",
+    "aliases": [
+      "烤鸡腿"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 220,
+    "protein100": 26,
+    "carbs100": 0,
+    "fat100": 13
+  },
+  {
+    "name": "鸡翅（烤）",
+    "aliases": [
+      "烤翅",
+      "鸡翅"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 35,
+    "kcal100": 260,
+    "protein100": 24,
+    "carbs100": 1,
+    "fat100": 18
+  },
+  {
+    "name": "鸡里脊（生）",
+    "aliases": [
+      "鸡里脊"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 40,
+    "kcal100": 110,
+    "protein100": 23,
+    "carbs100": 0,
+    "fat100": 2
+  },
+  {
+    "name": "鸡肝（熟）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 160,
+    "protein100": 25,
+    "carbs100": 2,
+    "fat100": 5
+  },
+  {
+    "name": "鸡胗（熟）",
+    "aliases": [
+      "鸡肫"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 120,
+    "protein100": 23,
+    "carbs100": 2,
+    "fat100": 2
+  },
+  {
+    "name": "鸭胸肉（生，去皮）",
+    "aliases": [
+      "鸭胸"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 150,
+    "kcal100": 130,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 6
+  },
+  {
+    "name": "鸭腿（烤，带皮）",
+    "aliases": [
+      "烤鸭腿"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 120,
+    "kcal100": 300,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 24
+  },
+  {
+    "name": "鸭血（熟）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 55,
+    "protein100": 12,
+    "carbs100": 1,
+    "fat100": 0
+  },
+  {
+    "name": "鹅肉（熟）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 250,
+    "protein100": 25,
+    "carbs100": 0,
+    "fat100": 17
+  },
+  {
+    "name": "鹌鹑肉（熟）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 190,
+    "protein100": 25,
+    "carbs100": 0,
+    "fat100": 10
+  },
+  {
+    "name": "猪里脊（生）",
+    "aliases": [
+      "里脊肉",
+      "猪里脊"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 100,
+    "kcal100": 140,
+    "protein100": 21,
+    "carbs100": 1,
+    "fat100": 6
+  },
+  {
+    "name": "猪瘦肉（生）",
+    "aliases": [
+      "瘦猪肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 100,
+    "kcal100": 145,
+    "protein100": 20,
+    "carbs100": 1,
+    "fat100": 7
+  },
+  {
+    "name": "猪后腿肉（瘦，生）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 145,
+    "protein100": 21,
+    "carbs100": 1,
+    "fat100": 6
+  },
+  {
+    "name": "猪五花肉（生）",
+    "aliases": [
+      "五花肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 395,
+    "protein100": 10,
+    "carbs100": 1,
+    "fat100": 39
+  },
+  {
+    "name": "猪排骨（生，可食部）",
+    "aliases": [
+      "排骨"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 280,
+    "protein100": 18,
+    "carbs100": 1,
+    "fat100": 23
+  },
+  {
+    "name": "猪肝（熟）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 160,
+    "protein100": 25,
+    "carbs100": 4,
+    "fat100": 5
+  },
+  {
+    "name": "猪蹄（熟，可食部）",
+    "aliases": [
+      "猪蹄"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 260,
+    "protein100": 23,
+    "carbs100": 0,
+    "fat100": 19
+  },
+  {
+    "name": "牛里脊（生）",
+    "aliases": [
+      "牛里脊"
+    ],
+    "category": "肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 150,
+    "kcal100": 125,
+    "protein100": 22,
+    "carbs100": 0,
+    "fat100": 4
+  },
+  {
+    "name": "牛腱（熟）",
+    "aliases": [
+      "酱牛肉",
+      "牛腱子"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 160,
+    "protein100": 29,
+    "carbs100": 1,
+    "fat100": 5
+  },
+  {
+    "name": "瘦牛肉（生）",
+    "aliases": [
+      "牛肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 125,
+    "protein100": 21,
+    "carbs100": 0,
+    "fat100": 4
+  },
+  {
+    "name": "牛腩（生）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 280,
+    "protein100": 17,
+    "carbs100": 0,
+    "fat100": 23
+  },
+  {
+    "name": "牛肉丸",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 25,
+    "kcal100": 170,
+    "protein100": 12,
+    "carbs100": 10,
+    "fat100": 9
+  },
+  {
+    "name": "羊腿肉（瘦，生）",
+    "aliases": [
+      "羊肉"
+    ],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 135,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 6
+  },
+  {
+    "name": "羊肉卷",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "片",
+    "gramsPerUnit": 15,
+    "kcal100": 280,
+    "protein100": 17,
+    "carbs100": 0,
+    "fat100": 24
+  },
+  {
+    "name": "兔肉（生）",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 105,
+    "protein100": 21,
+    "carbs100": 0,
+    "fat100": 2
+  },
+  {
+    "name": "鸡蛋（全蛋）",
+    "aliases": [
+      "鸡蛋",
+      "水煮蛋",
+      "白煮蛋"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 145,
+    "protein100": 13,
+    "carbs100": 2,
+    "fat100": 10
+  },
+  {
+    "name": "鸡蛋白",
+    "aliases": [
+      "蛋白",
+      "蛋清"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 30,
+    "kcal100": 50,
+    "protein100": 11,
+    "carbs100": 1,
+    "fat100": 0
+  },
+  {
+    "name": "鸡蛋黄",
+    "aliases": [
+      "蛋黄"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 17,
+    "kcal100": 325,
+    "protein100": 15,
+    "carbs100": 3,
+    "fat100": 28
+  },
+  {
+    "name": "鸭蛋",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 65,
+    "kcal100": 180,
+    "protein100": 13,
+    "carbs100": 3,
+    "fat100": 13
+  },
+  {
+    "name": "鹌鹑蛋",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 10,
+    "kcal100": 160,
+    "protein100": 13,
+    "carbs100": 2,
+    "fat100": 11
+  },
+  {
+    "name": "皮蛋",
+    "aliases": [
+      "松花蛋"
+    ],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 170,
+    "protein100": 14,
+    "carbs100": 5,
+    "fat100": 11
+  },
+  {
+    "name": "咸鸭蛋",
+    "aliases": [],
+    "category": "肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 190,
+    "protein100": 13,
+    "carbs100": 6,
+    "fat100": 14
+  },
+  {
+    "name": "虾仁（生）",
+    "aliases": [
+      "虾仁"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 85,
+    "protein100": 18,
+    "carbs100": 1,
+    "fat100": 1
+  },
+  {
+    "name": "基围虾（熟，可食部）",
+    "aliases": [
+      "基围虾",
+      "白灼虾"
+    ],
+    "category": "水产",
+    "unit": "只",
+    "gramsPerUnit": 10,
+    "kcal100": 100,
+    "protein100": 21,
+    "carbs100": 1,
+    "fat100": 1
+  },
+  {
+    "name": "河虾（生，可食部）",
+    "aliases": [
+      "河虾"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 85,
+    "protein100": 17,
+    "carbs100": 2,
+    "fat100": 1
+  },
+  {
+    "name": "小龙虾（熟，可食部）",
+    "aliases": [
+      "小龙虾"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 95,
+    "protein100": 19,
+    "carbs100": 1,
+    "fat100": 2
+  },
+  {
+    "name": "鳕鱼（生）",
+    "aliases": [
+      "鳕鱼"
+    ],
+    "category": "水产",
+    "unit": "块",
+    "gramsPerUnit": 150,
+    "kcal100": 90,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 1
+  },
+  {
+    "name": "三文鱼（生）",
+    "aliases": [
+      "鲑鱼",
+      "三文鱼"
+    ],
+    "category": "水产",
+    "unit": "块",
+    "gramsPerUnit": 100,
+    "kcal100": 200,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 13
+  },
+  {
+    "name": "金枪鱼（生）",
+    "aliases": [
+      "金枪鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 110,
+    "protein100": 24,
+    "carbs100": 0,
+    "fat100": 1
+  },
+  {
+    "name": "金枪鱼罐头（水浸）",
+    "aliases": [
+      "水浸金枪鱼"
+    ],
+    "category": "水产",
+    "unit": "罐",
+    "gramsPerUnit": 100,
+    "kcal100": 110,
+    "protein100": 24,
+    "carbs100": 0,
+    "fat100": 1
+  },
+  {
+    "name": "金枪鱼罐头（油浸，沥油）",
+    "aliases": [
+      "油浸金枪鱼"
+    ],
+    "category": "水产",
+    "unit": "罐",
+    "gramsPerUnit": 100,
+    "kcal100": 190,
+    "protein100": 27,
+    "carbs100": 0,
+    "fat100": 9
+  },
+  {
+    "name": "鲈鱼（生）",
+    "aliases": [
+      "鲈鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 105,
+    "protein100": 19,
+    "carbs100": 0,
+    "fat100": 3
+  },
+  {
+    "name": "鲫鱼（生）",
+    "aliases": [
+      "鲫鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 105,
+    "protein100": 18,
+    "carbs100": 0,
+    "fat100": 3
+  },
+  {
+    "name": "草鱼（生）",
+    "aliases": [
+      "草鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 115,
+    "protein100": 17,
+    "carbs100": 0,
+    "fat100": 5
+  },
+  {
+    "name": "鲤鱼（生）",
+    "aliases": [
+      "鲤鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 110,
+    "protein100": 18,
+    "carbs100": 0,
+    "fat100": 4
+  },
+  {
+    "name": "带鱼（生）",
+    "aliases": [
+      "带鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 130,
+    "protein100": 18,
+    "carbs100": 1,
+    "fat100": 6
+  },
+  {
+    "name": "黄花鱼（生）",
+    "aliases": [
+      "黄鱼",
+      "黄花鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 100,
+    "protein100": 18,
+    "carbs100": 0,
+    "fat100": 3
+  },
+  {
+    "name": "鲅鱼（生）",
+    "aliases": [
+      "鲅鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 120,
+    "protein100": 21,
+    "carbs100": 0,
+    "fat100": 4
+  },
+  {
+    "name": "鲭鱼（生）",
+    "aliases": [
+      "青花鱼",
+      "鲭鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 200,
+    "protein100": 19,
+    "carbs100": 0,
+    "fat100": 14
+  },
+  {
+    "name": "沙丁鱼（生）",
+    "aliases": [
+      "沙丁鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 185,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 11
+  },
+  {
+    "name": "罗非鱼（生）",
+    "aliases": [
+      "罗非鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 95,
+    "protein100": 20,
+    "carbs100": 0,
+    "fat100": 2
+  },
+  {
+    "name": "龙利鱼（生）",
+    "aliases": [
+      "龙利鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 85,
+    "protein100": 18,
+    "carbs100": 0,
+    "fat100": 1
+  },
+  {
+    "name": "巴沙鱼（生）",
+    "aliases": [
+      "巴沙鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 90,
+    "protein100": 15,
+    "carbs100": 0,
+    "fat100": 3
+  },
+  {
+    "name": "鱿鱼（生）",
+    "aliases": [
+      "鱿鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 90,
+    "protein100": 17,
+    "carbs100": 3,
+    "fat100": 1
+  },
+  {
+    "name": "章鱼（生）",
+    "aliases": [
+      "八爪鱼",
+      "章鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 80,
+    "protein100": 15,
+    "carbs100": 2,
+    "fat100": 1
+  },
+  {
+    "name": "墨鱼（生）",
+    "aliases": [
+      "乌贼",
+      "墨鱼"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 85,
+    "protein100": 15,
+    "carbs100": 3,
+    "fat100": 1
+  },
+  {
+    "name": "蛤蜊（生，可食部）",
+    "aliases": [
+      "花蛤",
+      "蛤蜊"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 60,
+    "protein100": 10,
+    "carbs100": 3,
+    "fat100": 1
+  },
+  {
+    "name": "扇贝（生，可食部）",
+    "aliases": [
+      "扇贝"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 65,
+    "protein100": 12,
+    "carbs100": 3,
+    "fat100": 1
+  },
+  {
+    "name": "生蚝（生，可食部）",
+    "aliases": [
+      "牡蛎",
+      "生蚝"
+    ],
+    "category": "水产",
+    "unit": "只",
+    "gramsPerUnit": 20,
+    "kcal100": 60,
+    "protein100": 6,
+    "carbs100": 5,
+    "fat100": 2
+  },
+  {
+    "name": "青口贝（熟，可食部）",
+    "aliases": [
+      "贻贝",
+      "青口"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 150,
+    "protein100": 24,
+    "carbs100": 7,
+    "fat100": 4
+  },
+  {
+    "name": "螃蟹（熟，可食部）",
+    "aliases": [
+      "蟹肉",
+      "螃蟹"
+    ],
+    "category": "水产",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 100,
+    "protein100": 20,
+    "carbs100": 2,
+    "fat100": 1
+  },
+  {
+    "name": "海参（水发）",
+    "aliases": [
+      "海参"
+    ],
+    "category": "水产",
+    "unit": "根",
+    "gramsPerUnit": 50,
+    "kcal100": 25,
+    "protein100": 6,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "纯牛奶（全脂）",
+    "aliases": [
+      "牛奶",
+      "全脂奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 65,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 4
+  },
+  {
+    "name": "低脂牛奶",
+    "aliases": [
+      "低脂奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 45,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 2
+  },
+  {
+    "name": "脱脂牛奶",
+    "aliases": [
+      "脱脂奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 35,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "无乳糖牛奶（全脂）",
+    "aliases": [
+      "舒化奶",
+      "无乳糖奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 65,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 4
+  },
+  {
+    "name": "纯羊奶",
+    "aliases": [
+      "羊奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 65,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 4
+  },
+  {
+    "name": "酸奶（原味，加糖）",
+    "aliases": [
+      "酸奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 200,
+    "kcal100": 90,
+    "protein100": 3,
+    "carbs100": 13,
+    "fat100": 3
+  },
+  {
+    "name": "酸奶（原味，无糖）",
+    "aliases": [
+      "无糖酸奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 200,
+    "kcal100": 65,
+    "protein100": 4,
+    "carbs100": 5,
+    "fat100": 3
+  },
+  {
+    "name": "希腊酸奶（无糖，脱脂）",
+    "aliases": [
+      "希腊酸奶"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 150,
+    "kcal100": 60,
+    "protein100": 10,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "奶酪（切达）",
+    "aliases": [
+      "芝士",
+      "切达奶酪"
+    ],
+    "category": "奶豆",
+    "unit": "片",
+    "gramsPerUnit": 20,
+    "kcal100": 400,
+    "protein100": 25,
+    "carbs100": 2,
+    "fat100": 33
+  },
+  {
+    "name": "马苏里拉奶酪",
+    "aliases": [
+      "马苏里拉"
+    ],
+    "category": "奶豆",
+    "unit": "片",
+    "gramsPerUnit": 20,
+    "kcal100": 280,
+    "protein100": 22,
+    "carbs100": 3,
+    "fat100": 20
+  },
+  {
+    "name": "茅屋奶酪",
+    "aliases": [],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 100,
+    "kcal100": 100,
+    "protein100": 12,
+    "carbs100": 3,
+    "fat100": 4
+  },
+  {
+    "name": "奶粉（全脂）",
+    "aliases": [
+      "全脂奶粉"
+    ],
+    "category": "奶豆",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 500,
+    "protein100": 24,
+    "carbs100": 38,
+    "fat100": 28
+  },
+  {
+    "name": "奶粉（脱脂）",
+    "aliases": [
+      "脱脂奶粉"
+    ],
+    "category": "奶豆",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 360,
+    "protein100": 35,
+    "carbs100": 52,
+    "fat100": 1
+  },
+  {
+    "name": "无糖豆浆",
+    "aliases": [
+      "豆浆"
+    ],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 30,
+    "protein100": 3,
+    "carbs100": 1,
+    "fat100": 1
+  },
+  {
+    "name": "甜豆浆",
+    "aliases": [],
+    "category": "奶豆",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 55,
+    "protein100": 2,
+    "carbs100": 9,
+    "fat100": 1
+  },
+  {
+    "name": "豆腐（北豆腐）",
+    "aliases": [
+      "老豆腐",
+      "北豆腐"
+    ],
+    "category": "奶豆",
+    "unit": "块",
+    "gramsPerUnit": 200,
+    "kcal100": 115,
+    "protein100": 12,
+    "carbs100": 3,
+    "fat100": 6
+  },
+  {
+    "name": "豆腐（南豆腐）",
+    "aliases": [
+      "嫩豆腐",
+      "南豆腐"
+    ],
+    "category": "奶豆",
+    "unit": "块",
+    "gramsPerUnit": 200,
+    "kcal100": 65,
+    "protein100": 6,
+    "carbs100": 3,
+    "fat100": 3
+  },
+  {
+    "name": "内酯豆腐",
+    "aliases": [],
+    "category": "奶豆",
+    "unit": "盒",
+    "gramsPerUnit": 300,
+    "kcal100": 50,
+    "protein100": 5,
+    "carbs100": 3,
+    "fat100": 2
+  },
+  {
+    "name": "豆腐干（原味）",
+    "aliases": [
+      "香干",
+      "豆干"
+    ],
+    "category": "奶豆",
+    "unit": "块",
+    "gramsPerUnit": 40,
+    "kcal100": 150,
+    "protein100": 16,
+    "carbs100": 5,
+    "fat100": 7
+  },
+  {
+    "name": "千张",
+    "aliases": [
+      "百叶",
+      "豆腐皮"
+    ],
+    "category": "奶豆",
+    "unit": "张",
+    "gramsPerUnit": 50,
+    "kcal100": 260,
+    "protein100": 25,
+    "carbs100": 6,
+    "fat100": 15
+  },
+  {
+    "name": "腐竹（干）",
+    "aliases": [],
+    "category": "奶豆",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 460,
+    "protein100": 45,
+    "carbs100": 20,
+    "fat100": 23
+  },
+  {
+    "name": "腐竹（泡发）",
+    "aliases": [
+      "腐竹"
+    ],
+    "category": "奶豆",
+    "unit": "100g",
+    "gramsPerUnit": 100,
+    "kcal100": 150,
+    "protein100": 15,
+    "carbs100": 7,
+    "fat100": 8
+  },
+  {
+    "name": "毛豆（熟，可食部）",
+    "aliases": [
+      "毛豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 130,
+    "protein100": 12,
+    "carbs100": 10,
+    "fat100": 6
+  },
+  {
+    "name": "黄豆（熟）",
+    "aliases": [
+      "黄豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 170,
+    "protein100": 16,
+    "carbs100": 10,
+    "fat100": 9
+  },
+  {
+    "name": "黑豆（熟）",
+    "aliases": [
+      "黑豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 170,
+    "protein100": 16,
+    "carbs100": 12,
+    "fat100": 8
+  },
+  {
+    "name": "红豆（熟）",
+    "aliases": [
+      "红小豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 125,
+    "protein100": 8,
+    "carbs100": 23,
+    "fat100": 0
+  },
+  {
+    "name": "绿豆（熟）",
+    "aliases": [
+      "绿豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 105,
+    "protein100": 7,
+    "carbs100": 19,
+    "fat100": 0
+  },
+  {
+    "name": "鹰嘴豆（熟）",
+    "aliases": [
+      "鹰嘴豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 165,
+    "protein100": 9,
+    "carbs100": 27,
+    "fat100": 3
+  },
+  {
+    "name": "豌豆（熟）",
+    "aliases": [
+      "青豌豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 80,
+    "protein100": 5,
+    "carbs100": 14,
+    "fat100": 0
+  },
+  {
+    "name": "蚕豆（熟）",
+    "aliases": [
+      "蚕豆"
+    ],
+    "category": "奶豆",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 110,
+    "protein100": 8,
+    "carbs100": 19,
+    "fat100": 1
+  },
+  {
+    "name": "西兰花（生）",
+    "aliases": [
+      "西蓝花",
+      "西兰花"
+    ],
+    "category": "蔬菜",
+    "unit": "棵",
+    "gramsPerUnit": 250,
+    "kcal100": 35,
+    "protein100": 4,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "菜花（生）",
+    "aliases": [
+      "花菜",
+      "菜花"
+    ],
+    "category": "蔬菜",
+    "unit": "棵",
+    "gramsPerUnit": 300,
+    "kcal100": 25,
+    "protein100": 2,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "菠菜（生）",
+    "aliases": [
+      "菠菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 25,
+    "protein100": 3,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "小白菜（生）",
+    "aliases": [
+      "小白菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 2,
+    "fat100": 0
+  },
+  {
+    "name": "大白菜（生）",
+    "aliases": [
+      "大白菜"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 2,
+    "fat100": 0
+  },
+  {
+    "name": "油菜（生）",
+    "aliases": [
+      "油菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 2,
+    "fat100": 1
+  },
+  {
+    "name": "生菜（生）",
+    "aliases": [
+      "生菜"
+    ],
+    "category": "蔬菜",
+    "unit": "棵",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 2,
+    "fat100": 0
+  },
+  {
+    "name": "油麦菜（生）",
+    "aliases": [
+      "油麦菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 2,
+    "fat100": 0
+  },
+  {
+    "name": "空心菜（生）",
+    "aliases": [
+      "空心菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "苋菜（生）",
+    "aliases": [
+      "苋菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 25,
+    "protein100": 3,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "芥蓝（生）",
+    "aliases": [
+      "芥蓝"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 30,
+    "protein100": 3,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "茼蒿（生）",
+    "aliases": [
+      "茼蒿"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 150,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 2,
+    "fat100": 0
+  },
+  {
+    "name": "韭菜（生）",
+    "aliases": [
+      "韭菜"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 100,
+    "kcal100": 25,
+    "protein100": 2,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "芹菜（生）",
+    "aliases": [
+      "芹菜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 100,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "西芹（生）",
+    "aliases": [
+      "西芹"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 100,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "黄瓜（生）",
+    "aliases": [
+      "黄瓜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "番茄（生）",
+    "aliases": [
+      "西红柿",
+      "番茄"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 20,
+    "protein100": 1,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "圣女果（生）",
+    "aliases": [
+      "小番茄",
+      "圣女果"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 15,
+    "kcal100": 25,
+    "protein100": 1,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "茄子（生）",
+    "aliases": [
+      "茄子"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 200,
+    "kcal100": 25,
+    "protein100": 1,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "青椒（生）",
+    "aliases": [
+      "青椒"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 25,
+    "protein100": 1,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "彩椒（生）",
+    "aliases": [
+      "甜椒",
+      "彩椒"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 30,
+    "protein100": 1,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "胡萝卜（生）",
+    "aliases": [
+      "胡萝卜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 100,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "白萝卜（生）",
+    "aliases": [
+      "白萝卜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 300,
+    "kcal100": 20,
+    "protein100": 1,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "冬瓜（生）",
+    "aliases": [
+      "冬瓜"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 12,
+    "protein100": 0,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "丝瓜（生）",
+    "aliases": [
+      "丝瓜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 200,
+    "kcal100": 20,
+    "protein100": 1,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "苦瓜（生）",
+    "aliases": [
+      "苦瓜"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 200,
+    "kcal100": 20,
+    "protein100": 1,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "西葫芦（生）",
+    "aliases": [
+      "角瓜",
+      "西葫芦"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 200,
+    "kcal100": 20,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "莲藕（生）",
+    "aliases": [
+      "藕",
+      "莲藕"
+    ],
+    "category": "蔬菜",
+    "unit": "节",
+    "gramsPerUnit": 150,
+    "kcal100": 75,
+    "protein100": 2,
+    "carbs100": 16,
+    "fat100": 0
+  },
+  {
+    "name": "莴笋（生）",
+    "aliases": [
+      "莴苣",
+      "莴笋"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 150,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "竹笋（生）",
+    "aliases": [
+      "竹笋"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 25,
+    "protein100": 3,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "芦笋（生）",
+    "aliases": [
+      "芦笋"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 20,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "四季豆（熟）",
+    "aliases": [
+      "四季豆"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 35,
+    "protein100": 2,
+    "carbs100": 7,
+    "fat100": 0
+  },
+  {
+    "name": "荷兰豆（生）",
+    "aliases": [
+      "荷兰豆"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 35,
+    "protein100": 3,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "秋葵（生）",
+    "aliases": [
+      "秋葵"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 15,
+    "kcal100": 30,
+    "protein100": 2,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "洋葱（生）",
+    "aliases": [
+      "洋葱"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "香菇（鲜）",
+    "aliases": [
+      "香菇"
+    ],
+    "category": "蔬菜",
+    "unit": "朵",
+    "gramsPerUnit": 15,
+    "kcal100": 25,
+    "protein100": 2,
+    "carbs100": 4,
+    "fat100": 0
+  },
+  {
+    "name": "平菇（鲜）",
+    "aliases": [
+      "平菇"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "金针菇（鲜）",
+    "aliases": [
+      "金针菇"
+    ],
+    "category": "蔬菜",
+    "unit": "把",
+    "gramsPerUnit": 100,
+    "kcal100": 30,
+    "protein100": 2,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "杏鲍菇（鲜）",
+    "aliases": [
+      "杏鲍菇"
+    ],
+    "category": "蔬菜",
+    "unit": "根",
+    "gramsPerUnit": 100,
+    "kcal100": 35,
+    "protein100": 3,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "口蘑（鲜）",
+    "aliases": [
+      "白蘑菇",
+      "口蘑"
+    ],
+    "category": "蔬菜",
+    "unit": "个",
+    "gramsPerUnit": 20,
+    "kcal100": 25,
+    "protein100": 3,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "木耳（水发）",
+    "aliases": [
+      "黑木耳",
+      "木耳"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 25,
+    "protein100": 1,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "银耳（水发）",
+    "aliases": [
+      "银耳"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "海带（水发）",
+    "aliases": [
+      "海带"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 15,
+    "protein100": 1,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "紫菜（干）",
+    "aliases": [
+      "紫菜"
+    ],
+    "category": "蔬菜",
+    "unit": "张",
+    "gramsPerUnit": 3,
+    "kcal100": 250,
+    "protein100": 25,
+    "carbs100": 35,
+    "fat100": 2
+  },
+  {
+    "name": "裙带菜（水发）",
+    "aliases": [
+      "裙带菜"
+    ],
+    "category": "蔬菜",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 3,
+    "fat100": 0
+  },
+  {
+    "name": "苹果",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 180,
+    "kcal100": 55,
+    "protein100": 0,
+    "carbs100": 14,
+    "fat100": 0
+  },
+  {
+    "name": "香蕉",
+    "aliases": [],
+    "category": "水果",
+    "unit": "根",
+    "gramsPerUnit": 100,
+    "kcal100": 90,
+    "protein100": 1,
+    "carbs100": 22,
+    "fat100": 0
+  },
+  {
+    "name": "橙子",
+    "aliases": [
+      "橙"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "橘子",
+    "aliases": [
+      "桔子",
+      "蜜桔"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 11,
+    "fat100": 0
+  },
+  {
+    "name": "柚子",
+    "aliases": [],
+    "category": "水果",
+    "unit": "瓣",
+    "gramsPerUnit": 50,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "葡萄柚",
+    "aliases": [
+      "西柚"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 200,
+    "kcal100": 35,
+    "protein100": 1,
+    "carbs100": 8,
+    "fat100": 0
+  },
+  {
+    "name": "梨",
+    "aliases": [
+      "雪梨"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 180,
+    "kcal100": 50,
+    "protein100": 0,
+    "carbs100": 13,
+    "fat100": 0
+  },
+  {
+    "name": "桃",
+    "aliases": [
+      "水蜜桃"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "油桃",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 120,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "李子",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "杏",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 30,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "草莓",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 20,
+    "kcal100": 35,
+    "protein100": 1,
+    "carbs100": 7,
+    "fat100": 0
+  },
+  {
+    "name": "蓝莓",
+    "aliases": [],
+    "category": "水果",
+    "unit": "盒",
+    "gramsPerUnit": 125,
+    "kcal100": 55,
+    "protein100": 1,
+    "carbs100": 12,
+    "fat100": 0
+  },
+  {
+    "name": "树莓",
+    "aliases": [
+      "覆盆子"
+    ],
+    "category": "水果",
+    "unit": "盒",
+    "gramsPerUnit": 125,
+    "kcal100": 50,
+    "protein100": 1,
+    "carbs100": 11,
+    "fat100": 1
+  },
+  {
+    "name": "桑葚",
+    "aliases": [],
+    "category": "水果",
+    "unit": "碗",
+    "gramsPerUnit": 100,
+    "kcal100": 50,
+    "protein100": 2,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "葡萄",
+    "aliases": [],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 10,
+    "kcal100": 65,
+    "protein100": 1,
+    "carbs100": 16,
+    "fat100": 0
+  },
+  {
+    "name": "提子",
+    "aliases": [],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 10,
+    "kcal100": 65,
+    "protein100": 1,
+    "carbs100": 16,
+    "fat100": 0
+  },
+  {
+    "name": "西瓜",
+    "aliases": [],
+    "category": "水果",
+    "unit": "块",
+    "gramsPerUnit": 200,
+    "kcal100": 30,
+    "protein100": 0,
+    "carbs100": 7,
+    "fat100": 0
+  },
+  {
+    "name": "哈密瓜",
+    "aliases": [],
+    "category": "水果",
+    "unit": "块",
+    "gramsPerUnit": 150,
+    "kcal100": 35,
+    "protein100": 1,
+    "carbs100": 8,
+    "fat100": 0
+  },
+  {
+    "name": "香瓜",
+    "aliases": [
+      "甜瓜"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 200,
+    "kcal100": 30,
+    "protein100": 1,
+    "carbs100": 7,
+    "fat100": 0
+  },
+  {
+    "name": "猕猴桃",
+    "aliases": [
+      "奇异果"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 80,
+    "kcal100": 60,
+    "protein100": 1,
+    "carbs100": 14,
+    "fat100": 0
+  },
+  {
+    "name": "菠萝",
+    "aliases": [
+      "凤梨"
+    ],
+    "category": "水果",
+    "unit": "块",
+    "gramsPerUnit": 100,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 11,
+    "fat100": 0
+  },
+  {
+    "name": "芒果",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 35,
+    "protein100": 1,
+    "carbs100": 8,
+    "fat100": 0
+  },
+  {
+    "name": "木瓜",
+    "aliases": [],
+    "category": "水果",
+    "unit": "碗",
+    "gramsPerUnit": 150,
+    "kcal100": 30,
+    "protein100": 1,
+    "carbs100": 7,
+    "fat100": 0
+  },
+  {
+    "name": "火龙果",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 250,
+    "kcal100": 55,
+    "protein100": 1,
+    "carbs100": 12,
+    "fat100": 0
+  },
+  {
+    "name": "荔枝",
+    "aliases": [],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 10,
+    "kcal100": 70,
+    "protein100": 1,
+    "carbs100": 16,
+    "fat100": 0
+  },
+  {
+    "name": "龙眼",
+    "aliases": [
+      "桂圆"
+    ],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 6,
+    "kcal100": 70,
+    "protein100": 1,
+    "carbs100": 16,
+    "fat100": 0
+  },
+  {
+    "name": "樱桃",
+    "aliases": [
+      "车厘子"
+    ],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 8,
+    "kcal100": 50,
+    "protein100": 1,
+    "carbs100": 11,
+    "fat100": 0
+  },
+  {
+    "name": "石榴",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 75,
+    "protein100": 1,
+    "carbs100": 17,
+    "fat100": 1
+  },
+  {
+    "name": "柿子",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 150,
+    "kcal100": 75,
+    "protein100": 1,
+    "carbs100": 18,
+    "fat100": 0
+  },
+  {
+    "name": "鲜枣",
+    "aliases": [
+      "冬枣"
+    ],
+    "category": "水果",
+    "unit": "颗",
+    "gramsPerUnit": 15,
+    "kcal100": 120,
+    "protein100": 1,
+    "carbs100": 28,
+    "fat100": 0
+  },
+  {
+    "name": "牛油果",
+    "aliases": [
+      "鳄梨"
+    ],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 130,
+    "kcal100": 160,
+    "protein100": 2,
+    "carbs100": 8,
+    "fat100": 15
+  },
+  {
+    "name": "榴莲",
+    "aliases": [],
+    "category": "水果",
+    "unit": "瓣",
+    "gramsPerUnit": 80,
+    "kcal100": 150,
+    "protein100": 3,
+    "carbs100": 28,
+    "fat100": 4
+  },
+  {
+    "name": "百香果",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 20,
+    "kcal100": 95,
+    "protein100": 2,
+    "carbs100": 20,
+    "fat100": 1
+  },
+  {
+    "name": "柠檬",
+    "aliases": [],
+    "category": "水果",
+    "unit": "个",
+    "gramsPerUnit": 80,
+    "kcal100": 35,
+    "protein100": 1,
+    "carbs100": 8,
+    "fat100": 0
+  },
+  {
+    "name": "花生（炒）",
+    "aliases": [
+      "花生米"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 580,
+    "protein100": 25,
+    "carbs100": 20,
+    "fat100": 47
+  },
+  {
+    "name": "花生（煮）",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 30,
+    "kcal100": 310,
+    "protein100": 13,
+    "carbs100": 13,
+    "fat100": 24
+  },
+  {
+    "name": "核桃仁",
+    "aliases": [
+      "核桃"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 650,
+    "protein100": 15,
+    "carbs100": 14,
+    "fat100": 62
+  },
+  {
+    "name": "巴旦木",
+    "aliases": [
+      "扁桃仁",
+      "杏仁"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 600,
+    "protein100": 21,
+    "carbs100": 20,
+    "fat100": 52
+  },
+  {
+    "name": "腰果",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 560,
+    "protein100": 18,
+    "carbs100": 30,
+    "fat100": 44
+  },
+  {
+    "name": "开心果仁",
+    "aliases": [
+      "开心果"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 570,
+    "protein100": 20,
+    "carbs100": 28,
+    "fat100": 46
+  },
+  {
+    "name": "榛子仁",
+    "aliases": [
+      "榛子"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 630,
+    "protein100": 15,
+    "carbs100": 17,
+    "fat100": 60
+  },
+  {
+    "name": "松子仁",
+    "aliases": [
+      "松子"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 670,
+    "protein100": 14,
+    "carbs100": 13,
+    "fat100": 65
+  },
+  {
+    "name": "夏威夷果仁",
+    "aliases": [
+      "夏威夷果"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 720,
+    "protein100": 8,
+    "carbs100": 14,
+    "fat100": 76
+  },
+  {
+    "name": "碧根果仁",
+    "aliases": [
+      "碧根果"
+    ],
+    "category": "坚果油脂",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 690,
+    "protein100": 9,
+    "carbs100": 14,
+    "fat100": 72
+  },
+  {
+    "name": "葵花籽仁",
+    "aliases": [
+      "瓜子仁"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 610,
+    "protein100": 22,
+    "carbs100": 18,
+    "fat100": 53
+  },
+  {
+    "name": "南瓜子仁",
+    "aliases": [
+      "南瓜子"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 580,
+    "protein100": 30,
+    "carbs100": 11,
+    "fat100": 48
+  },
+  {
+    "name": "黑芝麻",
+    "aliases": [
+      "芝麻"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 560,
+    "protein100": 19,
+    "carbs100": 24,
+    "fat100": 46
+  },
+  {
+    "name": "花生酱（无糖）",
+    "aliases": [
+      "花生酱"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 15,
+    "kcal100": 610,
+    "protein100": 25,
+    "carbs100": 18,
+    "fat100": 50
+  },
+  {
+    "name": "芝麻酱",
+    "aliases": [
+      "麻酱"
+    ],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 15,
+    "kcal100": 620,
+    "protein100": 20,
+    "carbs100": 20,
+    "fat100": 54
+  },
+  {
+    "name": "橄榄油",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 900,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 100
+  },
+  {
+    "name": "花生油",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 900,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 100
+  },
+  {
+    "name": "菜籽油",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 900,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 100
+  },
+  {
+    "name": "黄油",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "块",
+    "gramsPerUnit": 10,
+    "kcal100": 740,
+    "protein100": 1,
+    "carbs100": 1,
+    "fat100": 82
+  },
+  {
+    "name": "猪油",
+    "aliases": [],
+    "category": "坚果油脂",
+    "unit": "勺",
+    "gramsPerUnit": 10,
+    "kcal100": 900,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 100
+  },
+  {
+    "name": "可乐（含糖）",
+    "aliases": [
+      "可乐",
+      "汽水"
+    ],
+    "category": "零食饮料",
+    "unit": "罐",
+    "gramsPerUnit": 330,
+    "kcal100": 42,
+    "protein100": 0,
+    "carbs100": 11,
+    "fat100": 0
+  },
+  {
+    "name": "无糖可乐",
+    "aliases": [
+      "零度可乐"
+    ],
+    "category": "零食饮料",
+    "unit": "罐",
+    "gramsPerUnit": 330,
+    "kcal100": 0,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "橙汁（纯果汁）",
+    "aliases": [
+      "橙汁"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 45,
+    "protein100": 1,
+    "carbs100": 10,
+    "fat100": 0
+  },
+  {
+    "name": "椰子水（无加糖）",
+    "aliases": [
+      "椰子水"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 20,
+    "protein100": 0,
+    "carbs100": 5,
+    "fat100": 0
+  },
+  {
+    "name": "运动饮料（含糖）",
+    "aliases": [
+      "运动饮料"
+    ],
+    "category": "零食饮料",
+    "unit": "瓶",
+    "gramsPerUnit": 500,
+    "kcal100": 25,
+    "protein100": 0,
+    "carbs100": 6,
+    "fat100": 0
+  },
+  {
+    "name": "豆奶（含糖）",
+    "aliases": [
+      "豆奶"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 55,
+    "protein100": 2,
+    "carbs100": 8,
+    "fat100": 2
+  },
+  {
+    "name": "黑咖啡（无糖）",
+    "aliases": [
+      "美式咖啡",
+      "黑咖啡"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 2,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "拿铁（全脂，无糖）",
+    "aliases": [
+      "拿铁"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 300,
+    "kcal100": 55,
+    "protein100": 3,
+    "carbs100": 4,
+    "fat100": 3
+  },
+  {
+    "name": "奶茶（普通含糖）",
+    "aliases": [
+      "奶茶"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 500,
+    "kcal100": 80,
+    "protein100": 1,
+    "carbs100": 12,
+    "fat100": 3
+  },
+  {
+    "name": "茶（无糖）",
+    "aliases": [
+      "绿茶",
+      "红茶"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 0,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "矿泉水",
+    "aliases": [
+      "水",
+      "白开水"
+    ],
+    "category": "零食饮料",
+    "unit": "瓶",
+    "gramsPerUnit": 500,
+    "kcal100": 0,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "巧克力（牛奶）",
+    "aliases": [
+      "巧克力"
+    ],
+    "category": "零食饮料",
+    "unit": "块",
+    "gramsPerUnit": 10,
+    "kcal100": 540,
+    "protein100": 7,
+    "carbs100": 58,
+    "fat100": 31
+  },
+  {
+    "name": "黑巧克力（约70%）",
+    "aliases": [
+      "黑巧克力"
+    ],
+    "category": "零食饮料",
+    "unit": "块",
+    "gramsPerUnit": 10,
+    "kcal100": 580,
+    "protein100": 8,
+    "carbs100": 35,
+    "fat100": 43
+  },
+  {
+    "name": "薯片",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "袋",
+    "gramsPerUnit": 50,
+    "kcal100": 530,
+    "protein100": 5,
+    "carbs100": 52,
+    "fat100": 34
+  },
+  {
+    "name": "爆米花（焦糖）",
+    "aliases": [
+      "爆米花"
+    ],
+    "category": "零食饮料",
+    "unit": "杯",
+    "gramsPerUnit": 30,
+    "kcal100": 450,
+    "protein100": 5,
+    "carbs100": 75,
+    "fat100": 15
+  },
+  {
+    "name": "曲奇饼干",
+    "aliases": [
+      "曲奇"
+    ],
+    "category": "零食饮料",
+    "unit": "块",
+    "gramsPerUnit": 12,
+    "kcal100": 500,
+    "protein100": 6,
+    "carbs100": 63,
+    "fat100": 25
+  },
+  {
+    "name": "蛋黄酥",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 450,
+    "protein100": 8,
+    "carbs100": 45,
+    "fat100": 26
+  },
+  {
+    "name": "绿豆糕",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "块",
+    "gramsPerUnit": 30,
+    "kcal100": 350,
+    "protein100": 7,
+    "carbs100": 60,
+    "fat100": 9
+  },
+  {
+    "name": "红枣（干）",
+    "aliases": [
+      "干枣"
+    ],
+    "category": "零食饮料",
+    "unit": "颗",
+    "gramsPerUnit": 8,
+    "kcal100": 280,
+    "protein100": 3,
+    "carbs100": 68,
+    "fat100": 0
+  },
+  {
+    "name": "葡萄干",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 320,
+    "protein100": 3,
+    "carbs100": 77,
+    "fat100": 0
+  },
+  {
+    "name": "蔓越莓干（加糖）",
+    "aliases": [
+      "蔓越莓干"
+    ],
+    "category": "零食饮料",
+    "unit": "把",
+    "gramsPerUnit": 20,
+    "kcal100": 330,
+    "protein100": 0,
+    "carbs100": 82,
+    "fat100": 0
+  },
+  {
+    "name": "山楂片",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "袋",
+    "gramsPerUnit": 30,
+    "kcal100": 350,
+    "protein100": 0,
+    "carbs100": 87,
+    "fat100": 0
+  },
+  {
+    "name": "冰淇淋（奶油）",
+    "aliases": [
+      "雪糕"
+    ],
+    "category": "零食饮料",
+    "unit": "球",
+    "gramsPerUnit": 50,
+    "kcal100": 210,
+    "protein100": 4,
+    "carbs100": 25,
+    "fat100": 11
+  },
+  {
+    "name": "果冻",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "个",
+    "gramsPerUnit": 20,
+    "kcal100": 60,
+    "protein100": 0,
+    "carbs100": 15,
+    "fat100": 0
+  },
+  {
+    "name": "蜂蜜",
+    "aliases": [],
+    "category": "零食饮料",
+    "unit": "勺",
+    "gramsPerUnit": 15,
+    "kcal100": 320,
+    "protein100": 0,
+    "carbs100": 80,
+    "fat100": 0
+  },
+  {
+    "name": "清蒸鲈鱼（可食部）",
+    "aliases": [
+      "清蒸鱼"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 120,
+    "protein100": 20,
+    "carbs100": 1,
+    "fat100": 4
+  },
+  {
+    "name": "番茄炒蛋",
+    "aliases": [
+      "西红柿炒鸡蛋"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 110,
+    "protein100": 6,
+    "carbs100": 5,
+    "fat100": 7
+  },
+  {
+    "name": "青椒肉丝",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 150,
+    "protein100": 10,
+    "carbs100": 5,
+    "fat100": 10
+  },
+  {
+    "name": "宫保鸡丁",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 190,
+    "protein100": 13,
+    "carbs100": 9,
+    "fat100": 11
+  },
+  {
+    "name": "鱼香肉丝",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 190,
+    "protein100": 10,
+    "carbs100": 13,
+    "fat100": 11
+  },
+  {
+    "name": "回锅肉",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 320,
+    "protein100": 12,
+    "carbs100": 7,
+    "fat100": 27
+  },
+  {
+    "name": "红烧肉",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 150,
+    "kcal100": 400,
+    "protein100": 10,
+    "carbs100": 8,
+    "fat100": 36
+  },
+  {
+    "name": "红烧牛肉",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 180,
+    "protein100": 18,
+    "carbs100": 5,
+    "fat100": 10
+  },
+  {
+    "name": "土豆炖牛肉",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 250,
+    "kcal100": 120,
+    "protein100": 10,
+    "carbs100": 9,
+    "fat100": 5
+  },
+  {
+    "name": "麻婆豆腐",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 140,
+    "protein100": 8,
+    "carbs100": 5,
+    "fat100": 10
+  },
+  {
+    "name": "家常豆腐",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 160,
+    "protein100": 9,
+    "carbs100": 7,
+    "fat100": 11
+  },
+  {
+    "name": "清炒西兰花",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 65,
+    "protein100": 3,
+    "carbs100": 5,
+    "fat100": 4
+  },
+  {
+    "name": "清炒菠菜",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 60,
+    "protein100": 3,
+    "carbs100": 3,
+    "fat100": 4
+  },
+  {
+    "name": "炒土豆丝",
+    "aliases": [
+      "酸辣土豆丝"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 100,
+    "protein100": 2,
+    "carbs100": 15,
+    "fat100": 4
+  },
+  {
+    "name": "凉拌黄瓜",
+    "aliases": [
+      "拍黄瓜"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 200,
+    "kcal100": 40,
+    "protein100": 1,
+    "carbs100": 4,
+    "fat100": 2
+  },
+  {
+    "name": "番茄鸡蛋汤",
+    "aliases": [
+      "西红柿蛋汤"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 25,
+    "protein100": 2,
+    "carbs100": 2,
+    "fat100": 1
+  },
+  {
+    "name": "紫菜蛋花汤",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 20,
+    "protein100": 2,
+    "carbs100": 1,
+    "fat100": 1
+  },
+  {
+    "name": "小笼包（猪肉）",
+    "aliases": [
+      "小笼包"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 25,
+    "kcal100": 230,
+    "protein100": 9,
+    "carbs100": 28,
+    "fat100": 9
+  },
+  {
+    "name": "猪肉包子",
+    "aliases": [
+      "肉包"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 230,
+    "protein100": 8,
+    "carbs100": 30,
+    "fat100": 9
+  },
+  {
+    "name": "素菜包子",
+    "aliases": [
+      "菜包"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 180,
+    "protein100": 5,
+    "carbs100": 32,
+    "fat100": 4
+  },
+  {
+    "name": "猪肉白菜水饺",
+    "aliases": [
+      "饺子",
+      "水饺"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 25,
+    "kcal100": 210,
+    "protein100": 8,
+    "carbs100": 28,
+    "fat100": 7
+  },
+  {
+    "name": "鲜肉馄饨（不含汤）",
+    "aliases": [
+      "馄饨"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 15,
+    "kcal100": 180,
+    "protein100": 8,
+    "carbs100": 25,
+    "fat100": 5
+  },
+  {
+    "name": "烧麦（糯米）",
+    "aliases": [
+      "烧卖"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 250,
+    "protein100": 5,
+    "carbs100": 45,
+    "fat100": 6
+  },
+  {
+    "name": "鸡蛋炒饭",
+    "aliases": [
+      "蛋炒饭"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 300,
+    "kcal100": 180,
+    "protein100": 5,
+    "carbs100": 27,
+    "fat100": 6
+  },
+  {
+    "name": "牛肉炒面",
+    "aliases": [
+      "炒面"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 350,
+    "kcal100": 180,
+    "protein100": 8,
+    "carbs100": 24,
+    "fat100": 6
+  },
+  {
+    "name": "牛肉面（含汤）",
+    "aliases": [
+      "牛肉面"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "碗",
+    "gramsPerUnit": 500,
+    "kcal100": 90,
+    "protein100": 5,
+    "carbs100": 12,
+    "fat100": 3
+  },
+  {
+    "name": "鸡肉汉堡",
+    "aliases": [
+      "汉堡"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 180,
+    "kcal100": 260,
+    "protein100": 13,
+    "carbs100": 25,
+    "fat100": 12
+  },
+  {
+    "name": "炸鸡腿（可食部）",
+    "aliases": [
+      "炸鸡"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 280,
+    "protein100": 22,
+    "carbs100": 12,
+    "fat100": 16
+  },
+  {
+    "name": "薯条",
+    "aliases": [],
+    "category": "常见外食/菜品",
+    "unit": "份",
+    "gramsPerUnit": 100,
+    "kcal100": 310,
+    "protein100": 4,
+    "carbs100": 40,
+    "fat100": 15
+  },
+  {
+    "name": "披萨（芝士）",
+    "aliases": [
+      "披萨"
+    ],
+    "category": "常见外食/菜品",
+    "unit": "片",
+    "gramsPerUnit": 100,
+    "kcal100": 270,
+    "protein100": 12,
+    "carbs100": 30,
+    "fat100": 11
+  },
+  {
+    "name": "乳清蛋白粉",
+    "aliases": [
+      "蛋白粉",
+      "乳清"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "勺",
+    "gramsPerUnit": 30,
+    "kcal100": 390,
+    "protein100": 75,
+    "carbs100": 10,
+    "fat100": 6
+  },
+  {
+    "name": "分离乳清蛋白粉",
+    "aliases": [
+      "分离乳清"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "勺",
+    "gramsPerUnit": 30,
+    "kcal100": 370,
+    "protein100": 85,
+    "carbs100": 4,
+    "fat100": 2
+  },
+  {
+    "name": "酪蛋白粉",
+    "aliases": [
+      "酪蛋白"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "勺",
+    "gramsPerUnit": 30,
+    "kcal100": 370,
+    "protein100": 78,
+    "carbs100": 8,
+    "fat100": 3
+  },
+  {
+    "name": "大豆分离蛋白粉",
+    "aliases": [
+      "大豆蛋白粉"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "勺",
+    "gramsPerUnit": 30,
+    "kcal100": 365,
+    "protein100": 80,
+    "carbs100": 5,
+    "fat100": 3
+  },
+  {
+    "name": "豌豆蛋白粉",
+    "aliases": [
+      "豌豆蛋白"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "勺",
+    "gramsPerUnit": 30,
+    "kcal100": 380,
+    "protein100": 78,
+    "carbs100": 5,
+    "fat100": 6
+  },
+  {
+    "name": "即食鸡胸肉（原味）",
+    "aliases": [
+      "即食鸡胸"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "袋",
+    "gramsPerUnit": 100,
+    "kcal100": 120,
+    "protein100": 24,
+    "carbs100": 2,
+    "fat100": 2
+  },
+  {
+    "name": "即食鸡胸肉肠",
+    "aliases": [
+      "鸡胸肉肠"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "根",
+    "gramsPerUnit": 50,
+    "kcal100": 140,
+    "protein100": 18,
+    "carbs100": 8,
+    "fat100": 4
+  },
+  {
+    "name": "蛋白棒（通用估算）",
+    "aliases": [
+      "蛋白棒"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "根",
+    "gramsPerUnit": 50,
+    "kcal100": 360,
+    "protein100": 30,
+    "carbs100": 30,
+    "fat100": 13
+  },
+  {
+    "name": "高蛋白酸奶（无糖）",
+    "aliases": [
+      "高蛋白酸奶"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "杯",
+    "gramsPerUnit": 150,
+    "kcal100": 70,
+    "protein100": 10,
+    "carbs100": 5,
+    "fat100": 1
+  },
+  {
+    "name": "即食卤蛋",
+    "aliases": [
+      "卤蛋"
+    ],
+    "category": "蛋白粉与高蛋白即食食品",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 155,
+    "protein100": 13,
+    "carbs100": 3,
+    "fat100": 10
+  }
+]

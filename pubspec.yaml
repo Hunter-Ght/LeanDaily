@@ -1,0 +1,85 @@
+name: leandaily
+description: "薄肌日课 LeanDaily：按你的身材定制的薄肌训练与饮食记录 App。免费、开源、无广告、数据只在本机。"
+publish_to: 'none'
+version: 2.3.0+21
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  path_drawing: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: false
+  fonts:
+    - family: Wordmark
+      fonts:
+        - asset: assets/fonts/SmileySans-Wordmark.ttf
+  assets:
+    - assets/legal/privacy.md
+    - assets/state.json
+    - assets/foods.json
+    - assets/body_paths.json
+    - assets/icons.json
+    - assets/exercises/ab-machine/
+    - assets/exercises/assisted-pullup/
+    - assets/exercises/back-extension/
+    - assets/exercises/band-fly/
+    - assets/exercises/band-press/
+    - assets/exercises/band-pull-apart/
+    - assets/exercises/bench-dip/
+    - assets/exercises/bent-row/
+    - assets/exercises/butterfly/
+    - assets/exercises/cable-crossover/
+    - assets/exercises/cable-crunch/
+    - assets/exercises/calf-raise/
+    - assets/exercises/crunch/
+    - assets/exercises/db-bench/
+    - assets/exercises/db-curl/
+    - assets/exercises/db-incline-press/
+    - assets/exercises/db-row/
+    - assets/exercises/db-shoulder-press/
+    - assets/exercises/db-tricep-ext/
+    - assets/exercises/dead-bug/
+    - assets/exercises/face-pull/
+    - assets/exercises/feet-up-pushup/
+    - assets/exercises/floor-press/
+    - assets/exercises/front-raise/
+    - assets/exercises/glute-bridge/
+    - assets/exercises/goblet-squat/
+    - assets/exercises/hammer-curl/
+    - assets/exercises/incline-pushup/
+    - assets/exercises/incline-pushup-low/
+    - assets/exercises/kickback/
+    - assets/exercises/lat-pulldown/
+    - assets/exercises/lateral-raise/
+    - assets/exercises/leg-curl/
+    - assets/exercises/leg-extension/
+    - assets/exercises/leg-press/
+    - assets/exercises/machine-chest-press/
+    - assets/exercises/machine-curl/
+    - assets/exercises/machine-incline-press/
+    - assets/exercises/machine-shoulder-press/
+    - assets/exercises/plank/
+    - assets/exercises/pushdown/
+    - assets/exercises/pushup/
+    - assets/exercises/rdl/
+    - assets/exercises/rear-delt-fly/
+    - assets/exercises/reverse-crunch/
+    - assets/exercises/reverse-pec-deck/
+    - assets/exercises/russian-twist/
+    - assets/exercises/seated-calf/
+    - assets/exercises/seated-row/
+    - assets/exercises/side-plank/
+    - assets/exercises/single-leg-bridge/
+    - assets/exercises/split-squat/
+    - assets/exercises/squat/
+    - assets/exercises/straight-arm/
+    - assets/exercises/superman/

@@ -1,0 +1,897 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
+import '../kit/transitions.dart';
+
+import '../../app/app_controller.dart';
+import '../../core/native.dart';
+import '../../domain/records.dart' as records;
+import '../../theme/theme.dart';
+import '../kit/app_icon.dart';
+import '../kit/badge.dart' show mealIcon;
+import '../kit/menu.dart';
+import '../kit/number_field.dart';
+import '../kit/photo_image.dart';
+import '../kit/pressable.dart';
+import '../kit/sheet.dart';
+import 'train/controls.dart';
+
+class MealSheet extends StatefulWidget {
+  const MealSheet({super.key, this.preset});
+  final Map<String, dynamic>? preset;
+  @override
+  State<MealSheet> createState() => _MealSheetState();
+}
+
+class _MealSheetState extends State<MealSheet> {
+  late AppController _app;
+  late String _date, _draftKey;
+  String? _editId;
+  String _meal = '',
+      _time = '',
+      _note = '',
+      _source = '',
+      _summary = '',
+      _error = '';
+  String _base = '', _analysisSig = '', _job = '', _phase = '', _think = '';
+  List<Map<String, dynamic>> _items = [];
+  List<String> _photos = [];
+  final Map<String, Uint8List> _photoBytes = {};
+  bool _initialized = false,
+      _loading = true,
+      _saving = false,
+      _finished = false;
+  bool _analyzing = false,
+      _hasAnalysis = false,
+      _pickingPhotos = false,
+      _enabled = false;
+  int _seq = 0, _waited = 0, _generation = 0;
+  Timer? _draftTimer, _pollTimer;
+  Future<void> _draftLane = Future.value();
+  static const _fields = ['name', 'portion', 'kcal', 'protein', 'carbs', 'fat'];
+  Map<String, dynamic> _item([Map? raw]) => {
+    'id': _seq++,
+    for (final k in _fields) k: raw?[k] ?? '',
+  };
+  List<Map<String, dynamic>> get _plain => [
+    for (final it in _items) {for (final k in _fields) k: it[k]},
+  ];
+  String _sig(List<Map<String, dynamic>> list) => jsonEncode(list);
+  String get _contentSig => '${_sig(_plain)}|$_meal|$_time|$_note';
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
+    _app = context.app;
+    _date = _app.date;
+    final p = widget.preset ?? {};
+    _editId = (p['editId'] ?? p['record_id']) as String?;
+    _draftKey = 'android-meal-draft:${_editId ?? _date}';
+    _restore();
+  }
+
+  String _defaultMeal(String time) {
+    final parts = time.split(':').map((s) => int.tryParse(s) ?? 0).toList();
+    final mins = parts.first * 60 + (parts.length > 1 ? parts[1] : 0);
+    if (mins < 630) return '早餐';
+    if (mins < 870) return '午餐';
+    if (mins >= 1020 && mins < 1260) return '晚餐';
+    return '加餐';
+  }
+
+  Future<void> _restore() async {
+    try {
+      final docs = await _app.native.all();
+      final now = await _app.native.clock('${_app.settings.value['tz']}');
+      final secrets = await _app.native.secretsGet();
+      final opened = <String, dynamic>{...?_editRecord(), ...?widget.preset};
+      final rawDraft = docs[_draftKey];
+      if (rawDraft != null && rawDraft != 'null') {
+        final draft = jsonDecode(rawDraft);
+        if (draft is Map) opened.addAll(Map<String, dynamic>.from(draft));
+      }
+      if (!mounted) return;
+      setState(() {
+        _time = '${opened['time'] ?? now.now}';
+        _meal = '${opened['meal'] ?? ''}';
+        if (_meal.isEmpty) _meal = _defaultMeal(_time);
+        _note = '${opened['note'] ?? ''}';
+        _source = '${opened['source'] ?? ''}';
+        _items = (opened['items'] as List? ?? [])
+            .map((it) => _item(it as Map))
+            .toList();
+        _photos = List<String>.from(opened['photo_ids'] as List? ?? []);
+        _summary =
+            '${opened['summary'] ?? (_photos.isNotEmpty ? '可以用已保存的照片重新识别' : (records.number(opened['photos']) > 0 ? '原记录已有 ${opened['photos']} 张照片' : ''))}';
+        _enabled =
+            secrets.modelKey.isNotEmpty &&
+            '${_app.settings.value['model']}'.isNotEmpty &&
+            '${_app.settings.value['baseUrl']}'.isNotEmpty;
+        _base = _contentSig;
+        _loading = false;
+      });
+      for (final path in _photos.toList()) {
+        try {
+          final photo = await _app.native.photoRead(path);
+          if (mounted) setState(() => _photoBytes[path] = photo.bytes);
+        } catch (_) {
+          /* PhotoImage has an on-disk fallback. */
+        }
+      }
+      _scheduleDraft();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = AppController.message(e);
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  Map<String, dynamic>? _editRecord() {
+    if (_editId == null) return null;
+    final list = _app.repo.meals(_date)['meals'] as List;
+    for (final raw in list) {
+      if (raw['record_id'] == _editId) {
+        return Map<String, dynamic>.from(raw as Map);
+      }
+    }
+    return null;
+  }
+
+  String get _draft => jsonEncode({
+    'meal': _meal,
+    'time': _time,
+    'note': _note,
+    'items': _plain,
+    'photo_ids': _photos,
+  });
+  Future<void> _writeDraft(String value) {
+    _draftLane = _draftLane
+        .then((_) => _app.native.put(_draftKey, value))
+        .catchError((Object e) {
+          if (mounted) _app.toast.show(AppController.message(e));
+        });
+    return _draftLane;
+  }
+
+  void _scheduleDraft() {
+    if (_loading || _finished) return;
+    _draftTimer?.cancel();
+    final value = _draft;
+    _draftTimer = Timer(
+      const Duration(milliseconds: 300),
+      () => _writeDraft(value),
+    );
+  }
+
+  void _change(VoidCallback change) {
+    setState(change);
+    _scheduleDraft();
+  }
+
+  bool get _dirty {
+    if (_photos.isNotEmpty) return true;
+    if (_editId != null) return _contentSig != _base;
+    return _note.trim().isNotEmpty ||
+        _items.any(
+          (it) => [
+            'name',
+            'kcal',
+            'portion',
+          ].any((k) => '${it[k]}'.trim().isNotEmpty),
+        );
+  }
+
+  Future<bool> _confirmClose() async {
+    if (_saving || _pickingPhotos) return false;
+    if (_dirty &&
+        !await showConfirm(
+          context,
+          title: '放弃这餐？',
+          message: '已填的内容不会保存。',
+          confirm: '放弃',
+          danger: true,
+        )) {
+      return false;
+    }
+    _finished = true;
+    _draftTimer?.cancel();
+    await _writeDraft('null');
+    return true;
+  }
+
+  @override
+  void dispose() {
+    _draftTimer?.cancel();
+    _pollTimer?.cancel();
+    _generation++;
+    if (!_finished && !_loading) unawaited(_writeDraft(_draft));
+    if (_job.isNotEmpty) unawaited(_app.vision.cancelAnalysis(_job));
+    super.dispose();
+  }
+
+  Future<void> _pickPhotos(PickSource source) async {
+    if (_pickingPhotos) return;
+    final room = 8 - _photos.length;
+    if (room <= 0) {
+      _app.toast.show('最多 8 张');
+      return;
+    }
+    setState(() => _pickingPhotos = true);
+    try {
+      final picked = await _app.native.pickImages(source: source, limit: room);
+      if (picked.length > room) _app.toast.show('最多 8 张');
+      for (final bytes in picked.take(room)) {
+        try {
+          final path = await _app.native.photoWrite(bytes);
+          if (!mounted) return;
+          _change(() {
+            _photos.add(path);
+            _photoBytes[path] = bytes;
+          });
+        } catch (e) {
+          if (!mounted) return;
+          _app.toast.show('照片上传失败：${AppController.message(e)}');
+        }
+      }
+    } catch (e) {
+      final message = AppController.message(e);
+      if (!message.toLowerCase().contains('cancel')) {
+        _app.toast.show('照片选择未完成：$message');
+      }
+    } finally {
+      if (mounted) setState(() => _pickingPhotos = false);
+    }
+  }
+
+  Future<void> _analyze() async {
+    if (_analyzing) return;
+    if (_pickingPhotos) {
+      _app.toast.show('照片还在上传');
+      return;
+    }
+    if (_photos.isEmpty) {
+      _app.toast.show('先拍一张，或从相册选');
+      return;
+    }
+    final generation = ++_generation;
+    setState(() {
+      _analyzing = true;
+      _error = '';
+      _phase = '正在看照片';
+      _think = '';
+      _waited = 0;
+    });
+    _job = _app.vision.startAnalysis(_photos.toList(), _note, _meal)['job']!;
+    final started = DateTime.now();
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(milliseconds: 450), (_) {
+      if (!mounted || generation != _generation) return;
+      try {
+        final status = _app.vision.analysisStatus(_job);
+        if ('${status['error'] ?? ''}'.isNotEmpty) {
+          throw records.DomainError('${status['error']}');
+        }
+        if (status['done'] == true && status['analysis'] is Map) {
+          final a = status['analysis'] as Map;
+          _pollTimer?.cancel();
+          _change(() {
+            _items = (a['items'] as List? ?? [])
+                .map((it) => _item(it as Map))
+                .toList();
+            _hasAnalysis = true;
+            _analysisSig = _sig(_plain);
+            _summary = [
+              if ('${a['summary'] ?? ''}'.isNotEmpty) '${a['summary']}',
+              if ('${a['confidence'] ?? ''}'.isNotEmpty)
+                '可信度 ${a['confidence']}',
+            ].join(' · ');
+            _analyzing = false;
+            _job = '';
+            _phase = '';
+            _think = '';
+          });
+          return;
+        }
+        if (status['finished'] == true) {
+          throw const records.DomainError('识别没有返回结果');
+        }
+        final seconds = DateTime.now().difference(started).inSeconds;
+        if (seconds >= 160) {
+          unawaited(_app.vision.cancelAnalysis(_job));
+          throw const records.DomainError('请求超时');
+        }
+        setState(() {
+          _phase = '${status['phase'] ?? _phase}';
+          _think = '${status['think'] ?? ''}';
+          _waited = seconds;
+        });
+      } catch (e) {
+        _pollTimer?.cancel();
+        final msg = AppController.message(e);
+        _change(() {
+          _analyzing = false;
+          _job = '';
+          _phase = '';
+          _think = '';
+          _error = msg.startsWith('识别失败') ? msg : '识别失败：$msg';
+          if (_items.isEmpty) _items.add(_item());
+        });
+      }
+    });
+  }
+
+  Future<void> _cancelAnalysis() async {
+    final job = _job;
+    _generation++;
+    _pollTimer?.cancel();
+    setState(() {
+      _analyzing = false;
+      _job = '';
+      _phase = '';
+      _think = '';
+    });
+    if (job.isNotEmpty) {
+      try {
+        await _app.vision.cancelAnalysis(job);
+      } catch (e) {
+        _app.toast.show(AppController.message(e));
+      }
+    }
+  }
+
+  Future<void> _save() async {
+    if (_saving || _loading) return;
+    if (_pickingPhotos) {
+      _app.toast.show('照片还在上传');
+      return;
+    }
+    final clean = _plain
+        .where((it) => '${it['name']}'.trim().isNotEmpty)
+        .toList();
+    setState(() => _error = '');
+    if (_editId == null &&
+        _photos.isEmpty &&
+        clean.isEmpty &&
+        _note.trim().isEmpty) {
+      setState(() => _error = '至少拍一张、写一个食物，或写一句备注');
+      return;
+    }
+    var source = '待分析';
+    if (_hasAnalysis) {
+      source = _sig(clean) == _analysisSig ? 'AI识别' : 'AI识别+手动修正';
+    } else if (clean.isNotEmpty) {
+      source = _source.startsWith('AI') ? 'AI识别+手动修正' : '手动填写';
+    }
+    setState(() => _saving = true);
+    try {
+      if (_editId != null) {
+        await _app.repo.updateMeal(
+          id: _editId!,
+          date: _date,
+          meal: _meal,
+          time: _time,
+          note: _note.trim(),
+          source: source,
+          items: clean,
+          photoIds: _photos.toList(),
+          photosChanged: true,
+        );
+      } else {
+        await _app.repo.saveMeal(
+          date: _date,
+          meal: _meal,
+          time: _time,
+          note: _note.trim(),
+          source: source,
+          items: clean,
+          photoIds: _photos.toList(),
+        );
+      }
+      _finished = true;
+      _draftTimer?.cancel();
+      await _writeDraft('null');
+      _app.toast.show('已记下');
+      _app.haptics.saved();
+      if (mounted) SheetController.of(context).close();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = AppController.message(e);
+        });
+      }
+    }
+  }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
+    child: Text(text, style: AppText.hint(context.pal)),
+  );
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    final analyzeLabel = !_enabled
+        ? '识别营养（未配置）'
+        : (_items.isNotEmpty || _photos.isNotEmpty && _editId != null
+              ? '重新识别'
+              : '识别营养');
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: AppSheet(
+        title: _editId == null ? '记一餐' : '编辑饮食',
+        onSave: _save,
+        saveEnabled: !_saving && !_loading,
+        confirmClose: _confirmClose,
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+        child: FadeSwitcher(
+          child: KeyedSubtree(
+            key: ValueKey(_loading),
+            child: _loading
+                ? const SizedBox(height: 104)
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Reveal(
+                        visible: _error.isNotEmpty,
+                        child: _error.isNotEmpty
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: p.err.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(22),
+                                ),
+                                child: Text(
+                                  _error,
+                                  style: TextStyle(color: p.err, fontSize: 15),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      SheetSegments(
+                        labels: records.meals,
+                        value: _meal,
+                        onChanged: (s) => _change(() => _meal = s),
+                        height: 48,
+                        iconFor: mealIcon,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: p.card,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(child: Text('时间', style: AppText.body(p))),
+                            SizedBox(
+                              width: 100,
+                              child: SheetInput(
+                                value: _time,
+                                onChanged: (s) => _change(() => _time = s),
+                                label: '时间',
+                                color: p.secondary,
+                                align: TextAlign.end,
+                                weight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: MotionList(
+                          axis: Axis.horizontal,
+                          children: [
+                            KeyedSubtree(
+                              key: const ValueKey('camera'),
+                              child: _photoButton(
+                                '拍照',
+                                'camera',
+                                PickSource.camera,
+                              ),
+                            ),
+                            const SizedBox(
+                              key: ValueKey('photo-gap'),
+                              width: 8,
+                            ),
+                            KeyedSubtree(
+                              key: const ValueKey('gallery'),
+                              child: _photoButton(
+                                '相册',
+                                'photo',
+                                PickSource.gallery,
+                              ),
+                            ),
+                            for (final path in _photos)
+                              Padding(
+                                key: ValueKey(path),
+                                padding: const EdgeInsets.only(left: 8),
+                                child: SizedBox(
+                                  width: 104,
+                                  height: 104,
+                                  child: Stack(
+                                    children: [
+                                      PhotoImage(
+                                        path: path,
+                                        bytes: _photoBytes[path],
+                                        width: 104,
+                                        height: 104,
+                                        radius: 18,
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Semantics(
+                                          button: true,
+                                          label: '移除照片',
+                                          child: Pressable(
+                                            onTap: () => _change(
+                                              () => _photos.remove(path),
+                                            ),
+                                            child: SizedBox(
+                                              width: 44,
+                                              height: 44,
+                                              child: Center(
+                                                child: Container(
+                                                  width: 26,
+                                                  height: 26,
+                                                  decoration: BoxDecoration(
+                                                    color: p.scrim,
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    '×',
+                                                    style: TextStyle(
+                                                      color: p.onTint,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (!_enabled)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
+                          child: Text(
+                            '还没配置识别。可以自己填营养，或只保存照片，记成待分析。',
+                            style: AppText.hint(p),
+                          ),
+                        ),
+                      const SizedBox(height: 16),
+                      SheetButton(
+                        _analyzing ? '识别中' : analyzeLabel,
+                        _analyzing ? null : _analyze,
+                        primary: true,
+                      ),
+                      Reveal(
+                        visible: _analyzing,
+                        child: _analyzing
+                            ? Column(
+                                children: [
+                                  const SizedBox(height: 12),
+                                  SheetButton('取消识别', _cancelAnalysis),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 12),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: p.card,
+                                      borderRadius: BorderRadius.circular(22),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                _phase,
+                                                style: AppText.body(p),
+                                              ),
+                                            ),
+                                            Text(
+                                              '已等 $_waited 秒',
+                                              style: AppText.hint(p),
+                                            ),
+                                          ],
+                                        ),
+                                        Text(
+                                          _think.isEmpty
+                                              ? '识别过程会显示在这里'
+                                              : '思考过程',
+                                          style: AppText.hint(p),
+                                        ),
+                                        if (_think.isNotEmpty)
+                                          ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxHeight: 144,
+                                            ),
+                                            child: SingleChildScrollView(
+                                              reverse: true,
+                                              child: Text(
+                                                _think,
+                                                style: AppText.hint(p),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      Reveal(
+                        visible: _summary.isNotEmpty,
+                        child: _summary.isNotEmpty
+                            ? Container(
+                                margin: const EdgeInsets.only(top: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: p.fill2,
+                                  borderRadius: BorderRadius.circular(22),
+                                ),
+                                child: Text(
+                                  _summary,
+                                  style: TextStyle(color: p.text, fontSize: 15),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      if (_items.isNotEmpty) _totals(),
+                      MotionList(
+                        children: [
+                          for (final it in _items)
+                            KeyedSubtree(key: ObjectKey(it), child: _food(it)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      SheetButton(
+                        '添加食物',
+                        () => _change(() => _items.add(_item())),
+                        icon: 'plus',
+                      ),
+                      _label('补充，可选'),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: p.card,
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: SheetInput(
+                          value: _note,
+                          onChanged: (s) => _change(() => _note = s),
+                          label: '补充',
+                          placeholder: '例如米饭只吃了一半',
+                          lines: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _photoButton(String label, String icon, PickSource source) {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      label: label,
+      child: Pressable(
+        onTap: _pickingPhotos ? null : () => _pickPhotos(source),
+        child: Container(
+          width: 104,
+          height: 104,
+          decoration: BoxDecoration(
+            color: p.card,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppIcon(icon, size: 22, color: p.secondary),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: p.text,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _totals() {
+    final p = context.pal;
+    final keys = ['kcal', 'protein', 'carbs', 'fat'],
+        labels = ['热量', '蛋白', '碳水', '脂肪'];
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: p.card,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < keys.length; i++)
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    _total(keys[i], i == 0),
+                    style: TextStyle(
+                      color: p.text,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 3,
+                    width: 24,
+                    decoration: BoxDecoration(
+                      color: i == 0
+                          ? p.kcal
+                          : i == 1
+                          ? p.protein
+                          : p.secondary,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(labels[i], style: AppText.hint(p)),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _total(String key, bool integer) {
+    final sum = _items.fold<double>(0, (s, it) {
+      final n = records.number(it[key]);
+      return s + (n.isFinite ? n : 0);
+    });
+    return integer
+        ? sum.round().toString()
+        : (sum * 10).round().toDouble().__format();
+  }
+
+  Widget _food(Map<String, dynamic> it) {
+    final p = context.pal;
+    Widget field(
+      String key,
+      String label, {
+      String placeholder = '',
+      bool numeric = false,
+    }) => Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: p.sep, width: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Text(label, style: TextStyle(color: p.secondary, fontSize: 15)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: SheetInput(
+              value: '${it[key]}',
+              onChanged: (s) => _change(() => it[key] = s),
+              label: label,
+              placeholder: placeholder,
+              numeric: numeric,
+              align: TextAlign.end,
+              weight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+    return Container(
+      key: ValueKey(it['id']),
+      margin: const EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        color: p.card,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 14, right: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SheetInput(
+                    value: '${it['name']}',
+                    onChanged: (s) => _change(() => it['name'] = s),
+                    label: '食物',
+                    placeholder: '食物',
+                    weight: FontWeight.w600,
+                  ),
+                ),
+                Semantics(
+                  button: true,
+                  label: '删除这个食物',
+                  child: Pressable(
+                    onTap: () => _change(() => _items.remove(it)),
+                    child: SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: Center(
+                        child: AppIcon('trash', size: 18, color: p.secondary),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          field('portion', '份量', placeholder: '如 200g'),
+          Row(
+            children: [
+              Expanded(child: field('kcal', '热量', numeric: true)),
+              Expanded(child: field('protein', '蛋白', numeric: true)),
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(child: field('carbs', '碳水', numeric: true)),
+              Expanded(child: field('fat', '脂肪', numeric: true)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+extension on double {
+  String __format() => (this / 10).toString().replaceFirst(RegExp(r'\.0$'), '');
+}

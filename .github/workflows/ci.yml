@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.6
+          cache: true
+
+      # 测试里会加载一个中文字体来测量文字；Linux 上用 Noto CJK 代替 macOS 的苹方。
+      - name: Install CJK font
+        run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+
+      - run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Lint design tokens
+        run: bash tool/lint_tokens.sh
+
+      - name: Test
+        run: flutter test
+        env:
+          LEANDAILY_TEST_FONT: /usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc
+
+      - name: Check release scripts
+        run: python3 -m unittest discover -s tool -p "test_*.py"

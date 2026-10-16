@@ -1,0 +1,3 @@
+SmileySans-Wordmark.ttf 是开源字体「得意黑 Smiley Sans」(Oblique) 的子集，只包含“薄肌日课”四个字。
+得意黑 © 2022–2024 atelier-anchor，SIL Open Font License 1.1 授权，允许商用与嵌入分发。
+https://github.com/atelier-anchor/smiley-sans

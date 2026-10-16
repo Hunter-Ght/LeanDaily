@@ -1,0 +1,1616 @@
+{
+ "muscles": [
+  {
+   "id": "chest_up",
+   "name": "上胸",
+   "group": "chest"
+  },
+  {
+   "id": "chest",
+   "name": "中下胸",
+   "group": "chest"
+  },
+  {
+   "id": "delt_front",
+   "name": "前束肩",
+   "group": "shoulders"
+  },
+  {
+   "id": "delt_side",
+   "name": "中束肩",
+   "group": "shoulders"
+  },
+  {
+   "id": "delt_rear",
+   "name": "后束肩",
+   "group": "shoulders"
+  },
+  {
+   "id": "biceps",
+   "name": "肱二头肌",
+   "group": "arms"
+  },
+  {
+   "id": "triceps",
+   "name": "肱三头肌",
+   "group": "arms"
+  },
+  {
+   "id": "abs",
+   "name": "腹直肌",
+   "group": "abs"
+  },
+  {
+   "id": "obliques",
+   "name": "腹斜肌",
+   "group": "abs"
+  },
+  {
+   "id": "lats",
+   "name": "背阔肌",
+   "group": "back"
+  },
+  {
+   "id": "mid_back",
+   "name": "中背",
+   "group": "back"
+  },
+  {
+   "id": "lower_back",
+   "name": "下背",
+   "group": "back"
+  },
+  {
+   "id": "quads",
+   "name": "股四头肌",
+   "group": "quads"
+  },
+  {
+   "id": "hamstrings",
+   "name": "腘绳肌",
+   "group": "hamstrings"
+  },
+  {
+   "id": "glutes",
+   "name": "臀大肌",
+   "group": "glutes"
+  },
+  {
+   "id": "calves",
+   "name": "小腿",
+   "group": "calves"
+  }
+ ],
+ "groups": [
+  {
+   "id": "chest",
+   "name": "胸"
+  },
+  {
+   "id": "back",
+   "name": "背"
+  },
+  {
+   "id": "shoulders",
+   "name": "肩"
+  },
+  {
+   "id": "arms",
+   "name": "手臂"
+  },
+  {
+   "id": "abs",
+   "name": "腹"
+  },
+  {
+   "id": "quads",
+   "name": "股四头"
+  },
+  {
+   "id": "hamstrings",
+   "name": "腘绳"
+  },
+  {
+   "id": "glutes",
+   "name": "臀"
+  },
+  {
+   "id": "calves",
+   "name": "小腿"
+  }
+ ],
+ "cases": [
+  {
+   "name": "高位俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "低台面俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "跪姿俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "标准俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "弹力带胸推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.3,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "band",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃地板卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.5,
+     "triceps": 0.6
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃平板卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.5,
+     "triceps": 0.6
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.5,
+     "triceps": 0.6
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.5,
+     "triceps": 0.6
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿推胸机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.3,
+     "delt_front": 0.4,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "上斜推胸机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest_up": 1,
+     "chest": 0.5,
+     "delt_front": 0.6,
+     "triceps": 0.5
+    },
+    "primary": "chest_up",
+    "group": "chest",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "上斜哑铃卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest_up": 1,
+     "chest": 0.5,
+     "delt_front": 0.6,
+     "triceps": 0.5
+    },
+    "primary": "chest_up",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃上斜卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest_up": 1,
+     "chest": 0.5,
+     "delt_front": 0.6,
+     "triceps": 0.5
+    },
+    "primary": "chest_up",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "上斜卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest_up": 1,
+     "chest": 0.5,
+     "delt_front": 0.6,
+     "triceps": 0.5
+    },
+    "primary": "chest_up",
+    "group": "chest",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "拉力器高位向下夹胸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.15,
+     "delt_front": 0.3
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "龙门架夹胸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.15,
+     "delt_front": 0.3
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "蝴蝶机夹胸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.3,
+     "delt_front": 0.3
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "双杠臂屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "triceps": 0.8,
+     "delt_front": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "脚抬高俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest_up": 1,
+     "chest": 0.7,
+     "delt_front": 0.6,
+     "triceps": 0.5
+    },
+    "primary": "chest_up",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "弹力带夹胸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.3,
+     "delt_front": 0.3
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "band",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃肩推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "轻哑铃坐姿肩推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃推举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "杠铃推举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿肩推机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "器械推肩",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.6,
+     "triceps": 0.5,
+     "chest_up": 0.2
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "轻重量侧平举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_side": 1,
+     "delt_rear": 0.2,
+     "delt_front": 0.1
+    },
+    "primary": "delt_side",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "轻哑铃侧平举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_side": 1,
+     "delt_rear": 0.2,
+     "delt_front": 0.1
+    },
+    "primary": "delt_side",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "侧平举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_side": 1,
+     "delt_rear": 0.2,
+     "delt_front": 0.1
+    },
+    "primary": "delt_side",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "拉力器单臂侧平举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_side": 1,
+     "delt_rear": 0.2,
+     "delt_front": 0.1
+    },
+    "primary": "delt_side",
+    "group": "shoulders",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "前平举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_front": 1,
+     "delt_side": 0.3,
+     "chest_up": 0.3
+    },
+    "primary": "delt_front",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "反向飞鸟",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.6,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "面拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.6,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "俯身哑铃反向飞鸟",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.6,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "绳索面拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.6,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "反向蝴蝶机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.6,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "弹力带拉开",
+   "part": "",
+   "result": {
+    "muscles": {
+     "delt_rear": 1,
+     "mid_back": 0.8,
+     "delt_side": 0.2
+    },
+    "primary": "delt_rear",
+    "group": "shoulders",
+    "kind": "band",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "单臂哑铃划船",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "mid_back": 0.7,
+     "delt_rear": 0.5,
+     "biceps": 0.5,
+     "lower_back": 0.2
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "杠铃划船",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "mid_back": 0.8,
+     "delt_rear": 0.5,
+     "biceps": 0.5,
+     "lower_back": 0.4
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "T杠划船",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "mid_back": 0.8,
+     "delt_rear": 0.5,
+     "biceps": 0.5,
+     "lower_back": 0.4
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "弯腰双臂哑铃划船",
+   "part": "",
+   "result": {
+    "muscles": {
+     "mid_back": 1,
+     "lats": 0.7,
+     "delt_rear": 0.5,
+     "biceps": 0.5,
+     "lower_back": 0.4
+    },
+    "primary": "mid_back",
+    "group": "back",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿划船机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "mid_back": 1,
+     "lats": 0.7,
+     "delt_rear": 0.5,
+     "biceps": 0.5
+    },
+    "primary": "mid_back",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿划船",
+   "part": "",
+   "result": {
+    "muscles": {
+     "mid_back": 1,
+     "lats": 0.7,
+     "delt_rear": 0.5,
+     "biceps": 0.5
+    },
+    "primary": "mid_back",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "高位下拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "biceps": 0.6,
+     "mid_back": 0.4,
+     "delt_rear": 0.3
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "辅助引体向上机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "biceps": 0.6,
+     "mid_back": 0.4,
+     "delt_rear": 0.3
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "引体向上",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "biceps": 0.7,
+     "mid_back": 0.4,
+     "delt_rear": 0.3
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "直臂下拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lats": 1,
+     "triceps": 0.2
+    },
+    "primary": "lats",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "硬拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "glutes": 1,
+     "hamstrings": 0.9,
+     "lower_back": 0.8,
+     "quads": 0.5,
+     "mid_back": 0.4,
+     "lats": 0.2
+    },
+    "primary": "glutes",
+    "group": "glutes",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "深蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.6,
+     "hamstrings": 0.3,
+     "lower_back": 0.2
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "徒手深蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.6,
+     "hamstrings": 0.3,
+     "lower_back": 0.2
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "高脚杯深蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.6,
+     "hamstrings": 0.3,
+     "lower_back": 0.2,
+     "abs": 0.15
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "分腿蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.7,
+     "hamstrings": 0.3
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "箭步蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.7,
+     "hamstrings": 0.3
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "保加利亚分腿蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.7,
+     "hamstrings": 0.3
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "腿举机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.5,
+     "hamstrings": 0.2
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "腿举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.5,
+     "hamstrings": 0.2
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "腿屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "腿屈伸机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿腿弯举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "hamstrings": 1,
+     "calves": 0.15
+    },
+    "primary": "hamstrings",
+    "group": "hamstrings",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "腿弯举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "hamstrings": 1,
+     "calves": 0.15
+    },
+    "primary": "hamstrings",
+    "group": "hamstrings",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "轻哑铃罗马尼亚硬拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "hamstrings": 1,
+     "glutes": 0.7,
+     "lower_back": 0.4
+    },
+    "primary": "hamstrings",
+    "group": "hamstrings",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "罗马尼亚硬拉",
+   "part": "",
+   "result": {
+    "muscles": {
+     "hamstrings": 1,
+     "glutes": 0.7,
+     "lower_back": 0.4
+    },
+    "primary": "hamstrings",
+    "group": "hamstrings",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "臀桥",
+   "part": "",
+   "result": {
+    "muscles": {
+     "glutes": 1,
+     "hamstrings": 0.4,
+     "quads": 0.15
+    },
+    "primary": "glutes",
+    "group": "glutes",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "臀推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "glutes": 1,
+     "hamstrings": 0.4,
+     "quads": 0.15
+    },
+    "primary": "glutes",
+    "group": "glutes",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "单腿臀桥",
+   "part": "",
+   "result": {
+    "muscles": {
+     "glutes": 1,
+     "hamstrings": 0.5,
+     "quads": 0.1
+    },
+    "primary": "glutes",
+    "group": "glutes",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "提踵",
+   "part": "",
+   "result": {
+    "muscles": {
+     "calves": 1
+    },
+    "primary": "calves",
+    "group": "calves",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "站姿提踵",
+   "part": "",
+   "result": {
+    "muscles": {
+     "calves": 1
+    },
+    "primary": "calves",
+    "group": "calves",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "坐姿提踵机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "calves": 1
+    },
+    "primary": "calves",
+    "group": "calves",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "超人式",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lower_back": 1,
+     "glutes": 0.6,
+     "hamstrings": 0.3,
+     "delt_rear": 0.2
+    },
+    "primary": "lower_back",
+    "group": "back",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "背部伸展",
+   "part": "",
+   "result": {
+    "muscles": {
+     "lower_back": 1,
+     "glutes": 0.5,
+     "hamstrings": 0.4
+    },
+    "primary": "lower_back",
+    "group": "back",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃弯举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "biceps": 1
+    },
+    "primary": "biceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "杠铃弯举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "biceps": 1
+    },
+    "primary": "biceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "锤式弯举",
+   "part": "",
+   "result": {
+    "muscles": {
+     "biceps": 1
+    },
+    "primary": "biceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "二头弯举机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "biceps": 1
+    },
+    "primary": "biceps",
+    "group": "arms",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "绳索下压",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "machine",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "仰卧臂屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "过头臂屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "站姿哑铃臂屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "哑铃臂后屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "椅子臂屈伸",
+   "part": "",
+   "result": {
+    "muscles": {
+     "triceps": 1,
+     "chest": 0.4,
+     "delt_front": 0.4
+    },
+    "primary": "triceps",
+    "group": "arms",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "卷腹",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.2
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "卷腹机",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.2
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "绳索卷腹",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.2
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "反向卷腹",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.2
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "死虫式",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.3
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "侧平板支撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "obliques": 1,
+     "abs": 0.5,
+     "delt_side": 0.2,
+     "glutes": 0.3
+    },
+    "primary": "obliques",
+    "group": "abs",
+    "kind": "timed",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "平板支撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.5,
+     "delt_front": 0.3,
+     "lower_back": 0.2,
+     "glutes": 0.2
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "timed",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "悬垂举腿",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "obliques": 0.3
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "健腹轮",
+   "part": "",
+   "result": {
+    "muscles": {
+     "abs": 1,
+     "delt_front": 0.3,
+     "lats": 0.3
+    },
+    "primary": "abs",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "俄罗斯转体",
+   "part": "",
+   "result": {
+    "muscles": {
+     "obliques": 1,
+     "abs": 0.6
+    },
+    "primary": "obliques",
+    "group": "abs",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "壶铃摆荡",
+   "part": "",
+   "result": {
+    "muscles": {
+     "glutes": 1,
+     "hamstrings": 0.8,
+     "lower_back": 0.5,
+     "delt_front": 0.3,
+     "abs": 0.3
+    },
+    "primary": "glutes",
+    "group": "glutes",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "波比跳",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 0.6,
+     "chest": 0.4,
+     "delt_front": 0.3,
+     "triceps": 0.3,
+     "abs": 0.4,
+     "glutes": 0.4
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "农夫行走",
+   "part": "",
+   "result": {
+    "muscles": {
+     "mid_back": 0.6,
+     "abs": 0.4,
+     "obliques": 0.4,
+     "glutes": 0.3
+    },
+    "primary": "mid_back",
+    "group": "back",
+    "kind": "free",
+    "matched": "exact"
+   }
+  },
+  {
+   "name": "我的自创俯卧撑",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.25,
+     "delt_front": 0.5,
+     "triceps": 0.5
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "bw",
+    "matched": "keyword"
+   }
+  },
+  {
+   "name": "斜板卧推",
+   "part": "",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.5,
+     "triceps": 0.6
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "keyword"
+   }
+  },
+  {
+   "name": "某某蹲",
+   "part": "",
+   "result": {
+    "muscles": {
+     "quads": 1,
+     "glutes": 0.7,
+     "hamstrings": 0.3
+    },
+    "primary": "quads",
+    "group": "quads",
+    "kind": "bw",
+    "matched": "keyword"
+   }
+  },
+  {
+   "name": "跑步机",
+   "part": "",
+   "result": null
+  },
+  {
+   "name": "随便",
+   "part": "胸",
+   "result": {
+    "muscles": {
+     "chest": 1,
+     "chest_up": 0.4,
+     "delt_front": 0.4,
+     "triceps": 0.4
+    },
+    "primary": "chest",
+    "group": "chest",
+    "kind": "free",
+    "matched": "part"
+   }
+  }
+ ]
+}
