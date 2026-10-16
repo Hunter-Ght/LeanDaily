@@ -105,7 +105,8 @@ class Harness {
     return Harness._(native, controller, key);
   }
 
-  /// 写出 out/shots/NAME.png（2 倍图）。
+  /// 写出 NAME.png（2 倍图）：带安全区（LEANDAILY_SAFE_AREA=1，README 展示图的来源）写到 out/shots/，
+  /// 普通运行写到 out/shots-plain/，避免日常跑测试时覆盖展示图的素材。
   Future<void> shot(WidgetTester tester, String name) async {
     debugDisableShadows = false;
     await tester.pump();
@@ -114,7 +115,10 @@ class Harness {
     await tester.runAsync(() async {
       final image = await boundary.toImage(pixelRatio: 2);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-      final file = File('out/shots/$name.png');
+      final dir = Platform.environment['LEANDAILY_SAFE_AREA'] == '1'
+          ? 'out/shots'
+          : 'out/shots-plain';
+      final file = File('$dir/$name.png');
       await file.parent.create(recursive: true);
       await file.writeAsBytes(bytes!.buffer.asUint8List());
       image.dispose();

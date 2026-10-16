@@ -82,12 +82,12 @@ def render(name, body, w, h, bg, dark=False, transparent=False):
 LIGHT_BG = 'linear-gradient(160deg,#fff8f2 0%,#ffe9d9 55%,#ffd8bf 100%)'
 DARK_BG = 'linear-gradient(160deg,#1a1a1c 0%,#26211d 55%,#3a2415 100%)'
 
-# 1 主图
+# 1 主图：推荐方案 → 今日计划 → 肌肉恢复（三张等大，说明文字对齐）
 render('hero.png',
-       item('r-train-set-light.png', '一组一次点击', '数字沿用上一组，自动休息', 280)
-       + item('readme-today-light.png', '打开就是今天的计划', '一个大按钮，动作带示范图', 320)
-       + item('readme-muscle-light.png', '看得见的肌肉恢复', '练完的肌肉会染色，越狠颜色越深', 280, mask='#f2f2f7'),
-       1500, 920, LIGHT_BG)
+       item('r-plan-onb-light.png', '先问几句，再推荐', '每周几天、在哪练、练过没有，给你一张推荐卡', 310)
+       + item('readme-today-light.png', '打开就是今天的计划', '一个大按钮，动作带会动的示范图', 310)
+       + item('readme-muscle-light.png', '看得见的肌肉恢复', '练完的肌肉会染色，越狠颜色越深', 310, mask='#f2f2f7'),
+       1500, 940, LIGHT_BG)
 
 # 2 新手选方案（半屏弹层顶部是压暗的背景页，状态栏用白字）
 render('feature-plan.png',

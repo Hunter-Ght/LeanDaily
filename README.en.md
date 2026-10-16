@@ -37,17 +37,17 @@ It is a fully offline app: no account, no ads, no analytics, no server.
 
 ## Highlights
 
-**Today, at a glance.** Open the app and see what to train today, how many sets, what's next, and one big button. Every exercise has a looping demo that plays right inside the workout screen.
+**Ask a few questions, then get a recommendation — no plan-hunting.** Most training apps greet you with a dozen text-only plans that look the same. LeanDaily asks how many days a week, where you train (home without / with dumbbells, gym, or both) and your experience, then shows **one recommended card** plus swipeable alternatives. Each plan is a "fingerprint card": a 7-day strip showing which days you train and what (push / pull / legs / full / upper / lower), a mini body map shaded by the plan's real weekly volume per muscle, a one-line summary and a "who it's for" meter.
+
+<img src="docs/images/feature-plan.png" alt="Plan picker" width="100%">
+
+**Then: today, at a glance.** Open the app and see what to train today, how many sets, what's next, and one big button. Every exercise has a looping demo that plays right inside the workout screen.
 
 <div align="center">
 <img src="docs/images/flow.gif" alt="Today → workout → summary" height="420">
 &nbsp;&nbsp;&nbsp;
 <img src="docs/images/demo-floor-press.gif" alt="Exercise demo" height="420">
 </div>
-
-**Choosing a plan without a wall of text.** Each plan is a "fingerprint card": a 7-day strip showing which days you train and what (push / pull / legs / full / upper / lower), a mini body map shaded by the plan's real weekly volume per muscle, a one-line summary and a "who it's for" meter. Onboarding asks days per week, where you train (home without / with dumbbells, gym, or both) and experience, then shows **one recommended card** plus swipeable alternatives.
-
-<img src="docs/images/feature-plan.png" alt="Plan picker" width="100%">
 
 **Progress you can see.** A muscle map coloured by *recovery*, *volume* or *neglect*; a 7-day-average weight trend with estimated body-fat progress; a weekly review that suggests next week's adjustment (e.g. ±100 kcal) you can apply in one tap.
 

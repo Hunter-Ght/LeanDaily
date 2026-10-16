@@ -19,7 +19,7 @@ bash tool/lint_tokens.sh
 TZ=Asia/Shanghai flutter test     # 时区必须固定，否则与日期相关的测试会失败
 ```
 
-截图测试会把图片写到 `out/shots/`。README 里的展示图用下面的方法重新生成（macOS）：
+截图测试会把图片写到 `out/shots-plain/`（带 `LEANDAILY_SAFE_AREA=1` 时写到 `out/shots/`，那是 README 展示图的素材）。README 里的展示图用下面的方法重新生成（macOS）：
 
 ```bash
 python3 tool/readme_shots/extract_pingfang_sc.py        # 抽出苹方-简，截图字形才和真机一致
