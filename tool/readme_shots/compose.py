@@ -69,16 +69,14 @@ def item(img, title, sub, width=300, bar='dark', mask=None):
 
 
 def fold(img, width, caption, sub):
-    """折叠屏内屏：825×887dp，细边框、小圆角，中间一道淡淡的折痕。"""
+    """折叠屏内屏：825×887dp，细边框、小圆角。"""
     s = width / 825
     h = width * 887 / 825
     sb = (f'<div class="sb" style="height:{56 * s:.1f}px;padding:{12 * s:.1f}px {40 * s:.1f}px 0 {44 * s:.1f}px;'
           f'font-size:{17 * s:.1f}px;color:#000"><span>9:41</span><span class="r">{bar_svg("#000")}</span></div>')
-    crease = (f'<div style="position:absolute;top:0;bottom:0;left:50%;width:{14 * s:.1f}px;transform:translateX(-50%);'
-              'background:linear-gradient(90deg,transparent,rgba(0,0,0,.07) 50%,transparent)"></div>')
     frame = (f'<div class="phone" style="--k:{s:.4f};border-radius:{30 * s:.1f}px;padding:{8 * s:.1f}px;width:{width + 16 * s:.1f}px">'
              f'<div class="scr" style="width:{width}px;height:{h:.1f}px;border-radius:{22 * s:.1f}px">'
-             f'<img src="file://{SHOTS / img}">{crease}{sb}</div></div>')
+             f'<img src="file://{SHOTS / img}">{sb}</div></div>')
     return f'<div class="item">{frame}<div class="cap"><b>{caption}</b><span>{sub}</span></div></div>'
 
 
