@@ -19,7 +19,16 @@ bash tool/lint_tokens.sh
 TZ=Asia/Shanghai flutter test     # 时区必须固定，否则与日期相关的测试会失败
 ```
 
-截图测试会把图片写到 `out/shots/`。想让截图里的中文字形更接近真机，可以在 macOS 上先 `python3 tool/readme_shots/extract_pingfang_sc.py`，再设置 `LEANDAILY_TEST_FONT=out/fonts/PingFangSC-Regular.ttf`。
+截图测试会把图片写到 `out/shots/`。README 里的展示图用下面的方法重新生成（macOS）：
+
+```bash
+python3 tool/readme_shots/extract_pingfang_sc.py        # 抽出苹方-简，截图字形才和真机一致
+export LEANDAILY_SAFE_AREA=1                            # 模拟状态栏和手势条的安全区，界面才不会贴边
+export LEANDAILY_TEST_FONT="$PWD/out/fonts/PingFangSC-Regular.ttf" TZ=Asia/Shanghai
+flutter test                                            # 部分对位置敏感的测试在安全区下会失败，不影响出图
+for s in light dark; do README_SCHEME=$s flutter test tool/readme_shots/readme_shots_test.dart; done
+python3 tool/readme_shots/compose.py                    # 需要 Node + playwright-core、Chrome、ffmpeg
+```
 
 ## 代码约定
 

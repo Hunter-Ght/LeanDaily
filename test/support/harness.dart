@@ -42,11 +42,19 @@ class Harness {
   }) async {
     tester.view.devicePixelRatio = 2;
     tester.view.physicalSize = size * 2;
+    // 出展示图时模拟真机的状态栏/手势条安全区：LEANDAILY_SAFE_AREA=1（顶 47dp、底 20dp）。
+    if (Platform.environment['LEANDAILY_SAFE_AREA'] == '1') {
+      const inset = FakeViewPadding(top: 94, bottom: 40);
+      tester.view.padding = inset;
+      tester.view.viewPadding = inset;
+    }
     tester.platformDispatcher.platformBrightnessTestValue = dark
         ? Brightness.dark
         : Brightness.light;
     addTearDown(() {
       tester.view.resetPhysicalSize();
+      tester.view.resetPadding();
+      tester.view.resetViewPadding();
       tester.view.resetDevicePixelRatio();
       tester.platformDispatcher.clearPlatformBrightnessTestValue();
     });
