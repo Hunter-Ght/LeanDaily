@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/app/routes.dart';
 import 'package:leandaily/data/update_check.dart';
+import 'package:leandaily/config/app_links.dart' as links;
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/kit/grouped.dart';
 import 'package:leandaily/ui/kit/markdown_lite.dart';
@@ -62,7 +63,10 @@ void main() {
       for (final label in ['检查更新', '启动时自动检查更新', '隐私政策', '开源与致谢']) {
         expect(find.text(label), findsOneWidget);
       }
-      expect(find.text('项目主页'), findsNothing);
+      expect(find.text('项目主页'), findsOneWidget);
+      await tapVisible(tester, '项目主页');
+      expect(h.native.opened, [links.repoUrl]);
+      h.native.opened.clear();
       await h.shot(tester, 'r-about-$mode');
       await tapVisible(tester, '检查更新');
       expect(h.controller.hasUnseenUpdate, isFalse);
@@ -80,7 +84,9 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(find.text('一句话版本'), findsOneWidget);
-      expect(find.text('在线查看'), findsNothing);
+      expect(find.text('在线查看'), findsOneWidget);
+      await tapVisible(tester, '在线查看');
+      expect(h.native.opened.last, links.privacyPolicyUrl);
       expect(find.byType(GroupCard), findsWidgets);
       await h.shot(tester, 'r-privacy-$mode');
       final table = find.text('权限');
@@ -99,7 +105,7 @@ void main() {
     });
   }
   testWidgets('未配置说明、自动检查开关和引导入口', (tester) async {
-    final h = await Harness.pump(tester, tab: 3);
+    final h = await Harness.pump(tester, tab: 3, updateUrl: '');
     await tapVisible(tester, '检查更新');
     expect(find.text('暂未提供在线更新'), findsOneWidget);
     expect(h.native.httpLog, isEmpty);

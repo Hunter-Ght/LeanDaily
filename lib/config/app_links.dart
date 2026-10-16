@@ -1,9 +1,10 @@
-/// 发布前请填写。留空显示“未配置”，不会发出网络请求。
-/// GitHub Releases latest 接口，或包含 version/build/url/notes 的 HTTPS JSON。
-const String updateCheckUrl = '';
+/// GitHub Releases latest 接口；发布正式 Release 后可检查更新。
+const String updateCheckUrl =
+    'https://api.github.com/repos/Hunter-Ght/LeanDaily/releases/latest';
 
-/// 留空则不显示“在线查看”。
-const String privacyPolicyUrl = '';
+/// 在线隐私政策，随 main 分支中的 PRIVACY.md 更新。
+const String privacyPolicyUrl =
+    'https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md';
 
-/// 留空则不显示“项目主页”。
-const String repoUrl = '';
+/// 项目主页。
+const String repoUrl = 'https://github.com/Hunter-Ght/LeanDaily';

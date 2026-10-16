@@ -41,7 +41,8 @@ void main() {
     test('old settings boot and cleanup runs once; failure=$fail', () async {
       final n = CleanupNative(fail: fail)
         ..docs['android-settings'] = jsonEncode(legacySettings);
-      final app = AppController(native: n);
+      // Isolate legacy cleanup from the configured startup update request.
+      final app = AppController(native: n, updateUrl: '');
       addTearDown(app.dispose);
       await app.boot();
       expect(app.booted, true);
@@ -83,7 +84,9 @@ void main() {
         'synced': true,
         'record_id': 'old-id',
       });
-      await repo.replaceState(Map<String, dynamic>.from(backup['state'] as Map));
+      await repo.replaceState(
+        Map<String, dynamic>.from(backup['state'] as Map),
+      );
       final cleanExport = await exportBackup(n, repo);
       final exportedRow = cleanExport['state']['sets'][ids.single] as Map;
       expect(exportedRow.containsKey('feishuId'), false);

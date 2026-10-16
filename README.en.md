@@ -78,7 +78,7 @@ Android 8.0+ (64-bit ARM). Download the latest APK from [Releases](../../release
 Requires Flutter 3.47+ (Dart 3.13+), JDK 17+, Android SDK and NDK.
 
 ```bash
-git clone https://github.com/<your-username>/LeanDaily.git
+git clone https://github.com/Hunter-Ght/LeanDaily.git
 cd LeanDaily
 flutter pub get
 flutter run
@@ -100,7 +100,9 @@ python3 tool/check_apk.py build/app/outputs/flutter-apk/app-release.apk
 
 Keep R8 minification **off** (`isMinifyEnabled = false`): the Flutter engine calls back into `FlutterJNI` by class name.
 
-Before publishing, fill in [`lib/config/app_links.dart`](lib/config/app_links.dart) (`updateCheckUrl`, `privacyPolicyUrl`, `repoUrl`). Empty values disable the feature and make no network requests.
+[`lib/config/app_links.dart`](lib/config/app_links.dart) is configured for [Hunter-Ght/LeanDaily](https://github.com/Hunter-Ght/LeanDaily), the GitHub latest-release API, and the [online privacy policy](https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md). Contact: [Issues](https://github.com/Hunter-Ght/LeanDaily/issues).
+
+Pushing `PRIVACY.md` to `main` makes it readable on GitHub without GitHub Pages. APKs must be built, signed, and uploaded to [Releases](https://github.com/Hunter-Ght/LeanDaily/releases) separately; a normal `git push` does not create them. See [the release checklist](docs/RELEASING.md).
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DESIGN.md](docs/DESIGN.md).
 

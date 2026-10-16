@@ -118,7 +118,7 @@ void main() {
   });
   test('未配置、关闭自动检查、失败静默与手动提示', () async {
     final n = FakeNative();
-    final a = AppController(native: n);
+    final a = AppController(native: n, updateUrl: '');
     await a.boot();
     await a.checkUpdate(manual: true);
     expect(n.httpLog, isEmpty);

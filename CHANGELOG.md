@@ -2,6 +2,15 @@
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.3.1] · 2026-10-16
+
+### 修复
+- 配置 Hunter-Ght/LeanDaily 的正式更新接口、项目主页和在线隐私政策入口。
+- 补齐中英文隐私政策的 Issues 联系方式及 README 中的仓库地址。
+
+### 文档
+- 补充签名构建、GitHub Release 上传 APK、版本比较和在线政策更新说明。
+
 ## [2.3.0] · 首个开源版本
 
 ### 新增

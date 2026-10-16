@@ -125,7 +125,7 @@
 需要 [Flutter](https://flutter.dev) 3.47+（Dart 3.13+）、JDK 17+、Android SDK 与 NDK。
 
 ```bash
-git clone https://github.com/<你的用户名>/LeanDaily.git
+git clone https://github.com/Hunter-Ght/LeanDaily.git
 cd LeanDaily
 flutter pub get
 flutter run                      # 连接手机或模拟器
@@ -150,17 +150,19 @@ python3 tool/check_apk.py build/app/outputs/flutter-apk/app-release.apk   # 发�
 
 > **注意**：发布构建必须保持 R8 混淆关闭（`isMinifyEnabled = false`）。Flutter 引擎会按类名回调 `FlutterJNI`，被混淆后引擎无法启动。
 
-### 发布前你需要填的地方
+### 项目链接与发布
 
-[`lib/config/app_links.dart`](lib/config/app_links.dart) 里有三个常量，留空时对应功能显示"未配置"，不会发出任何网络请求：
+[`lib/config/app_links.dart`](lib/config/app_links.dart) 已配置：
 
-| 常量 | 填什么 |
+| 常量 | 地址 |
 | --- | --- |
-| `updateCheckUrl` | 检查更新地址，如 `https://api.github.com/repos/<用户名>/LeanDaily/releases/latest`，或自托管 JSON |
-| `privacyPolicyUrl` | 隐私政策在线页面（GitHub Pages 或 `PRIVACY.md` 的链接） |
-| `repoUrl` | 项目主页，如 `https://github.com/<用户名>/LeanDaily` |
+| `updateCheckUrl` | `https://api.github.com/repos/Hunter-Ght/LeanDaily/releases/latest` |
+| `privacyPolicyUrl` | [在线隐私政策](https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md) |
+| `repoUrl` | [项目主页](https://github.com/Hunter-Ght/LeanDaily) |
 
-另外 [`assets/legal/privacy.md`](assets/legal/privacy.md) 与 `PRIVACY*.md` 末尾的联系方式也需要填写。
+隐私政策中的联系方式为 [Issues](https://github.com/Hunter-Ght/LeanDaily/issues)。推送 `PRIVACY.md` 到 `main` 后即可在线阅读，无需部署 GitHub Pages。
+
+安装包从 [Releases](https://github.com/Hunter-Ght/LeanDaily/releases) 下载。普通 `git push` 不会自动生成 APK 或 Release；构建、签名和上传步骤见 [发布清单](docs/RELEASING.md)。
 
 ### 项目结构
 

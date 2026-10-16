@@ -73,4 +73,4 @@ If this policy changes, the new version ships with an app update and is noted in
 
 ## 9. Contact
 
-For questions or suggestions, please open an issue on the project page: `<project page URL — fill in before release>`.
+For questions or suggestions, please open an issue on the project page: [LeanDaily Issues](https://github.com/Hunter-Ght/LeanDaily/issues).

@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/app/app.dart';
 import 'package:leandaily/app/app_controller.dart';
 import 'package:leandaily/core/native.dart';
+import 'package:leandaily/config/app_links.dart' as links;
 import 'package:leandaily/ui/kit/app_icon.dart';
 
 import 'fonts.dart';
@@ -38,6 +39,7 @@ class Harness {
     String at = refTime,
     bool empty = false,
     bool newUser = false,
+    String updateUrl = links.updateCheckUrl,
     void Function(FakeNative native)? seed,
   }) async {
     tester.view.devicePixelRatio = 2;
@@ -75,7 +77,11 @@ class Harness {
       }
     }
     seed?.call(native);
-    final controller = AppController(native: native, clock: () => now);
+    final controller = AppController(
+      native: native,
+      clock: () => now,
+      updateUrl: updateUrl,
+    );
     final key = GlobalKey();
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox());

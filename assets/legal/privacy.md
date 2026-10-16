@@ -71,4 +71,4 @@ App 面向成年人设计。未满 18 岁的用户会进入“成长期”路线
 
 ## 9. 联系我们
 
-如有疑问或建议，请通过项目主页的 Issues 联系：`<项目主页链接，发布前填写>`。
+如有疑问或建议，请通过项目主页的 Issues 联系：[LeanDaily Issues](https://github.com/Hunter-Ght/LeanDaily/issues)。
