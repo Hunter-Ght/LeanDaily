@@ -102,4 +102,30 @@ void main() {
       await h.shot(tester, 'readme-today-$scheme');
     });
   }
+  // 折叠屏内屏（约 7.8 英寸、接近方形）：825×887dp，会进入侧边导航 + 双栏布局。
+  for (final tab in [0, 1]) {
+    testWidgets('readme fold light tab$tab', (tester) async {
+      if (_only == 'dark') return;
+      final h = await Harness.pump(
+        tester,
+        tab: tab,
+        size: const Size(825, 887),
+        seed: (n) {
+          n.docs['fw-profile-v1'] = jsonEncode(_profile());
+          n.docs['fw-body-v1'] = _body();
+        },
+      );
+      // 内屏的状态栏比直板机矮，手势条也更细。
+      const inset = FakeViewPadding(top: 56, bottom: 24);
+      tester.view.padding = inset;
+      tester.view.viewPadding = inset;
+      await tester.pumpAndSettle();
+      if (tab == 0) await loadExerciseImages(tester);
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 300)),
+      );
+      await tester.pumpAndSettle();
+      await h.shot(tester, 'readme-fold-${tab == 0 ? 'today' : 'log'}-light');
+    });
+  }
 }

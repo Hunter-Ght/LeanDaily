@@ -67,6 +67,21 @@ def item(img, title, sub, width=300, bar='dark', mask=None):
             f'<div class="cap"><b>{title}</b><span>{sub}</span></div></div>')
 
 
+
+def fold(img, width, caption, sub):
+    """折叠屏内屏：825×887dp，细边框、小圆角，中间一道淡淡的折痕。"""
+    s = width / 825
+    h = width * 887 / 825
+    sb = (f'<div class="sb" style="height:{56 * s:.1f}px;padding:{12 * s:.1f}px {40 * s:.1f}px 0 {44 * s:.1f}px;'
+          f'font-size:{17 * s:.1f}px;color:#000"><span>9:41</span><span class="r">{bar_svg("#000")}</span></div>')
+    crease = (f'<div style="position:absolute;top:0;bottom:0;left:50%;width:{14 * s:.1f}px;transform:translateX(-50%);'
+              'background:linear-gradient(90deg,transparent,rgba(0,0,0,.07) 50%,transparent)"></div>')
+    frame = (f'<div class="phone" style="--k:{s:.4f};border-radius:{30 * s:.1f}px;padding:{8 * s:.1f}px;width:{width + 16 * s:.1f}px">'
+             f'<div class="scr" style="width:{width}px;height:{h:.1f}px;border-radius:{22 * s:.1f}px">'
+             f'<img src="file://{SHOTS / img}">{crease}{sb}</div></div>')
+    return f'<div class="item">{frame}<div class="cap"><b>{caption}</b><span>{sub}</span></div></div>'
+
+
 def render(name, body, w, h, bg, dark=False, transparent=False):
     pad = '8px 20px' if transparent else '56px 40px'
     html = (f'<!doctype html><meta charset="utf-8"><style>{CSS}body{{width:{w}px;height:{h}px;background:{bg};padding:{pad}}}</style>'
@@ -109,6 +124,12 @@ render('feature-training.png',
        + item('r-train-feedback-bar-light.png', '感受随时可补', '组后收成一行小条，不打断下一组', 300)
        + item('r-train-summary-light.png', '训练小结', '本次组数 / 训练量 / 用时', 300),
        1500, 920, LIGHT_BG)
+
+# 4.5 折叠屏内屏（侧边导航 + 双栏）
+render('feature-fold.png',
+       fold('readme-fold-today-light.png', 640, '展开就是双栏', '左边今天练什么，右边这个动作怎么做')
+       + fold('readme-fold-log-light.png', 640, '记录页：日历 + 当天', '侧边导航，一屏看完一整天'),
+       1500, 940, LIGHT_BG)
 
 # 5 暗色
 render('feature-dark.png',

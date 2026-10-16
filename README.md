@@ -102,6 +102,10 @@
 
 <img src="docs/images/feature-dark.png" alt="深色模式" width="100%">
 
+折叠屏展开后自动切到侧边导航和双栏：左边是今天的计划，右边是选中动作的做法和注意事项。
+
+<img src="docs/images/feature-fold.png" alt="折叠屏内屏的双栏布局" width="100%">
+
 ## 隐私承诺
 
 - **没有账号，没有登录。**

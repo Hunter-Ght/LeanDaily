@@ -65,6 +65,10 @@ It is a fully offline app: no account, no ads, no analytics, no server.
 
 <img src="docs/images/feature-dark.png" alt="Dark mode" width="100%">
 
+Unfolded, the app switches to a side rail and two panes: today's plan on the left, how to do the selected exercise on the right.
+
+<img src="docs/images/feature-fold.png" alt="Two-pane layout on a foldable inner screen" width="100%">
+
 ## Privacy
 
 No account. No ads, analytics or crash reporting. Everything is stored locally; Android cloud backup is disabled. The only two network uses are the photo-recognition endpoint **you** configure and the update check (can be turned off). Full text: [PRIVACY.en.md](PRIVACY.en.md).
