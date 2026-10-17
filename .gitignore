@@ -57,7 +57,7 @@ android/key.properties
 
 # 仅本机使用的 agent 说明，不上传
 /AGENTS.md
-
+.env
 # iOS local signing/build state (never commit credentials)
 **/xcuserdata/
 *.mobileprovision

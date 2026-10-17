@@ -16,7 +16,7 @@ flutter build ios --simulator --debug
 flutter run -d <iPhone模拟器ID>
 ```
 
-Xcode 打开 `ios/Runner.xcworkspace`。真机在 Signing & Capabilities 中选择自己的 Team；Bundle ID 默认为 `app.leandaily`，如已被占用需使用自己的 ID。连接 iPhone、信任电脑并启用开发者模式。仓库不包含个人 Team、证书或账号。
+Xcode 打开 `ios/Runner.xcworkspace`。当前发行 Bundle ID 为 `com.leandaily.app`，必须与 Apple Developer 和 App Store Connect 一致；Signing & Capabilities 中选择已获授权的组织 Team，并启用自动签名。证书私钥和账号凭据不入库。使用 Xcode 直连开发测试时，连接 iPhone、信任电脑并启用开发者模式；通过 TestFlight 安装不需要这些步骤。
 
 ```sh
 # 编译真机 Release，不签名，不会安装或上传
@@ -26,6 +26,18 @@ flutter build ipa --release
 ```
 
 生成 unsigned build 不代表已完成真机验收、TestFlight 上传或 App Store 审核。
+
+## 团队尚无测试设备时生成 App Store IPA
+
+如果 `flutter build ipa --release` 提示团队没有设备、无法生成 iOS App Development 描述文件，可以直接使用两阶段发行流程，无需虚构设备或更换团队：
+
+```sh
+python3 tool/build_ios_app_store.py
+```
+
+脚本先以 Release 生成未签名归档，再调用 Xcode 的 App Store Connect 自动发行签名导出；只导出，不上传。签名使用 Xcode 已登录账号，Team 默认读取 Runner Release 配置，也可显式传入 `--team-id`。需要该组织的发行签名权限。API 密钥、证书私钥和账号密码均不写入脚本。
+
+输出为 `build/ios/ipa/leandaily.ipa`，归档为 `build/ios/archive/Runner.xcarchive`。中间未签名归档本身不能直接发布，以最终经过发行签名的 IPA 为准。上传成功与 App Store 审核仍需另外完成；每次新上传使用尚未使用的 build number。
 
 ## 原生能力映射
 

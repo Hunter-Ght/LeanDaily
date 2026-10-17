@@ -44,11 +44,21 @@ App Store Connect → My Apps / App → ＋ → New App：
 6. Organizer 中先 Validate App，查看 Generate Privacy Report，核对 App 和 Flutter 清单，再 Distribute App → App Store Connect → Upload。
 7. 上传成功还需苹果 processing；完成后才会在 TestFlight 出现。
 
-本轮只生成未签名 Release，没有使用组织证书，也没有创建或上传 App Store Connect 记录。正式 Archive 校验仍未执行。
+2026-10-17 已生成组织发行签名的 App Store IPA，并成功上传 `com.leandaily.app` 的 `2.3.2 (23)`；Xcode 确认 `Upload succeeded`。苹果服务器已开始 processing，处理完成和 TestFlight 真机安装仍需确认。此操作未提交公开上架审核。后续上传需使用新的 build number。
 
 ## 4. 先做内部 TestFlight
 
 App Store Connect → LeanDaily → TestFlight → Internal Testing → 创建测试组，把你自己等有 App 访问权的团队成员加进去，选择已处理的 build。iPhone 安装苹果的 TestFlight，再接受邀请安装。
+
+用你自己的 iPhone 操作：
+
+1. 等 `2.3.2 (23)` 处理完成；如果处理失败，先查看苹果给出的具体错误，不要重复上传相同 build number。
+2. 在 Internal Testing（内部测试）旁点 `+`，创建“个人测试”组。若已有只供你使用的组，可直接复用。
+3. 点 Invite Testers（邀请测试员），选择你自己的 App Store Connect 用户；App Manager 且有本 App 访问权即可。再点 Add Builds（添加构建版本），选择 `2.3.2 (23)`。填写本轮测试内容后添加。
+4. iPhone 从 App Store 安装苹果官方 TestFlight。在手机上打开发到你团队账号邮箱的测试邀请，接受后安装 LeanDaily。
+5. TestFlight 不需要数据线、设备 UDID 注册或开发者模式。测试版本有效期 90 天；后续新版本通过 TestFlight 更新。
+
+先检查启动、离线记训练/饮食、三语言、手动输入排版、相机与相册权限、锁屏提醒，以及关闭后重开数据是否保留。如果手机已有本 App 的重要记录，先导出备份，不要为测试直接删 App。AI 可最后用自己的 API Key 测试，不要把 Key 发给其他人。
 
 普通朋友不需要加入开发团队；以后走 External Testing，填写测试信息并提交 Beta App Review。不要为了测试把所有朋友都变成 App Manager。
 

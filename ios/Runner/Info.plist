@@ -24,8 +24,12 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Take meal photos when you choose the camera. Photos are sent to your AI provider only after separate consent.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -66,9 +70,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>Take meal photos when you choose the camera. Photos are sent to your AI provider only after separate consent.</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>
