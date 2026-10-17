@@ -22,9 +22,9 @@ All of the following is stored **only in your phone's local storage**:
 - Meal logs and the meal photos you take;
 - Body-weight and waist entries, daily targets and settings.
 
-None of it is uploaded to us — we have no server. Android's automatic cloud backup is turned off for the app (`allowBackup=false`), so the system does not copy it to the cloud either. Uninstalling the app or clearing its data deletes it.
+None of it is uploaded to us — we have no server. Android automatic backup is disabled (`allowBackup=false`). On iOS the local database and photo directory are excluded from system backup; iCloud sync is not enabled. Uninstalling the app or clearing its data deletes it.
 
-If you configure an API key for photo recognition, it is encrypted with the Android Keystore and kept on the device; it is never included in backup files.
+If you configure an API key for photo recognition, Android encrypts it with Keystore; iOS stores it in a non-synchronizing Keychain item accessible only while unlocked on this device. It is never included in exported backups. On iOS the first launch of a fresh installation clears this app's leftover Keychain item.
 
 ## 2. Network requests
 
@@ -32,7 +32,7 @@ The app goes online only in these two cases, always over HTTPS:
 
 **① Photo recognition (optional, off by default).** Only if you enter a model provider's endpoint, model and API key under "Me → Backup & Advanced" **and** tap "Recognize" while logging a meal, the app sends **that one meal photo** and a prompt to **the provider you entered**. That provider's own privacy policy applies; we never see or handle the data.
 
-**② Update check.** When the app starts (at most once a day) or when you tap "Check for updates", it makes one ordinary web request to the release page to read the latest version number. The request **carries no personal information, device identifier or usage data**. You can turn off "Check for updates at launch" under "Me → About".
+**② Update check.** Local iOS development builds disable update checks by default; update through the original installation channel. The following applies only when an iOS update service is configured. When the app starts (at most once a day) or when you tap "Check for updates", it makes one ordinary web request to the release page to read the latest version number. The request **carries no personal information, device identifier or usage data**. You can turn off "Check for updates at launch" under "Me → About".
 
 The app sends nothing anywhere else.
 
@@ -42,14 +42,16 @@ The app sends nothing anywhere else.
 | --- | --- |
 | Network | Only the photo recognition and update check described above |
 | Notifications | Daily workout reminders and rest-timer alerts |
-| Exact alarms / boot completed | Reminders on time, and restored after a reboot |
+| Exact alarms / boot completed (Android only) | Reminders on time, and restored after a reboot |
 | Camera | Taking meal photos (only when you tap to take one) |
+
+iOS uses the system photo picker and reads only images you select, without full photo-library permission. iOS reminders use local notifications and are subject to notification permission, Focus and other system settings.
 
 The app requests no location, contacts, microphone, SMS or call permissions.
 
 ## 4. Backups and export
 
-You can export a backup file under "Me → Backup & Advanced". It contains your workouts, meals, weight entries and photos, and **you are responsible for keeping it safe**. Importing only reads the file you choose.
+You can export a backup file under "Me → Backup & Advanced". It contains your workouts, meals, weight entries and photos, and **you are responsible for keeping it safe**. Importing only reads the file you choose. If you explicitly export to iCloud Drive or another cloud provider, that provider stores the exported file according to its settings; this is separate from automatic backup of local app data.
 
 ## 5. Health information
 

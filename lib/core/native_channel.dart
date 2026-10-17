@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 
 import 'native.dart';
 
-/// Android SDK 实现的原生能力，所有字节直接使用 StandardMethodCodec。
+/// Android / iOS 原生能力的统一通道，所有字节直接使用 StandardMethodCodec。
 class ChannelNative implements Native {
   ChannelNative({MethodChannel? channel})
     : _channel = channel ?? const MethodChannel('leandaily/native') {

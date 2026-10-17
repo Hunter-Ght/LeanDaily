@@ -4,13 +4,13 @@
 
 ## 提 Issue
 
-- **Bug**：请说明手机型号、Android 版本、App 版本（"我的 → 关于"里能看到），以及复现步骤；有截图更好。**不要在 Issue 里贴你的备份文件或 API 密钥。**
+- **Bug**：请说明手机型号、Android / iOS 版本、App 版本（"我的 → 关于"里能看到），以及复现步骤；有截图更好。**不要在 Issue 里贴你的备份文件或 API 密钥。**
 - **建议**：先说你要解决的问题，再说你想要的做法。
 - **训练 / 饮食规则**的讨论请附上依据（指南、论文或你的实践经验）。规则文档见 [docs/PROGRESSION.md](docs/PROGRESSION.md)。
 
 ## 开发环境
 
-需要 Flutter 3.47+、JDK 17+、Android SDK 与 NDK（用于 `llvm-strip`）。
+需要 Flutter 3.47+。Android 开发需要 JDK 17+、Android SDK 与 NDK（用于 `llvm-strip`）；iOS 开发需要 macOS、Xcode 和 iOS Simulator，详见 [docs/IOS.md](docs/IOS.md)。
 
 ```bash
 flutter pub get

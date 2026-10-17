@@ -52,7 +52,11 @@ class _UpdateUnavailableSheet extends StatelessWidget {
     title: '检查更新',
     child: Column(
       children: [
-        const GroupFooter('暂未提供在线更新'),
+        GroupFooter(
+          defaultTargetPlatform == TargetPlatform.iOS
+              ? '此版本请通过原安装渠道更新。TestFlight 测试版在 TestFlight 中更新，本机开发版需重新安装。'
+              : '暂未提供在线更新',
+        ),
         Padding(
           padding: const EdgeInsets.all(20),
           child: FormButton(

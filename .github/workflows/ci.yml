@@ -38,3 +38,33 @@ jobs:
 
       - name: Check release scripts
         run: python3 -m unittest discover -s tool -p "test_*.py"
+
+  ios:
+    runs-on: macos-latest
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.6
+          cache: true
+      - run: flutter pub get
+      - name: Build iOS simulator app
+        run: flutter build ios --simulator --debug
+      - name: Choose an available iPhone simulator
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          devices = json.loads(subprocess.check_output(['xcrun', 'simctl', 'list', 'devices', 'available', '-j']))
+          phone = next(d for group in devices['devices'].values() for d in group if d['name'].startswith('iPhone'))
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('IOS_TEST_DEVICE=' + phone['udid'] + '\n')
+          PY
+      - name: Test native storage, secrets, photos, HTTP and notifications
+        run: |
+          xcodebuild test -workspace ios/Runner.xcworkspace -scheme Runner \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$IOS_TEST_DEVICE" \
+            CODE_SIGN_IDENTITY=-

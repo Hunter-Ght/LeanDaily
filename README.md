@@ -117,7 +117,9 @@
 
 ## 安装
 
-> 目前提供 Android（8.0 及以上，64 位 ARM 手机）。
+> 目前提供 Android（8.0 及以上，64 位 ARM 手机）安装包。
+
+iOS 源码已支持本地构建，最低 iOS 15；暂未提供 TestFlight / App Store 发行。构建与验收见 [iOS 开发说明](docs/IOS.md)。
 
 1. 到 [Releases](../../releases) 页面下载最新的 `LeanDaily-x.y.z-arm64.apk`；
 2. 在手机上允许"安装未知来源应用"，点开 APK 安装。
@@ -182,6 +184,8 @@ test/         1100+ 个测试（含和旧实现对照的"金标"数据）
 docs/         架构、进阶规则、设计原则、数据安全说明
 ```
 
+iOS 构建、签名与验收说明见 [docs/IOS.md](docs/IOS.md)。
+
 更多见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) 和 [docs/DESIGN.md](docs/DESIGN.md)。
 
 ## 路线图
@@ -190,7 +194,7 @@ docs/         架构、进阶规则、设计原则、数据安全说明
 - [ ] 计划升级建议（稳定训练 8 周后推荐更高阶方案）
 - [ ] 估算 1RM 作为统一的力量指标
 - [ ] 英文界面与更多语言
-- [ ] iOS 版本
+- [ ] iOS 版本真机验收与发行（Swift 原生层已实现，见 [iOS 开发说明](docs/IOS.md)）
 
 欢迎提 Issue 和 PR，见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 

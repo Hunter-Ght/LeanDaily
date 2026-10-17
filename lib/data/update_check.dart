@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import '../core/native.dart';
 
 class UpdateInfo {
@@ -25,7 +27,8 @@ bool _https(String value) {
       uri.userInfo.isEmpty;
 }
 
-UpdateInfo? parseUpdate(String body) {
+UpdateInfo? parseUpdate(String body, {TargetPlatform? platform}) {
+  final ios = (platform ?? defaultTargetPlatform) == TargetPlatform.iOS;
   try {
     final j = jsonDecode(body);
     if (j is! Map) return null;
@@ -38,7 +41,7 @@ UpdateInfo? parseUpdate(String body) {
       return null;
     }
     Object? url = j[github ? 'html_url' : 'url'];
-    if (github && j['assets'] is List) {
+    if (!ios && github && j['assets'] is List) {
       for (final a in j['assets']) {
         if (a is Map && a['browser_download_url'] is String) {
           final candidate = a['browser_download_url'] as String;
@@ -52,6 +55,16 @@ UpdateInfo? parseUpdate(String body) {
       }
     }
     if (url is! String || !_https(url)) return null;
+    if (ios) {
+      final destination = Uri.parse(url);
+      if (!const {
+            'apps.apple.com',
+            'testflight.apple.com',
+          }.contains(destination.host) ||
+          destination.path.toLowerCase().endsWith('.apk')) {
+        return null;
+      }
+    }
     final build = j['build'];
     if (build != null && (build is! int || build < 0)) return null;
     return UpdateInfo(

@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../app/app_controller.dart';
 import '../../config/app_info.dart';
@@ -114,7 +115,9 @@ class MePage extends StatelessWidget {
                     value: app.updateStatus == UpdateStatus.available
                         ? '有新版本 ${app.updateInfo!.version}'
                         : app.updateUrl.isEmpty
-                        ? '未配置'
+                        ? (defaultTargetPlatform == TargetPlatform.iOS
+                              ? '通过安装渠道更新'
+                              : '未配置')
                         : app.updateStatus == UpdateStatus.checking
                         ? '正在检查…'
                         : app.updateStatus == UpdateStatus.upToDate
@@ -123,14 +126,16 @@ class MePage extends StatelessWidget {
                     trailing: app.hasUnseenUpdate ? const UpdateDot() : null,
                     onTap: () => handleUpdateTap(context),
                   ),
-                  GroupRow(
-                    label: '启动时自动检查更新',
-                    trailing: FormSwitch(
+                  if (defaultTargetPlatform != TargetPlatform.iOS ||
+                      app.updateUrl.isNotEmpty)
+                    GroupRow(
                       label: '启动时自动检查更新',
-                      value: app.settings.value['autoUpdateCheck'] != false,
-                      onChanged: app.setAutoUpdateCheck,
+                      trailing: FormSwitch(
+                        label: '启动时自动检查更新',
+                        value: app.settings.value['autoUpdateCheck'] != false,
+                        onChanged: app.setAutoUpdateCheck,
+                      ),
                     ),
-                  ),
                   GroupRow(label: '隐私政策', onTap: () => openPrivacy(context)),
                   GroupRow(label: '开源与致谢', onTap: () => openCredits(context)),
                   if (links.repoUrl.isNotEmpty)

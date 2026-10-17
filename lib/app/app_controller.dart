@@ -148,8 +148,9 @@ class AppController extends ChangeNotifier {
     required this.native,
     String? deviceTz,
     Clock? clock,
-    this.updateUrl = links.updateCheckUrl,
-  }) : clock = clock ?? DateTime.now,
+    String? updateUrl,
+  }) : updateUrl = updateUrl ?? links.platformUpdateCheckUrl,
+       clock = clock ?? DateTime.now,
        repo = Repository(native, clock: clock),
        settings = Settings(native, deviceTz: deviceTz ?? 'Asia/Shanghai'),
        goalsStore = GoalsStore(native),
@@ -166,6 +167,9 @@ class AppController extends ChangeNotifier {
       haptics.restEnded();
     });
     repo.addListener(_onRecords);
+    _notificationSubscription = native.notificationTaps.listen(
+      _onNotificationTap,
+    );
   }
 
   final String updateUrl;
@@ -351,6 +355,22 @@ class AppController extends ChangeNotifier {
   /// 0 今日，1 记录，2 进度，3 我的。
   int tab = 0;
 
+  StreamSubscription<NotificationTap>? _notificationSubscription;
+  NotificationTap? _pendingNotificationTap;
+
+  void _onNotificationTap(NotificationTap tap) {
+    if (_updateDisposed) return;
+    if (!booted) {
+      _pendingNotificationTap = tap;
+      return;
+    }
+    // Both reminder kinds lead back to today's training entry without opening
+    // a second training sheet on top of one that may already be open.
+    tab = 0;
+    _date = today;
+    notifyListeners();
+  }
+
   Timer? _reminderTimer;
   Timer? _clockTimer;
 
@@ -417,6 +437,15 @@ class AppController extends ChangeNotifier {
     }
     notifyListeners();
     if (booted) {
+      try {
+        final launch = await native.takeLaunchPayload();
+        final tap = _pendingNotificationTap ?? launch;
+        _pendingNotificationTap = null;
+        if (tap != null) _onNotificationTap(tap);
+      } on Object {
+        /* Notification routing must not prevent startup. */
+      }
+      if (_updateDisposed) return;
       _refreshReminders();
       unawaited(checkUpdate());
     }
@@ -1099,6 +1128,7 @@ class AppController extends ChangeNotifier {
   @override
   void dispose() {
     _updateDisposed = true;
+    unawaited(_notificationSubscription?.cancel());
     _reminderTimer?.cancel();
     _clockTimer?.cancel();
     repo.removeListener(_onRecords);

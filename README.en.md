@@ -131,3 +131,5 @@ Calorie and protein targets, body-fat estimates and training suggestions are gen
 ## License
 
 [MIT](LICENSE) © 2026 Hunter-Ght
+
+The Swift native layer supports local iOS builds (iOS 15+). For local builds, signing and outstanding device checks, see [docs/IOS.md](docs/IOS.md). iOS distribution is not available yet.

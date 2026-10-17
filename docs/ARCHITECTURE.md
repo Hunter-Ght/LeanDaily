@@ -1,6 +1,6 @@
 # 架构
 
-LeanDaily 是一个 **Flutter + 极薄 Android 原生层** 的本地优先应用。目标：业务规则是纯 Dart、可单测；界面不含业务计算；原生代码只做平台能力。
+LeanDaily 是一个 **Flutter + Android / iOS 原生层** 的本地优先应用。目标：业务规则是纯 Dart、可单测；界面不含业务计算；原生代码只做平台能力。
 
 ## 分层
 
@@ -16,6 +16,7 @@ LeanDaily 是一个 **Flutter + 极薄 Android 原生层** 的本地优先应用
 │ core/      Native 接口（MethodChannel）+ FakeNative（测试）   │
 ├────────────────────────────────────────────────────┤
 │ android/   Java：SQLite 文档存储、通知闹钟、照片、HTTP、密钥     │
+│ ios/       Swift：SQLite、Keychain、系统选择器、HTTP、本地通知   │
 └────────────────────────────────────────────────────┘
 ```
 
@@ -68,3 +69,7 @@ flutter test test/progression_sim_test.dart
 [`android/app/src/main/java/app/leandaily`](../android/app/src/main/java/app/leandaily)：`Storage`（SQLite 文档）、`Secrets`（Keystore 加密 API 密钥）、`Photos`（私有目录照片）、`Notifier`/`AlarmReceiver`/`BootReceiver`（精确闹钟提醒与开机恢复）、`Http`（强制 HTTPS）、`Images`（压缩缩放）、`NativeChannel`（MethodChannel `leandaily/native`）。
 
 **注意**：发布构建必须关闭 R8 混淆。Flutter 引擎按类名回调 `FlutterJNI`，被混淆后引擎无法启动，表现为一直停在启动图。
+
+## iOS 原生层
+
+`ios/Runner/Native/` 使用 Swift 实现相同的 `leandaily/native` 通道。业务规则与页面共用，Android 原生实现不变。SQLite 文档键和 JSON 备份格式保留；iOS 私有照片使用相对路径；Keychain 保存密钥；系统文件/照片选择器和本地通知负责平台交互。通知点击在 AppController 内回到今日入口，iOS 更新清单与 Android 发布隔离。详见 [IOS.md](IOS.md)。
