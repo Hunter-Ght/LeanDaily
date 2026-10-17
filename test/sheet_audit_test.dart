@@ -98,7 +98,13 @@ void main() {
         await settle(tester);
         if (sheet == 'quickfood') {
           final food = h.controller.foods!.proteinRanking().first;
-          await tester.tap(find.bySemanticsLabel('选择 ${food['name']}').first);
+          final choose = find.bySemanticsLabel('选择 ${food['name']}').first;
+          // Recommendations can move below the footer as serving labels wrap.
+          // Scroll to the real hit target before opening its portion panel.
+          await tester.ensureVisible(choose);
+          await settle(tester);
+          expect(choose.hitTestable(), findsOneWidget);
+          await tester.tap(choose);
           await settle(tester);
           await tester.tap(find.text('加入'));
           await settle(tester);

@@ -216,13 +216,21 @@ void main() {
       expect(size.height, 44);
       expect(size.width, lessThan(329));
     }
-    await tapVisible(tester, find.text('鸡蛋'));
+    expect(find.text('鸡蛋 · 2 个'), findsOneWidget);
+    await tapVisible(
+      tester,
+      find.byWidgetPredicate((w) => w is TodayFoodChip && w.name == '鸡蛋'),
+    );
     expect(
       jsonRows(h.controller.repo.meals(h.controller.today)['meals']),
       hasLength(3),
     );
     expect(find.text('已记入 鸡蛋'), findsOneWidget);
-    await tapVisible(tester, find.text('蛋白粉'));
+    expect(find.text('蛋白粉 · 1 勺（30 g）'), findsOneWidget);
+    await tapVisible(
+      tester,
+      find.byWidgetPredicate((w) => w is TodayFoodChip && w.name == '蛋白粉'),
+    );
     expect(
       jsonMap(h.controller.repo.meals(h.controller.today)['totals'])['protein'],
       58.6,
