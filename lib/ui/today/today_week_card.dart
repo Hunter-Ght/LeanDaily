@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -26,7 +30,7 @@ class TodayWeekCard extends StatelessWidget {
       bool bold = false,
       Color? color,
       double height = 1.45,
-    }) => Text(
+    }) => LText(
       s,
       style: TextStyle(
         fontSize: size,
@@ -77,8 +81,9 @@ class TodayWeekCard extends StatelessWidget {
                       Expanded(
                         child: Semantics(
                           button: true,
-                          label:
-                              '预览 ${d['label']} ${workoutTitle('${d['name']}')}',
+                          label: AppMessages.of(context).text(
+                            '预览 ${d['label']} ${workoutTitle('${d['name']}')}',
+                          ),
                           child: Pressable(
                             onTap: () => openDayPreview(context, '${d['iso']}'),
                             child: Container(

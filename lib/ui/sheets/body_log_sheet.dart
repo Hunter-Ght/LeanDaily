@@ -1,3 +1,6 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
 import '../../core/haptics.dart';
 
 import 'dart:async';
@@ -64,7 +67,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
 
   Widget _stepButton(int direction) => Semantics(
     button: true,
-    label: direction < 0 ? '减少体重' : '增加体重',
+    label: AppMessages.of(context).text(direction < 0 ? '减少体重' : '增加体重'),
     child: GestureDetector(
       onLongPressStart: (_) {
         _step(direction);
@@ -81,7 +84,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
           width: 52,
           height: 52,
           child: Center(
-            child: Text(
+            child: LText(
               direction < 0 ? '−' : '+',
               style: TextStyle(fontSize: 30, color: context.pal.tint),
             ),
@@ -156,7 +159,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                     align: TextAlign.center,
                   ),
                 ),
-                Text('kg', style: AppText.hint(p)),
+                LText('kg', style: AppText.hint(p)),
                 _stepButton(1),
               ],
             ),
@@ -196,7 +199,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                       Semantics(
                         button: true,
                         selected: _day == i,
-                        label: label,
+                        label: AppMessages.of(context).text(label),
                         child: Pressable(
                           haptic: _day != i,
                           onTap: () => setState(() => _day = i),
@@ -208,7 +211,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                               color: _day == i ? p.tintSoft : p.fill2,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
+                            child: LText(
                               label,
                               style: TextStyle(
                                 fontSize: 15,
@@ -236,7 +239,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
             child: _error.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(
+                    child: LText(
                       _error,
                       style: TextStyle(fontSize: 13, color: p.err),
                     ),

@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -228,7 +232,7 @@ class _TrainSheetState extends State<TrainSheet> {
 
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
-    child: Text(text, style: AppText.hint(context.pal)),
+    child: LText(text, style: AppText.hint(context.pal)),
   );
   Widget _card(Widget child, {double padding = 16}) => Container(
     padding: EdgeInsets.all(padding),
@@ -257,7 +261,7 @@ class _TrainSheetState extends State<TrainSheet> {
               child: _error.isNotEmpty
                   ? Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Text(_error, style: TextStyle(color: p.err)),
+                      child: LText(_error, style: TextStyle(color: p.err)),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -302,7 +306,7 @@ class _TrainSheetState extends State<TrainSheet> {
                 padding: const EdgeInsets.only(right: 8),
                 child: Semantics(
                   button: true,
-                  label: part,
+                  label: AppMessages.of(context).text(part),
                   selected: part == _part,
                   child: Pressable(
                     onTap: () => setState(() {
@@ -338,7 +342,7 @@ class _TrainSheetState extends State<TrainSheet> {
                           else
                             ToneBadge.part(part, size: 36, iconSize: 16),
                           const SizedBox(height: 8),
-                          Text(
+                          LText(
                             part,
                             style: TextStyle(
                               fontSize: 15,
@@ -415,7 +419,7 @@ class _TrainSheetState extends State<TrainSheet> {
                   for (final name in common)
                     Semantics(
                       button: true,
-                      label: name,
+                      label: AppMessages.of(context).text(name),
                       child: Pressable(
                         onTap: () => _pick(name),
                         child: Container(
@@ -428,7 +432,7 @@ class _TrainSheetState extends State<TrainSheet> {
                             color: p.card,
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          child: Text(
+                          child: LText(
                             name,
                             style: TextStyle(
                               color: p.text,
@@ -451,7 +455,7 @@ class _TrainSheetState extends State<TrainSheet> {
                   icon: 'plus',
                 ),
               ),
-            if (custom) Text('不在列表里，就用这个名字', style: AppText.hint(p)),
+            if (custom) LText('不在列表里，就用这个名字', style: AppText.hint(p)),
           ],
         ),
       ),
@@ -462,7 +466,7 @@ class _TrainSheetState extends State<TrainSheet> {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: name,
+      label: AppMessages.of(context).text(name),
       child: Pressable(
         onTap: () => _pick(name),
         child: Container(
@@ -496,7 +500,7 @@ class _TrainSheetState extends State<TrainSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    LText(
                       name,
                       style: TextStyle(
                         color: p.text,
@@ -519,7 +523,7 @@ class _TrainSheetState extends State<TrainSheet> {
                               color: p.fill,
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: Text(
+                            child: LText(
                               '${_fmt(s['weight'])}×${s['reps']}',
                               style: TextStyle(
                                 color: s['type'] == '热身' ? p.secondary : p.text,
@@ -558,8 +562,8 @@ class _TrainSheetState extends State<TrainSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_part, style: AppText.hint(p)),
-                        Text(
+                        LText(_part, style: AppText.hint(p)),
+                        LText(
                           _exercise,
                           style: TextStyle(
                             color: p.text,
@@ -570,7 +574,7 @@ class _TrainSheetState extends State<TrainSheet> {
                           ),
                         ),
                         if (_lastLine(_exercise).isNotEmpty)
-                          Text(
+                          LText(
                             _lastLine(_exercise),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -602,7 +606,7 @@ class _TrainSheetState extends State<TrainSheet> {
             Semantics(
               button: true,
               toggled: _unilateral,
-              label: '单边，只记一只的重量',
+              label: AppMessages.of(context).text('单边，只记一只的重量'),
               child: Pressable(
                 onTap: () => setState(() => _unilateral = !_unilateral),
                 child: Container(
@@ -616,7 +620,7 @@ class _TrainSheetState extends State<TrainSheet> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text('单边，只记一只的重量', style: AppText.body(p)),
+                        child: LText('单边，只记一只的重量', style: AppText.body(p)),
                       ),
                       Container(
                         width: 51,
@@ -713,7 +717,7 @@ class _TrainSheetState extends State<TrainSheet> {
         children: [
           Row(
             children: [
-              Expanded(child: Text('第 ${i + 1} 组', style: AppText.h2(p))),
+              Expanded(child: LText('第 ${i + 1} 组', style: AppText.h2(p))),
               SheetButton(
                 '删除这组',
                 () => setState(() {

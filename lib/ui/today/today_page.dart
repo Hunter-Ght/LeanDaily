@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -180,7 +184,7 @@ class _TodayPageState extends State<TodayPage> {
     bool bold = false,
     Color? color,
     double height = 1.45,
-  }) => Text(
+  }) => LText(
     s,
     style: TextStyle(
       fontSize: size,
@@ -225,7 +229,7 @@ class _TodayPageState extends State<TodayPage> {
                     color: tired.contains(e) ? p.tintSoft : p.fill2,
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text.rich(
+                  child: LText.rich(
                     TextSpan(
                       text: '${e['name']}  ',
                       style: TextStyle(
@@ -601,7 +605,7 @@ class _TodayPageState extends State<TodayPage> {
                   const Expanded(child: Wordmark()),
                   Semantics(
                     button: true,
-                    label: '计划与提醒设置',
+                    label: AppMessages.of(context).text('计划与提醒设置'),
                     child: Pressable(
                       onTap: () => openPlanEditor(context),
                       child: Container(
@@ -624,7 +628,7 @@ class _TodayPageState extends State<TodayPage> {
             Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                Text(
+                LText(
                   '${dateLabel(m.iso)} · 第 ${plan.weekNumber(app.plan, m.iso)} 周',
                   style: TextStyle(
                     fontSize: 15,

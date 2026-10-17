@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -37,7 +41,7 @@ class DayCards extends StatelessWidget {
     if (!columns) return lazyList(context, day, groups, meals);
     final train = section(context, '训练', [
       if (f.userNote(day).isNotEmpty) ...[
-        Text('备注', style: AppText.hint(context.pal)),
+        LText('备注', style: AppText.hint(context.pal)),
         card(
           context,
           Padding(
@@ -98,7 +102,7 @@ class DayCards extends StatelessWidget {
   ) {
     Widget heading(String title) => Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 12, 6),
-      child: Text(
+      child: LText(
         title,
         key: ValueKey('section-$iso-$title'),
         style: AppText.sect(c.pal),
@@ -119,7 +123,7 @@ class DayCards extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('备注', style: AppText.hint(c.pal)),
+                LText('备注', style: AppText.hint(c.pal)),
                 card(
                   c,
                   Padding(
@@ -202,12 +206,13 @@ class DayCards extends StatelessWidget {
         AppIcon('check', size: 18, color: c.pal.tint),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
+          child: LText(
             '已保存 ${lastAdd.first['ex']} ${lastAdd.length} 组',
             style: AppText.hint(c.pal).copyWith(fontSize: 15),
           ),
         ),
         tap(
+          c,
           '撤销',
           () async {
             final app = c.app;
@@ -231,7 +236,7 @@ class DayCards extends StatelessWidget {
           SizedBox(
             height: 44,
             child: Center(
-              child: Text(
+              child: LText(
                 '撤销',
                 style: AppText.body(c.pal).copyWith(color: c.pal.tint),
               ),
@@ -247,7 +252,7 @@ class DayCards extends StatelessWidget {
     children: [
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 18, 12, 6),
-        child: Text(
+        child: LText(
           title,
           key: ValueKey('section-$iso-$title'),
           style: AppText.sect(c.pal),
@@ -275,12 +280,13 @@ class DayCards extends StatelessWidget {
         ),
         child: child,
       );
-  Widget tap(String label, VoidCallback onTap, Widget child) => Semantics(
-    button: true,
-    excludeSemantics: true,
-    label: label,
-    child: Pressable(onTap: onTap, child: child),
-  );
+  Widget tap(BuildContext c, String label, VoidCallback onTap, Widget child) =>
+      Semantics(
+        button: true,
+        excludeSemantics: true,
+        label: AppMessages.of(c).text(label),
+        child: Pressable(onTap: onTap, child: child),
+      );
   Widget empty(
     BuildContext c,
     String title,
@@ -293,17 +299,18 @@ class DayCards extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
+            child: LText(
               title,
               style: AppText.hint(c.pal).copyWith(fontSize: 15),
             ),
           ),
           tap(
+            c,
             label,
             onTap,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              child: Text(
+              child: LText(
                 label,
                 style: AppText.navWeek(c.pal).copyWith(color: c.pal.tint),
               ),
@@ -321,6 +328,7 @@ class DayCards extends StatelessWidget {
     bool centered = false,
   }) {
     final button = tap(
+      c,
       label,
       onTap,
       Container(
@@ -333,7 +341,10 @@ class DayCards extends StatelessWidget {
           children: [
             AppIcon('plus', size: 16, color: c.pal.tint),
             const SizedBox(width: 6),
-            Text(label, style: AppText.body(c.pal).copyWith(color: c.pal.tint)),
+            LText(
+              label,
+              style: AppText.body(c.pal).copyWith(color: c.pal.tint),
+            ),
           ],
         ),
       ),
@@ -341,7 +352,7 @@ class DayCards extends StatelessWidget {
     return centered ? card(c, button) : button;
   }
 
-  Widget meta(BuildContext c, String text, {int? maxLines}) => Text(
+  Widget meta(BuildContext c, String text, {int? maxLines}) => LText(
     text,
     maxLines: maxLines,
     overflow: maxLines == null ? null : TextOverflow.ellipsis,
@@ -376,7 +387,7 @@ class DayCards extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
+      child: LText(
         text,
         style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: fg),
       ),
@@ -393,6 +404,7 @@ class DayCards extends StatelessWidget {
     ],
   );
   Widget trash(BuildContext c, String label, VoidCallback onTap) => tap(
+    c,
     label,
     onTap,
     SizedBox.square(
@@ -474,7 +486,7 @@ class DayCards extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      LText(
                         exercise,
                         style: AppText.sect(c.pal).copyWith(height: 1.2),
                       ),
@@ -509,6 +521,7 @@ class DayCards extends StatelessWidget {
                           children: [
                             Expanded(
                               child: tap(
+                                c,
                                 '修改 ${s['ex']} 第 ${s['no']} 组',
                                 () => openEditSet(c, s),
                                 ConstrainedBox(
@@ -519,7 +532,7 @@ class DayCards extends StatelessWidget {
                                     children: [
                                       SizedBox(
                                         width: 22,
-                                        child: Text(
+                                        child: LText(
                                           '${s['no']}',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
@@ -537,7 +550,7 @@ class DayCards extends StatelessWidget {
                                           crossAxisAlignment:
                                               WrapCrossAlignment.center,
                                           children: [
-                                            Text(
+                                            LText(
                                               setDisplay(s),
                                               style: AppText.body(c.pal).copyWith(
                                                 fontWeight: FontWeight.w600,
@@ -562,6 +575,7 @@ class DayCards extends StatelessWidget {
                               ),
                             ),
                             tap(
+                              c,
                               '这组的更多操作',
                               () => deleteSet(c, s),
                               SizedBox.square(
@@ -626,6 +640,7 @@ class DayCards extends StatelessWidget {
       Column(
         children: [
           tap(
+            c,
             '编辑${m['meal']}',
             () => openMealSheet(c, preset: {...m, 'editId': m['record_id']}),
             Padding(
@@ -650,7 +665,7 @@ class DayCards extends StatelessWidget {
                           spacing: 6,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text('${m['meal']}', style: AppText.sect(c.pal)),
+                            LText('${m['meal']}', style: AppText.sect(c.pal)),
                             if ('${m['time'] ?? ''}'.isNotEmpty)
                               Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -701,7 +716,7 @@ class DayCards extends StatelessWidget {
                         if (m['source'] == '待分析' && !f.jsTruthy(m['kcal']))
                           tag(c, '待分析')
                         else ...[
-                          Text(
+                          LText(
                             '${f.jsNumber(m['kcal']).round()} kcal',
                             style: AppText.body(c.pal)
                                 .copyWith(fontWeight: FontWeight.w600),

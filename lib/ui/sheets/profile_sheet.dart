@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'dart:convert';
 import 'dart:math' as math;
 
@@ -156,7 +158,7 @@ class _ProfileSheetState extends State<ProfileSheet> {
       if (suffix.isNotEmpty)
         Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: Text(suffix, style: TextStyle(color: context.pal.secondary)),
+          child: LText(suffix, style: TextStyle(color: context.pal.secondary)),
         ),
     ],
   );

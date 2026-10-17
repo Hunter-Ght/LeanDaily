@@ -1,3 +1,5 @@
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/format.dart';
@@ -24,7 +26,7 @@ class NutritionSummary extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
-        Text(
+        LText(
           text,
           style: TextStyle(
             fontSize: 14,

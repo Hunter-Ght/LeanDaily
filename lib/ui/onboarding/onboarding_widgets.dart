@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
@@ -51,7 +55,7 @@ class OnboardingButton extends StatelessWidget {
       button: true,
       enabled: onTap != null,
       selected: selected,
-      label: label,
+      label: AppMessages.of(context).text(label),
       excludeSemantics: true,
       child: Pressable(
         haptic:
@@ -87,7 +91,7 @@ class OnboardingButton extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: Text(
+            child: LText(
               label,
               textAlign: TextAlign.center,
               style: (textOnly || compact ? AppText.body(p) : AppText.h2(p))
@@ -135,9 +139,9 @@ class OnboardingPage extends StatelessWidget {
       : ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
-            Text(title, style: AppText.navDay(context.pal)),
+            LText(title, style: AppText.navDay(context.pal)),
             const SizedBox(height: 12),
-            Text(subtitle, style: AppText.navWeek(context.pal)),
+            LText(subtitle, style: AppText.navWeek(context.pal)),
             SizedBox(height: dense ? 16 : 24),
             for (final child in children) ...[
               child,
@@ -182,11 +186,11 @@ class _OnboardingNumberState extends State<OnboardingNumber> {
     padding: const EdgeInsets.symmetric(vertical: 8),
     child: Row(
       children: [
-        Expanded(child: Text(widget.label, style: AppText.body(context.pal))),
+        Expanded(child: LText(widget.label, style: AppText.body(context.pal))),
         SizedBox(
           width: 90,
           child: Semantics(
-            label: widget.label,
+            label: AppMessages.of(context).text(widget.label),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: context.pal.fill2,
@@ -215,7 +219,7 @@ class _OnboardingNumberState extends State<OnboardingNumber> {
           ),
         ),
         const SizedBox(width: 8),
-        Text(widget.suffix, style: AppText.hint(context.pal)),
+        LText(widget.suffix, style: AppText.hint(context.pal)),
       ],
     ),
   );

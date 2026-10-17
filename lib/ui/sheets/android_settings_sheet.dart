@@ -1,3 +1,4 @@
+import '../../l10n/localized_text.dart';
 import '../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -8,6 +9,7 @@ import '../../app/app_controller.dart';
 import '../../config/app_info.dart';
 import '../../core/native.dart';
 import '../../data/backup.dart' as backup;
+import '../../data/ai_consent.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
@@ -110,7 +112,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        LText(
           label,
           style: TextStyle(fontSize: 13, color: context.pal.secondary),
         ),
@@ -222,6 +224,17 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           ),
           const GroupFooter(
             '地址填写到 /v1，不包含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。',
+          ),
+          GroupCard(
+            children: [
+              _button('撤回 AI 照片授权', () async {
+                await AiConsent(app.native).revoke();
+                app.toast.show('已撤回授权，下次识别前会重新询问');
+              }),
+            ],
+          ),
+          const GroupFooter(
+            '仅发送所选照片、餐次和补充说明。服务商可能保存数据；请先阅读其隐私政策。撤回授权不会删除已发送的数据。',
           ),
           const GroupHeader('提醒'),
           GroupCard(

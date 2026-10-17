@@ -63,3 +63,6 @@ android/key.properties
 *.mobileprovision
 *.p12
 *.p8
+
+# Resumable local translation cache (packaged catalogs are tracked)
+/tool/l10n/draft_en.json

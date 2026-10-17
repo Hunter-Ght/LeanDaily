@@ -1,3 +1,6 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
 import '../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -89,7 +92,7 @@ class _SheetInputState extends State<SheetInput> {
           : null,
     );
     return Semantics(
-      label: widget.label,
+      label: AppMessages.of(context).text(widget.label),
       child: Stack(
         alignment: Alignment.centerLeft,
         children: [
@@ -97,7 +100,7 @@ class _SheetInputState extends State<SheetInput> {
             IgnorePointer(
               child: SizedBox(
                 width: double.infinity,
-                child: Text(
+                child: LText(
                   widget.placeholder,
                   textAlign: widget.align,
                   style: style.copyWith(color: p.ph),
@@ -168,7 +171,7 @@ class NumberField extends StatelessWidget {
     final p = context.pal;
     Widget button(String text, String semantics, double delta) => Semantics(
       button: true,
-      label: semantics,
+      label: AppMessages.of(context).text(semantics),
       child: Pressable(
         onTap: () => bump(context, delta),
         child: Container(
@@ -177,7 +180,7 @@ class NumberField extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(color: p.card, shape: BoxShape.circle),
           child: ExcludeSemantics(
-            child: Text(text, style: TextStyle(color: p.tint, fontSize: 28)),
+            child: LText(text, style: TextStyle(color: p.tint, fontSize: 28)),
           ),
         ),
       ),
@@ -207,7 +210,7 @@ class NumberField extends StatelessWidget {
                   focusNode: focusNode,
                   weight: FontWeight.w700,
                 ),
-                Text(
+                LText(
                   unit,
                   style: TextStyle(
                     color: p.secondary,

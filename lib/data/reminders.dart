@@ -20,6 +20,7 @@ class Reminders {
   Reminders(this.native, {Clock? clock}) : clock = clock ?? DateTime.now;
   final Native native;
   final Clock clock;
+  String Function(String) translate = (text) => text;
   Future<void> _lane = Future.value();
   Future<void> _enqueue(Future<void> Function() action) {
     final p = _lane.then((_) => action());
@@ -42,7 +43,12 @@ class Reminders {
       throw const DomainError('锁屏提醒未开启，可在 APP 设置中开启');
     }
     await native.schedule([
-      ScheduledNote(id: 1, title: '休息好了', body: '可以开始下一组训练了', atMs: untilMs),
+      ScheduledNote(
+        id: 1,
+        title: translate('休息好了'),
+        body: translate('可以开始下一组训练了'),
+        atMs: untilMs,
+      ),
     ]);
   });
   Future<bool> planNotifyGranted() async =>

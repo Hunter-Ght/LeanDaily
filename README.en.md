@@ -7,7 +7,7 @@
 
 **A lean-physique training plan built around your body — and an app that coaches you up, week by week.**
 
-Free · Open source · No ads · No account · Your data stays on your phone
+Free · Open source · No ads · No account · Local records · AI requires separate consent
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-ff6a13.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Android-8.0%2B-3ddc84?logo=android&logoColor=white)](#install)
@@ -71,7 +71,9 @@ Unfolded, the app switches to a side rail and two panes: today's plan on the lef
 
 ## Privacy
 
-No account. No ads, analytics or crash reporting. Everything is stored locally; Android cloud backup is disabled. The only two network uses are the photo-recognition endpoint **you** configure and the update check (can be turned off). Full text: [PRIVACY.en.md](PRIVACY.en.md).
+No account, ads, analytics, crash reporting or tracking SDKs. Core records and photos stay on the device and are excluded from automatic system backup. Optional AI recognition sends selected photos, the meal name and your note to your chosen provider only after separate consent; provider retention and fees may apply. Manual logging works without AI. Android update checks can be disabled. Public links open in your browser.
+
+English, Simplified Chinese and Traditional Chinese are available in Me → Language. Read the [full privacy policy](PRIVACY.en.md) and [US storefront release guide](docs/US_STORE_RELEASE.md).
 
 ## Install
 

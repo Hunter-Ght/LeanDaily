@@ -1,3 +1,5 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -62,7 +64,7 @@ class BodyMap extends StatelessWidget {
       var point = Offset.zero;
       return Semantics(
         button: true,
-        label: back ? '背面肌肉图' : '正面肌肉图',
+        label: AppMessages.of(context).text(back ? '背面肌肉图' : '正面肌肉图'),
         child: Listener(
           onPointerDown: (event) => point = event.localPosition,
           child: Pressable(

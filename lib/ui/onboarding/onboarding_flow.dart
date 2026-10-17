@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/physics.dart';
@@ -236,7 +240,8 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                         ? _pages.page ?? _step.toDouble()
                                         : _step.toDouble();
                                     return Semantics(
-                                      label: '第 ${_step + 1} 步，共 4 步',
+                                      label: AppMessages.of(context)
+                                          .text('第 ${_step + 1} 步，共 4 步'),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -352,7 +357,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                             if (!_canContinue)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
-                                child: Text(
+                                child: LText(
                                   '请填写有效范围内的数值',
                                   style: AppText.hint(p)
                                       .copyWith(color: p.tint),

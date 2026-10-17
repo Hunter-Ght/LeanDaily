@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../core/haptics.dart';
@@ -137,7 +141,8 @@ class _AppSegmentsState extends State<AppSegments> {
                             child: Semantics(
                               button: true,
                               selected: i == _selected,
-                              label: widget.labels[i],
+                              label: AppMessages.of(context)
+                                  .text(widget.labels[i]),
                               excludeSemantics: true,
                               onTap: () {
                                 _verticalMove = false;
@@ -168,7 +173,7 @@ class _AppSegmentsState extends State<AppSegments> {
                                             ),
                                           ],
                                           Flexible(
-                                            child: Text(
+                                            child: LText(
                                               widget.labels[i],
                                               textAlign: TextAlign.center,
                                               style: AppText.navWeek(p)

@@ -1,7 +1,10 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../app/app_controller.dart';
+import '../kit/menu.dart';
 import '../../config/app_info.dart';
 import '../../config/app_links.dart' as links;
 import '../kit/form.dart';
@@ -36,7 +39,7 @@ class MePage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                child: Text('我的', style: AppText.navDay(p)),
+                child: LText('我的', style: AppText.navDay(p)),
               ),
               const ProfileCard(),
               const GroupHeader('训练'),
@@ -85,6 +88,34 @@ class MePage extends StatelessWidget {
                     icon: 'note',
                     iconColor: p.detrain,
                     onTap: () => openGoals(context),
+                  ),
+                  GroupRow(
+                    label: '语言',
+                    value: switch (app.languagePreference) {
+                      'en' => 'English',
+                      'zh_Hans' => '简体中文',
+                      'zh_Hant' => '繁體中文',
+                      _ => '跟随系统',
+                    },
+                    onTap: () async {
+                      final selected = await showActionMenu(
+                        context,
+                        title: '语言',
+                        actions: const [
+                          MenuAction(id: 'system', label: '跟随系统'),
+                          MenuAction(id: 'en', label: 'English'),
+                          MenuAction(id: 'zh_Hans', label: '简体中文'),
+                          MenuAction(id: 'zh_Hant', label: '繁體中文'),
+                        ],
+                      );
+                      if (selected != null) {
+                        try {
+                          await app.setLanguage(selected.id);
+                        } catch (_) {
+                          app.toast.show('语言设置未保存，请重试');
+                        }
+                      }
+                    },
                   ),
                   GroupRow(
                     label: '提醒',
@@ -137,6 +168,13 @@ class MePage extends StatelessWidget {
                       ),
                     ),
                   GroupRow(label: '隐私政策', onTap: () => openPrivacy(context)),
+                  GroupRow(
+                    label: '帮助与支持',
+                    onTap: () => openAboutUrl(
+                      context,
+                      links.localizedPage(links.supportUrl, app.messages.code),
+                    ),
+                  ),
                   GroupRow(label: '开源与致谢', onTap: () => openCredits(context)),
                   if (links.repoUrl.isNotEmpty)
                     GroupRow(
@@ -145,7 +183,7 @@ class MePage extends StatelessWidget {
                     ),
                 ],
               ),
-              const GroupFooter('免费，没有广告。数据只存在你的手机里。'),
+              const GroupFooter('免费，没有广告。记录保存在本机；AI 识别需另行授权。'),
               const Padding(
                 padding: EdgeInsets.only(top: 28),
                 child: Center(child: Wordmark(fontSize: 22)),

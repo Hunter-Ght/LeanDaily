@@ -5,6 +5,7 @@ import '../core/native.dart';
 import '../domain/records.dart';
 import 'http_request.dart' show request;
 import 'prefs.dart';
+import 'ai_consent.dart';
 import 'state_doc.dart';
 
 const _prompt =
@@ -21,6 +22,7 @@ const _promptCompare =
 class Vision {
   Vision(this.native);
   final Native native;
+  String Function() outputLanguage = () => 'zh_Hans';
   final _jobs = <String, Map<String, dynamic>>{};
   final _timers = <Timer>[];
   bool _disposed = false;
@@ -94,6 +96,9 @@ class Vision {
     if (!truthy(s['baseUrl']) || !truthy(s['model']) || key.isEmpty) {
       throw const DomainError('请先在设置中配置模型');
     }
+    if (!await AiConsent(native).granted(s)) {
+      throw const DomainError('请先确认将照片发送到你配置的 AI 服务');
+    }
     // 吃之前的排在前面、吃完后的在后面，每张前面带一句文字标注，模型不用猜哪张是哪张。
     final kinds = cleanPhases(phases, ids.length);
     final order = [
@@ -115,7 +120,16 @@ class Vision {
     final prompt = compare
         ? _promptCompare
         : (phases == null ? _prompt : _promptBeforeOnly);
-    final text = '$prompt\n餐次：$meal\n补充说明：${cut(note, 300)}',
+    final language = outputLanguage();
+    final responseLanguage = language == 'en'
+        ? 'English'
+        : language == 'zh_Hant'
+        ? 'Traditional Chinese'
+        : language == 'zh_Hans'
+        ? 'Simplified Chinese'
+        : 'the language of the meal name and note; default to English';
+    final text =
+            '$prompt\n餐次：$meal\n补充说明：${cut(note, 300)}\nWrite human-readable food names, portions, summary and warnings in $responseLanguage. Preserve all JSON field names, numeric values and required confidence enum values.',
         responses = s['protocol'] == 'responses';
     final textType = responses ? 'input_text' : 'text';
     final content = <Map<String, dynamic>>[

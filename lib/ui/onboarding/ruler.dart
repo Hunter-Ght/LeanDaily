@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -77,16 +81,16 @@ class _ProfileRulerState extends State<ProfileRuler> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(widget.label, style: AppText.h2(context.pal)),
+      LText(widget.label, style: AppText.h2(context.pal)),
       ValueListenableBuilder<double>(
         valueListenable: _value,
         builder: (context, value, _) => Semantics(
-          label: widget.label,
-          value: '$value ${widget.unit}',
-          increasedValue:
-              '${(value + widget.step).clamp(widget.min, widget.max)}',
-          decreasedValue:
-              '${(value - widget.step).clamp(widget.min, widget.max)}',
+          label: AppMessages.of(context).text(widget.label),
+          value: AppMessages.of(context).text('$value ${widget.unit}'),
+          increasedValue: AppMessages.of(context)
+              .text('${(value + widget.step).clamp(widget.min, widget.max)}'),
+          decreasedValue: AppMessages.of(context)
+              .text('${(value - widget.step).clamp(widget.min, widget.max)}'),
           onIncrease: () => _scroll
               .animateTo(
                 math.min(count * spacing, _scroll.offset + spacing),
@@ -102,7 +106,7 @@ class _ProfileRulerState extends State<ProfileRuler> {
               )
               .then((_) => _commit()),
           child: Center(
-            child: Text(
+            child: LText(
               '${value.toStringAsFixed(widget.step < 1 ? 1 : 0)} ${widget.unit}',
               style: AppText.navDay(context.pal).copyWith(fontSize: 28),
             ),

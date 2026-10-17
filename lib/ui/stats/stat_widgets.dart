@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -20,7 +22,7 @@ class StatBlock extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(title, style: AppText.h2(context.pal)),
+        LText(title, style: AppText.h2(context.pal)),
         ...children,
       ],
     ),

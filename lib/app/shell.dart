@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/physics.dart';
@@ -259,7 +263,7 @@ class _GlassIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     child: Pressable(
       onTap: onTap,
       child: SizedBox(
@@ -415,7 +419,7 @@ class _DockItem extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: label,
+      label: AppMessages.of(context).text(label),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -428,7 +432,7 @@ class _DockItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 1),
-          Text(
+          LText(
             label,
             style: TextStyle(
               fontSize: 12,

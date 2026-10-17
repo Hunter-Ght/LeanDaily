@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import '../core/native.dart';
 import '../domain/records.dart';
+import 'ai_consent.dart';
 
 const defaults = <String, dynamic>{
   'tz': 'Asia/Shanghai',
@@ -32,8 +33,11 @@ class Settings {
 
   Future<void> save(Map<String, dynamic> s, [Secrets? secrets]) async {
     await native.clock('${s['tz'] ?? deviceTz}');
-    if (truthy(s['baseUrl']) && !'${s['baseUrl']}'.startsWith('https://')) {
-      throw const DomainError('模型接口必须使用 HTTPS');
+    if (truthy(s['baseUrl'])) {
+      if (!'${s['baseUrl']}'.startsWith('https://')) {
+        throw const DomainError('模型接口必须使用 HTTPS');
+      }
+      AiConsent.destination(s);
     }
     final safe = {
       for (final k in defaults.keys)

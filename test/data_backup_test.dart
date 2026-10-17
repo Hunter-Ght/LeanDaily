@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/core/native.dart';
 import 'package:leandaily/core/sha256.dart';
 import 'package:leandaily/data/backup.dart';
+import 'package:leandaily/data/ai_consent.dart';
 import 'package:leandaily/data/repository.dart';
 import 'package:leandaily/data/prefs.dart';
 import 'package:leandaily/data/plan_store.dart';
@@ -100,7 +101,12 @@ void main() {
       n.docs['fw-plan-v1'] = '{"opaque":true}';
       n.docs['fw-cache-v1'] = '{"outbox":[1]}';
       n.docs['android-meal-draft:x'] = '{}';
+      await AiConsent(n).grant({'baseUrl': 'https://example.test/v1'});
       final b = await exportBackup(n, repo);
+      expect(
+        (b['preferences'] as Map).containsKey(AiConsent.storageKey),
+        isFalse,
+      );
       await pendingSave;
       expect(b['state']['sets'], isNotEmpty);
       await validateBackup(b, native: n);
@@ -108,6 +114,10 @@ void main() {
       n.importData = n.exported;
       expect((await chooseBackup(n))['format'], 'leandaily-backup');
       await restoreBackup(n, repo, b);
+      expect(
+        await AiConsent(n).granted({'baseUrl': 'https://example.test/v1'}),
+        isFalse,
+      );
       expect(n.docs['fw-plan-v1'], '{"opaque":true}');
       expect(n.docs['fw-cache-v1'], 'null');
       expect(n.secrets.modelKey, '');

@@ -1,3 +1,6 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../../l10n/localized_text.dart';
 import '../../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -27,7 +30,7 @@ class SheetButton extends StatelessWidget {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: label,
+      label: AppMessages.of(context).text(label),
       child: Pressable(
         onTap: onTap,
         child: Container(
@@ -66,7 +69,7 @@ class SheetButton extends StatelessWidget {
               ],
               if (!iconOnly)
                 Flexible(
-                  child: Text(
+                  child: LText(
                     label,
                     style: TextStyle(
                       color: primary
@@ -135,10 +138,12 @@ class EffortControl extends StatelessWidget {
     }
 
     return Semantics(
-      label: '吃力程度 1–10',
-      value: '$value',
-      increasedValue: '${(value + 0.5).clamp(1, 10)}',
-      decreasedValue: '${value <= 1 ? 0 : value - 0.5}',
+      label: AppMessages.of(context).text('吃力程度 1–10'),
+      value: AppMessages.of(context).text('$value'),
+      increasedValue: AppMessages.of(context)
+          .text('${(value + 0.5).clamp(1, 10)}'),
+      decreasedValue: AppMessages.of(context)
+          .text('${value <= 1 ? 0 : value - 0.5}'),
       slider: true,
       onIncrease: () {
         if (value < 10) {

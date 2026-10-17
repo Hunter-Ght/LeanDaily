@@ -1,5 +1,5 @@
 name: leandaily
-description: "薄肌日课 LeanDaily：按你的身材定制的薄肌训练与饮食记录 App。免费、开源、无广告、数据只在本机。"
+description: "薄肌日课 LeanDaily：按你的身材定制的薄肌训练与饮食记录 App。免费、开源、无广告，记录默认存本机，AI 识别需另行授权。"
 publish_to: 'none'
 version: 2.3.2+23
 
@@ -10,11 +10,14 @@ dependencies:
   flutter:
     sdk: flutter
   path_drawing: ^1.0.1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  analyzer: ^10.1.0
 
 flutter:
   uses-material-design: false
@@ -23,7 +26,8 @@ flutter:
       fonts:
         - asset: assets/fonts/SmileySans-Wordmark.ttf
   assets:
-    - assets/legal/privacy.md
+    - assets/legal/
+    - assets/l10n/
     - assets/state.json
     - assets/foods.json
     - assets/body_paths.json

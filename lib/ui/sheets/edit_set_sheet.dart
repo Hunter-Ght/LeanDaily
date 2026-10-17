@@ -1,3 +1,6 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
 import '../../core/haptics.dart';
 
 import 'dart:math' as math;
@@ -123,7 +126,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
     Widget button(int delta) => Semantics(
       button: true,
       excludeSemantics: true,
-      label: '${delta < 0 ? '减少' : '增加'}$label',
+      label: AppMessages.of(context).text('${delta < 0 ? '减少' : '增加'}$label'),
       child: Pressable(
         onTap: () => bump(isWeight, delta),
         child: Container(
@@ -131,7 +134,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
           height: 44,
           alignment: Alignment.center,
           decoration: BoxDecoration(color: p.card, shape: BoxShape.circle),
-          child: Text(
+          child: LText(
             delta < 0 ? '−' : '+',
             style: TextStyle(color: p.tint, fontSize: 28),
           ),
@@ -141,7 +144,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(fieldLabel, style: TextStyle(fontSize: 13, color: p.secondary)),
+        LText(fieldLabel, style: TextStyle(fontSize: 13, color: p.secondary)),
         const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.all(8),
@@ -158,7 +161,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
                 child: Column(
                   children: [
                     Semantics(
-                      label: fieldLabel,
+                      label: AppMessages.of(context).text(fieldLabel),
                       textField: true,
                       child: EditableText(
                         controller: isWeight ? weight : reps,
@@ -177,7 +180,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
                         ),
                       ),
                     ),
-                    Text(
+                    LText(
                       isWeight ? 'kg' : '次',
                       style: TextStyle(
                         fontSize: 13,
@@ -218,14 +221,14 @@ class _EditSetSheetState extends State<EditSetSheet> {
                       color: p.tintSoft,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
+                    child: LText(
                       error,
                       style: TextStyle(color: p.err, fontSize: 15),
                     ),
                   )
                 : const SizedBox.shrink(),
           ),
-          Text(
+          LText(
             '${widget.set['ex']} · 第 ${widget.set['no']} 组',
             style: TextStyle(
               fontSize: 13,
@@ -238,7 +241,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
           const SizedBox(height: 10),
           step(false),
           const SizedBox(height: 14),
-          Text('还能做几次', style: TextStyle(fontSize: 13, color: p.secondary)),
+          LText('还能做几次', style: TextStyle(fontSize: 13, color: p.secondary)),
           Row(
             children: [
               for (final n in [0, 1, 2, 3]) ...[
@@ -256,7 +259,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
               ],
             ],
           ),
-          Text('有不舒服吗', style: TextStyle(fontSize: 13, color: p.secondary)),
+          LText('有不舒服吗', style: TextStyle(fontSize: 13, color: p.secondary)),
           Row(
             children: [
               for (final item in [('form', '动作变形'), ('pain', '有点痛')]) ...[
@@ -287,7 +290,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
                     child: Semantics(
                       button: true,
                       selected: type == name,
-                      label: name,
+                      label: AppMessages.of(context).text(name),
                       child: Pressable(
                         onTap: () => setState(() => type = name),
                         child: AnimatedContainer(
@@ -297,7 +300,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
                             color: type == name ? p.segOn : null,
                             borderRadius: BorderRadius.circular(9),
                           ),
-                          child: Text(
+                          child: LText(
                             name,
                             style: TextStyle(
                               fontSize: 16,
@@ -334,7 +337,7 @@ class SetFeedbackChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     selected: selected,
     child: Pressable(
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
@@ -350,7 +353,7 @@ class SetFeedbackChip extends StatelessWidget {
               color: selected ? context.pal.tintSoft : context.pal.fill2,
               borderRadius: BorderRadius.circular(22),
             ),
-            child: Text(
+            child: LText(
               label,
               style: TextStyle(
                 fontSize: 15,

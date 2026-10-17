@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -32,7 +36,7 @@ class IdentityStep extends StatelessWidget {
               child: Semantics(
                 button: true,
                 selected: profile['sex'] == entry.key,
-                label: entry.value,
+                label: AppMessages.of(context).text(entry.value),
                 excludeSemantics: true,
                 child: Pressable(
                   haptic: profile['sex'] != entry.key,
@@ -46,7 +50,7 @@ class IdentityStep extends StatelessWidget {
                       child: SizedBox(
                         height: 44,
                         child: Center(
-                          child: Text(
+                          child: LText(
                             entry.value,
                             style: AppText.sect(context.pal),
                           ),
@@ -87,16 +91,16 @@ class IdentityStep extends StatelessWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('继续即表示你了解 ', style: AppText.hint(context.pal)),
+          LText('继续即表示你了解 ', style: AppText.hint(context.pal)),
           Semantics(
             button: true,
-            label: '隐私政策',
+            label: AppMessages.of(context).text('隐私政策'),
             child: Pressable(
               onTap: () => openPrivacy(context),
               child: Container(
                 constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
                 alignment: Alignment.center,
-                child: Text('隐私政策 ›', style: AppText.hint(context.pal)),
+                child: LText('隐私政策 ›', style: AppText.hint(context.pal)),
               ),
             ),
           ),
@@ -152,7 +156,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(title, style: AppText.hint(context.pal)),
+        LText(title, style: AppText.hint(context.pal)),
         const SizedBox(height: 6),
         if (grid) ...[
           row(entries.take(2).toList()),
@@ -169,7 +173,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('你主要在哪练？', style: AppText.hint(p)),
+        LText('你主要在哪练？', style: AppText.hint(p)),
         const SizedBox(height: 6),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +190,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                     Semantics(
                       button: true,
                       selected: widget.profile['venue'] == option.$1,
-                      label: option.$2,
+                      label: AppMessages.of(context).text(option.$2),
                       excludeSemantics: true,
                       child: Pressable(
                         haptic: widget.profile['venue'] != option.$1,
@@ -210,7 +214,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                             children: [
                               AppIcon(option.$4, size: 20, color: p.text),
                               const SizedBox(height: 4),
-                              Text(
+                              LText(
                                 option.$3,
                                 textAlign: TextAlign.center,
                                 style: AppText.hint(p).copyWith(
@@ -230,11 +234,14 @@ class _ConditionsStepState extends State<ConditionsStep> {
           ],
         ),
         const SizedBox(height: 4),
-        Text('无哑铃也能练：徒手、背包、弹力带', style: AppText.hint(p).copyWith(fontSize: 12)),
+        LText(
+          '无哑铃也能练：徒手、背包、弹力带',
+          style: AppText.hint(p).copyWith(fontSize: 12),
+        ),
         Semantics(
           button: true,
           selected: widget.profile['venue'] == 'both',
-          label: '两边都会去',
+          label: AppMessages.of(context).text('两边都会去'),
           excludeSemantics: true,
           child: Pressable(
             haptic: widget.profile['venue'] != 'both',
@@ -242,7 +249,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
             child: Container(
               constraints: const BoxConstraints(minHeight: 44),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: LText(
                 widget.profile['venue'] == 'both' ? '✓ 两边都会去' : '两边都会去 ›',
                 style: AppText.hint(p).copyWith(
                   color: widget.profile['venue'] == 'both'
@@ -293,7 +300,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                     'light': '轻度',
                     'active': '常走动',
                   }),
-                  Text('不方便的部位', style: AppText.hint(context.pal)),
+                  LText('不方便的部位', style: AppText.hint(context.pal)),
                   Row(
                     children: [
                       for (final (i, part) in [

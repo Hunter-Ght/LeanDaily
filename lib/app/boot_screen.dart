@@ -1,3 +1,5 @@
+import '../l10n/localized_text.dart';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -76,7 +78,7 @@ class _BootScreenState extends State<BootScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (failed)
-                      Text(
+                      LText(
                         '打不开',
                         style: TextStyle(
                           fontSize: 20,
@@ -87,14 +89,14 @@ class _BootScreenState extends State<BootScreen> {
                       ),
                     if (failed) const SizedBox(height: 8),
                     if (failed)
-                      Text(
+                      LText(
                         widget.error,
                         textAlign: TextAlign.center,
                         style: style,
                       ),
                     if (failed || _slow || errors.isNotEmpty) ...[
                       const SizedBox(height: 12),
-                      Text(
+                      LText(
                         '启动步骤：${Diagnostics.step.value}',
                         textAlign: TextAlign.center,
                         style: style,
@@ -102,7 +104,7 @@ class _BootScreenState extends State<BootScreen> {
                       for (final e in errors)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
-                          child: Text(
+                          child: LText(
                             e,
                             textAlign: TextAlign.left,
                             style: style.copyWith(fontSize: 11),
@@ -122,7 +124,7 @@ class _BootScreenState extends State<BootScreen> {
                             color: p.tintSoft,
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: Text(
+                          child: LText(
                             '重试',
                             style: TextStyle(
                               fontSize: 17,
@@ -155,7 +157,7 @@ class ErrorBox extends StatelessWidget {
     color: AppPalette.light.card,
     child: Padding(
       padding: const EdgeInsets.all(8),
-      child: Text(
+      child: LText(
         text,
         maxLines: 6,
         overflow: TextOverflow.ellipsis,

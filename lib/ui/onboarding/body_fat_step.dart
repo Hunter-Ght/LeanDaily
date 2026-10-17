@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -59,7 +63,7 @@ class BodyFatStep extends StatelessWidget {
                   child: Semantics(
                     button: true,
                     selected: tab == i,
-                    label: label,
+                    label: AppMessages.of(context).text(label),
                     excludeSemantics: true,
                     child: Pressable(
                       haptic: tab != i,
@@ -78,7 +82,7 @@ class BodyFatStep extends StatelessWidget {
                           color: tab == i ? context.pal.segOn : null,
                           borderRadius: BorderRadius.circular(9),
                         ),
-                        child: Text(
+                        child: LText(
                           label,
                           style: AppText.h2(context.pal).copyWith(fontSize: 15),
                         ),
@@ -100,7 +104,7 @@ class BodyFatStep extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('输入你的体脂率', style: AppText.h2(context.pal)),
+                      LText('输入你的体脂率', style: AppText.h2(context.pal)),
                       OnboardingNumber(
                         key: const ValueKey('bodyFatPct'),
                         label: '体脂率',
@@ -116,7 +120,7 @@ class BodyFatStep extends StatelessWidget {
                           );
                         },
                       ),
-                      Text(
+                      LText(
                         '填写 3–60%，保留一位小数；也可以先用粗略估算。',
                         style: AppText.hint(context.pal),
                       ),
@@ -155,7 +159,7 @@ class BodyFatStep extends StatelessWidget {
                                     value: profile[key] as num?,
                                     onChanged: (v) => onChanged(key, v),
                                   ),
-                                  Text(note, style: AppText.hint(context.pal)),
+                                  LText(note, style: AppText.hint(context.pal)),
                                 ],
                               ),
                             ),
@@ -163,7 +167,7 @@ class BodyFatStep extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                       ],
-                      Text(
+                      LText(
                         '皮尺轻贴皮肤，不勒紧。缺少有效围度时使用粗略估算。',
                         style: AppText.hint(context.pal),
                       ),
@@ -180,7 +184,7 @@ class BodyFatStep extends StatelessWidget {
                     itemBuilder: (context, i) => SizedBox(
                       width: 126,
                       child: Semantics(
-                        label: '约 ${bands[i]}%',
+                        label: AppMessages.of(context).text('约 ${bands[i]}%'),
                         button: true,
                         selected: profile['bodyFatPct'] == bands[i],
                         excludeSemantics: true,
@@ -202,13 +206,13 @@ class BodyFatStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              LText(
                 '约 ${fat['value']}%（误差 ±${fat['margin']}%）',
                 style: AppText.sect(context.pal),
               ),
               if (fat['method'] == 'bmi') ...[
                 const SizedBox(height: 6),
-                Text('粗略估算 · BMI 公式', style: AppText.hint(context.pal)),
+                LText('粗略估算 · BMI 公式', style: AppText.hint(context.pal)),
               ],
             ],
           ),
@@ -248,9 +252,9 @@ class _BodyBand extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text('约 $value%', style: AppText.h2(context.pal)),
+          LText('约 $value%', style: AppText.h2(context.pal)),
           const SizedBox(height: 4),
-          Text(description, style: AppText.hint(context.pal)),
+          LText(description, style: AppText.hint(context.pal)),
         ],
       ),
     ),

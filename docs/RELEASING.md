@@ -5,7 +5,7 @@
 | 位置 | 当前内容 |
 | --- | --- |
 | `lib/config/app_links.dart` → `updateCheckUrl` | `https://api.github.com/repos/Hunter-Ght/LeanDaily/releases/latest` |
-| `lib/config/app_links.dart` → `privacyPolicyUrl` | `https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md` |
+| `lib/config/app_links.dart` → `privacyPolicyUrl` | `https://hunter-ght.github.io/LeanDaily/privacy/` |
 | `lib/config/app_links.dart` → `repoUrl` | `https://github.com/Hunter-Ght/LeanDaily` |
 | `assets/legal/privacy.md`、`PRIVACY.md`、`PRIVACY.en.md` 的联系方式 | `https://github.com/Hunter-Ght/LeanDaily/issues` |
 | `README.md`、`README.en.md` 中的仓库用户名 | `Hunter-Ght` |
@@ -13,11 +13,9 @@
 
 ### 隐私政策如何上线
 
-当前使用 GitHub 自带的 Markdown 阅读页面。将 `PRIVACY.md` 提交并推送到远程 `main` 后，上面的在线地址即可展示文件内容；公开仓库的访问者无需登录。无需域名、服务器或 GitHub Pages。仓库需公开并启用 Issues，才能让所有用户阅读政策、提交问题。
+公开网页源码在 `website/`，含英文、简体中文、繁体中文的隐私和支持页。提交网页后运行 `python3 tool/publish_site.py`，将网页独立发布到 `gh-pages` 分支。在仓库 **Settings → Pages** 选择 **Deploy from a branch → gh-pages → / (root)**。仅推送文件不会启用 Pages。发布前确认三个语言的隐私和支持地址都返回 200，且无需登录。
 
-如果以后想使用独立网页样式，可以再配置仓库 **Settings → Pages**，选择发布分支和目录，部署成功后将 `privacyPolicyUrl` 改为实际页面地址。仅推送文件不会自动启用 GitHub Pages。
-
-`assets/legal/privacy.md` 是 App 内离线政策，修改它需要重新构建并安装 App；修改远程 `PRIVACY.md` 则会直接更新在线阅读内容。App 链接常量的修改也需要重新构建安装。
+`assets/legal/privacy_en.md`、`privacy_zh_Hans.md`、`privacy_zh_Hant.md` 是 App 内离线政策；修改后需重新构建。根目录 `PRIVACY.md` / `PRIVACY.en.md` 供仓库阅读，不能代替 Pages 的部署。完整 iOS 上架步骤见 `US_STORE_RELEASE.md`，隐私填表核对见 `STORE_DATA_SAFETY.md`。
 
 ### 检查更新如何工作
 

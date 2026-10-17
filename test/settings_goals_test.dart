@@ -29,7 +29,7 @@ class SettingsHarness {
     native.docs['fw-plan-v1'] = legacyDocs['fw-plan-v1']!;
     native.docs['fw-onboarded-v1'] = '1';
     if (!empty) native.docs['android-state'] = jsonEncode(jsonDecode(File('test/fixtures/full_state.json').readAsStringSync())['state']);
-    final app = AppController(native: native, clock: () => DateTime.parse('2026-10-16T09:00:00'));
+    final app = AppController(localeOverride: const Locale('zh', 'CN'), native: native, clock: () => DateTime.parse('2026-10-16T09:00:00'));
     await app.boot();
     final shot = GlobalKey(), home = GlobalKey();
     final p = dark ? AppPalette.dark : AppPalette.light;

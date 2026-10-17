@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -36,7 +38,7 @@ class PreviewSheet extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text.rich(
+            child: LText.rich(
               TextSpan(
                 text: train ? workoutTitle('${workout['name']}') : '休息日',
                 children: [
@@ -60,7 +62,7 @@ class PreviewSheet extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
-            child: Text(
+            child: LText(
               train
                   ? '${need.fold<num>(0, (n, e) => n + jsNumber(e['target']))} 组 · ${need.length} 个动作 · 约 ${plan.estimateMinutes(app.plan, all, jsNumber(jsonMap(workout['warmup'])['minutes']))} 分钟'
                   : '散步、睡够 7～9 小时，蛋白质照样吃够。',
@@ -76,7 +78,7 @@ class PreviewSheet extends StatelessWidget {
                 color: p.card,
                 borderRadius: BorderRadius.circular(22),
               ),
-              child: Text(
+              child: LText(
                 train
                     ? '${workout['note']}'
                     : '下次训练：${weekday('${nx!['iso']}')} · ${workoutTitle('${nx['workout']['name']}')}',
@@ -92,7 +94,7 @@ class PreviewSheet extends StatelessWidget {
               ),
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
-              child: Text(
+              child: LText(
                 '精简版只做：${all.where((e) => core.contains(e['id'])).map((e) => e['name']).join('、')}。点任意动作看示范。',
                 style: TextStyle(
                   fontSize: 13,

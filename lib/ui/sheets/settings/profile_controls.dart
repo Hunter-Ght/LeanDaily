@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/body.dart';
@@ -20,9 +24,9 @@ class ProfileDiagnosis extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 13, color: p.secondary)),
+          LText(label, style: TextStyle(fontSize: 13, color: p.secondary)),
           const SizedBox(height: 6),
-          Text(
+          LText(
             value,
             style: TextStyle(
               fontSize: 28,
@@ -31,7 +35,7 @@ class ProfileDiagnosis extends StatelessWidget {
               color: p.text,
             ),
           ),
-          Text(unit, style: TextStyle(fontSize: 13, color: p.secondary)),
+          LText(unit, style: TextStyle(fontSize: 13, color: p.secondary)),
         ],
       ),
     );
@@ -44,7 +48,7 @@ class ProfileDiagnosis extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          LText(
             stageName(targets['stage'] as String),
             style: TextStyle(
               fontSize: 20,
@@ -53,7 +57,7 @@ class ProfileDiagnosis extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
+          LText(
             routeText(targets['stage'] as String),
             style: TextStyle(fontSize: 13, height: 1.45, color: p.secondary),
           ),
@@ -73,7 +77,7 @@ class ProfileDiagnosis extends StatelessWidget {
                 color: p.fill2,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
+              child: LText(
                 '$warning',
                 style: TextStyle(fontSize: 13, color: p.secondary),
               ),
@@ -124,13 +128,13 @@ class _ProfileGoalSliderState extends State<ProfileGoalSlider> {
       void locate(double x) =>
           _change(widget.min + (x / box.maxWidth) * (widget.max - widget.min));
       return Semantics(
-        label: '目标体脂滑杆',
-        value: '${numberText(_value)}%',
+        label: AppMessages.of(context).text('目标体脂滑杆'),
+        value: AppMessages.of(context).text('${numberText(_value)}%'),
         slider: true,
-        increasedValue:
-            '${numberText((_value + 1).clamp(widget.min, widget.max))}%',
-        decreasedValue:
-            '${numberText((_value - 1).clamp(widget.min, widget.max))}%',
+        increasedValue: AppMessages.of(context)
+            .text('${numberText((_value + 1).clamp(widget.min, widget.max))}%'),
+        decreasedValue: AppMessages.of(context)
+            .text('${numberText((_value - 1).clamp(widget.min, widget.max))}%'),
         onIncrease: () {
           _change(_value + 1);
           widget.onChanged(_value);

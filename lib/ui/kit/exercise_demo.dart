@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -114,11 +118,13 @@ class _ExerciseDemoState extends State<ExerciseDemo>
     return Semantics(
       button: true,
       excludeSemantics: true,
-      label: manual
-          ? '切换示范帧'
-          : _paused
-          ? '继续播放示范'
-          : '暂停示范',
+      label: AppMessages.of(context).text(
+        manual
+            ? '切换示范帧'
+            : _paused
+            ? '继续播放示范'
+            : '暂停示范',
+      ),
       child: Pressable(
         scale: 1,
         onTap: () {
@@ -172,7 +178,7 @@ class _ExerciseDemoState extends State<ExerciseDemo>
                           color: p.scrim,
                           shape: BoxShape.circle,
                         ),
-                        child: Text(
+                        child: LText(
                           '▶',
                           style: TextStyle(fontSize: 14, color: p.onTint),
                         ),

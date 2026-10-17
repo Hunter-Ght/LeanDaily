@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../domain/body.dart';
@@ -116,7 +118,7 @@ class _PlanStepState extends State<PlanStep> {
             onTap: () => widget.onSelected(null),
           ),
         if (limits.isNotEmpty)
-          Text(
+          LText(
             '${limits.join('、')}不方便：模板尚未自动避开，请预览动作后按身体情况调整。',
             style: AppText.hint(context.pal),
           ),
@@ -155,7 +157,7 @@ class _PlanStepState extends State<PlanStep> {
           ),
         ),
         if (others.isNotEmpty) ...[
-          Text('也适合你 · 左右滑动比较', style: AppText.hint(context.pal)),
+          LText('也适合你 · 左右滑动比较', style: AppText.hint(context.pal)),
           LayoutBuilder(
             builder: (context, c) => SizedBox(
               height: MediaQuery.textScalerOf(context).scale(220) + 65,

@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
@@ -176,7 +180,7 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
         children: [
           Semantics(
             button: true,
-            label: workoutTitle('${w['name']}'),
+            label: AppMessages.of(context).text(workoutTitle('${w['name']}')),
             child: Pressable(
               onTap: () => setState(() => _open = _open == id ? '' : id),
               child: SizedBox(
@@ -184,7 +188,7 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
+                      child: LText(
                         workoutTitle('${w['name']}'),
                         style: TextStyle(
                           fontSize: 17,
@@ -193,7 +197,7 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
                         ),
                       ),
                     ),
-                    Text(
+                    LText(
                       '${list.length} 个动作${_open == id ? ' ▾' : ' ▸'}',
                       style: TextStyle(
                         fontSize: 13,
@@ -240,7 +244,7 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
                           children: [
-                            Text(
+                            LText(
                               '名称',
                               style: TextStyle(
                                 fontSize: 17,

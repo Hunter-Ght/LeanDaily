@@ -159,9 +159,7 @@ class _GoalsSheetState extends State<GoalsSheet> {
                 ),
           ],
         ),
-        GroupFooter(
-          '进度按这些目标计算。',
-        ),
+        GroupFooter('进度按这些目标计算。'),
       ],
     ),
   );

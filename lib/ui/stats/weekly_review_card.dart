@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -80,7 +84,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
               ),
               const SizedBox(width: 5),
               Flexible(
-                child: Text(
+                child: LText(
                   label,
                   style: TextStyle(fontSize: 12, color: p.secondary),
                 ),
@@ -88,7 +92,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
             ],
           ),
           const SizedBox(height: 4),
-          Text(
+          LText(
             value,
             style: TextStyle(
               fontSize: 15,
@@ -101,7 +105,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
     );
     Widget button(String label, {bool apply = false}) => Semantics(
       button: true,
-      label: label,
+      label: AppMessages.of(context).text(label),
       enabled: !busy,
       child: Pressable(
         onTap: busy ? null : () => finish(apply),
@@ -113,7 +117,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
             color: apply && !widget.compact ? p.tint : p.fill2,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Text(
+          child: LText(
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -139,7 +143,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          LText(
             '上周回顾',
             style: TextStyle(
               fontSize: 17,
@@ -148,7 +152,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
+          LText(
             '${r['label']}',
             style: TextStyle(fontSize: 13, color: p.secondary),
           ),
@@ -162,7 +166,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
           ),
           if (r['weightAvg'] != null) ...[
             const SizedBox(height: 12),
-            Text(
+            LText(
               '体重均值 ${fmt(r['weightAvg'])} kg${change == null
                   ? ''
                   : change.abs() < 0.05
@@ -172,7 +176,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
             ),
           ],
           const SizedBox(height: 12),
-          Text(
+          LText(
             '${r['message']}',
             style: TextStyle(
               fontSize: widget.compact ? 14 : 15,

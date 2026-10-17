@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -74,7 +78,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
       double top = 6,
     }) => Padding(
       padding: EdgeInsets.fromLTRB(4, top, 4, 0),
-      child: Text(
+      child: LText(
         text,
         style: TextStyle(
           fontSize: size,
@@ -86,7 +90,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
     );
     Widget heading(String text) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 6),
-      child: Text(
+      child: LText(
         text,
         style: TextStyle(
           fontSize: 17,
@@ -110,7 +114,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
             children: [
               SizedBox(
                 width: 16,
-                child: Text(
+                child: LText(
                   ordered ? '${i + 1}.' : '•',
                   style: TextStyle(
                     fontSize: 14,
@@ -120,7 +124,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
                 ),
               ),
               Expanded(
-                child: Text(
+                child: LText(
                   '$t',
                   style: TextStyle(
                     fontSize: 14,
@@ -139,7 +143,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
         if (g != null)
           Semantics(
             button: true,
-            label: _paused ? '继续播放示范' : '暂停示范',
+            label: AppMessages.of(context).text(_paused ? '继续播放示范' : '暂停示范'),
             child: Pressable(
               onTap: () => setState(() => _paused = !_paused),
               child: ClipRRect(
@@ -165,7 +169,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
                           color: p.scrim,
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: LText(
                           '${_frame == 0 ? '起始' : '发力'}${_paused ? ' · 已暂停' : ''}',
                           style: TextStyle(
                             fontSize: 12,
@@ -182,7 +186,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
           ),
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 14, 4, 0),
-          child: Text(
+          child: LText(
             '${e['name']}',
             style: TextStyle(
               fontSize: 17,
@@ -208,7 +212,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
                 AppIcon('weight', size: 16, color: p.secondary),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
+                  child: LText(
                     '${e['gear']}',
                     style: TextStyle(
                       fontSize: 14,
@@ -261,7 +265,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 14),
-          child: Text(
+          child: LText(
             '示范图来自开源动作库 free-exercise-db（Unlicense）',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: p.tertiary),

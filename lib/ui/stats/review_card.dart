@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -51,7 +53,7 @@ class _ReviewCardState extends State<ReviewCard> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Text.rich(
+            LText.rich(
               TextSpan(
                 text: '${a['done']}',
                 style: TextStyle(
@@ -73,7 +75,7 @@ class _ReviewCardState extends State<ReviewCard> {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
+              child: LText(
                 '近 4 周出勤${jsNumber(a['planned']) > 0 ? ' ${(jsNumber(a['rate']) * 100).round()}%' : '：还没到计划练的日子'}',
                 textAlign: TextAlign.right,
                 style: TextStyle(
@@ -95,7 +97,7 @@ class _ReviewCardState extends State<ReviewCard> {
                 children: [
                   SizedBox(
                     width: 78.2, // .rv-list grid: 4.6em at the inherited 17px.
-                    child: Text(
+                    child: LText(
                       '${g['name']}',
                       style: TextStyle(
                         fontSize: 15,
@@ -176,7 +178,7 @@ class _ReviewCardState extends State<ReviewCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text(
+                        LText(
                           '${g['week']} 组',
                           style: TextStyle(
                             fontSize: 15,
@@ -184,7 +186,7 @@ class _ReviewCardState extends State<ReviewCard> {
                             color: p.text,
                           ),
                         ),
-                        Text(
+                        LText(
                           '上周 ${g['last']}',
                           style: TextStyle(
                             fontSize: 12,
@@ -206,7 +208,7 @@ class _ReviewCardState extends State<ReviewCard> {
             plain: true,
             onTap: () => setState(() => expanded = !expanded),
           ),
-        Text('浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。$note', style: AppText.hint(p)),
+        LText('浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。$note', style: AppText.hint(p)),
       ],
     );
   }

@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>薄肌日课</string>
+	<string>LeanDaily</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -67,7 +67,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>用于拍摄你主动记录的饮食照片。仅当你选择拍照时使用相机。</string>
+	<string>Take meal photos when you choose the camera. Photos are sent to your AI provider only after separate consent.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

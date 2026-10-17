@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -62,19 +66,19 @@ class _DiagnosisStepState extends State<DiagnosisStep> {
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
+              LText(
                 stageName(targets['stage'] as String),
                 style: AppText.sect(p),
               ),
               const SizedBox(height: 6),
-              Text(
+              LText(
                 routeText(targets['stage'] as String),
                 style: AppText.body(p),
               ),
             ],
           ),
         ),
-        Text(
+        LText(
           fat['margin'] == 0
               ? '体脂 ${_percent(fat['value'] as num)}%（手动输入）'
               : '体脂约 ${_percent(fat['value'] as num)}%，估算误差 ±${fat['margin']}%。',
@@ -100,7 +104,7 @@ class _DiagnosisStepState extends State<DiagnosisStep> {
                         max: male ? 25 : 35,
                         onChanged: widget.onGoalChanged,
                       ),
-                      Text(
+                      LText(
                         '目标体脂安全下限：${male ? 8 : 16}%',
                         style: AppText.hint(p),
                       ),
@@ -111,8 +115,8 @@ class _DiagnosisStepState extends State<DiagnosisStep> {
         ),
         for (final warning in targets['warnings'] as List)
           if (!(warning as String).startsWith('体脂为估算值'))
-            Text(warning, style: AppText.hint(p)),
-        Text(
+            LText(warning, style: AppText.hint(p)),
+        LText(
           '估算仅供参考，不是医疗建议',
           key: const ValueKey('diagnosis-disclaimer'),
           textAlign: TextAlign.center,
@@ -138,12 +142,12 @@ class _TargetNumber extends StatelessWidget {
       children: [
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
+          child: LText(
             value,
             style: AppText.navDay(context.pal).copyWith(fontSize: 28),
           ),
         ),
-        Text('$label · $unit', style: AppText.hint(context.pal)),
+        LText('$label · $unit', style: AppText.hint(context.pal)),
       ],
     ),
   );
@@ -163,7 +167,8 @@ class BodyFatScale extends StatelessWidget {
     final p = context.pal;
     final band = male ? thinBodyFatMale : thinBodyFatFemale;
     return Semantics(
-      label: '体脂刻度，薄肌区间 ${band.$1}–${band.$2}%，你现在 $current%，目标 $goal%',
+      label: AppMessages.of(context)
+          .text('体脂刻度，薄肌区间 ${band.$1}–${band.$2}%，你现在 $current%，目标 $goal%'),
       excludeSemantics: true,
       child: SizedBox(
         height: 148,
@@ -192,7 +197,7 @@ class BodyFatScale extends StatelessWidget {
                         borderRadius: BorderRadius.circular(9),
                       )
                     : null,
-                child: Text(
+                child: LText(
                   text,
                   textAlign: TextAlign.center,
                   style: AppText.hint(p).copyWith(
@@ -317,12 +322,14 @@ class _GoalBodyFatSliderState extends State<GoalBodyFatSlider> {
   Widget build(BuildContext context) => ValueListenableBuilder<double>(
     valueListenable: _value,
     builder: (context, value, _) => Semantics(
-      label: '目标体脂',
+      label: AppMessages.of(context).text('目标体脂'),
       button: true,
       slider: true,
-      value: '$value%',
-      increasedValue: '${(value + .1).clamp(widget.min, widget.max)}%',
-      decreasedValue: '${(value - .1).clamp(widget.min, widget.max)}%',
+      value: AppMessages.of(context).text('$value%'),
+      increasedValue: AppMessages.of(context)
+          .text('${(value + .1).clamp(widget.min, widget.max)}%'),
+      decreasedValue: AppMessages.of(context)
+          .text('${(value - .1).clamp(widget.min, widget.max)}%'),
       onIncrease: () =>
           widget.onChanged((value + .1).clamp(widget.min, widget.max)),
       onDecrease: () =>
@@ -332,7 +339,7 @@ class _GoalBodyFatSliderState extends State<GoalBodyFatSlider> {
         child: Column(
           children: [
             const SizedBox(height: 8),
-            Text('$value%', style: AppText.sect(context.pal)),
+            LText('$value%', style: AppText.sect(context.pal)),
             SizedBox(
               height: 48,
               child: LayoutBuilder(
@@ -405,11 +412,11 @@ class _GoalBodyFatSliderState extends State<GoalBodyFatSlider> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                LText(
                   '${widget.min.toInt()}%',
                   style: AppText.hint(context.pal),
                 ),
-                Text(
+                LText(
                   '${widget.max.toInt()}%',
                   style: AppText.hint(context.pal),
                 ),

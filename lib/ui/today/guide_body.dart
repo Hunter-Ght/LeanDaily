@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -72,7 +76,7 @@ class _GuideBodyState extends State<GuideBody> {
       double top = 6,
     }) => Padding(
       padding: EdgeInsets.fromLTRB(4, top, 4, 0),
-      child: Text(
+      child: LText(
         text,
         style: TextStyle(
           fontSize: size,
@@ -84,7 +88,7 @@ class _GuideBodyState extends State<GuideBody> {
     );
     Widget heading(String text) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 6),
-      child: Text(
+      child: LText(
         text,
         style: TextStyle(
           fontSize: 16,
@@ -108,13 +112,13 @@ class _GuideBodyState extends State<GuideBody> {
             children: [
               SizedBox(
                 width: 16,
-                child: Text(
+                child: LText(
                   ordered ? '${i + 1}.' : '•',
                   style: const TextStyle(fontSize: 15, height: 1.6),
                 ),
               ),
               Expanded(
-                child: Text(
+                child: LText(
                   '$t',
                   style: const TextStyle(fontSize: 15, height: 1.6),
                 ),
@@ -129,7 +133,7 @@ class _GuideBodyState extends State<GuideBody> {
         if (g != null)
           Semantics(
             button: true,
-            label: _paused ? '继续播放示范' : '暂停示范',
+            label: AppMessages.of(context).text(_paused ? '继续播放示范' : '暂停示范'),
             child: Pressable(
               onTap: () => setState(() => _paused = !_paused),
               child: ClipRRect(
@@ -154,7 +158,7 @@ class _GuideBodyState extends State<GuideBody> {
                           color: p.scrim,
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: LText(
                           '${_frame == 0 ? '起始' : '发力'}${_paused ? ' · 已暂停' : ''}',
                           style: TextStyle(
                             fontSize: 12,
@@ -171,7 +175,7 @@ class _GuideBodyState extends State<GuideBody> {
           ),
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 14, 4, 0),
-          child: Text(
+          child: LText(
             '${e['name']}',
             style: TextStyle(
               fontSize: 22,
@@ -200,7 +204,7 @@ class _GuideBodyState extends State<GuideBody> {
                 AppIcon('weight', size: 16, color: p.secondary),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
+                  child: LText(
                     '${e['gear']}',
                     style: TextStyle(
                       fontSize: 14,
@@ -250,7 +254,7 @@ class _GuideBodyState extends State<GuideBody> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 14),
-          child: Text(
+          child: LText(
             '示范图来自开源动作库 free-exercise-db（Unlicense）',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: p.tertiary),

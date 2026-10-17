@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -32,7 +36,7 @@ class WeekDots extends StatelessWidget {
       .join(' ');
   @override
   Widget build(BuildContext context) => Semantics(
-    label: describe(week),
+    label: AppMessages.of(context).text(describe(week)),
     excludeSemantics: true,
     child: Row(
       children: [
@@ -42,7 +46,7 @@ class WeekDots extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (showWeekdays) ...[
-                  Text(
+                  LText(
                     const ['日', '一', '二', '三', '四', '五', '六'][day],
                     style: TextStyle(
                       fontSize: 11,
@@ -64,7 +68,7 @@ class WeekDots extends StatelessWidget {
                         color: active ? context.pal.tint : context.pal.fill2,
                       ),
                       child: active
-                          ? Text(
+                          ? LText(
                               '${matches.first['label']}',
                               textScaler: TextScaler.noScaling,
                               style: TextStyle(
@@ -178,7 +182,7 @@ class LevelMeter extends StatelessWidget {
         ),
       const SizedBox(width: 3),
       Flexible(
-        child: Text(
+        child: LText(
           const ['新手可上手', '有基础', '老手'][(level - 1).clamp(0, 2)],
           style: TextStyle(fontSize: 12, color: context.pal.secondary),
         ),
@@ -246,7 +250,7 @@ class PlanCard extends StatelessWidget {
                       color: p.tintSoft,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
+                    child: LText(
                       reason,
                       style: TextStyle(fontSize: 12, color: p.secondary),
                     ),
@@ -273,7 +277,7 @@ class PlanCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text.rich(
+                    LText.rich(
                       TextSpan(
                         text: name,
                         children: [
@@ -294,7 +298,7 @@ class PlanCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 5),
-                    Text(
+                    LText(
                       tagline,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -330,7 +334,8 @@ class PlanCard extends StatelessWidget {
       button: true,
       selected: selected,
       excludeSemantics: true,
-      label: '$name，每周 ${week.length} 天，${WeekDots.describe(week)}',
+      label: AppMessages.of(context)
+          .text('$name，每周 ${week.length} 天，${WeekDots.describe(week)}'),
       child: Pressable(onTap: onTap, child: animated),
     );
   }
@@ -340,7 +345,7 @@ class PlanCard extends StatelessWidget {
     runSpacing: 4,
     crossAxisAlignment: WrapCrossAlignment.center,
     children: [
-      Text(
+      LText(
         '约 ${insight['minutes']} 分钟 / 次 ·',
         style: TextStyle(fontSize: 12, color: context.pal.secondary),
       ),
@@ -394,7 +399,7 @@ class _PlanPreviewState extends State<PlanPreview> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(
+                LText(
                   '${widget.tagline} · 约 ${insight['minutes']} 分钟 / 次',
                   style: AppText.hint(p),
                 ),
@@ -441,7 +446,7 @@ class _PlanPreviewState extends State<PlanPreview> {
                               shape: BoxShape.circle,
                               color: p.tint,
                             ),
-                            child: Text(
+                            child: LText(
                               '${day['label']}',
                               style: TextStyle(
                                 fontSize: 15,
@@ -455,12 +460,12 @@ class _PlanPreviewState extends State<PlanPreview> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                LText(
                                   '周${const ['日', '一', '二', '三', '四', '五', '六'][day['dow'] as int]} · ${workout['name']}',
                                   style: AppText.h2(p),
                                 ),
                                 const SizedBox(height: 6),
-                                Text(
+                                LText(
                                   exercises.map((ex) => ex['name']).join(' · '),
                                   style: AppText.hint(p),
                                 ),
@@ -486,18 +491,18 @@ class _PlanPreviewState extends State<PlanPreview> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 12, bottom: 6),
-                      child: Text('${workout['name']}', style: AppText.h2(p)),
+                      child: LText('${workout['name']}', style: AppText.h2(p)),
                     ),
                     if ('${variant['note'] ?? workout['note'] ?? ''}'
                         .isNotEmpty)
-                      Text(
+                      LText(
                         '${variant['note'] ?? workout['note']}',
                         style: AppText.hint(p),
                       ),
                     for (final ex in variant['exercises'] as List? ?? []) ...[
                       Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: Text(
+                        child: LText(
                           '${ex['name']} · ${ex['sets']} 组 × ${ex['min']}–${ex['max']} ${ex['unit'] == 'sec' ? '秒' : '次'}${ex['side'] == true ? ' / 每侧' : ''}${ex['optional'] == true ? ' · 可选' : ''}',
                           style: AppText.hint(p),
                         ),
@@ -505,7 +510,7 @@ class _PlanPreviewState extends State<PlanPreview> {
                       if ('${ex['tip'] ?? ''}'.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 6),
-                          child: Text(
+                          child: LText(
                             '${ex['name']}：${ex['tip']}',
                             style: AppText.hint(p),
                           ),

@@ -11,7 +11,8 @@ class Diagnostics {
   static void at(String s) => step.value = s;
 
   static void error(Object e, [StackTrace? st]) {
-    final line = '$e${st == null ? '' : '\n${st.toString().split('\n').take(6).join('\n')}'}';
+    final line =
+        '$e${st == null ? '' : '\n${st.toString().split('\n').take(6).join('\n')}'}';
     errors.value = [...errors.value.take(4), line];
   }
 }

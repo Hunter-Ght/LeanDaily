@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../core/haptics.dart';
@@ -104,8 +108,9 @@ class _RecordCalendarState extends State<RecordCalendar> {
               button: true,
               selected: day.iso == widget.iso,
               enabled: !day.future,
-              label:
-                  '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${day.meal ? '，有饮食' : ''}',
+              label: AppMessages.of(context).text(
+                '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${day.meal ? '，有饮食' : ''}',
+              ),
               child: Pressable(
                 scale: 1,
                 onTap: day.future
@@ -131,7 +136,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
                             ? Border.all(color: context.pal.tint)
                             : null,
                       ),
-                      child: Text(
+                      child: LText(
                         '${day.num}',
                         style: AppText.calNum(
                           context.pal,
@@ -203,17 +208,19 @@ class _RecordCalendarState extends State<RecordCalendar> {
                       button: !widget.persistent,
                       excludeSemantics: true,
                       onTap: widget.persistent ? null : widget.onToggle,
-                      label: widget.persistent
-                          ? title
-                          : month
-                          ? '收起月历'
-                          : '展开月历',
+                      label: AppMessages.of(context).text(
+                        widget.persistent
+                            ? title
+                            : month
+                            ? '收起月历'
+                            : '展开月历',
+                      ),
                       child: Pressable(
                         scale: 1,
                         onTap: widget.persistent ? null : widget.onToggle,
                         child: Row(
                           children: [
-                            Text(
+                            LText(
                               title,
                               style: AppText.calTitle(context.pal)
                                   .copyWith(color: context.pal.text),
@@ -238,9 +245,11 @@ class _RecordCalendarState extends State<RecordCalendar> {
                     Semantics(
                       button: true,
                       enabled: direction < 0 ? index > 0 : index < last,
-                      label: month
-                          ? (direction < 0 ? '上个月' : '下个月')
-                          : (direction < 0 ? '上一周' : '下一周'),
+                      label: AppMessages.of(context).text(
+                        month
+                            ? (direction < 0 ? '上个月' : '下个月')
+                            : (direction < 0 ? '上一周' : '下一周'),
+                      ),
                       child: Pressable(
                         onTap:
                             transitioning ||
@@ -271,7 +280,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
                 children: [
                   for (final label in weekLabels)
                     Expanded(
-                      child: Text(
+                      child: LText(
                         label,
                         textAlign: TextAlign.center,
                         style: AppText.calLabel(context.pal),

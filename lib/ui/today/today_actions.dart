@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../domain/format.dart';
@@ -73,7 +77,8 @@ class _TodayActionsState extends State<TodayActions> {
                       final done = jsNumber(item?['done']);
                       return Semantics(
                         button: true,
-                        label: '${e['name']}，${m.started ? '进入训练' : '看示范'}',
+                        label: AppMessages.of(context)
+                            .text('${e['name']}，${m.started ? '进入训练' : '看示范'}'),
                         child: Pressable(
                           onTap: () => widget.onOpen(e),
                           child: Padding(
@@ -87,7 +92,7 @@ class _TodayActionsState extends State<TodayActions> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      LText(
                                         '${e['name']}',
                                         style: TextStyle(
                                           fontSize: 17,
@@ -95,7 +100,7 @@ class _TodayActionsState extends State<TodayActions> {
                                           color: p.text,
                                         ),
                                       ),
-                                      Text(
+                                      LText(
                                         skipped
                                             ? '精简版不练'
                                             : '${fmt(target['sets'] ?? e['sets'])} 组 × ${fmt(target['reps'] ?? e['min'])} ${e['unit'] == 'sec' ? '秒' : '次'}${jsNumber(target['weight'] ?? e['weight']) > 0 ? ' · ${fmt(target['weight'] ?? e['weight'])} kg' : ''}',
@@ -110,7 +115,7 @@ class _TodayActionsState extends State<TodayActions> {
                                         ),
                                       ),
                                       if (!skipped && last.isNotEmpty)
-                                        Text(
+                                        LText(
                                           '上次 ${jsNumber(last['weight']) > 0 ? '${fmt(last['weight'])} kg' : '自重'} × ${fmt(last['minReps'])}${e['unit'] == 'sec' ? ' 秒' : ''}',
                                           style: TextStyle(
                                             fontSize: 12,
@@ -129,7 +134,7 @@ class _TodayActionsState extends State<TodayActions> {
                                           size: 18,
                                           color: p.ok,
                                         )
-                                      : Text(
+                                      : LText(
                                           key: ValueKey(
                                             'progress-$done-${target['sets'] ?? e['sets']}',
                                           ),
@@ -160,7 +165,7 @@ class _TodayActionsState extends State<TodayActions> {
               visible: rulesOpen,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(
+                child: LText(
                   rules.join('\n'),
                   style: TextStyle(
                     fontSize: 13,

@@ -1,3 +1,5 @@
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../app/app_controller.dart';
@@ -54,7 +56,7 @@ class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
                     onTap: _busy ? null : () => Navigator.of(context).pop(),
                   ),
                   Expanded(
-                    child: Text(
+                    child: LText(
                       '选择计划',
                       textAlign: TextAlign.center,
                       style: AppText.h2(context.pal),

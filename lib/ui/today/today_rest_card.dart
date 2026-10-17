@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/routes.dart';
@@ -28,7 +32,7 @@ class TodayRestCard extends StatelessWidget {
       bool bold = false,
       Color? color,
       double height = 1.45,
-    }) => Text(
+    }) => LText(
       s,
       style: TextStyle(
         fontSize: size,
@@ -50,7 +54,7 @@ class TodayRestCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          LText(
             '今天休息',
             style: TextStyle(
               fontSize: 26,
@@ -91,7 +95,7 @@ class TodayRestCard extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Semantics(
                 button: true,
-                label: '查看下次训练',
+                label: AppMessages.of(context).text('查看下次训练'),
                 child: Pressable(
                   onTap: () => openDayPreview(context, '${m.next!['iso']}'),
                   child: Container(

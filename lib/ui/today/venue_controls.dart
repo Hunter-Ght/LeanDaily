@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
@@ -16,7 +20,7 @@ class VenueChip extends StatelessWidget {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: '今天在哪练，当前${gym ? '健身房' : '居家'}',
+      label: AppMessages.of(context).text('今天在哪练，当前${gym ? '健身房' : '居家'}'),
       excludeSemantics: true,
       child: Pressable(
         onTap: onTap,
@@ -32,7 +36,7 @@ class VenueChip extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                LText(
                   gym ? '健身房' : '居家',
                   style: TextStyle(
                     fontSize: 13,
@@ -59,14 +63,14 @@ Future<bool?> showVenueDefaultConfirm(
   final p = context.pal;
   Widget action(String label, bool value) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     excludeSemantics: true,
     child: Pressable(
       onTap: () => SheetController.of(context).close(value),
       child: Container(
         height: 56,
         alignment: Alignment.center,
-        child: Text(
+        child: LText(
           label,
           style: TextStyle(
             fontSize: 20,
@@ -96,7 +100,7 @@ Future<bool?> showVenueDefaultConfirm(
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
+            child: LText(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -108,7 +112,7 @@ Future<bool?> showVenueDefaultConfirm(
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Text(
+            child: LText(
               '之后这天会默认用这个场地，你随时可以在今日页改。',
               textAlign: TextAlign.center,
               style: AppText.hint(p),

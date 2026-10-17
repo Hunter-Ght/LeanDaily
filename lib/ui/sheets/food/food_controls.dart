@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../theme/theme.dart';
@@ -41,7 +45,7 @@ class FoodButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     child: Pressable(
       onTap: onTap,
       child: Container(
@@ -54,7 +58,7 @@ class FoodButton extends StatelessWidget {
         ),
         child: Opacity(
           opacity: onTap == null ? .4 : 1,
-          child: Text(
+          child: LText(
             label,
             style: TextStyle(
               fontSize: 15,

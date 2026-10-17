@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../domain/format.dart';
@@ -28,7 +32,7 @@ class TodayHero extends StatelessWidget {
       bool bold = false,
       Color? color,
       double height = 1.45,
-    }) => Text(
+    }) => LText(
       s,
       style: TextStyle(
         fontSize: size,
@@ -49,7 +53,7 @@ class TodayHero extends StatelessWidget {
             size: 13,
           ),
           const SizedBox(height: 4),
-          Text(
+          LText(
             workoutTitle('${m.workout['name']}'),
             style: TextStyle(
               fontSize: 26,
@@ -77,7 +81,7 @@ class TodayHero extends StatelessWidget {
                               ? 0
                               : 300,
                         ),
-                        builder: (context, done, _) => Text.rich(
+                        builder: (context, done, _) => LText.rich(
                           TextSpan(
                             text: fmt((done * 10).round() / 10),
                             children: [
@@ -160,7 +164,7 @@ class TodayHero extends StatelessWidget {
           Container(height: .5, color: p.sep),
           Semantics(
             button: true,
-            label: adjustmentSummary(m),
+            label: AppMessages.of(context).text(adjustmentSummary(m)),
             child: Pressable(
               onTap: onAdjust,
               child: Container(

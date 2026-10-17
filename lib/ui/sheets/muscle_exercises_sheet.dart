@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -182,7 +186,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                   ? [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(4, 4, 4, 14),
-                        child: Text(
+                        child: LText(
                           sub,
                           style: TextStyle(
                             fontSize: 17,
@@ -219,7 +223,10 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                       if (easy.isEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 12),
-                          child: Text('这个场地暂时没有合适的动作。', style: AppText.hint(p)),
+                          child: LText(
+                            '这个场地暂时没有合适的动作。',
+                            style: AppText.hint(p),
+                          ),
                         ),
                       if (hard.isNotEmpty) ...[
                         button(
@@ -234,7 +241,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                         ),
                       ],
                       const SizedBox(height: 12),
-                      Text(
+                      LText(
                         '点动作看示范；点「＋ 加入」选加到哪一天。加入后和其他动作一样，目标次数和升级建议由「今日」页管理，默认每个动作 2 组。',
                         style: AppText.hint(p),
                       ),
@@ -257,15 +264,16 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text('加到哪一天', style: AppText.hint(p)),
+                      LText('加到哪一天', style: AppText.hint(p)),
                       for (final s in slots)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Semantics(
                             button: true,
                             selected: slot == s,
-                            label:
-                                '${dayText(s['workoutId'] as String)} · ${workoutTitle('${s['name']}')}',
+                            label: AppMessages.of(context).text(
+                              '${dayText(s['workoutId'] as String)} · ${workoutTitle('${s['name']}')}',
+                            ),
                             child: Pressable(
                               onTap: () => setState(
                                 () => slotId = s['workoutId'] as String,
@@ -290,7 +298,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                                     Row(
                                       children: [
                                         Expanded(
-                                          child: Text(
+                                          child: LText(
                                             '${dayText(s['workoutId'] as String)} · ${workoutTitle('${s['name']}')}',
                                             style: TextStyle(
                                               fontSize: 16,
@@ -303,9 +311,12 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                                       ],
                                     ),
                                     const SizedBox(height: 2),
-                                    Text('${s['why']}', style: AppText.hint(p)),
+                                    LText(
+                                      '${s['why']}',
+                                      style: AppText.hint(p),
+                                    ),
                                     const SizedBox(height: 2),
-                                    Text(
+                                    LText(
                                       '时长约 ${s['before']} → ${s['after']} 分钟',
                                       style: AppText.hint(p),
                                     ),
@@ -316,14 +327,14 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                           ),
                         ),
                       if (slots.isEmpty)
-                        Text(
+                        LText(
                           '当前计划里没有排训练日，先在「训练计划与提醒」里安排每周训练。',
                           style: AppText.hint(p),
                         ),
                       if (effect != null)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 12, 4, 0),
-                          child: Text(
+                          child: LText(
                             '加入后，${effect['name']}每周直接训练 ${fmt(effect['now'])} → ${fmt(effect['next'])} 组（参考 ${effect['band']['lo']}～${effect['band']['hi']} 组）${jsNumber(effect['next']) > jsNumber(effect['band']['hi']) ? '，已经偏多了，建议换掉一个动作而不是再加。' : '。'}',
                             style: TextStyle(
                               fontSize: 14,
@@ -336,7 +347,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                       Semantics(
                         button: true,
                         toggled: optional,
-                        label: '作为可选动作',
+                        label: AppMessages.of(context).text('作为可选动作'),
                         excludeSemantics: true,
                         child: Pressable(
                           onTap: () => setState(() => optional = !optional),
@@ -346,7 +357,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    LText(
                                       '作为可选动作',
                                       style: TextStyle(
                                         fontSize: 15,
@@ -354,7 +365,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                                         color: p.text,
                                       ),
                                     ),
-                                    Text(
+                                    LText(
                                       '时间不够时可以跳过，不算进今天的目标组数',
                                       style: TextStyle(
                                         fontSize: 12,
@@ -453,7 +464,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
               Expanded(
                 child: Semantics(
                   button: true,
-                  label: '查看$name示范',
+                  label: AppMessages.of(context).text('查看$name示范'),
                   child: Pressable(
                     onTap: () => openGuide(context, name),
                     child: Row(
@@ -473,7 +484,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      LText(
                         '已加入 · ${dayText(a.workoutId)}',
                         textAlign: TextAlign.right,
                         style: TextStyle(
@@ -489,7 +500,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
               else if (inPlan.isNotEmpty)
                 SizedBox(
                   width: 90,
-                  child: Text(
+                  child: LText(
                     '已在计划：${inPlan.map((w) => dayText(w['workoutId'] as String)).toSet().join('、')}',
                     textAlign: TextAlign.right,
                     style: TextStyle(
@@ -501,7 +512,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                 )
               else
                 Semantics(
-                  label: '把$name加入计划',
+                  label: AppMessages.of(context).text('把$name加入计划'),
                   button: true,
                   excludeSemantics: true,
                   child: button(
@@ -534,7 +545,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        LText(
           '${e['name']}',
           style: TextStyle(
             fontSize: 16,
@@ -544,7 +555,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
           ),
         ),
         const SizedBox(height: 2),
-        Text(
+        LText(
           '${prescription({...spec, 'target': spec['sets']})}${jsNumber(spec['weight']) != 0 ? ' · ${fmt(spec['weight'])} kg' : ''}${version ? '　·　${venue == 'gym' ? '健身房版' : '居家版'}' : ''}',
           style: AppText.hint(p),
         ),
@@ -578,7 +589,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
         color: p.fill2,
         borderRadius: BorderRadius.circular(99),
       ),
-      child: Text(
+      child: LText(
         label,
         style: TextStyle(
           fontSize: 12,
@@ -600,7 +611,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: label,
+      label: AppMessages.of(context).text(label),
       selected: segment ? selected : null,
       enabled: action != null,
       child: Pressable(
@@ -629,7 +640,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                     : 16,
               ),
             ),
-            child: Text(
+            child: LText(
               label,
               style: TextStyle(
                 fontSize: filled && !compact ? 17 : 15,

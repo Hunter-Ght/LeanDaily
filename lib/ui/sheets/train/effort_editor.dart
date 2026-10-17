@@ -1,3 +1,5 @@
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/format.dart' show effortWord;
@@ -28,9 +30,9 @@ class _EffortEditorState extends State<EffortEditor> {
       children: [
         Row(
           children: [
-            Text('吃力程度 1–10', style: AppText.hint(p)),
+            LText('吃力程度 1–10', style: AppText.hint(p)),
             const SizedBox(width: 8),
-            Text(
+            LText(
               _value.isEmpty ? '关' : _value,
               style: TextStyle(
                 color: p.text,
@@ -39,7 +41,7 @@ class _EffortEditorState extends State<EffortEditor> {
               ),
             ),
             const Spacer(),
-            Text(
+            LText(
               effortWord(_value),
               style: TextStyle(
                 color: p.secondary,
@@ -62,7 +64,7 @@ class _EffortEditorState extends State<EffortEditor> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             for (final label in ['不记', '轻松', '适中', '吃力', '力竭'])
-              Text(
+              LText(
                 label,
                 style: TextStyle(
                   color:

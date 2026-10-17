@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -477,7 +481,7 @@ class _AppSheetState extends State<AppSheet> {
     bool enabled = true,
   }) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     child: Pressable(
       onTap: enabled ? onTap : null,
       scale: 0.96,
@@ -486,7 +490,7 @@ class _AppSheetState extends State<AppSheet> {
         child: Opacity(
           opacity: enabled ? 1 : 0.4,
           child: FadeSwitcher(
-            child: Text(
+            child: LText(
               label,
               key: ValueKey(label),
               style: TextStyle(
@@ -536,7 +540,7 @@ class _AppSheetState extends State<AppSheet> {
                 ),
                 Expanded(
                   child: FadeSwitcher(
-                    child: Text(
+                    child: LText(
                       widget.title,
                       key: ValueKey(widget.title),
                       textAlign: TextAlign.center,

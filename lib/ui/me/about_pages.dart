@@ -1,3 +1,6 @@
+import '../../l10n/app_messages.dart';
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
@@ -18,7 +21,7 @@ class UpdateDot extends StatelessWidget {
   const UpdateDot({super.key});
   @override
   Widget build(BuildContext context) => Semantics(
-    label: '有未查看的新版本',
+    label: AppMessages.of(context).text('有未查看的新版本'),
     child: Container(
       width: 12,
       height: 12,
@@ -80,11 +83,16 @@ class UpdateDetailsSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('新版本 ${info.version}', style: AppText.sect(context.pal)),
+          LText('新版本 ${info.version}', style: AppText.sect(context.pal)),
           const SizedBox(height: 6),
-          Text('当前版本 $appVersion', style: AppText.hint(context.pal)),
+          LText('当前版本 $appVersion', style: AppText.hint(context.pal)),
           const SizedBox(height: 16),
-          MarkdownLite(info.notes.isEmpty ? '此版本暂无更新说明。' : info.notes),
+          MarkdownLite(
+            info.notes.isEmpty
+                ? AppMessages.of(context).text('此版本暂无更新说明。')
+                : info.notes,
+            localize: false,
+          ),
           const SizedBox(height: 12),
           FormButton(
             '去下载',
@@ -122,14 +130,14 @@ class AboutPageFrame extends StatelessWidget {
               children: [
                 Semantics(
                   button: true,
-                  label: '返回',
+                  label: AppMessages.of(context).text('返回'),
                   child: Pressable(
                     onTap: () => Navigator.of(context).pop(),
                     child: SizedBox(
                       width: 72,
                       height: 48,
                       child: Center(
-                        child: Text(
+                        child: LText(
                           '‹ 返回',
                           style: TextStyle(
                             fontSize: 17,
@@ -141,7 +149,7 @@ class AboutPageFrame extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
+                  child: LText(
                     title,
                     textAlign: TextAlign.center,
                     style: AppText.sect(context.pal),
@@ -178,9 +186,18 @@ class PrivacyPage extends StatefulWidget {
 }
 
 class _PrivacyPageState extends State<PrivacyPage> {
-  late final Future<String> _policy = rootBundle.loadString(
-    'assets/legal/privacy.md',
-  );
+  Future<String>? _policy;
+  String? _language;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = AppMessages.of(context).code;
+    if (_language != language) {
+      _language = language;
+      _policy = rootBundle.loadString('assets/legal/privacy_$language.md');
+    }
+  }
+
   @override
   Widget build(BuildContext context) => AboutPageFrame(
     title: '隐私政策',
@@ -190,8 +207,8 @@ class _PrivacyPageState extends State<PrivacyPage> {
         FutureBuilder<String>(
           future: _policy,
           builder: (context, snapshot) => snapshot.hasData
-              ? MarkdownLite(snapshot.data!)
-              : Text(
+              ? MarkdownLite(snapshot.data!, localize: false)
+              : LText(
                   snapshot.hasError ? '暂时无法读取隐私政策，请重新打开。' : '正在读取…',
                   style: AppText.hint(context.pal),
                 ),
@@ -202,7 +219,12 @@ class _PrivacyPageState extends State<PrivacyPage> {
               children: [
                 GroupRow(
                   label: '在线查看',
-                  onTap: () => openAboutUrl(context, widget.onlineUrl),
+                  onTap: () => openAboutUrl(
+                    context,
+                    widget.onlineUrl == links.privacyPolicyUrl
+                        ? links.localizedPage(widget.onlineUrl, AppMessages.of(context).code)
+                        : widget.onlineUrl,
+                  ),
                 ),
               ],
             ),
@@ -275,7 +297,7 @@ class _OpenSourceLicensesPageState extends State<OpenSourceLicensesPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (final license in snapshot.data!) ...[
-                  Text(
+                  LText(
                     license.packages.join(' · '),
                     style: AppText.sect(context.pal),
                   ),
@@ -283,7 +305,7 @@ class _OpenSourceLicensesPageState extends State<OpenSourceLicensesPage> {
                   for (final paragraph in license.paragraphs)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(
+                      child: LText(
                         paragraph.text,
                         style: TextStyle(
                           fontSize: 15,
@@ -296,7 +318,7 @@ class _OpenSourceLicensesPageState extends State<OpenSourceLicensesPage> {
                 ],
               ],
             )
-          : Text(
+          : LText(
               snapshot.hasError ? '暂时无法读取许可证。' : '正在读取…',
               style: AppText.hint(context.pal),
             ),

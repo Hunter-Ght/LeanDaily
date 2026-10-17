@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -131,7 +135,7 @@ class _StatsPageState extends State<StatsPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(4, 0, 4, 14),
-                    child: Text('进度', style: AppText.navDay(p)),
+                    child: LText('进度', style: AppText.navDay(p)),
                   ),
                   Reveal(
                     visible: review != null,
@@ -168,7 +172,7 @@ class _StatsPageState extends State<StatsPage> {
                     children: current == null
                         ? [
                             const SizedBox(height: 8),
-                            Text(
+                            LText(
                               '记过正式组之后，这里会画出每次的估算极限。',
                               style: AppText.hint(p),
                             ),
@@ -185,7 +189,8 @@ class _StatsPageState extends State<StatsPage> {
                                       child: Semantics(
                                         button: true,
                                         selected: e == current,
-                                        label: '${e['ex']}',
+                                        label: AppMessages.of(context)
+                                            .text('${e['ex']}'),
                                         child: Pressable(
                                           onTap: () => setState(
                                             () => picked = e['ex'] as String,
@@ -205,7 +210,7 @@ class _StatsPageState extends State<StatsPage> {
                                               borderRadius:
                                                   BorderRadius.circular(99),
                                             ),
-                                            child: Text(
+                                            child: LText(
                                               '${e['ex']}',
                                               style: TextStyle(
                                                 fontSize: 15,
@@ -223,7 +228,7 @@ class _StatsPageState extends State<StatsPage> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
+                            LText(
                               bodyweight ? '次数' : '估算极限',
                               style: AppText.hint(p),
                             ),
@@ -232,7 +237,7 @@ class _StatsPageState extends State<StatsPage> {
                                 key: ValueKey(
                                   '${current['ex']}:${last?['iso']}',
                                 ),
-                                child: Text(
+                                child: LText(
                                   bodyweight
                                       ? '${fmt(last!['reps'])} 次'
                                       : '${fmt(last!['e1'])} kg',
@@ -244,7 +249,7 @@ class _StatsPageState extends State<StatsPage> {
                                 ),
                               ),
                             ),
-                            Text(
+                            LText(
                               bodyweight
                                   ? '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 次'
                                   : '最近一次估算极限 · ${shortDate(last['iso'])} · ${fmt(last['weight'])}×${fmt(last['reps'])}',
@@ -256,8 +261,9 @@ class _StatsPageState extends State<StatsPage> {
                                   '${current['ex']}:${last['iso']}',
                                 ),
                                 child: Semantics(
-                                  label:
-                                      '${current['ex']} 的${bodyweight ? '次数' : '估算极限'}',
+                                  label: AppMessages.of(context).text(
+                                    '${current['ex']} 的${bodyweight ? '次数' : '估算极限'}',
+                                  ),
                                   image: true,
                                   child: SizedBox(
                                     height: 150,
@@ -278,7 +284,7 @@ class _StatsPageState extends State<StatsPage> {
                                   jsonRows(chart['list']).first,
                                   jsonRows(chart['list']).last,
                                 ])
-                                  Text(
+                                  LText(
                                     shortDate(e['iso']),
                                     style: AppText.hint(p),
                                   ),
@@ -291,7 +297,7 @@ class _StatsPageState extends State<StatsPage> {
                     title: '个人最佳',
                     children: [
                       if (bests.isEmpty)
-                        Text('还没有正式组。', style: AppText.hint(p)),
+                        LText('还没有正式组。', style: AppText.hint(p)),
                       for (final (index, b) in bests.indexed)
                         Reveal(
                           visible: allBests || index < 5,
@@ -309,7 +315,7 @@ class _StatsPageState extends State<StatsPage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      LText(
                                         '${b['ex']}',
                                         style: TextStyle(
                                           fontSize: 17,
@@ -317,7 +323,7 @@ class _StatsPageState extends State<StatsPage> {
                                           color: p.text,
                                         ),
                                       ),
-                                      Text(
+                                      LText(
                                         jsNumber(b['heavy']) == 0
                                             ? shortDate(b['date'])
                                             : '极限 ${fmt(b['e1'])} · ${shortDate(b['date'])}',
@@ -327,7 +333,7 @@ class _StatsPageState extends State<StatsPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Text(
+                                LText(
                                   jsNumber(b['heavy']) == 0
                                       ? '自重 × ${fmt(b['heavyReps'])} 次'
                                       : '${fmt(b['heavy'])} kg × ${fmt(b['heavyReps'])}',
@@ -394,7 +400,7 @@ class _StatsPageState extends State<StatsPage> {
                   children: [
                     Container(width: 16, height: 3, color: item.$3),
                     const SizedBox(height: 8),
-                    Text(
+                    LText(
                       item.$2,
                       style: TextStyle(
                         fontSize: 24,
@@ -402,7 +408,7 @@ class _StatsPageState extends State<StatsPage> {
                         color: p.text,
                       ),
                     ),
-                    Text(item.$1, style: AppText.hint(p)),
+                    LText(item.$1, style: AppText.hint(p)),
                   ],
                 ),
               ),
@@ -416,12 +422,19 @@ class _StatsPageState extends State<StatsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.$1, style: AppText.hint(p)),
+                    LText(item.$1, style: AppText.hint(p)),
                     SizedBox(
                       height: 84,
                       child: CustomPaint(
                         painter: WeekBars(
-                          days,
+                          [
+                            for (final day in days)
+                              {
+                                ...day,
+                                'label': AppMessages.of(context)
+                                    .text('${day['label']}'),
+                              },
+                          ],
                           item.$2,
                           item.$3,
                           p,

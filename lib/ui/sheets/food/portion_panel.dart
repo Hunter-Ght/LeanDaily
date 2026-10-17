@@ -1,3 +1,4 @@
+import '../../../l10n/localized_text.dart';
 import '../../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -90,7 +91,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          LText(
             '${widget.food['name']}',
             style: TextStyle(
               fontSize: 17,
@@ -117,7 +118,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
           ),
           if (!_recent) ...[
             const SizedBox(height: 8),
-            Text(
+            LText(
               _hint(),
               style: TextStyle(fontSize: 13, color: context.pal.secondary),
             ),
@@ -144,7 +145,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
           ],
           const SizedBox(height: 12),
           if (entry == null)
-            Text(
+            LText(
               '请输入有效份量',
               style: TextStyle(fontSize: 15, color: context.pal.secondary),
             )

@@ -1,0 +1,47 @@
+{
+  "en-US": {
+    "name": "LeanDaily: Workout & Meal Log",
+    "subtitle": "Offline fitness & food journal",
+    "promotionalText": "Plan your training, log meals and follow your progress. No account, no ads. Keep your journal on your phone.",
+    "description": "Build a fitness routine you can keep.\n\nLeanDaily brings your workout plan, food journal and body measurements into one simple app. It is free, open source and works offline for everyday logging.\n\nTRAIN WITH A PLAN\nChoose a home or gym template, adjust your exercises and record sets, reps, weight and effort. Exercise demonstrations are included offline. Use the rest timer and optional local reminders to keep a steady routine.\n\nLOG YOUR MEALS\nSearch the built-in food library or enter portions and nutrition yourself. Add before-and-after meal photos if you want a visual journal. Review calorie and protein totals against your own targets.\n\nFOLLOW YOUR PROGRESS\nTrack weight, waist measurements and weekly training. View your history and adjust your routine as you learn what works for you.\n\nYOUR JOURNAL, ON YOUR DEVICE\nNo account, advertising or tracking SDKs. Core records stay on your phone. Export and restore your own backups. No automatic cloud sync.\n\nOPTIONAL AI PHOTO ESTIMATES\nIf you configure a compatible third-party AI endpoint, model and API key, you can request meal-photo nutrition estimates. The app asks for permission before sending selected photos and notes to that provider. Provider fees and privacy policies apply. You can use manual meal logging without AI.\n\nEnglish, Simplified Chinese and Traditional Chinese are available, with an in-app language selector.\n\nFitness and nutrition estimates are general references, not medical advice. AI estimates may be inaccurate; review them before saving.",
+    "keywords": "workout,training,food,meal,fitness,calorie,protein,weight,waist,offline",
+    "screenshots": [
+      "Your daily training and nutrition",
+      "Log sets, reps and effort",
+      "Record meals your way",
+      "Follow weekly progress",
+      "Keep your journal on your device",
+      "English, 简体中文 and 繁體中文"
+    ]
+  },
+  "zh-Hans": {
+    "name": "薄肌日课 LeanDaily",
+    "subtitle": "本机训练、饮食与身体记录",
+    "promotionalText": "按自己的节奏练，清楚地记下每一组、每一餐。不用注册，没有广告。",
+    "description": "把训练、饮食和身体变化记在一起。\n\n薄肌日课是一款免费、开源的健身记录工具，日常记录无需联网。\n\n训练：选择居家或健身房模板，调整动作，记录组数、次数、重量与余力。动作示范图离线可用，支持休息计时和本地提醒。\n\n饮食：搜索内置食物库，或手动填写份量和营养。可保存吃之前、吃完后的照片，查看热量和蛋白质记录。\n\n进度：记录体重与腰围，回看每周训练和历史记录。\n\n数据：无需账号，没有广告或追踪 SDK。核心记录保存在本机，可自行导出、恢复备份，不自动同步云端。\n\n可选 AI 识别：你需要自行配置兼容的服务商接口、模型和 API Key。App 会先征求同意，再把所选饮食照片和说明发给该服务商。可能产生服务商费用，适用其隐私政策。不使用 AI 也能完整手动记餐。\n\n支持英文、简体中文和繁体中文，可在 App 内切换。\n\n健身和营养估算仅为一般参考，不是医疗建议。AI 可能估算错误，保存前请核对。",
+    "keywords": "健身,训练,饮食,热量,蛋白质,体重,腰围,记录,哑铃,居家,离线",
+    "screenshots": [
+      "看清今天的训练与饮食",
+      "记录每一组与余力",
+      "按自己的方式记餐",
+      "回看每周进度",
+      "把日记保存在本机",
+      "英文、简体、繁体自由切换"
+    ]
+  },
+  "zh-Hant": {
+    "name": "薄肌日課 LeanDaily",
+    "subtitle": "本機訓練、飲食與身體記錄",
+    "promotionalText": "按自己的節奏練，清楚地記下每一組、每一餐。不用註冊，沒有廣告。",
+    "description": "把訓練、飲食和身體變化記在一起。\n\n薄肌日課是一款免費、開源的健身記錄工具，日常記錄無需聯網。\n\n訓練：選擇居家或健身房模板，調整動作，記錄組數、次數、重量與餘力。動作示範圖離線可用，支援休息計時和本地提醒。\n\n飲食：搜尋內建食物庫，或手動填寫份量和營養。可儲存吃之前、吃完後的照片，檢視熱量和蛋白質記錄。\n\n進度：記錄體重與腰圍，回看每週訓練和歷史記錄。\n\n資料：無需賬號，沒有廣告或追蹤 SDK。核心記錄儲存在本機，可自行匯出、恢復備份，不自動同步雲端。\n\n可選 AI 識別：你需要自行配置相容的服務商介面、模型和 API Key。App 會先徵求同意，再把所選飲食照片和說明發給該服務商。可能產生服務商費用，適用其隱私政策。不使用 AI 也能完整手動記餐。\n\n支援英文、簡體中文和繁體中文，可在 App 內切換。\n\n健身和營養估算僅為一般參考，不是醫療建議。AI 可能估算錯誤，儲存前請核對。",
+    "keywords": "健身,訓練,飲食,熱量,蛋白質,體重,腰圍,記錄,啞鈴,居家,離線",
+    "screenshots": [
+      "看清今天的訓練與飲食",
+      "記錄每一組與餘力",
+      "按自己的方式記餐",
+      "回看每週進度",
+      "把日記儲存在本機",
+      "英文、簡體、繁體自由切換"
+    ]
+  }
+}

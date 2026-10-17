@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -155,11 +159,11 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            LText(
               label,
               style: TextStyle(fontSize: 12, height: 1.1, color: p.secondary),
             ),
-            Text(
+            LText(
               '${fmt(value)} / ${fmt(goal)} $unit',
               style: TextStyle(
                 fontSize: 15,
@@ -170,7 +174,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
             ),
             Reveal(
               visible: value > goal && goal > 0,
-              child: Text(
+              child: LText(
                 '超出 ${fmt(value - goal)}',
                 style: TextStyle(fontSize: 12, color: p.secondary),
               ),
@@ -208,7 +212,8 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                 Expanded(
                   child: Semantics(
                     button: true,
-                    label: expanded ? '收起营养条带' : '展开营养条带',
+                    label: AppMessages.of(context)
+                        .text(expanded ? '收起营养条带' : '展开营养条带'),
                     child: Pressable(
                       onTap: () => setState(() => expanded = !expanded),
                       child: ConstrainedBox(
@@ -221,7 +226,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                               visible: app.profile == null,
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(
+                                child: LText(
                                   '已吃 ${fmt(kcal)} 千卡 · 蛋白 ${fmt(protein)} g',
                                   style: TextStyle(
                                     fontSize: 15,
@@ -260,7 +265,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                 ),
                 Semantics(
                   button: true,
-                  label: '添加饮食',
+                  label: AppMessages.of(context).text('添加饮食'),
                   child: Pressable(
                     onTap: () => openQuickFood(context, date: m.iso),
                     child: SizedBox(
@@ -290,7 +295,8 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                   ? const SizedBox.shrink()
                   : Semantics(
                       button: true,
-                      label: '补拍${pending.first['meal']}吃完后的照片',
+                      label: AppMessages.of(context)
+                          .text('补拍${pending.first['meal']}吃完后的照片'),
                       child: Pressable(
                         onTap: () {
                           app.setDate(m.iso);
@@ -306,7 +312,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                           constraints: const BoxConstraints(minHeight: 44),
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: LText(
                               '${pending.first['meal']}还差一张吃完后的照片 ›',
                               style: TextStyle(fontSize: 13, color: p.tint),
                             ),
@@ -327,7 +333,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(
+                          LText(
                             '常吃',
                             style: TextStyle(fontSize: 13, color: p.secondary),
                           ),
@@ -361,7 +367,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                     ),
                     Reveal(
                       visible: app.profile != null && protein < app.proteinGoal,
-                      child: Text(
+                      child: LText(
                         '还差约 ${fmt((app.proteinGoal - protein).round())} g 蛋白',
                         style: TextStyle(fontSize: 13, color: p.secondary),
                       ),
@@ -382,7 +388,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                         ),
                       ],
                     ),
-                    Text(
+                    LText(
                       '营养数据为估算，可按实际份量调整。',
                       style: TextStyle(fontSize: 13, color: p.secondary),
                     ),
@@ -414,7 +420,7 @@ class TodayFoodChip extends StatelessWidget {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: '添加 $name，${fmt(protein)} g 蛋白',
+      label: AppMessages.of(context).text('添加 $name，${fmt(protein)} g 蛋白'),
       child: Pressable(
         onTap: onTap,
         child: Padding(
@@ -430,7 +436,7 @@ class TodayFoodChip extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: Text(
+                  child: LText(
                     name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -438,7 +444,7 @@ class TodayFoodChip extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                Text(
+                LText(
                   '+${fmt(protein)} g 蛋白',
                   style: TextStyle(fontSize: 12, color: p.secondary),
                 ),

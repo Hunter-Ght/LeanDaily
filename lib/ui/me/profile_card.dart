@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -35,7 +39,7 @@ class ProfileCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          LText(
             profile == null ? '你的起点' : routeName(t?['stage']),
             style: TextStyle(
               fontSize: 22,
@@ -44,7 +48,7 @@ class ProfileCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          Text(
+          LText(
             profile == null
                 ? '填几个数字，得到适合你身材的计划和每日目标'
                 : '体脂约 ${fmt((t?['bodyFat'] as Map?)?['value'])}% · 体重 ${fmt(profile['weightKg'])} kg${t?['stage'] == 'youth' ? '' : ' · 目标体脂 ${fmt(t?['goalBodyFat'])}%'}',
@@ -72,7 +76,7 @@ class ProfileCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        LText(
                           item.$2,
                           style: TextStyle(
                             fontSize: 20,
@@ -81,7 +85,7 @@ class ProfileCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(item.$1, style: AppText.hint(p)),
+                        LText(item.$1, style: AppText.hint(p)),
                       ],
                     ),
                   ),
@@ -94,7 +98,7 @@ class ProfileCard extends StatelessWidget {
         ? content
         : Semantics(
             button: true,
-            label: '查看我的资料与目标',
+            label: AppMessages.of(context).text('查看我的资料与目标'),
             child: Pressable(onTap: () => openProfile(context), child: content),
           );
   }

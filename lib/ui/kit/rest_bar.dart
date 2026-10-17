@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 
 import '../../core/haptics.dart';
@@ -105,7 +109,7 @@ class _Bar extends StatelessWidget {
               color: on ? p.tintSoft : p.tintSoft.withValues(alpha: 0),
               borderRadius: BorderRadius.circular(999),
             ),
-            child: Text(
+            child: LText(
               text,
               style: TextStyle(
                 fontSize: 14,
@@ -116,7 +120,7 @@ class _Bar extends StatelessWidget {
           ),
         );
     return Semantics(
-      label: '组间休息 $label',
+      label: AppMessages.of(context).text('组间休息 $label'),
       child: GlassSurface(
         radius: 26,
         child: SizedBox(
@@ -127,7 +131,7 @@ class _Bar extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 64,
-                  child: Text(
+                  child: LText(
                     label,
                     style: TextStyle(
                       fontSize: 22,

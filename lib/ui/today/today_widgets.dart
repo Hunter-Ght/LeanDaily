@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../domain/format.dart';
@@ -26,7 +30,7 @@ class TodayExerciseRow extends StatelessWidget {
       opacity: skipped ? .5 : 1,
       child: Semantics(
         button: true,
-        label: '${exercise['name']}，看示范',
+        label: AppMessages.of(context).text('${exercise['name']}，看示范'),
         child: Pressable(
           onTap: onOpen,
           child: Container(
@@ -44,7 +48,7 @@ class TodayExerciseRow extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      LText(
                         '${exercise['name']}',
                         style: TextStyle(
                           fontSize: 17,
@@ -54,12 +58,12 @@ class TodayExerciseRow extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      LText(
                         '${plan.prescription(exercise)}${jsNumber(exercise['weight']) > 0 ? ' · ${fmt(exercise['weight'])} kg' : ''}',
                         style: TextStyle(fontSize: 14, color: p.secondary),
                       ),
                       if (skipped || jsTruthy(exercise['optional']))
-                        Text(
+                        LText(
                           skipped ? '精简版不练' : '可选',
                           style: TextStyle(fontSize: 12, color: p.secondary),
                         ),
@@ -100,7 +104,7 @@ class TodayButton extends StatelessWidget {
     final p = context.pal;
     return Semantics(
       button: true,
-      label: label,
+      label: AppMessages.of(context).text(label),
       selected: selected,
       child: Pressable(
         onTap: onTap,
@@ -126,7 +130,7 @@ class TodayButton extends StatelessWidget {
           child: Center(
             widthFactor: 1,
             heightFactor: 1,
-            child: Text(
+            child: LText(
               label,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -247,13 +251,13 @@ class _TodayInputState extends State<TodayInput> {
 
   @override
   Widget build(BuildContext context) => Semantics(
-    label: widget.label,
+    label: AppMessages.of(context).text(widget.label),
     textField: true,
     child: Stack(
       children: [
         if (_text.text.isEmpty && widget.placeholder.isNotEmpty)
           IgnorePointer(
-            child: Text(
+            child: LText(
               widget.placeholder,
               maxLines: 1,
               overflow: TextOverflow.clip,

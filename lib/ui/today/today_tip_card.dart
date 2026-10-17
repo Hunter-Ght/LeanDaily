@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
@@ -39,7 +43,7 @@ class TodayTipCard extends StatelessWidget {
       bool bold = false,
       Color? color,
       double height = 1.45,
-    }) => Text(
+    }) => LText(
       s,
       style: TextStyle(
         fontSize: size,
@@ -123,7 +127,7 @@ class TodayNudgeRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  LText(
                     title,
                     style: TextStyle(
                       fontSize: 15,
@@ -132,7 +136,7 @@ class TodayNudgeRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
+                  LText(
                     subtitle,
                     style: TextStyle(fontSize: 13, color: p.secondary),
                   ),
@@ -143,7 +147,7 @@ class TodayNudgeRow extends StatelessWidget {
           const SizedBox(width: 8),
           Semantics(
             button: true,
-            label: actionLabel,
+            label: AppMessages.of(context).text(actionLabel),
             child: Pressable(
               onTap: onAction,
               child: Container(
@@ -158,7 +162,7 @@ class TodayNudgeRow extends StatelessWidget {
                     color: p.tintSoft,
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text(
+                  child: LText(
                     actionLabel,
                     style: TextStyle(
                       fontSize: 14,
@@ -172,7 +176,7 @@ class TodayNudgeRow extends StatelessWidget {
           ),
           Semantics(
             button: true,
-            label: '先不',
+            label: AppMessages.of(context).text('先不'),
             child: Pressable(
               onTap: onDismiss,
               child: SizedBox(

@@ -1,3 +1,5 @@
+import 'package:leandaily/data/ai_consent.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -128,7 +130,9 @@ void main() {
     await tester.pump();
     debugDisableShadows = true;
   });
-  testWidgets('photo selection, per-phase limit, removal and edit', (tester) async {
+  testWidgets('photo selection, per-phase limit, removal and edit', (
+    tester,
+  ) async {
     final h = await Harness.pump(tester, empty: true);
     h.native.pickResult = List.filled(8, jpeg);
     await openMeal(tester);
@@ -173,6 +177,9 @@ void main() {
         seed: (native) {
           native.docs['android-settings'] = jsonEncode({
             'model': 'test',
+            'baseUrl': 'https://example.test',
+          });
+          native.docs[AiConsent.storageKey] = AiConsent.fingerprint({
             'baseUrl': 'https://example.test',
           });
           native.secrets = const Secrets(modelKey: 'test');
@@ -234,6 +241,9 @@ void main() {
           'model': 'test',
           'baseUrl': 'https://example.test',
         });
+        native.docs[AiConsent.storageKey] = AiConsent.fingerprint({
+          'baseUrl': 'https://example.test',
+        });
         native.secrets = const Secrets(modelKey: 'test');
         native.pickResult = [jpeg];
         native.onHttp = (_) => pending.future;
@@ -274,6 +284,9 @@ void main() {
         'model': 'test',
         'baseUrl': 'https://example.test',
       });
+      native.docs[AiConsent.storageKey] = AiConsent.fingerprint({
+        'baseUrl': 'https://example.test',
+      });
       native.secrets = const Secrets(modelKey: 'test');
       native.pickResult = [jpeg];
       native.onHttp = (call) {
@@ -298,121 +311,138 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('before + after photos are sent in order and saved as a comparison', (
-    tester,
-  ) async {
-    Map? body;
-    final h = await aiHarness(
-      tester,
-      onBody: (b) => body = b,
-      reply: {
-        'items': [
-          {'name': '米饭', 'portion': '吃了约150g（剩1/4）', 'kcal': 174, 'protein': 3.4, 'carbs': 38, 'fat': .5},
-        ],
-        'eaten_ratio': .75,
-        'summary': '吃得不多',
-        'confidence': '高',
-      },
-    );
-    await openMeal(tester);
-    await tester.tap(find.text('拍照').first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('相册').last);
-    await tester.pumpAndSettle();
-    expect(find.byType(PhotoImage), findsNWidgets(2));
-    expect(find.text('按吃前吃后对比识别'), findsOneWidget);
-    await analyzeNow(tester, '按吃前吃后对比识别');
-    final content = (body!['messages'] as List).single['content'] as List;
-    expect(
-      content.where((e) => e['type'] == 'text').map((e) => e['text']).take(2),
-      ['第1张（吃之前）', '第2张（吃完后）'],
-    );
-    // 前后对比算出的就是实际摄入，不再出现“吃了多少”。
-    expect(find.text('这一餐你吃了多少？'), findsNothing);
-    await save(tester);
-    final m = (saved(h)['meals'] as Map).values.single as Map;
-    expect(m['photo_phases'], ['before', 'after']);
-    expect(m['basis'], '前后对比');
-    expect(m['kcal'], 174);
-    expect(m['source'], 'AI识别');
-    await tester.pump(const Duration(seconds: 3));
-    h.controller.vision.dispose();
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump();
-    debugDisableShadows = true;
-  });
+  testWidgets(
+    'before + after photos are sent in order and saved as a comparison',
+    (tester) async {
+      Map? body;
+      final h = await aiHarness(
+        tester,
+        onBody: (b) => body = b,
+        reply: {
+          'items': [
+            {
+              'name': '米饭',
+              'portion': '吃了约150g（剩1/4）',
+              'kcal': 174,
+              'protein': 3.4,
+              'carbs': 38,
+              'fat': .5,
+            },
+          ],
+          'eaten_ratio': .75,
+          'summary': '吃得不多',
+          'confidence': '高',
+        },
+      );
+      await openMeal(tester);
+      await tester.tap(find.text('拍照').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('相册').last);
+      await tester.pumpAndSettle();
+      expect(find.byType(PhotoImage), findsNWidgets(2));
+      expect(find.text('按吃前吃后对比识别'), findsOneWidget);
+      await analyzeNow(tester, '按吃前吃后对比识别');
+      final content = (body!['messages'] as List).single['content'] as List;
+      expect(
+        content.where((e) => e['type'] == 'text').map((e) => e['text']).take(2),
+        ['第1张（吃之前）', '第2张（吃完后）'],
+      );
+      // 前后对比算出的就是实际摄入，不再出现“吃了多少”。
+      expect(find.text('这一餐你吃了多少？'), findsNothing);
+      await save(tester);
+      final m = (saved(h)['meals'] as Map).values.single as Map;
+      expect(m['photo_phases'], ['before', 'after']);
+      expect(m['basis'], '前后对比');
+      expect(m['kcal'], 174);
+      expect(m['source'], 'AI识别');
+      await tester.pump(const Duration(seconds: 3));
+      h.controller.vision.dispose();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      debugDisableShadows = true;
+    },
+  );
 
-  testWidgets('only a before photo: estimate whole plate, then scale by what was eaten', (
-    tester,
-  ) async {
-    final h = await aiHarness(
-      tester,
-      reply: {
-        'items': [
-          {'name': '鸡蛋', 'portion': '2个', 'kcal': 140, 'protein': 12, 'carbs': 2, 'fat': 10},
-        ],
-        'summary': '两个蛋',
-        'confidence': '中',
-      },
-    );
-    await openMeal(tester);
-    await tester.tap(find.text('拍照').first);
-    await tester.pumpAndSettle();
-    await analyzeNow(tester, '识别营养');
-    expect(find.text('这一餐你吃了多少？'), findsOneWidget);
-    await tester.tap(find.text('½'));
-    await tester.pumpAndSettle();
-    expect(find.text('70'), findsWidgets);
-    await save(tester);
-    final m = (saved(h)['meals'] as Map).values.single as Map;
-    expect(m['basis'], '仅吃前估算');
-    expect(m['kcal'], 70);
-    expect(m['protein'], 6);
-    expect(m['items'].single['portion'], '2个（吃了约½）');
-    expect(m['source'], 'AI识别');
-    expect(m['photo_phases'], ['before']);
-    await tester.pump(const Duration(seconds: 3));
-    h.controller.vision.dispose();
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump();
-    debugDisableShadows = true;
-  });
+  testWidgets(
+    'only a before photo: estimate whole plate, then scale by what was eaten',
+    (tester) async {
+      final h = await aiHarness(
+        tester,
+        reply: {
+          'items': [
+            {
+              'name': '鸡蛋',
+              'portion': '2个',
+              'kcal': 140,
+              'protein': 12,
+              'carbs': 2,
+              'fat': 10,
+            },
+          ],
+          'summary': '两个蛋',
+          'confidence': '中',
+        },
+      );
+      await openMeal(tester);
+      await tester.tap(find.text('拍照').first);
+      await tester.pumpAndSettle();
+      await analyzeNow(tester, '识别营养');
+      expect(find.text('这一餐你吃了多少？'), findsOneWidget);
+      await tester.tap(find.text('½'));
+      await tester.pumpAndSettle();
+      expect(find.text('70'), findsWidgets);
+      await save(tester);
+      final m = (saved(h)['meals'] as Map).values.single as Map;
+      expect(m['basis'], '仅吃前估算');
+      expect(m['kcal'], 70);
+      expect(m['protein'], 6);
+      expect(m['items'].single['portion'], '2个（吃了约½）');
+      expect(m['source'], 'AI识别');
+      expect(m['photo_phases'], ['before']);
+      await tester.pump(const Duration(seconds: 3));
+      h.controller.vision.dispose();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      debugDisableShadows = true;
+    },
+  );
 
-  testWidgets('我吃光了 settles the meal; otherwise a before-only meal asks for the after photo', (
-    tester,
-  ) async {
-    final h = await Harness.pump(
-      tester,
-      empty: true,
-      size: const Size(393, 2300),
-      seed: (n) => n.docs['fw-profile-v1'] = jsonEncode(fourProfile()),
-    );
-    h.native.pickResult = [jpeg];
-    await openMeal(tester);
-    await tester.tap(find.text('拍照').first);
-    await tester.pumpAndSettle();
-    await save(tester);
-    var m = (saved(h)['meals'] as Map).values.single as Map;
-    expect(needsAfterPhoto(m), true);
-    // 首页营养条带给出一条轻提示，点它直接回到这餐补拍。
-    expect(find.text('早餐还差一张吃完后的照片 ›'), findsOneWidget);
-    await tester.tap(find.text('早餐还差一张吃完后的照片 ›'));
-    await tester.pumpAndSettle();
-    expect(find.text('编辑饮食'), findsOneWidget);
-    await tester.tap(find.text('我吃光了'));
-    await tester.pumpAndSettle();
-    expect(find.text('已标记吃光了，不用补拍'), findsOneWidget);
-    await save(tester);
-    m = (saved(h)['meals'] as Map).values.single as Map;
-    expect(m['after_skipped'], true);
-    expect(needsAfterPhoto(m), false);
-    expect(find.text('早餐还差一张吃完后的照片 ›'), findsNothing);
-    await tester.pump(const Duration(seconds: 3));
-    h.controller.vision.dispose();
-    await tester.pumpWidget(const SizedBox());
-    await tester.pump();
-    debugDisableShadows = true;
-  });
+  testWidgets(
+    '我吃光了 settles the meal; otherwise a before-only meal asks for the after photo',
+    (tester) async {
+      final h = await Harness.pump(
+        tester,
+        empty: true,
+        size: const Size(393, 2300),
+        seed: (n) => n.docs['fw-profile-v1'] = jsonEncode(fourProfile()),
+      );
+      h.native.pickResult = [jpeg];
+      await openMeal(tester);
+      await tester.tap(find.text('拍照').first);
+      await tester.pumpAndSettle();
+      await save(tester);
+      var m = (saved(h)['meals'] as Map).values.single as Map;
+      expect(needsAfterPhoto(m), true);
+      // 首页营养条带给出一条轻提示，点它直接回到这餐补拍。
+      expect(find.text('早餐还差一张吃完后的照片 ›'), findsOneWidget);
+      await tester.tap(find.text('早餐还差一张吃完后的照片 ›'));
+      await tester.pumpAndSettle();
+      expect(find.text('编辑饮食'), findsOneWidget);
+      await tester.tap(find.text('我吃光了'));
+      await tester.pumpAndSettle();
+      expect(find.text('已标记吃光了，不用补拍'), findsOneWidget);
+      await save(tester);
+      m = (saved(h)['meals'] as Map).values.single as Map;
+      expect(m['after_skipped'], true);
+      expect(needsAfterPhoto(m), false);
+      expect(find.text('早餐还差一张吃完后的照片 ›'), findsNothing);
+      await tester.pump(const Duration(seconds: 3));
+      h.controller.vision.dispose();
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+      debugDisableShadows = true;
+    },
+  );
 
   testWidgets('keyboard keeps food fields and save reachable', (tester) async {
     final h = await Harness.pump(tester, empty: true);

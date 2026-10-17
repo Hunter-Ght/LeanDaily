@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 
@@ -26,7 +30,7 @@ const _targets = {
   'glutes': 6,
   'calves': 4,
 };
-const _labels = ['恢复', '训练量', '久未练'];
+const _labels = ['恢复状态', '训练量', '久未练'];
 const _notes = [
   '颜色越深，肌肉还没缓过来；已恢复的显示为灰色。',
   '近 7 天各肌肉的有效组数，颜色越深越接近每周所需的量。',
@@ -179,7 +183,7 @@ class _MuscleCardState extends State<MuscleCard> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('肌肉状态', style: AppText.h2(p)),
+            LText('肌肉状态', style: AppText.h2(p)),
             const SizedBox(height: 12.0),
             _segments(p),
             const SizedBox(height: 12.0),
@@ -215,7 +219,7 @@ class _MuscleCardState extends State<MuscleCard> {
                                   },
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
+                                LText(
                                   back ? '背面' : '正面',
                                   style: AppText.calLabel(p)
                                       .copyWith(letterSpacing: 0),
@@ -231,7 +235,7 @@ class _MuscleCardState extends State<MuscleCard> {
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: Row(
                         children: [
-                          Text(
+                          LText(
                             switch (mode) {
                               MuscleMode.fatigue => '已恢复',
                               MuscleMode.volume => '偏少',
@@ -251,7 +255,7 @@ class _MuscleCardState extends State<MuscleCard> {
                             ),
                           ),
                           const SizedBox(width: 8.0),
-                          Text(
+                          LText(
                             switch (mode) {
                               MuscleMode.fatigue => '很累',
                               MuscleMode.volume => '够量',
@@ -273,13 +277,13 @@ class _MuscleCardState extends State<MuscleCard> {
                       textBaseline: TextBaseline.alphabetic,
                       children: [
                         Expanded(
-                          child: Text(
+                          child: LText(
                             current['name'] as String,
                             style: AppText.sect(p),
                           ),
                         ),
                         const SizedBox(width: 12.0),
-                        Text(
+                        LText(
                           value(current),
                           style: AppText.navWeek(p)
                               .copyWith(color: hue, letterSpacing: 0),
@@ -288,7 +292,7 @@ class _MuscleCardState extends State<MuscleCard> {
                     ),
                     if (detail(current).isNotEmpty) ...[
                       const SizedBox(height: 4.0),
-                      Text(
+                      LText(
                         detail(current),
                         maxLines: _showDetail ? null : 2,
                         overflow: _showDetail ? null : TextOverflow.ellipsis,
@@ -334,7 +338,7 @@ class _MuscleCardState extends State<MuscleCard> {
                       child: SizedBox(
                         height: Metrics.touchTarget,
                         child: Center(
-                          child: Text(
+                          child: LText(
                             _showAll ? '收起列表' : '查看全部 ${rows.length} 块肌肉',
                             style: AppText.hint(p).copyWith(color: p.tint),
                           ),
@@ -372,12 +376,12 @@ class _MuscleCardState extends State<MuscleCard> {
               },
             ),
             const SizedBox(height: 12.0),
-            Text(_notes[mode.index], style: AppText.hint(p)),
+            LText(_notes[mode.index], style: AppText.hint(p)),
             Pressable(
               onTap: () => setState(() => _showDetail = !_showDetail),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
+                child: LText(
                   _showDetail ? '收起说明' : '估算依据',
                   style: AppText.hint(p).copyWith(color: p.tint),
                 ),
@@ -386,7 +390,7 @@ class _MuscleCardState extends State<MuscleCard> {
             Reveal(
               visible: _showDetail,
               child: _showDetail
-                  ? Text(
+                  ? LText(
                       '${status['setCount'] == 0 ? '记过正式组之后，这里就会亮起来。' : ''}根据你记的组数、次数和余力估算，仅供参考，恢复快慢因人而异。',
                       style: AppText.hint(p),
                     )
@@ -410,7 +414,8 @@ class _MuscleCardState extends State<MuscleCard> {
   Widget _openButton(String id, String label, AppPalette p, {Color? hue}) =>
       Semantics(
         button: true,
-        label: label == '练它' ? '练${MUSCLE[id]!['name']}的动作' : label,
+        label: AppMessages.of(context)
+            .text(label == '练它' ? '练${MUSCLE[id]!['name']}的动作' : label),
         child: Pressable(
           onTap: () => widget.onOpen?.call(id),
           child: ConstrainedBox(
@@ -429,12 +434,14 @@ class _MuscleCardState extends State<MuscleCard> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: label == '练它' ? 13 : 16,
-                        fontWeight: FontWeight.w600,
-                        color: hue ?? p.tint,
+                    Flexible(
+                      child: LText(
+                        label,
+                        style: TextStyle(
+                          fontSize: label == '练它' ? 13 : 16,
+                          fontWeight: FontWeight.w600,
+                          color: hue ?? p.tint,
+                        ),
                       ),
                     ),
                     if (label != '练它') ...[
@@ -472,7 +479,7 @@ class _MuscleCardState extends State<MuscleCard> {
     final fraction = lv > 0 ? pct.clamp(4.0 / 100.0, 1.0) : 0.0;
     return Semantics(
       button: true,
-      label: m['name'] as String,
+      label: AppMessages.of(context).text(m['name'] as String),
       selected: m['id'] == selected,
       child: Pressable(
         key: ValueKey('muscle-row-${m['id']}'),
@@ -492,12 +499,12 @@ class _MuscleCardState extends State<MuscleCard> {
             children: [
               SizedBox(
                 width: nameStyle.fontSize! * 5.5,
-                child: Text(m['name'] as String, style: nameStyle),
+                child: LText(m['name'] as String, style: nameStyle),
               ),
               const SizedBox(width: 10.0),
               Expanded(
                 child: mode == MuscleMode.detrain
-                    ? Text(
+                    ? LText(
                         m['daysSince'] == null ? '' : '距上次',
                         textAlign: TextAlign.right,
                         style: AppText.hint(p),
@@ -527,7 +534,7 @@ class _MuscleCardState extends State<MuscleCard> {
               const SizedBox(width: 10.0),
               SizedBox(
                 width: valueStyle.fontSize! * 6.4,
-                child: Text(
+                child: LText(
                   value(m),
                   style: valueStyle,
                   textAlign: TextAlign.right,

@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
@@ -27,7 +31,7 @@ class GroupHeader extends StatelessWidget {
       GroupScope.flush(context) ? 0 : 16,
       6,
     ),
-    child: Text(
+    child: LText(
       text,
       style: TextStyle(
         fontSize: 13,
@@ -49,7 +53,7 @@ class GroupFooter extends StatelessWidget {
       GroupScope.flush(context) ? 0 : 16,
       0,
     ),
-    child: Text(
+    child: LText(
       text,
       style: TextStyle(
         fontSize: 13,
@@ -153,14 +157,14 @@ class GroupRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              LText(
                 label,
                 style: TextStyle(fontSize: 17, height: 1.25, color: color),
               ),
               if (sub != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 2),
-                  child: Text(
+                  child: LText(
                     sub!,
                     style: TextStyle(
                       fontSize: 13,
@@ -180,7 +184,7 @@ class GroupRow extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.only(left: 12),
-              child: Text(
+              child: LText(
                 value!,
                 maxLines: 2,
                 textAlign: TextAlign.right,
@@ -210,7 +214,13 @@ class GroupRow extends StatelessWidget {
         : Semantics(
             button: true,
             excludeSemantics: true,
-            label: semanticLabel ?? [label, ?value, ?sub].join(' '),
+            label: semanticLabel != null
+                ? AppMessages.of(context).text(semanticLabel!)
+                : [
+                    label,
+                    ?value,
+                    ?sub,
+                  ].map(AppMessages.of(context).text).join(' '),
             child: Pressable(scale: 0.99, onTap: onTap, child: padded),
           );
     if (trailing == null) return tappable;

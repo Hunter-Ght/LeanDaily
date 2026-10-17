@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -109,13 +113,13 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                LText(
                   '${date.month}月${date.day}日',
                   key: const ValueKey('record-date'),
                   style: AppText.navDay(context.pal),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                LText(
                   '周${weekLabels[date.weekday - 1]}${iso == context.app.today ? ' · 今天' : ''}',
                   style: AppText.navWeek(context.pal)
                       .copyWith(height: AppText.body(context.pal).height),
@@ -126,7 +130,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
           if (iso != context.app.today)
             Semantics(
               button: true,
-              label: '回到今天',
+              label: AppMessages.of(context).text('回到今天'),
               child: Pressable(
                 onTap: () => pick(context.app.today, collapse: true),
                 child: Container(
@@ -137,7 +141,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                     color: context.pal.tintSoft,
                     borderRadius: BorderRadius.circular(Metrics.calRow),
                   ),
-                  child: Text(
+                  child: LText(
                     '回到今天',
                     style: AppText.navWeek(context.pal)
                         .copyWith(color: context.pal.tint),
@@ -170,7 +174,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     );
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 6, Metrics.pagePad, 0),
-      child: Text(
+      child: LText(
         '本周 $count/${fmt(target)} 天${meals.isNotEmpty ? ' · ${kcal.round()} 千卡 · 蛋白 ${fmt(protein)} g' : ''}',
         style: AppText.weekGoal(context.pal)
             .copyWith(height: AppText.body(context.pal).height),

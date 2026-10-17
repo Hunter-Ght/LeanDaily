@@ -4,9 +4,9 @@ import 'package:flutter/foundation.dart';
 const String updateCheckUrl =
     'https://api.github.com/repos/Hunter-Ght/LeanDaily/releases/latest';
 
-/// 在线隐私政策，随 main 分支中的 PRIVACY.md 更新。
+/// Public, login-free legal/support pages.
 const String privacyPolicyUrl =
-    'https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md';
+    'https://hunter-ght.github.io/LeanDaily/privacy/';
 
 /// 项目主页。
 const String repoUrl = 'https://github.com/Hunter-Ght/LeanDaily';
@@ -19,3 +19,8 @@ const String iosUpdateCheckUrl = String.fromEnvironment(
 String get platformUpdateCheckUrl => defaultTargetPlatform == TargetPlatform.iOS
     ? iosUpdateCheckUrl
     : updateCheckUrl;
+
+const String supportUrl = 'https://hunter-ght.github.io/LeanDaily/support/';
+
+String localizedPage(String base, String language) =>
+    language == 'en' ? base : '$base$language/';

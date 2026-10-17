@@ -1,3 +1,6 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
 import '../../core/haptics.dart';
 
 import 'dart:async';
@@ -431,7 +434,7 @@ class _TrainingModeState extends State<TrainingMode>
     double size = 15,
     bool bold = false,
     bool secondary = false,
-  }) => Text(
+  }) => LText(
     s,
     style: TextStyle(
       fontSize: size,
@@ -448,7 +451,7 @@ class _TrainingModeState extends State<TrainingMode>
     bool secondary = false,
   }) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     selected: selected,
     child: Pressable(
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
@@ -465,7 +468,7 @@ class _TrainingModeState extends State<TrainingMode>
               : null,
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Text(
+        child: LText(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -560,7 +563,7 @@ class _TrainingModeState extends State<TrainingMode>
             if (_flag == 'pain')
               Padding(
                 padding: const EdgeInsets.only(top: 6),
-                child: Text(
+                child: LText(
                   '疼痛请停止，先休息并确认身体情况。',
                   style: TextStyle(color: context.pal.err, fontSize: 13),
                 ),
@@ -572,7 +575,7 @@ class _TrainingModeState extends State<TrainingMode>
   );
   Widget headerButton(String label, String icon, VoidCallback tap) => Semantics(
     button: true,
-    label: label,
+    label: AppMessages.of(context).text(label),
     child: Pressable(
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
       onTap: tap,
@@ -827,8 +830,9 @@ class _TrainingModeState extends State<TrainingMode>
             )
               Semantics(
                 button: i < sets.length,
-                label:
-                    '第 ${i + 1} 组${i < sets.length ? ' 完成${setFeedbackLabel(sets[i]).isNotEmpty ? '，有感受记录' : '，编辑'}' : ''}',
+                label: AppMessages.of(context).text(
+                  '第 ${i + 1} 组${i < sets.length ? ' 完成${setFeedbackLabel(sets[i]).isNotEmpty ? '，有感受记录' : '，编辑'}' : ''}',
+                ),
                 child: Pressable(
                   scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
                   onTap: i < sets.length
@@ -856,7 +860,7 @@ class _TrainingModeState extends State<TrainingMode>
                         ),
                         child: i < sets.length
                             ? AppIcon('check', size: 20, color: p.onTint)
-                            : Text(
+                            : LText(
                                 '${i + 1}',
                                 style: TextStyle(
                                   color: p.secondary,
@@ -975,7 +979,7 @@ class _TrainingModeState extends State<TrainingMode>
                             ),
                             if (!_summary)
                               Expanded(
-                                child: Text(
+                                child: LText(
                                   '${workoutTitle('${m.workout['name'] ?? '训练'}')} · ${_warm
                                       ? '热身'
                                       : _summary
@@ -1262,7 +1266,8 @@ class _TrainingNumberState extends State<TrainingNumber> {
         },
         child: Semantics(
           button: true,
-          label: '${minus ? '减少' : '增加'}${widget.label}',
+          label: AppMessages.of(context)
+              .text('${minus ? '减少' : '增加'}${widget.label}'),
           child: Pressable(
             scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
             onTap: () => step(d),
@@ -1279,7 +1284,7 @@ class _TrainingNumberState extends State<TrainingNumber> {
               height: 52,
               decoration: BoxDecoration(color: p.fill2, shape: BoxShape.circle),
               child: Center(
-                child: Text(
+                child: LText(
                   minus ? '−' : '+',
                   style: TextStyle(color: p.text, fontSize: 28),
                 ),
@@ -1303,7 +1308,7 @@ class _TrainingNumberState extends State<TrainingNumber> {
             child: Column(
               children: [
                 Semantics(
-                  label: widget.label,
+                  label: AppMessages.of(context).text(widget.label),
                   textField: true,
                   child: EditableText(
                     controller: _text,
@@ -1330,7 +1335,7 @@ class _TrainingNumberState extends State<TrainingNumber> {
                     },
                   ),
                 ),
-                Text(
+                LText(
                   widget.label == '重量' ? 'kg' : widget.label,
                   style: TextStyle(color: p.secondary, fontSize: 13),
                 ),
@@ -1384,7 +1389,7 @@ class _TrainingRestState extends State<TrainingRest> {
         .clamp(0, 99999);
     Widget action(String label, VoidCallback tap) => Semantics(
       button: true,
-      label: label,
+      label: AppMessages.of(context).text(label),
       child: Pressable(
         scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
         onTap: tap,
@@ -1392,7 +1397,7 @@ class _TrainingRestState extends State<TrainingRest> {
           height: 44,
           width: 76,
           child: Center(
-            child: Text(
+            child: LText(
               label,
               style: TextStyle(color: context.pal.tint, fontSize: 13),
             ),
@@ -1407,7 +1412,7 @@ class _TrainingRestState extends State<TrainingRest> {
         child: Row(
           children: [
             Expanded(
-              child: Text(
+              child: LText(
                 '休息 ${left ~/ 60}:${(left % 60).toString().padLeft(2, '0')}',
                 style: TextStyle(
                   color: context.pal.text,

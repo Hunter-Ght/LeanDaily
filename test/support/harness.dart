@@ -35,6 +35,7 @@ class Harness {
     WidgetTester tester, {
     Size size = const Size(393, 850),
     bool dark = false,
+    Locale? locale = const Locale('zh', 'CN'),
     int tab = 0,
     String at = refTime,
     bool empty = false,
@@ -79,6 +80,7 @@ class Harness {
     seed?.call(native);
     final controller = AppController(
       native: native,
+      localeOverride: locale,
       clock: () => now,
       updateUrl: updateUrl,
     );

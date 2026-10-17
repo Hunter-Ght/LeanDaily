@@ -23,7 +23,7 @@ const constUpdate = UpdateInfo(
 void main() {
   setUpAll(() async {
     await Harness.setUpAll();
-    await rootBundle.loadString('assets/legal/privacy.md');
+    await rootBundle.loadString('assets/legal/privacy_zh_Hans.md');
   });
   Future<void> tapVisible(WidgetTester tester, String label) async {
     await tester.ensureVisible(find.text(label).last);
@@ -80,19 +80,22 @@ void main() {
       await tapVisible(tester, '隐私政策');
       expect(find.byType(PrivacyPage), findsOneWidget);
       await tester.runAsync(() async {
-        await rootBundle.loadString('assets/legal/privacy.md');
+        await rootBundle.loadString('assets/legal/privacy_zh_Hans.md');
       });
       await tester.pumpAndSettle();
-      expect(find.text('一句话版本'), findsOneWidget);
+      expect(find.text('1. 本机数据'), findsOneWidget);
       expect(find.text('在线查看'), findsOneWidget);
       await tapVisible(tester, '在线查看');
-      expect(h.native.opened.last, links.privacyPolicyUrl);
+      expect(
+        h.native.opened.last,
+        links.localizedPage(links.privacyPolicyUrl, 'zh_Hans'),
+      );
       expect(find.byType(GroupCard), findsWidgets);
       await h.shot(tester, 'r-privacy-$mode');
-      final table = find.text('权限');
+      final table = find.text('4. 权限');
       await tester.ensureVisible(table);
       await tester.pumpAndSettle();
-      expect(find.text('网络'), findsOneWidget);
+      expect(find.textContaining('只有你选择拍摄饮食照片时'), findsOneWidget);
       await h.shot(tester, 'r-privacy-table-$mode');
       await tapVisible(tester, '‹ 返回');
       await tapVisible(tester, '开源与致谢');
@@ -134,7 +137,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     await tester.runAsync(() async {
-      await rootBundle.loadString('assets/legal/privacy.md');
+      await rootBundle.loadString('assets/legal/privacy_zh_Hans.md');
     });
     await tester.pumpAndSettle();
     await tapVisible(tester, '在线查看');
@@ -148,13 +151,15 @@ void main() {
     );
     expect(
       richTexts.any(
-        (t) => t.data == null && t.textSpan!.toPlainText().contains('不需要注册账号'),
+        (t) => t.data == null && t.textSpan!.toPlainText().contains('无需注册'),
       ),
       isTrue,
     );
     expect(
       richTexts.any(
-        (t) => t.textSpan?.toPlainText().contains('allowBackup=false') == true,
+        (t) =>
+            t.textSpan?.toPlainText().contains('不参与 Android / iCloud 自动备份') ==
+            true,
       ),
       isTrue,
     );

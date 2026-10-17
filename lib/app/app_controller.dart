@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
 
 import '../core/native.dart';
+import '../l10n/app_messages.dart';
 import '../config/app_info.dart';
 import '../config/app_links.dart' as links;
 import '../data/update_check.dart';
@@ -148,6 +149,7 @@ class AppController extends ChangeNotifier {
     required this.native,
     String? deviceTz,
     Clock? clock,
+    this.localeOverride,
     String? updateUrl,
   }) : updateUrl = updateUrl ?? links.platformUpdateCheckUrl,
        clock = clock ?? DateTime.now,
@@ -166,10 +168,38 @@ class AppController extends ChangeNotifier {
       toast.show('休息好了');
       haptics.restEnded();
     });
+    reminders.translate = (text) => messages.text(text);
+    vision.outputLanguage = () => messages.code;
     repo.addListener(_onRecords);
     _notificationSubscription = native.notificationTaps.listen(
       _onNotificationTap,
     );
+  }
+
+  final Locale? localeOverride;
+  String languagePreference = 'system';
+  Locale get resolvedLocale =>
+      localeOverride ??
+      AppMessages.resolve(
+        languagePreference,
+        WidgetsBinding.instance.platformDispatcher.locales,
+      );
+  AppMessages get messages => AppMessages(resolvedLocale);
+  Future<void> setLanguage(String value) async {
+    if (!const ['system', 'en', 'zh_Hans', 'zh_Hant'].contains(value)) return;
+    await native.put('leandaily-language-v1', value);
+    languagePreference = value;
+    notifyListeners();
+    await refreshLocalizedReminders();
+  }
+
+  Future<void> refreshLocalizedReminders() async {
+    await _refreshReminders();
+    try {
+      await reminders.scheduleRest(rest.untilMs);
+    } on Object {
+      // A denied notification permission must not undo a saved language choice.
+    }
   }
 
   final String updateUrl;
@@ -387,6 +417,16 @@ class AppController extends ChangeNotifier {
       }
     }
     try {
+      await AppMessages.initialize();
+      final storedLanguage = (await native.all())['leandaily-language-v1'];
+      if (const [
+        'system',
+        'en',
+        'zh_Hans',
+        'zh_Hant',
+      ].contains(storedLanguage)) {
+        languagePreference = storedLanguage!;
+      }
       Diagnostics.at('读取记录');
       await repo.load();
       Diagnostics.at('读取设置');
@@ -1099,8 +1139,8 @@ class AppController extends ChangeNotifier {
         for (final n in list)
           PlanNote(
             id: n['id'] as int,
-            title: '${n['title']}',
-            body: '${n['body']}',
+            title: messages.text('${n['title']}'),
+            body: messages.text('${n['body']}'),
             at: n['at'] as DateTime,
           ),
       ]);

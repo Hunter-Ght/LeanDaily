@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
@@ -22,7 +24,10 @@ class BodyRouteCard extends StatelessWidget {
         ? app.targets
         : {
             ...app.targets!,
-            'bodyFat': {...app.targets!['bodyFat'] as Map, 'value': base['bodyFatPct']},
+            'bodyFat': {
+              ...app.targets!['bodyFat'] as Map,
+              'value': base['bodyFatPct'],
+            },
           };
     final trend = bodyTrend(app.bodyEntries, profile, targets, app.today);
     final mean = trend['latestMean'] as double?;
@@ -35,7 +40,7 @@ class BodyRouteCard extends StatelessWidget {
       children: [
         const SizedBox(height: 10),
         if (mean == null) ...[
-          Text(
+          LText(
             '记录体重，看见趋势',
             style: TextStyle(
               fontSize: 22,
@@ -46,7 +51,7 @@ class BodyRouteCard extends StatelessWidget {
           const SizedBox(height: 14),
           FormButton('记体重', filled: true, onTap: () => openBodyLog(context)),
         ] else ...[
-          Text(
+          LText(
             '${mean.toStringAsFixed(1)} kg',
             style: TextStyle(
               fontSize: 44,
@@ -54,7 +59,7 @@ class BodyRouteCard extends StatelessWidget {
               color: p.text,
             ),
           ),
-          Text(
+          LText(
             change == null
                 ? (trend['count'] == 1 ? '再记几天就能看到趋势' : '7 日平均体重 · 继续记录，看见本周变化')
                 : '本周 ${change == 0 ? '持平' : '${change > 0 ? '↑' : '↓'}${change.abs().toStringAsFixed(1)} 公斤'} · 7 日平均',
@@ -71,8 +76,14 @@ class BodyRouteCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(_shortDate(series.first['date'] as String), style: AppText.hint(p)),
-                Text(_shortDate(series.last['date'] as String), style: AppText.hint(p)),
+                LText(
+                  _shortDate(series.first['date'] as String),
+                  style: AppText.hint(p),
+                ),
+                LText(
+                  _shortDate(series.last['date'] as String),
+                  style: AppText.hint(p),
+                ),
               ],
             ),
           ],
@@ -81,15 +92,15 @@ class BodyRouteCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                LText(
                   '起点 ${(targets!['bodyFat']['value'] as num).toStringAsFixed(1)}%',
                   style: AppText.hint(p),
                 ),
-                Text(
+                LText(
                   '估算 ${estimate!.toStringAsFixed(1)}%',
                   style: AppText.hint(p),
                 ),
-                Text(
+                LText(
                   '目标 ${app.targets!['goalBodyFat']}%',
                   style: AppText.hint(p),
                 ),
@@ -113,11 +124,11 @@ class BodyRouteCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Text('体脂根据体重变化估算，仅供参考。', style: AppText.hint(p)),
+            LText('体脂根据体重变化估算，仅供参考。', style: AppText.hint(p)),
           ],
           if (stage == 'bulk' || stage == 'youth') ...[
             const SizedBox(height: 12),
-            Text(
+            LText(
               stage == 'youth'
                   ? '成长期 · 吃够睡够，保持训练习惯'
                   : '每周增重参考 0.2–0.4 kg${change == null
@@ -171,7 +182,9 @@ class BodyTrendLine extends CustomPainter {
         path.lineTo(x, y);
       }
       // 点多时只画线；点少（刚开始记录）才画圆点，避免折线变成一串珠子。
-      if (weights.length <= 14) canvas.drawCircle(Offset(x, y), 3, Paint()..color = color);
+      if (weights.length <= 14) {
+        canvas.drawCircle(Offset(x, y), 3, Paint()..color = color);
+      }
     }
     canvas.drawPath(
       path,
@@ -191,4 +204,5 @@ class BodyTrendLine extends CustomPainter {
       oldDelegate.fill != fill;
 }
 
-String _shortDate(String iso) => '${int.parse(iso.substring(5, 7))}月${int.parse(iso.substring(8, 10))}日';
+String _shortDate(String iso) =>
+    '${int.parse(iso.substring(5, 7))}月${int.parse(iso.substring(8, 10))}日';

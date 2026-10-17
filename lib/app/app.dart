@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import '../l10n/app_messages.dart';
 
 import '../core/native.dart';
 import '../core/haptics.dart';
@@ -61,57 +64,70 @@ class _LeanDailyAppState extends State<LeanDailyApp>
   }
 
   @override
+  void didChangeLocales(List<Locale>? locales) {
+    if (mounted) setState(() {});
+    widget.controller.refreshLocalizedReminders();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    return WidgetsApp(
-      color:
-          MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark ||
-              (MediaQuery.maybePlatformBrightnessOf(context) == null &&
-                  WidgetsBinding
-                          .instance
-                          .platformDispatcher
-                          .platformBrightness ==
-                      Brightness.dark)
-          ? AppPalette.dark.bg
-          : AppPalette.light.bg,
-      debugShowCheckedModeBanner: false,
-      locale: const Locale('zh', 'CN'),
-      supportedLocales: const [Locale('zh', 'CN')],
-      localizationsDelegates: const [DefaultWidgetsLocalizations.delegate],
-      pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
-        settings: settings,
-        pageBuilder: (context, _, _) => builder(context),
-        transitionDuration: Duration.zero,
-        reverseTransitionDuration: Duration.zero,
-      ),
-      builder: (context, navigator) {
-        final dark =
-            MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-        final palette = dark ? AppPalette.dark : AppPalette.light;
-        return PaletteScope(
-          palette: palette,
-          child: AppScope(
-            controller: controller,
-            child: HapticScope(
-              haptics: controller.haptics,
-              child: DefaultTextStyle(
-                style: AppText.body(palette).copyWith(
-                  fontFamily: widget.fontFamily,
-                  fontFamilyFallback: widget.fontFamilyFallback,
-                ),
-                child: ColoredBox(
-                  color: palette.bg,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [?navigator, const ToastHost()],
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => WidgetsApp(
+        color:
+            MediaQuery.maybePlatformBrightnessOf(context) == Brightness.dark ||
+                (MediaQuery.maybePlatformBrightnessOf(context) == null &&
+                    WidgetsBinding
+                            .instance
+                            .platformDispatcher
+                            .platformBrightness ==
+                        Brightness.dark)
+            ? AppPalette.dark.bg
+            : AppPalette.light.bg,
+        debugShowCheckedModeBanner: false,
+        locale: controller.resolvedLocale,
+        supportedLocales: AppMessages.locales,
+        localizationsDelegates: const [
+          AppMessages.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+          settings: settings,
+          pageBuilder: (context, _, _) => builder(context),
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
+        ),
+        builder: (context, navigator) {
+          final dark =
+              MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+          final palette = dark ? AppPalette.dark : AppPalette.light;
+          return PaletteScope(
+            palette: palette,
+            child: AppScope(
+              controller: controller,
+              child: HapticScope(
+                haptics: controller.haptics,
+                child: DefaultTextStyle(
+                  style: AppText.body(palette).copyWith(
+                    fontFamily: widget.fontFamily,
+                    fontFamilyFallback: widget.fontFamilyFallback,
+                  ),
+                  child: ColoredBox(
+                    color: palette.bg,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [?navigator, const ToastHost()],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-      home: const AppShell(),
+          );
+        },
+        home: const AppShell(),
+      ),
     );
   }
 }

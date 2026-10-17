@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
@@ -5,7 +7,8 @@ import 'grouped.dart';
 
 /// 离线法律文本需要的少量 Markdown；不执行 HTML，也不加载外部资源。
 class MarkdownLite extends StatelessWidget {
-  const MarkdownLite(this.source, {super.key});
+  const MarkdownLite(this.source, {super.key, this.localize = true});
+  final bool localize;
   final String source;
 
   List<InlineSpan> _inline(BuildContext context, String value) {
@@ -35,8 +38,9 @@ class MarkdownLite extends StatelessWidget {
   }
 
   Widget _text(BuildContext context, String text, {int heading = 0}) =>
-      Text.rich(
+      LText.rich(
         TextSpan(children: _inline(context, text)),
+        localize: localize,
         style: TextStyle(
           color: context.pal.text,
           fontSize: heading == 1

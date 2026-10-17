@@ -4,6 +4,7 @@ import '../core/native.dart';
 import '../core/sha256.dart';
 import '../domain/records.dart';
 import 'prefs.dart';
+import 'ai_consent.dart';
 import 'repository.dart';
 import 'state_doc.dart';
 
@@ -265,6 +266,7 @@ Future<void> restoreBackup(
   for (final m in (state['meals'] as Map).values) {
     m['photo_ids'] = (m['photo_ids'] as List).map((p) => paths[p]!).toList();
   }
+  await AiConsent(native).revoke();
   await native.put('android-settings', jsonEncode(defaults));
   await native.secretsSet(const Secrets());
   await repository.replaceState(state);

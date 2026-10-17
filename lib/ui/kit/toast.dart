@@ -1,3 +1,5 @@
+import '../../l10n/localized_text.dart';
+
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
@@ -104,7 +106,7 @@ class _Pill extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Flexible(
-                    child: Text(
+                    child: LText(
                       text,
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -123,7 +125,7 @@ class _Pill extends StatelessWidget {
                       child: SizedBox(
                         height: 44,
                         child: Center(
-                          child: Text(
+                          child: LText(
                             actionLabel ?? '撤销',
                             style: TextStyle(
                               fontSize: 15,

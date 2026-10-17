@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../app/app_controller.dart';
@@ -154,7 +158,8 @@ class _PlanLibrarySectionState extends State<PlanLibrarySection> {
                             onTap: _busy ? null : () => _run(() => _use(item)),
                             trailing: Semantics(
                               button: true,
-                              label: '${item['name']}的更多操作',
+                              label: AppMessages.of(context)
+                                  .text('${item['name']}的更多操作'),
                               excludeSemantics: true,
                               child: Pressable(
                                 onTap: _busy
@@ -164,7 +169,7 @@ class _PlanLibrarySectionState extends State<PlanLibrarySection> {
                                   width: 44,
                                   height: 44,
                                   child: Center(
-                                    child: Text(
+                                    child: LText(
                                       '…',
                                       style: TextStyle(
                                         fontSize: 24,
@@ -198,7 +203,7 @@ class _PlanLibrarySectionState extends State<PlanLibrarySection> {
                                       ),
                                     ),
                                     const SizedBox(width: 12),
-                                    Text(
+                                    LText(
                                       '约 ${insight['minutes']} 分钟',
                                       style: TextStyle(
                                         fontSize: 12,

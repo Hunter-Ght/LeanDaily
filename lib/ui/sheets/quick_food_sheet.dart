@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -198,7 +202,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
 
   Widget _heading(String text) => Padding(
     padding: const EdgeInsets.only(top: 20, bottom: 8),
-    child: Text(
+    child: LText(
       text,
       style: TextStyle(
         fontSize: 17,
@@ -218,12 +222,12 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              LText(
                 '${food['name']}',
                 style: TextStyle(fontSize: 16, color: context.pal.text),
               ),
               const SizedBox(height: 4),
-              Text(
+              LText(
                 '${food['recent'] == true ? '每份' : '每 100g'} 约 ${fmt(food['kcal100'])} 千卡 / 蛋白 ${fmt(food['protein100'])} g',
                 style: TextStyle(fontSize: 12, color: context.pal.secondary),
               ),
@@ -231,7 +235,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
           ),
         ),
         Semantics(
-          label: '选择 ${food['name']}',
+          label: AppMessages.of(context).text('选择 ${food['name']}'),
           button: true,
           child: FoodButton('＋', () => _portion(food)),
         ),
@@ -255,7 +259,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
           Expanded(
             child: Semantics(
               button: true,
-              label: label,
+              label: AppMessages.of(context).text(label),
               selected: label == value,
               child: Pressable(
                 onTap: () => change(label),
@@ -266,7 +270,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                     color: label == value ? context.pal.segOn : null,
                     borderRadius: BorderRadius.circular(9),
                   ),
-                  child: Text(
+                  child: LText(
                     label,
                     style: TextStyle(
                       fontSize: 15,
@@ -325,7 +329,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               children: [
                 Row(
                   children: [
-                    Text(
+                    LText(
                       '已选 ${_items.length}',
                       style: TextStyle(
                         fontSize: 13,
@@ -408,16 +412,37 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                         _heading('食物库加载中…')
                       else if (_query.trim().isNotEmpty) ...[
                         _heading('搜索结果'),
-                        if (foods.search(_query).isEmpty)
-                          Text(
+                        if ((_query.trim().isEmpty
+                                ? foods.search(_query)
+                                : {
+                                    for (final food in [
+                                      ...foods.search(_query),
+                                      ...AppMessages.of(context)
+                                          .foodSearch(foods.items, _query),
+                                    ])
+                                      food['name']: food,
+                                  }.values.toList())
+                            .isEmpty)
+                          LText(
                             '没有找到，试试手动输入',
                             style: TextStyle(color: context.pal.secondary),
                           ),
-                        for (final food in foods.search(_query)) _food(food),
+                        for (final food
+                            in (_query.trim().isEmpty
+                                ? foods.search(_query)
+                                : {
+                                    for (final food in [
+                                      ...foods.search(_query),
+                                      ...AppMessages.of(context)
+                                          .foodSearch(foods.items, _query),
+                                    ])
+                                      food['name']: food,
+                                  }.values.toList()))
+                          _food(food),
                       ] else ...[
                         _heading('常吃'),
                         if (frequent.isEmpty)
-                          Text(
+                          LText(
                             '最近 14 天还没有记录常吃的食物',
                             style: TextStyle(
                               fontSize: 13,
@@ -492,7 +517,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               if (!_configured)
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
-                  child: Text(
+                  child: LText(
                     '在 我的 → 高级 里配置大模型后可用',
                     style: TextStyle(
                       fontSize: 13,

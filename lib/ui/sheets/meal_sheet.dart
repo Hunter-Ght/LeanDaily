@@ -1,3 +1,7 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
+import '../../l10n/localized_text.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
@@ -9,6 +13,7 @@ import '../kit/transitions.dart';
 
 import '../../app/app_controller.dart';
 import '../../core/native.dart';
+import '../../data/ai_consent.dart';
 import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
@@ -56,6 +61,7 @@ class _MealSheetState extends State<MealSheet> {
       _loading = true,
       _saving = false,
       _finished = false;
+  bool _consenting = false;
   bool _analyzing = false,
       _hasAnalysis = false,
       _pickingPhotos = false,
@@ -282,7 +288,7 @@ class _MealSheetState extends State<MealSheet> {
   }
 
   Future<void> _analyze() async {
-    if (_analyzing) return;
+    if (_analyzing || _consenting) return;
     if (_pickingPhotos) {
       _app.toast.show('照片还在上传');
       return;
@@ -295,6 +301,34 @@ class _MealSheetState extends State<MealSheet> {
       _app.toast.show('先拍一张吃之前的，才能算吃了多少');
       return;
     }
+    _consenting = true;
+    final consent = AiConsent(_app.native);
+    final consentSettings = Map<String, dynamic>.from(_app.settings.value);
+    try {
+      if (!await consent.granted(consentSettings)) {
+        if (!mounted) return;
+        final accepted = await showConfirm(
+          context,
+          title: '发送照片给 AI 服务？',
+          message:
+              '接收地址：${AiConsent.destination(consentSettings)}\n将发送你选择的饮食照片、餐次和补充说明，用于估算营养；不会发送身体资料或训练记录。该服务可能按自己的隐私政策保存数据，也可能收费。只在你同意并点击识别后发送；更换接口地址或协议会重新询问。',
+          confirm: '同意并识别',
+        );
+        if (!accepted || !mounted) {
+          _consenting = false;
+          return;
+        }
+        // Bind the permission to the settings shown in the dialog. If settings
+        // change meanwhile, Vision rejects the new destination independently.
+        await consent.grant(consentSettings);
+      }
+    } catch (e) {
+      if (mounted) _app.toast.show(AppController.message(e));
+      _consenting = false;
+      return;
+    }
+    _consenting = false;
+    if (!mounted || _analyzing) return;
     final generation = ++_generation;
     setState(() {
       _analyzing = true;
@@ -497,7 +531,7 @@ class _MealSheetState extends State<MealSheet> {
 
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
-    child: Text(text, style: AppText.hint(context.pal)),
+    child: LText(text, style: AppText.hint(context.pal)),
   );
   @override
   Widget build(BuildContext context) {
@@ -541,7 +575,7 @@ class _MealSheetState extends State<MealSheet> {
                                   color: p.err.withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(22),
                                 ),
-                                child: Text(
+                                child: LText(
                                   _error,
                                   style: TextStyle(color: p.err, fontSize: 15),
                                 ),
@@ -567,7 +601,9 @@ class _MealSheetState extends State<MealSheet> {
                         ),
                         child: Row(
                           children: [
-                            Expanded(child: Text('时间', style: AppText.body(p))),
+                            Expanded(
+                              child: LText('时间', style: AppText.body(p)),
+                            ),
                             SizedBox(
                               width: 100,
                               child: SheetInput(
@@ -596,7 +632,7 @@ class _MealSheetState extends State<MealSheet> {
                       if (!_enabled)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
-                          child: Text(
+                          child: LText(
                             '还没配置识别。可以自己填营养，或只保存照片，记成待分析。',
                             style: AppText.hint(p),
                           ),
@@ -631,18 +667,18 @@ class _MealSheetState extends State<MealSheet> {
                                         Row(
                                           children: [
                                             Expanded(
-                                              child: Text(
+                                              child: LText(
                                                 _phase,
                                                 style: AppText.body(p),
                                               ),
                                             ),
-                                            Text(
+                                            LText(
                                               '已等 $_waited 秒',
                                               style: AppText.hint(p),
                                             ),
                                           ],
                                         ),
-                                        Text(
+                                        LText(
                                           _think.isEmpty
                                               ? '识别过程会显示在这里'
                                               : '思考过程',
@@ -655,8 +691,9 @@ class _MealSheetState extends State<MealSheet> {
                                             ),
                                             child: SingleChildScrollView(
                                               reverse: true,
-                                              child: Text(
+                                              child: LText(
                                                 _think,
+                                                localize: false,
                                                 style: AppText.hint(p),
                                               ),
                                             ),
@@ -681,11 +718,12 @@ class _MealSheetState extends State<MealSheet> {
                                   color: p.fill2,
                                   borderRadius: BorderRadius.circular(22),
                                 ),
-                                child: Text(
+                                child: LText(
                                   [
                                     _summary,
                                     if (_warning.isNotEmpty) '提示：$_warning',
                                   ].join('\n'),
+                                  localize: false,
                                   style: TextStyle(color: p.text, fontSize: 15),
                                 ),
                               )
@@ -757,13 +795,13 @@ class _MealSheetState extends State<MealSheet> {
         children: [
           Row(
             children: [
-              Text(
+              LText(
                 title,
                 style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: LText(
                   skipped ? '已标记吃光了，不用补拍' : hint,
                   style: AppText.hint(p),
                 ),
@@ -771,7 +809,7 @@ class _MealSheetState extends State<MealSheet> {
               if (skip && _count(phase) == 0)
                 Semantics(
                   button: true,
-                  label: '我吃光了',
+                  label: AppMessages.of(context).text('我吃光了'),
                   selected: _afterSkipped,
                   child: Pressable(
                     haptic: true,
@@ -784,7 +822,7 @@ class _MealSheetState extends State<MealSheet> {
                         color: _afterSkipped ? p.tint : p.fill2,
                         borderRadius: BorderRadius.circular(18),
                       ),
-                      child: Text(
+                      child: LText(
                         '我吃光了',
                         style: TextStyle(
                           fontSize: 14,
@@ -824,7 +862,7 @@ class _MealSheetState extends State<MealSheet> {
                               top: -6,
                               child: Semantics(
                                 button: true,
-                                label: '移除照片',
+                                label: AppMessages.of(context).text('移除照片'),
                                 child: Pressable(
                                   onTap: () => _removePhoto(path),
                                   child: SizedBox(
@@ -839,7 +877,7 @@ class _MealSheetState extends State<MealSheet> {
                                           shape: BoxShape.circle,
                                         ),
                                         alignment: Alignment.center,
-                                        child: Text(
+                                        child: LText(
                                           '×',
                                           style: TextStyle(
                                             color: p.onTint,
@@ -878,7 +916,7 @@ class _MealSheetState extends State<MealSheet> {
     final where = phase == records.photoPhaseBefore ? '开吃前' : '吃完后';
     return Semantics(
       button: true,
-      label: '$label（$where）',
+      label: AppMessages.of(context).text('$label（$where）'),
       child: Pressable(
         onTap: _pickingPhotos || full ? null : () => _pickPhotos(source, phase),
         child: Opacity(
@@ -895,7 +933,7 @@ class _MealSheetState extends State<MealSheet> {
               children: [
                 AppIcon(icon, size: 22, color: p.secondary),
                 const SizedBox(height: 6),
-                Text(
+                LText(
                   label,
                   style: TextStyle(
                     color: p.text,
@@ -924,12 +962,12 @@ class _MealSheetState extends State<MealSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          LText(
             '这一餐你吃了多少？',
             style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 2),
-          Text('按全部吃完估算，没吃完在这里改', style: AppText.hint(p)),
+          LText('按全部吃完估算，没吃完在这里改', style: AppText.hint(p)),
           const SizedBox(height: 10),
           SheetSegments(
             labels: _ratios.keys.toList(),
@@ -959,7 +997,7 @@ class _MealSheetState extends State<MealSheet> {
             Expanded(
               child: Column(
                 children: [
-                  Text(
+                  LText(
                     _total(keys[i], i == 0),
                     style: TextStyle(
                       color: p.text,
@@ -981,7 +1019,7 @@ class _MealSheetState extends State<MealSheet> {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(labels[i], style: AppText.hint(p)),
+                  LText(labels[i], style: AppText.hint(p)),
                 ],
               ),
             ),
@@ -1015,7 +1053,7 @@ class _MealSheetState extends State<MealSheet> {
       ),
       child: Row(
         children: [
-          Text(label, style: TextStyle(color: p.secondary, fontSize: 15)),
+          LText(label, style: TextStyle(color: p.secondary, fontSize: 15)),
           const SizedBox(width: 8),
           Expanded(
             child: SheetInput(
@@ -1056,7 +1094,7 @@ class _MealSheetState extends State<MealSheet> {
                 ),
                 Semantics(
                   button: true,
-                  label: '删除这个食物',
+                  label: AppMessages.of(context).text('删除这个食物'),
                   child: Pressable(
                     onTap: () => _change(() => _items.remove(it)),
                     child: SizedBox(
