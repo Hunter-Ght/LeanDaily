@@ -21,3 +21,14 @@ Verified on Flutter 3.47.6 / Dart 3.13.5 and Xcode 26.3.
 - Physical iPhone camera, locked-screen delivery and large-text acceptance; signing, TestFlight and App Store review.
 - Final App Store Connect privacy questionnaire, age rating, screenshots and legal/contact acceptance. `store_metadata.json` is draft copy, not submitted metadata.
 - Android debug APK build succeeded (`build/app/outputs/flutter-apk/app-debug.apk`). Required SDK/NDK/CMake components were installed by the existing Android tooling. No physical Android device acceptance was performed in this pass.
+
+## Latest AI provider preparation — 2026-10-17
+
+This supersedes the earlier Flutter count for the current implementation:
+
+- Full Flutter suite: **1,166 passed**. New coverage checks exact provider identity, no send before consent, revision-1 consent invalidation, `store=false` for both official OpenAI protocols, unchanged custom-provider request schema, draft-only preset changes, and English/Simplified/Traditional disclosure cancellation. A 320×568 screen with 1.7× text can scroll policy content while both decision buttons remain usable.
+- `dart analyze`: no issues; design-token lint and all five Python release-tool tests passed.
+- Unsigned iOS Release and Android debug APK builds passed. All three packaged legal policies match source bytes on both platforms; the iOS collected-data privacy manifest matches its source.
+- Policy text now distinguishes optional official OpenAI usage from arbitrary custom services, explains response storage versus safety retention, and includes current OpenAI data-control links. Privacy manifest conservatively covers optional AI flows; final App Store Connect answers still require publisher acceptance.
+- No real API request was sent: API account permissions, billing, model access and live output quality are **not verified**. No production credentials are embedded.
+- User confirmed an organization Apple Developer team and App Manager role. Certificates/Identifiers/Profiles access, signed archive, live TestFlight acceptance and store submission remain unverified. Public publisher identity and support email are explicitly deferred by the user. See `APP_STORE_NEXT_STEPS.md` for the exact handoff.

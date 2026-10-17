@@ -2273,5 +2273,17 @@
   "1 {p0}（{p1} g）": "1 {p0} ({p1} g)",
   "1 份（上次份量）": "1 portion (last logged amount)",
   "{p0} · {p1} 千卡 / 蛋白 {p2} g": "{p0} · {p1} kcal / {p2} g protein",
-  "1 勺（30 g）": "1 scoop (30 g)"
+  "1 勺（30 g）": "1 scoop (30 g)",
+  "使用范例": "Use example",
+  "填入 OpenAI 范例": "Fill OpenAI example",
+  "接口、模型和协议将替换为范例，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。": "This replaces the endpoint, model and protocol and clears the key in this form. Changes apply only after Save. It does not request recognition or grant consent.",
+  "接收方为 OpenAI。API 数据默认不用于训练，除非你向服务商主动选择共享。App 请求不保存响应，但滥用监测日志通常仍可保留最多 30 天，法律和安全例外可能更久；这不等于零留存。适用 OpenAI 的条款、数据政策和独立计费。": "The recipient is OpenAI. API data is not used for training by default unless you opt in with the provider. The app requests no response storage, but abuse monitoring logs may normally be retained for up to 30 days, or longer for legal or safety reasons. This is not zero retention. OpenAI terms, data policies and separate API billing apply.",
+  "接收方是你填写的自定义服务，不能仅凭模型名认定它是 OpenAI。其保存、训练、删除和计费规则需由你向服务商核实。不要提交儿童照片或其他敏感个人信息。": "The recipient is your custom service. A model name does not establish that it is OpenAI. Verify its retention, training, deletion and billing policies with the provider. Do not send children's photos or other sensitive personal information.",
+  "接收服务：{p0}\n接收地址：{p1}\n将发送你选择的饮食照片、餐次和补充说明，用于估算营养；不会发送身体资料或训练记录。该服务可能按自己的隐私政策保存数据，也可能收费。只在你同意并点击识别后发送；更换接口地址或协议会重新询问。\n\n{p2}": "Recipient: {p0}\nEndpoint: {p1}\nYour selected meal photos, meal name and note will be sent to estimate nutrition. Your body profile and workout records are not sent. The service may retain data under its policy and may charge fees. Sending starts only after you agree and request recognition. A changed endpoint or protocol requires consent again.\n\n{p2}",
+  "替换为 OpenAI 范例？": "Replace with the OpenAI example?",
+  "查看 OpenAI 数据处理说明": "Read OpenAI data controls",
+  "自定义 AI 服务（非官方 OpenAI 范例）": "Custom AI service (not the official OpenAI example)",
+  "范例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。": "Example: OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses. Use your own API key and available API credit. A ChatGPT subscription does not include API usage. Filling the example does not activate recognition or contact the service.",
+  "Responses（OpenAI / 兼容接口）": "Responses (OpenAI / compatible APIs)",
+  "AI 照片授权": "AI photo consent"
 }

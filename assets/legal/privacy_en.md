@@ -14,6 +14,14 @@ Recognition is off until you configure your own HTTPS endpoint, model and API ke
 
 Your chosen AI provider receives this data and standard network information such as your IP address. It may retain or use the data under its own terms, privacy policy and billing rules. We do not control that provider or promise deletion from its systems. Review its policy before agreeing; avoid photos or notes containing sensitive personal information. A changed endpoint or protocol requires new permission. You can revoke permission in Backup & advanced. Revoking prevents future requests; it does not delete information already received by the provider. Recognition is optional: you can record meals manually.
 
+### OpenAI example and provider identification
+
+The optional OpenAI example uses https://api.openai.com/v1, gpt-4.1-mini and the Responses protocol. It does not include a key or enable recognition. You need your own eligible API account, key and API billing; a ChatGPT subscription does not include API usage. Model access and service availability depend on your provider account and region. LeanDaily is independent and is not endorsed by OpenAI.
+
+Only the exact HTTPS api.openai.com /v1 endpoint is identified as OpenAI in the app. Other endpoints are custom services, even if their model names include OpenAI or GPT. Verify their privacy, retention, training, deletion and billing terms before sending data.
+
+For the official OpenAI endpoint, the app sets store=false for Responses and Chat Completions requests. This disables response storage for later retrieval; it is not Zero Data Retention. OpenAI states API data is not used for model training by default unless you opt in. Abuse monitoring logs may contain inputs and outputs and are normally retained for up to 30 days, with legal and safety exceptions; flagged image content may be retained for safety review. Account-specific controls may differ. Read the current data controls: https://developers.openai.com/api/docs/guides/your-data . Delete requests and account settings must be handled with OpenAI; revoking app consent cannot erase provider-held copies. Do not upload children's photos, faces, medical documents or other sensitive information. We cannot certify the practices of arbitrary custom providers.
+
 ## 3. Other network activity
 
 On Android, optional update checks request release information from GitHub. No health records, advertising identifiers or usage events are included. GitHub receives ordinary network information such as IP addresses under its own policy. You can disable automatic checks in Me. iOS uses its installation channel for updates unless a separate update service is configured. Opening public privacy, support or project links uses your browser and the hosting site's policies. Exercise demonstration images ship with the app and are available offline.

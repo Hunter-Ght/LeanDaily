@@ -14,6 +14,7 @@ import '../kit/transitions.dart';
 import '../../app/app_controller.dart';
 import '../../core/native.dart';
 import '../../data/ai_consent.dart';
+import 'ai_consent_sheet.dart';
 import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
@@ -307,14 +308,11 @@ class _MealSheetState extends State<MealSheet> {
     try {
       if (!await consent.granted(consentSettings)) {
         if (!mounted) return;
-        final accepted = await showConfirm(
+        final accepted = await showAppSheet<bool>(
           context,
-          title: '发送照片给 AI 服务？',
-          message:
-              '接收地址：${AiConsent.destination(consentSettings)}\n将发送你选择的饮食照片、餐次和补充说明，用于估算营养；不会发送身体资料或训练记录。该服务可能按自己的隐私政策保存数据，也可能收费。只在你同意并点击识别后发送；更换接口地址或协议会重新询问。',
-          confirm: '同意并识别',
+          (_) => AiConsentSheet(settings: consentSettings),
         );
-        if (!accepted || !mounted) {
+        if (accepted != true || !mounted) {
           _consenting = false;
           return;
         }

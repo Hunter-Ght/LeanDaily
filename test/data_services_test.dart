@@ -26,6 +26,10 @@ void main() {
       n.onHttp = (c) {
         final b = jsonDecode(c.body!);
         expect(c.headers['Authorization'], 'Bearer key');
+        expect(
+          b.containsKey('store'),
+          false,
+        ); // Do not change custom-provider protocols.
         final content = (b[protocol == 'chat' ? 'messages' : 'input'] as List)
             .single['content'];
         expect(content.length, 2);

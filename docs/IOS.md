@@ -49,7 +49,7 @@ flutter build ipa --release
 - 默认不读取 Android GitHub Releases，不提供 APK 链接。
 - 本机开发版重新构建安装；TestFlight 版通过 TestFlight 更新。
 - 有独立 iOS 更新 JSON 服务时可用 `--dart-define=LEANDAILY_IOS_UPDATE_URL=https://...` 配置；清单字段沿用 `version/build/url/notes`，下载目标只接受 `apps.apple.com` 或 `testflight.apple.com` 的 HTTPS 链接。
-- 相机说明位于 Info.plist；PrivacyInfo.xcprivacy 声明不追踪、不收集。可选识别会按用户操作把照片送往其配置的服务，应在提交商店时按实际发行行为核对隐私信息。
+- 相机说明位于 Info.plist；PrivacyInfo.xcprivacy 声明不追踪，并覆盖可选 AI 的照片、补充说明、膳食营养及服务商账号关联。普通本机资料和训练记录不上传。正式商店问卷仍需按实际发行行为核对，不能填写“完全不收集”。
 - 不加入 Android 的精确闹钟、开机广播或 iOS 后台常驻权限。锁屏提醒由系统通知投递，专注模式等可能影响显示。
 
 ## 自动验证

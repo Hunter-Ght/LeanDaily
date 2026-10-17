@@ -28,3 +28,9 @@ If a provider demonstrably discards a request after real-time processing, Apple'
 If publishing on Play, complete the current Data safety form for the same actual flows, including optional data sharing/collection and provider retention. Recheck the policy when adding any SDK, account, backend, analytics or fixed AI provider.
 
 Primary requirements: [Apple review guidelines](https://developer.apple.com/app-store/review/guidelines/), [App privacy details](https://developer.apple.com/app-store/app-privacy-details/).
+
+## OpenAI example added on 2026-10-17
+
+The optional example fills https://api.openai.com/v1, gpt-4.1-mini and Responses as a draft. It contains no key and does not activate, consent or send. Official OpenAI requests explicitly use store=false in both supported protocols. This does not remove abuse-monitoring retention or legal/safety exceptions, and no live API acceptance was performed without an owner-provided test account. Disclosure revision 2 invalidates previous grants. Exact HTTPS host/path validation prevents custom proxies from being identified as OpenAI.
+
+The app privacy manifest now declares the optional AI photo, text, meal nutrition, provider account linkage and ordinary network metadata flows conservatively as linked, for app functionality and not tracking. It no longer states an unconditional empty collected-data list. App Store Connect answers still need owner acceptance and provider-account verification; see [Chinese submission walkthrough](APP_STORE_NEXT_STEPS.md). Ordinary local-only body profiles/workouts are not part of recognition requests.

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import '../core/native.dart';
+import '../config/ai_provider.dart';
 import '../domain/records.dart';
 import 'http_request.dart' show request;
 import 'prefs.dart';
@@ -152,6 +153,7 @@ class Vision {
     final body = responses
         ? {
             'model': s['model'],
+            if (isOfficialOpenAi(s)) 'store': false,
             'input': [
               {'role': 'user', 'content': content},
             ],
@@ -160,6 +162,7 @@ class Vision {
           }
         : {
             'model': s['model'],
+            if (isOfficialOpenAi(s)) 'store': false,
             'messages': [
               {'role': 'user', 'content': content},
             ],

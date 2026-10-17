@@ -1,4 +1,5 @@
 import '../../l10n/localized_text.dart';
+import '../../config/ai_provider.dart';
 import '../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -80,6 +81,25 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     app.refreshRemindersNow();
     app.toast.show('设置已保存');
   });
+  Future<void> _useOpenAiExample() async {
+    if (_busy || !_ready) return;
+    final changedDestination = !isOfficialOpenAi(_cfg!);
+    if (changedDestination &&
+        ('${_cfg!['baseUrl']}'.isNotEmpty || _modelKey.isNotEmpty)) {
+      final accepted = await showConfirm(
+        context,
+        title: '替换为 OpenAI 范例？',
+        message: '接口、模型和协议将替换为范例，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。',
+        confirm: '使用范例',
+      );
+      if (!accepted || !mounted) return;
+    }
+    setState(() {
+      _cfg!.addAll(openAiExample);
+      if (changedDestination) _modelKey = '';
+    });
+  }
+
   Future<void> _restore() => _run(() async {
     final app = context.app;
     final b = await backup.chooseBackup(app.native);
@@ -198,13 +218,17 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           const GroupHeader('拍照识别（大模型）'),
           GroupCard(
             children: [
-              _field('接口地址', 'baseUrl', placeholder: 'https://你的服务地址/v1'),
-              _field('模型名称', 'model', placeholder: '服务商支持图片输入的模型'),
+              GroupRow(
+                label: '填入 OpenAI 范例',
+                onTap: _busy || !_ready ? null : _useOpenAiExample,
+              ),
+              _field('接口地址', 'baseUrl', placeholder: openAiExample['baseUrl']),
+              _field('模型名称', 'model', placeholder: openAiExample['model']),
               _field('API Key', 'modelKey', secret: true),
               GroupRow(
                 label: '接口协议',
                 value: _cfg!['protocol'] == 'responses'
-                    ? 'Responses（含 xAI）'
+                    ? 'Responses（OpenAI / 兼容接口）'
                     : 'Chat Completions（兼容接口）',
                 onTap: () async {
                   final picked = await showActionMenu(
@@ -212,7 +236,10 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
                     title: '接口协议',
                     actions: const [
                       MenuAction(id: 'chat', label: 'Chat Completions（兼容接口）'),
-                      MenuAction(id: 'responses', label: 'Responses（含 xAI）'),
+                      MenuAction(
+                        id: 'responses',
+                        label: 'Responses（OpenAI / 兼容接口）',
+                      ),
                     ],
                   );
                   if (picked != null && mounted) {
@@ -225,6 +252,20 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           const GroupFooter(
             '地址填写到 /v1，不包含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。',
           ),
+          const GroupFooter(
+            '范例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。',
+          ),
+          GroupFooter(aiProviderDisclosure(_cfg!)),
+          if (isOfficialOpenAi(_cfg!))
+            GroupCard(
+              children: [
+                GroupRow(
+                  label: '查看 OpenAI 数据处理说明',
+                  onTap: () =>
+                      _run(() => app.native.openUrl(openAiDataPolicyUrl)),
+                ),
+              ],
+            ),
           GroupCard(
             children: [
               _button('撤回 AI 照片授权', () async {
