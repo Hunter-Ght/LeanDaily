@@ -1,3 +1,5 @@
+import '../../core/haptics.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 
@@ -143,14 +145,19 @@ class NumberField extends StatelessWidget {
   final double step;
   final FocusNode? focusNode;
   final ValueChanged<String> onChanged;
-  void bump(double delta) {
+  void bump(BuildContext context, double delta) {
     if (value.trim().isEmpty) {
-      if (delta > 0) onChanged('$step'.replaceFirst(RegExp(r'\.0$'), ''));
+      if (delta > 0) {
+        HapticScope.of(context)?.selection();
+        onChanged('$step'.replaceFirst(RegExp(r'\.0$'), ''));
+      }
       return;
     }
     final n = double.tryParse(value);
     if (n == null || !n.isFinite) return;
     final next = ((n + delta) * 1000).round() / 1000;
+    if ((next < 0 ? 0 : next) == n) return;
+    HapticScope.of(context)?.selection();
     onChanged(
       (next < 0 ? 0 : next).toString().replaceFirst(RegExp(r'\.0$'), ''),
     );
@@ -163,7 +170,7 @@ class NumberField extends StatelessWidget {
       button: true,
       label: semantics,
       child: Pressable(
-        onTap: () => bump(delta),
+        onTap: () => bump(context, delta),
         child: Container(
           width: 44,
           height: 44,

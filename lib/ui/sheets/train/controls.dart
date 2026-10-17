@@ -1,3 +1,5 @@
+import '../../../core/haptics.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../theme/theme.dart';
@@ -127,6 +129,8 @@ class EffortControl extends StatelessWidget {
     void update(double x, double width) {
       var n = ((x / width).clamp(0, 1) * 20).round() / 2;
       if (n > 0 && n < 1) n = 1;
+      if (n == value) return;
+      if (n.floor() != value.floor()) HapticScope.of(context)?.tick();
       onChanged(n);
     }
 
@@ -136,8 +140,18 @@ class EffortControl extends StatelessWidget {
       increasedValue: '${(value + 0.5).clamp(1, 10)}',
       decreasedValue: '${value <= 1 ? 0 : value - 0.5}',
       slider: true,
-      onIncrease: () => onChanged((value + 0.5).clamp(1, 10)),
-      onDecrease: () => onChanged(value <= 1 ? 0 : value - 0.5),
+      onIncrease: () {
+        if (value < 10) {
+          HapticScope.of(context)?.tick();
+          onChanged((value + 0.5).clamp(1, 10));
+        }
+      },
+      onDecrease: () {
+        if (value > 0) {
+          HapticScope.of(context)?.tick();
+          onChanged(value <= 1 ? 0 : value - 0.5);
+        }
+      },
       child: LayoutBuilder(
         builder: (context, box) => GestureDetector(
           behavior: HitTestBehavior.opaque,

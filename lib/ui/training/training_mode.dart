@@ -1,3 +1,5 @@
+import '../../core/haptics.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
 
@@ -27,6 +29,7 @@ import 'training_logic.dart';
 Future<void> openTrainingMode(
   BuildContext context, {
   String? exerciseId,
+  bool haptic = false,
 }) async {
   final app = context.app;
   final model = TodayModel(app);
@@ -35,6 +38,7 @@ Future<void> openTrainingMode(
   await app.native.keepAwake(true);
   try {
     if (!context.mounted) return;
+    if (haptic) app.haptics.saved();
     await Navigator.of(context, rootNavigator: true).push<void>(
       PageRouteBuilder<void>(
         pageBuilder: (_, _, _) => TrainingMode(exerciseId: exerciseId),
@@ -90,10 +94,12 @@ class _TrainingModeState extends State<TrainingMode>
   late final PageController _pages;
   final _dragOrigin = ValueNotifier<double>(0);
   int _page = 0;
+  bool _manualPage = false;
   bool get hasWarm => jsonMap(model.workout['warmup']).isNotEmpty;
   int get warmOffset => hasWarm ? 1 : 0;
 
   void goPage(int page) {
+    _manualPage = false;
     FocusScope.of(context).unfocus();
     _advance?.cancel();
     _dragOrigin.value = page * _pages.position.viewportDimension;
@@ -109,6 +115,7 @@ class _TrainingModeState extends State<TrainingMode>
   }
 
   void pageChanged(int page) {
+    if (_manualPage && page != _page) _app!.haptics.selection();
     _advance?.cancel();
     setState(() {
       clearFeedback();
@@ -229,6 +236,30 @@ class _TrainingModeState extends State<TrainingMode>
     }
   }
 
+  Future<void> finishWarmup(TodayModel m) async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    try {
+      if (!jsTruthy(model.state['warm'])) {
+        await _app!.patchDayState(m.iso, {'warm': true});
+        if (!mounted) return;
+        _app!.haptics.saved();
+      }
+      if (!mounted) return;
+      final items = model.items;
+      goPage(
+        warmOffset +
+            items
+                .indexWhere((i) => i['ex']['id'] == _id)
+                .clamp(0, math.max(0, items.length - 1)),
+      );
+    } on Object catch (error) {
+      if (mounted) _app!.toast.show(AppController.message(error));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   Future<void> save(
     Map<String, dynamic> e,
     List<Map<String, dynamic>> sets,
@@ -297,7 +328,9 @@ class _TrainingModeState extends State<TrainingMode>
     final id = _feedbackId;
     if (id == null) return;
     try {
+      if (remaining == _remaining && flag == null) return;
       await trainingFeedback(_app!, id, remaining: remaining, flag: flag);
+      if (flag != null || remaining != _remaining) _app!.haptics.selection();
       if (!mounted) return;
       setState(() {
         if (remaining != null) _remaining = remaining;
@@ -450,7 +483,12 @@ class _TrainingModeState extends State<TrainingMode>
   );
   Widget feedbackChip(String label, VoidCallback tap, bool selected) =>
       Expanded(
-        child: SetFeedbackChip(label: label, onTap: tap, selected: selected),
+        child: SetFeedbackChip(
+          label: label,
+          onTap: tap,
+          selected: selected,
+          haptic: false,
+        ),
       );
 
   Widget feedbackBar() {
@@ -956,10 +994,16 @@ class _TrainingModeState extends State<TrainingMode>
                       ),
                     ),
                     Expanded(
-                      child: NotificationListener<ScrollStartNotification>(
+                      child: NotificationListener<ScrollNotification>(
                         onNotification: (notification) {
                           if (notification.depth == 0 &&
+                              notification is ScrollEndNotification) {
+                            _manualPage = false;
+                          }
+                          if (notification.depth == 0 &&
+                              notification is ScrollStartNotification &&
                               notification.dragDetails != null) {
+                            _manualPage = true;
                             _dragOrigin.value = notification.metrics.pixels;
                           }
                           return false;
@@ -1127,31 +1171,7 @@ class _TrainingModeState extends State<TrainingMode>
                                               ? null
                                               : () async {
                                                   if (_warm) {
-                                                    await _app!.patchDayState(
-                                                      m.iso,
-                                                      {'warm': true},
-                                                    );
-                                                    if (mounted) {
-                                                      goPage(
-                                                        warmOffset +
-                                                            model.items
-                                                                .indexWhere(
-                                                                  (i) =>
-                                                                      i['ex']['id'] ==
-                                                                      _id,
-                                                                )
-                                                                .clamp(
-                                                                  0,
-                                                                  math.max(
-                                                                    0,
-                                                                    model
-                                                                            .items
-                                                                            .length -
-                                                                        1,
-                                                                  ),
-                                                                ),
-                                                      );
-                                                    }
+                                                    await finishWarmup(m);
                                                   } else if (_summary) {
                                                     Navigator.of(context).pop();
                                                   } else {
@@ -1222,6 +1242,8 @@ class _TrainingNumberState extends State<TrainingNumber> {
       widget.minimum,
       ((jsNumber(_text.text) + d) * 10).round() / 10,
     );
+    if (n == jsNumber(_text.text)) return;
+    HapticScope.of(context)?.tick();
     _text.text = fmt(n);
     widget.onChanged(n);
   }
@@ -1243,7 +1265,6 @@ class _TrainingNumberState extends State<TrainingNumber> {
           label: '${minus ? '减少' : '增加'}${widget.label}',
           child: Pressable(
             scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
-            haptic: true,
             onTap: () => step(d),
             onLongPress: () {
               step(d);
@@ -1332,26 +1353,18 @@ class TrainingRest extends StatefulWidget {
 
 class _TrainingRestState extends State<TrainingRest> {
   Timer? _tick;
-  bool _active = false;
-  int _until = 0;
+
   @override
   void initState() {
     super.initState();
     widget.app.rest.addListener(changed);
-    _active = widget.app.rest.active;
-    _until = widget.app.rest.untilMs;
+
     _tick = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && widget.app.rest.active) setState(() {});
     });
   }
 
   void changed() {
-    final on = widget.app.rest.active;
-    if (_active && !on && DateTime.now().millisecondsSinceEpoch >= _until) {
-      widget.app.haptics.saved();
-    }
-    _active = on;
-    _until = widget.app.rest.untilMs;
     if (mounted) setState(() {});
   }
 
@@ -1404,8 +1417,14 @@ class _TrainingRestState extends State<TrainingRest> {
                 ),
               ),
             ),
-            action('+15 秒', () => rest.add(15)),
-            action('跳过', rest.clear),
+            action('+15 秒', () {
+              widget.app.haptics.selection();
+              rest.add(15);
+            }),
+            action('跳过', () {
+              widget.app.haptics.selection();
+              rest.clear();
+            }),
           ],
         ),
       ),

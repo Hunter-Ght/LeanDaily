@@ -1,3 +1,5 @@
+import '../../../core/haptics.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../../../domain/foods.dart';
@@ -25,13 +27,17 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
   num get _step => _grams ? 10 : .5;
   num get _min => _grams ? 10 : .5;
 
-  void _nudge(num delta) => setState(
-    () => _quantity = fmt(
-      ((num.tryParse(_quantity) ?? 0) + delta).clamp(_min, 9999),
-    ),
-  );
+  void _choose(num quantity) {
+    if (num.tryParse(_quantity) == quantity) return;
+    HapticScope.of(context)?.selection();
+    setState(() => _quantity = fmt(quantity));
+  }
+
+  void _nudge(num delta) =>
+      _choose(((num.tryParse(_quantity) ?? 0) + delta).clamp(_min, 9999));
 
   void _switchMode() {
+    HapticScope.of(context)?.selection();
     final n = num.tryParse(_quantity);
     setState(() {
       if (_grams) {
@@ -124,7 +130,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
                     Expanded(
                       child: FoodButton(
                         '${fmt(q)}${widget.food['unit']}',
-                        () => setState(() => _quantity = fmt(q)),
+                        () => _choose(q),
                       ),
                     ),
                   ],

@@ -1,3 +1,5 @@
+import '../../core/haptics.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -45,9 +47,13 @@ class _EditSetSheetState extends State<EditSetSheet> {
     final value = jsNumber(controller.text);
     final base = value.isFinite ? value : 0;
     final step = isWeight && base >= 20 ? 2.5 : 1;
-    controller.text = fmt(
-      math.max(isWeight ? 0 : 1, ((base + delta * step) * 10).round() / 10),
+    final next = math.max(
+      isWeight ? 0 : 1,
+      ((base + delta * step) * 10).round() / 10,
     );
+    if (next == value) return;
+    HapticScope.of(context)?.selection();
+    controller.text = fmt(next);
   }
 
   Future<void> save() async {
@@ -90,6 +96,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
         mark(state, 'sets', id);
         mark(state, 'days', date);
       }, incrementRevision: true);
+      app.haptics.saved();
       app.toast.show('已改好');
       if (mounted) SheetController.of(context).close();
     } on Object catch (e) {
@@ -318,10 +325,12 @@ class SetFeedbackChip extends StatelessWidget {
     required this.label,
     required this.onTap,
     required this.selected,
+    this.haptic = true,
   });
   final String label;
   final VoidCallback onTap;
   final bool selected;
+  final bool haptic;
   @override
   Widget build(BuildContext context) => Semantics(
     button: true,
@@ -329,6 +338,7 @@ class SetFeedbackChip extends StatelessWidget {
     selected: selected,
     child: Pressable(
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
+      haptic: haptic,
       onTap: onTap,
       child: SizedBox(
         height: 44,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/core/native.dart';
 import 'package:leandaily/app/routes.dart' show openEditSet;
@@ -94,6 +95,77 @@ Map<String, dynamic> rows(Harness h) =>
         .cast<String, dynamic>();
 void main() {
   setUpAll(Harness.setUpAll);
+  for (final enabled in [true, false]) {
+    testWidgets('开始、热身完成、继续各轻震一次，触感开启=$enabled', (t) async {
+      final effects = <String>[];
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+            if (call.method == 'HapticFeedback.vibrate') {
+              effects.add(call.arguments as String);
+            }
+            return null;
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(SystemChannels.platform, null),
+      );
+      await Harness.pump(
+        t,
+        empty: true,
+        seed: (n) {
+          seedPlan(n);
+          n.docs['android-settings'] = jsonEncode({'haptics': enabled});
+        },
+      );
+      await tap(t, '开始训练');
+      expect(effects, enabled ? ['HapticFeedbackType.lightImpact'] : isEmpty);
+      effects.clear();
+      await tap(t, '热身完成');
+      expect(effects, enabled ? ['HapticFeedbackType.lightImpact'] : isEmpty);
+      effects.clear();
+      await t.tap(find.bySemanticsLabel('关闭'));
+      await settle(t);
+      expect(effects, isEmpty);
+      await tap(t, '继续训练');
+      expect(effects, enabled ? ['HapticFeedbackType.lightImpact'] : isEmpty);
+      await t.tap(find.bySemanticsLabel('关闭'));
+      await settle(t);
+      await t.pump(const Duration(seconds: 4));
+    });
+  }
+  testWidgets('热身保存失败不震，重试成功才轻震', (t) async {
+    final h = await Harness.pump(t, empty: true, seed: seedPlan);
+    await tap(t, '开始训练');
+    final effects = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            effects.add(call.arguments as String);
+          }
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+    h.native.failNextPut = StateError('测试写入失败');
+    await tap(t, '热身完成');
+    expect(effects, isEmpty);
+    expect(find.text('热身完成'), findsOneWidget);
+    await tap(t, '热身完成');
+    expect(effects, ['HapticFeedbackType.lightImpact']);
+    expect(h.controller.dayStates[h.controller.today]['warm'], true);
+    await t.drag(find.byType(PageView), const Offset(350, 0));
+    await settle(t);
+    expect(find.text('热身完成'), findsOneWidget);
+    effects.clear();
+    await tap(t, '热身完成');
+    expect(effects, isEmpty);
+    expect(find.text('热身完成'), findsNothing);
+    await t.tap(find.bySemanticsLabel('关闭'));
+    await settle(t);
+    await t.pump(const Duration(seconds: 4));
+  });
   testWidgets('今日入口、热身、保存字段、反馈超时、编辑及常亮恢复', (t) async {
     final h = await Harness.pump(
       t,

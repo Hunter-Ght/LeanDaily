@@ -44,8 +44,17 @@ Future<String> saveTrainingSet(
       {'weight': weight, 'reps': reps.round(), 'rpe': null, 'type': '正式'},
     ],
   );
-  if (!model.complete && TodayModel(app).complete) {
+  final after = TodayModel(app);
+  final wasComplete = model.items.any(
+    (i) => i['ex']['id'] == e['id'] && i['complete'] == true,
+  );
+  final isComplete = after.items.any(
+    (i) => i['ex']['id'] == e['id'] && i['complete'] == true,
+  );
+  if (!model.complete && after.complete) {
     app.haptics.completed();
+  } else if (!wasComplete && isComplete) {
+    app.haptics.exerciseCompleted();
   } else {
     app.haptics.saved();
   }

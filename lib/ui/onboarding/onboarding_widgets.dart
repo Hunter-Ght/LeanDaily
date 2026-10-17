@@ -30,6 +30,7 @@ class OnboardingButton extends StatelessWidget {
     this.onTap,
     this.primary = false,
     this.selected = false,
+    this.toggleable = false,
     this.circular = false,
     this.secondary = false,
     this.textOnly = false,
@@ -40,6 +41,7 @@ class OnboardingButton extends StatelessWidget {
   final bool primary;
   final bool selected;
   final bool circular;
+  final bool toggleable;
   final bool secondary, textOnly, compact;
 
   @override
@@ -52,7 +54,8 @@ class OnboardingButton extends StatelessWidget {
       label: label,
       excludeSemantics: true,
       child: Pressable(
-        haptic: selected,
+        haptic:
+            toggleable || (!selected && !primary && !secondary && !textOnly),
         onTap: onTap,
         child: Container(
           constraints: BoxConstraints(

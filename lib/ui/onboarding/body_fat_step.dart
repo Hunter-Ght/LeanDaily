@@ -62,6 +62,7 @@ class BodyFatStep extends StatelessWidget {
                     label: label,
                     excludeSemantics: true,
                     child: Pressable(
+                      haptic: tab != i,
                       onTap: () {
                         if (tab == i) return;
                         onChanged('bodyFatPct', null);
@@ -232,7 +233,7 @@ class _BodyBand extends StatelessWidget {
   final VoidCallback tap;
   @override
   Widget build(BuildContext context) => Pressable(
-    haptic: true,
+    haptic: !selected,
     onTap: tap,
     child: OnboardingCard(
       selected: selected,

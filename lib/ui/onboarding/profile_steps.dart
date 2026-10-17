@@ -35,7 +35,7 @@ class IdentityStep extends StatelessWidget {
                 label: entry.value,
                 excludeSemantics: true,
                 child: Pressable(
-                  haptic: true,
+                  haptic: profile['sex'] != entry.key,
                   onTap: () => onChanged('sex', entry.key),
                   child: AnimatedScale(
                     scale: profile['sex'] == entry.key ? 1 : .97,
@@ -189,6 +189,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                       label: option.$2,
                       excludeSemantics: true,
                       child: Pressable(
+                        haptic: widget.profile['venue'] != option.$1,
                         onTap: () => widget.onChanged('venue', option.$1),
                         child: Container(
                           height: 76,
@@ -236,6 +237,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
           label: '两边都会去',
           excludeSemantics: true,
           child: Pressable(
+            haptic: widget.profile['venue'] != 'both',
             onTap: () => widget.onChanged('venue', 'both'),
             child: Container(
               constraints: const BoxConstraints(minHeight: 44),
@@ -305,6 +307,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                         Expanded(
                           child: OnboardingButton(
                             label: part,
+                            toggleable: part != '无',
                             compact: true,
                             selected: part == '无'
                                 ? (widget.profile['limits'] as List).isEmpty

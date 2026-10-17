@@ -81,6 +81,7 @@ class _Bar extends StatelessWidget {
   final AppController app;
 
   void _pick(int sec) {
+    if (app.restSeconds != sec || !app.rest.active) app.haptics.selection();
     app.saveRestPrefs({...app.restPrefs, 'sec': sec});
     app.startRest(sec);
   }
@@ -144,7 +145,10 @@ class _Bar extends StatelessWidget {
                   HapticScope.of(context)?.selection();
                   app.rest.add(30);
                 }),
-                chip('跳过', app.rest.clear),
+                chip('跳过', () {
+                  app.haptics.selection();
+                  app.rest.clear();
+                }),
               ],
             ),
           ),

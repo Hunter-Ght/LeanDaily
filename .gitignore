@@ -54,3 +54,6 @@ app.*.map.json
 *.keystore
 android/local.properties
 android/key.properties
+
+# 仅本机使用的 agent 说明，不上传
+/AGENTS.md

@@ -161,7 +161,10 @@ class AppController extends ChangeNotifier {
        bodyLog = BodyLogStore(native),
        reminders = Reminders(native, clock: clock),
        vision = Vision(native) {
-    rest = RestTimer(_persistRest, () => toast.show('休息好了'));
+    rest = RestTimer(_persistRest, () {
+      toast.show('休息好了');
+      haptics.restEnded();
+    });
     repo.addListener(_onRecords);
   }
 
@@ -496,6 +499,7 @@ class AppController extends ChangeNotifier {
           },
         ],
       );
+      haptics.saved();
       toast.show('+${_fmt(p['protein'])} g 蛋白质（已记入饮食 · 加餐）');
     } on Object catch (e) {
       toast.show('保存失败：${_msg(e)}');
@@ -1099,6 +1103,7 @@ class AppController extends ChangeNotifier {
     _clockTimer?.cancel();
     repo.removeListener(_onRecords);
     rest.dispose();
+    haptics.dispose();
     toast.dispose();
     repo.dispose();
     super.dispose();

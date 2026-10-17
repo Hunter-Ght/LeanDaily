@@ -37,6 +37,7 @@ class _TodayPageState extends State<TodayPage> {
   final _scroll = ScrollController();
   String _focus = '';
   bool _showSuggestions = false;
+  bool _enteringTraining = false;
   bool _notifyOk = true, _notifyChecked = false;
   AppController? _app;
   @override
@@ -259,9 +260,17 @@ class _TodayPageState extends State<TodayPage> {
   }
 
   Future<void> start(TodayModel m) async {
-    if (!m.train || m.complete) return;
-    if (!m.started) await patch({'started': true});
-    if (mounted) openTrainingMode(context, exerciseId: m.firstOpen);
+    if (!m.train || m.complete || _enteringTraining) return;
+    _enteringTraining = true;
+    try {
+      if (mounted) {
+        await openTrainingMode(context, exerciseId: m.firstOpen, haptic: true);
+      }
+    } on Object catch (error) {
+      if (mounted) _app!.toast.show(AppController.message(error));
+    } finally {
+      _enteringTraining = false;
+    }
   }
 
   void adjust() {

@@ -92,7 +92,6 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
       _pulsing
         ..clear()
         ..addAll(crossed);
-      app.haptics.saved();
       _pulse.forward(from: 0);
     }
   }
@@ -114,6 +113,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
           source: '手动填写',
           items: [Map<String, dynamic>.from(food)],
         );
+        app.haptics.saved();
         app.toast.show('已记入 ${food['name']}');
       }
     } on Object catch (e) {
@@ -130,9 +130,9 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
     final totals = jsonMap(app.repo.meals(m.iso)['totals']);
     final protein = jsNumber(totals['protein']),
         kcal = jsNumber(totals['kcal']);
-    final pending = jsonRows(
-      app.repo.meals(m.iso)['meals'],
-    ).where(records.needsAfterPhoto).toList();
+    final pending = jsonRows(app.repo.meals(m.iso)['meals'])
+        .where(records.needsAfterPhoto)
+        .toList();
     final powder = jsonMap(jsonMap(app.plan['protein'])['powder']);
     final frequent = recent
         .where(

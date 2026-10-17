@@ -381,6 +381,8 @@ class _MealSheetState extends State<MealSheet> {
       _sig(_plain) == _scaledSig;
 
   void _setRatio(String label) {
+    if (label == _ratio) return;
+    _app.haptics.selection();
     final r = _ratios[label] ?? 1.0;
     _change(() {
       _ratio = label;
@@ -772,6 +774,7 @@ class _MealSheetState extends State<MealSheet> {
                   label: '我吃光了',
                   selected: _afterSkipped,
                   child: Pressable(
+                    haptic: true,
                     onTap: () => _change(() => _afterSkipped = !_afterSkipped),
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 36),

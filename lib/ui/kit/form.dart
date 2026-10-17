@@ -89,7 +89,8 @@ class _FormInputState extends State<FormInput> {
 }
 
 class FormSwitch extends StatefulWidget {
-  const FormSwitch({super.key, required this.value, required this.onChanged, required this.label});
+  const FormSwitch({super.key, required this.value, required this.onChanged, required this.label, this.haptic = true});
+  final bool haptic;
   final bool value;
   final ValueChanged<bool> onChanged;
   final String label;
@@ -106,6 +107,7 @@ class _FormSwitchState extends State<FormSwitch> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final p = context.pal;
     return Semantics(label: widget.label, toggled: widget.value, button: true, child: Pressable(
+      haptic: widget.haptic,
       onTap: () => widget.onChanged(!widget.value),
       child: SizedBox(width: 51, height: 44, child: Center(child: AnimatedBuilder(animation: _x, builder: (_, _) => Container(
         width: 51, height: 31,

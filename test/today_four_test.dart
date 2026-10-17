@@ -61,7 +61,7 @@ void main() {
     await settleFour(tester);
     expect(find.text('常吃'), findsNothing);
   });
-  testWidgets('有资料条带进度封顶，超出中性文案，每项首次达标反馈一次', (tester) async {
+  testWidgets('有资料条带进度封顶，超出中性文案，营养达标不额外震动', (tester) async {
     final effects = <String>[];
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, (call) async {
@@ -97,10 +97,10 @@ void main() {
     );
     await add(100, 200);
     await settleFour(tester);
-    expect(effects.where((e) => e.endsWith('lightImpact')), hasLength(1));
+    expect(effects.where((e) => e.endsWith('lightImpact')), isEmpty);
     await add(30, 920);
     await settleFour(tester);
-    expect(effects.where((e) => e.endsWith('lightImpact')), hasLength(2));
+    expect(effects.where((e) => e.endsWith('lightImpact')), isEmpty);
     expect(find.text('超出 30'), findsOneWidget);
     expect(find.text('超出 120'), findsOneWidget);
     final bars = tester.widgetList<TodayBar>(find.byType(TodayBar)).toList();
@@ -109,7 +109,7 @@ void main() {
     await settleFour(tester);
     await h.controller.repo.deleteMeal(h.controller.today, id);
     await settleFour(tester);
-    expect(effects.where((e) => e.endsWith('lightImpact')), hasLength(2));
+    expect(effects.where((e) => e.endsWith('lightImpact')), isEmpty);
     await tester.pump(const Duration(seconds: 4));
   });
   testWidgets('体重提醒最低优先级，先不后当天消失且保存节流', (tester) async {

@@ -1,3 +1,5 @@
+import '../../core/haptics.dart';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -51,11 +53,15 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
     super.dispose();
   }
 
-  void _step(int direction) => setState(
-    () => _weight = ((double.tryParse(_weight!) ?? 70) + direction * .1)
+  void _step(int direction) {
+    final next = ((double.tryParse(_weight!) ?? 70) + direction * .1)
         .clamp(30, 250)
-        .toStringAsFixed(1),
-  );
+        .toStringAsFixed(1);
+    if (next == _weight) return;
+    HapticScope.of(context)?.tick();
+    setState(() => _weight = next);
+  }
+
   Widget _stepButton(int direction) => Semantics(
     button: true,
     label: direction < 0 ? '减少体重' : '增加体重',
@@ -103,6 +109,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
         updateProfile: _update,
       );
       if (!mounted) return;
+      app.haptics.saved();
       app.toast.show('已记录 ${weight.toStringAsFixed(1)} kg');
       SheetController.of(context).close();
     } catch (error) {
@@ -191,6 +198,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                         selected: _day == i,
                         label: label,
                         child: Pressable(
+                          haptic: _day != i,
                           onTap: () => setState(() => _day = i),
                           child: Container(
                             alignment: Alignment.center,

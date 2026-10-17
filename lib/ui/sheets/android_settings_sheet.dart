@@ -1,3 +1,5 @@
+import '../../core/haptics.dart';
+
 import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
@@ -27,8 +29,17 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     super.didChangeDependencies();
     if (_cfg != null) return;
     _cfg = Map.of(context.app.settings.value);
+    _haptics = context.app.haptics;
     _loadKeys();
   }
+
+  @override
+  void dispose() {
+    _haptics?.enabledOverride = null;
+    super.dispose();
+  }
+
+  AppHaptics? _haptics;
 
   Future<void> _loadKeys() async {
     try {
@@ -154,13 +165,18 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
                 label: '触感反馈',
                 trailing: FormSwitch(
                   label: '触感反馈',
+                  haptic: false,
                   value: _cfg!['haptics'] != false,
-                  onChanged: (v) => setState(() => _cfg!['haptics'] = v),
+                  onChanged: (v) {
+                    context.app.haptics.enabledOverride = v;
+                    setState(() => _cfg!['haptics'] = v);
+                    if (v) context.app.haptics.selection();
+                  },
                 ),
               ),
             ],
           ),
-          const GroupFooter('切换选项、选择日期和完成训练时，给一次轻触反馈。'),
+          const GroupFooter('选择与调数时轻触，保存后轻震，完成训练和休息到点时给短双震。'),
           const GroupHeader('备份与恢复'),
           GroupCard(
             children: [

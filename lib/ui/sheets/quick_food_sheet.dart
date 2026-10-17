@@ -100,6 +100,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
         source: '手动填写',
         items: _items.map((e) => Map<String, dynamic>.from(e)).toList(),
       );
+      app.haptics.saved();
       app.toast.show('已记入 $meal：$summary');
       if (mounted) ctl.close();
     } on Object catch (e) {
@@ -124,6 +125,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
       return;
     }
     setState(() => _items.add(records.cleanItems([entry]).single));
+    context.app.haptics.selection();
   }
 
   void _openPhoto() {
