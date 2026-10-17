@@ -67,40 +67,24 @@ class _PlanLibrarySectionState extends State<PlanLibrarySection> {
         : item['id'] == app.activePlanId
         ? '当前使用的方案不能删除，请先切换方案'
         : '';
-    final action = await showSheetPanel<String>(
+    final picked = await showActionMenu(
       context,
-      (panel) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          16 + MediaQuery.paddingOf(panel).bottom,
+      title: '${item['name']}',
+      message: reason.isEmpty ? null : reason,
+      actions: [
+        const MenuAction(id: 'rename', label: '重命名'),
+        const MenuAction(id: 'copy', label: '复制'),
+        MenuAction(
+          id: 'delete',
+          label: '删除',
+          danger: true,
+          enabled: reason.isEmpty,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            FormLabel('${item['name']}'),
-            for (final entry in {
-              'rename': '重命名',
-              'copy': '复制',
-              'delete': '删除',
-              if (app.hasLegacySnapshot) 'restore': '恢复到升级前的方案',
-            }.entries)
-              FormButton(
-                entry.value,
-                plain: true,
-                danger: entry.key == 'delete' || entry.key == 'restore',
-                onTap: entry.key == 'delete' && reason.isNotEmpty
-                    ? null
-                    : () => SheetController.of(panel).close(entry.key),
-              ),
-            if (reason.isNotEmpty) FormHint(reason),
-            FormButton('取消', onTap: () => SheetController.of(panel).close()),
-          ],
-        ),
-      ),
+        if (app.hasLegacySnapshot)
+          const MenuAction(id: 'restore', label: '恢复到升级前的方案', danger: true),
+      ],
     );
+    final action = picked?.id;
     if (!mounted || action == null) return;
     final id = item['id'] as String;
     switch (action) {

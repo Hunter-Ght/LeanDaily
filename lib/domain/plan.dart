@@ -805,7 +805,7 @@ const _defaultJson = r'''
   "protein": {
     "goal": 110,
     "powder": {
-      "name": "酵母蛋白粉",
+      "name": "蛋白粉",
       "grams": 30,
       "protein": 22.6,
       "kcal": 124
@@ -846,6 +846,13 @@ void _attachGym(Map<String, dynamic> plan) {
       workouts[e.key]['gym'] = e.value;
     }
   }
+}
+
+/// 蛋白粉不再区分种类：旧版默认名“酵母蛋白粉”显示为“蛋白粉”。
+/// 已保存的计划原样保留，只在显示和记录时换名。
+String powderLabel(Object? name) {
+  final text = jsString(name);
+  return text == '酵母蛋白粉' ? '蛋白粉' : text;
 }
 
 Map<String, dynamic> normalizePlan(Object? raw, [String startDate = '']) {
@@ -1391,7 +1398,7 @@ List<Map<String, dynamic>> buildReminders({
         2,
         _atTime(iso, r['proteinTime'] as String),
         '蛋白粉时间',
-        '${jsString(p['grams'])} g ${p['name']} ≈ ${jsString(p['protein'])} g 蛋白质，今天目标 ${jsString(plan['protein']['goal'])} g',
+        '${jsString(p['grams'])} g ${powderLabel(p['name'])} ≈ ${jsString(p['protein'])} g 蛋白质，今天目标 ${jsString(plan['protein']['goal'])} g',
       );
     }
   }

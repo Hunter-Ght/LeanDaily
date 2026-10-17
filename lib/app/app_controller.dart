@@ -487,8 +487,8 @@ class AppController extends ChangeNotifier {
         source: '手动填写',
         items: [
           {
-            'name': '${p['name']} ${p['grams']} g',
-            'portion': '${p['grams']} g',
+            'name': plan_lib.powderLabel(p['name']),
+            'portion': '约1勺（${_fmt(p['grams'])}g）',
             'kcal': p['kcal'],
             'protein': p['protein'],
             'carbs': 0,

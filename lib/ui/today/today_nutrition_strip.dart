@@ -4,6 +4,8 @@ import '../../app/app_controller.dart';
 import '../../app/routes.dart';
 import '../../domain/calendar.dart';
 import '../../domain/format.dart' hide shiftDate;
+import '../../domain/plan.dart' show powderLabel;
+import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
 import '../kit/app_icon.dart';
@@ -128,11 +130,16 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
     final totals = jsonMap(app.repo.meals(m.iso)['totals']);
     final protein = jsNumber(totals['protein']),
         kcal = jsNumber(totals['kcal']);
+    final pending = jsonRows(
+      app.repo.meals(m.iso)['meals'],
+    ).where(records.needsAfterPhoto).toList();
     final powder = jsonMap(jsonMap(app.plan['protein'])['powder']);
     final frequent = recent
         .where(
           (f) =>
-              powder.isEmpty || !'${f['name']}'.startsWith('${powder['name']}'),
+              powder.isEmpty ||
+              !('${f['name']}'.startsWith(powderLabel(powder['name'])) ||
+                  '${f['name']}'.startsWith('${powder['name']}')),
         )
         .take(powder.isEmpty ? 3 : 2);
     Widget metric(
@@ -278,6 +285,37 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
               ],
             ),
             Reveal(
+              visible: pending.isNotEmpty,
+              child: pending.isEmpty
+                  ? const SizedBox.shrink()
+                  : Semantics(
+                      button: true,
+                      label: '补拍${pending.first['meal']}吃完后的照片',
+                      child: Pressable(
+                        onTap: () {
+                          app.setDate(m.iso);
+                          openMealSheet(
+                            context,
+                            preset: {
+                              ...pending.first,
+                              'editId': pending.first['record_id'],
+                            },
+                          );
+                        },
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 44),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${pending.first['meal']}还差一张吃完后的照片 ›',
+                              style: TextStyle(fontSize: 13, color: p.tint),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+            Reveal(
               visible: expanded,
               child: Padding(
                 padding: const EdgeInsets.only(top: 12),
@@ -305,7 +343,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                               children: [
                                 if (powder.isNotEmpty)
                                   TodayFoodChip(
-                                    name: '${powder['name']}',
+                                    name: powderLabel(powder['name']),
                                     protein: jsNumber(powder['protein']),
                                     onTap: busy ? null : () => add(null),
                                   ),

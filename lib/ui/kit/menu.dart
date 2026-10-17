@@ -8,11 +8,14 @@ import 'sheet.dart';
 
 /// 动作菜单项。
 class MenuAction {
-  const MenuAction({required this.id, required this.label, this.icon, this.danger = false});
+  const MenuAction({required this.id, required this.label, this.icon, this.danger = false, this.enabled = true});
   final String id;
   final String label;
   final String? icon;
   final bool danger;
+
+  /// 为 false 时置灰且点不动（原因请写进菜单的 message）。
+  final bool enabled;
 }
 
 /// 底部动作菜单。返回被点的项；点遮罩或“取消”返回 null。
@@ -66,7 +69,7 @@ class _MenuPanel extends StatelessWidget {
                     ),
                   for (var i = 0; i < actions.length; i++) ...[
                     if (i > 0 || title != null || message != null) Container(height: 0.5, color: p.sep),
-                    _Row(action: actions[i], onTap: () => ctl.close(actions[i])),
+                    _Row(action: actions[i], onTap: actions[i].enabled ? () => ctl.close(actions[i]) : null),
                   ],
                 ],
               ),
@@ -91,7 +94,7 @@ class _MenuPanel extends StatelessWidget {
 class _Row extends StatelessWidget {
   const _Row({required this.action, required this.onTap});
   final MenuAction action;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -101,14 +104,17 @@ class _Row extends StatelessWidget {
       onTap: onTap,
       scale: 1,
       dim: 0.55,
-      child: SizedBox(
-        height: 56,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (action.icon != null) ...[AppIcon(action.icon!, color: color, size: 18), const SizedBox(width: 8)],
-            Text(action.label, style: TextStyle(fontSize: 20, color: color)),
-          ],
+      child: Opacity(
+        opacity: action.enabled ? 1 : 0.4,
+        child: SizedBox(
+          height: 56,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (action.icon != null) ...[AppIcon(action.icon!, color: color, size: 18), const SizedBox(width: 8)],
+              Text(action.label, style: TextStyle(fontSize: 20, color: color)),
+            ],
+          ),
         ),
       ),
     );

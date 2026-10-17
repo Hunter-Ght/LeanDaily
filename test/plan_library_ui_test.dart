@@ -49,11 +49,12 @@ void main() {
       h.open(const PlanEditorSheet());
       await settle(t);
       await menu(t, '我的原始方案');
-      final disabledDelete = t.widget<FormButton>(
-        find.byWidgetPredicate((w) => w is FormButton && w.label == '删除'),
-      );
-      expect(disabledDelete.onTap, isNull);
       expect(find.text('当前使用的方案不能删除，请先切换方案'), findsOneWidget);
+      // 删除置灰：点了菜单不会收起，也不会弹出确认。
+      await t.tap(find.text('删除'));
+      await settle(t);
+      expect(find.text('当前使用的方案不能删除，请先切换方案'), findsOneWidget);
+      expect(find.text('删除「我的原始方案」？'), findsNothing);
       await tapText(t, '取消');
       await t.tap(find.bySemanticsLabel('使用方案：全身两练 · 入门'));
       await settle(t);
@@ -93,14 +94,10 @@ void main() {
       await settle(t);
       await menu(t, '我的原始方案');
       expect(find.text('最后一个方案不能删除'), findsOneWidget);
-      expect(
-        t
-            .widget<FormButton>(
-              find.byWidgetPredicate((w) => w is FormButton && w.label == '删除'),
-            )
-            .onTap,
-        isNull,
-      );
+      await t.tap(find.text('删除'));
+      await settle(t);
+      expect(find.text('最后一个方案不能删除'), findsOneWidget);
+      expect(find.text('删除「我的原始方案」？'), findsNothing);
       await tapText(t, '取消');
       await t.tap(find.byType(FormSwitch).first);
       await settle(t);

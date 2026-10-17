@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -39,6 +40,17 @@ class _MealSheetState extends State<MealSheet> {
   String _base = '', _analysisSig = '', _job = '', _phase = '', _think = '';
   List<Map<String, dynamic>> _items = [];
   List<String> _photos = [];
+
+  /// 与 [_photos] 一一对应：before = 吃之前，after = 吃完后。
+  List<String> _phases = [];
+  bool _afterSkipped = false;
+  String _basis = '', _warning = '';
+
+  /// 只有吃之前的照片时，识别出的是“整份”；按用户选的吃了几成再折算。
+  List<Map<String, dynamic>> _plate = [];
+  String _ratio = '全部', _scaledSig = '';
+  static const _ratios = {'¼': .25, '½': .5, '¾': .75, '全部': 1.0};
+  static const _perPhase = 2;
   final Map<String, Uint8List> _photoBytes = {};
   bool _initialized = false,
       _loading = true,
@@ -60,7 +72,8 @@ class _MealSheetState extends State<MealSheet> {
     for (final it in _items) {for (final k in _fields) k: it[k]},
   ];
   String _sig(List<Map<String, dynamic>> list) => jsonEncode(list);
-  String get _contentSig => '${_sig(_plain)}|$_meal|$_time|$_note';
+  String get _contentSig =>
+      '${_sig(_plain)}|$_meal|$_time|$_note|${_phases.join(',')}|$_afterSkipped';
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -105,6 +118,9 @@ class _MealSheetState extends State<MealSheet> {
             .map((it) => _item(it as Map))
             .toList();
         _photos = List<String>.from(opened['photo_ids'] as List? ?? []);
+        _phases = records.cleanPhases(opened['photo_phases'], _photos.length);
+        _afterSkipped = opened['after_skipped'] == true;
+        _basis = '${opened['basis'] ?? ''}';
         _summary =
             '${opened['summary'] ?? (_photos.isNotEmpty ? '可以用已保存的照片重新识别' : (records.number(opened['photos']) > 0 ? '原记录已有 ${opened['photos']} 张照片' : ''))}';
         _enabled =
@@ -150,6 +166,9 @@ class _MealSheetState extends State<MealSheet> {
     'note': _note,
     'items': _plain,
     'photo_ids': _photos,
+    'photo_phases': _phases,
+    'after_skipped': _afterSkipped,
+    'basis': _basis,
   });
   Future<void> _writeDraft(String value) {
     _draftLane = _draftLane
@@ -216,24 +235,36 @@ class _MealSheetState extends State<MealSheet> {
     super.dispose();
   }
 
-  Future<void> _pickPhotos(PickSource source) async {
+  int _count(String phase) => _phases.where((e) => e == phase).length;
+
+  void _removePhoto(String path) => _change(() {
+    final i = _photos.indexOf(path);
+    if (i < 0) return;
+    _photos.removeAt(i);
+    _phases.removeAt(i);
+  });
+
+  Future<void> _pickPhotos(PickSource source, String phase) async {
     if (_pickingPhotos) return;
-    final room = 8 - _photos.length;
+    final room = math.min(_perPhase - _count(phase), 8 - _photos.length);
     if (room <= 0) {
-      _app.toast.show('最多 8 张');
+      _app.toast.show('这一栏最多 $_perPhase 张');
       return;
     }
     setState(() => _pickingPhotos = true);
     try {
       final picked = await _app.native.pickImages(source: source, limit: room);
-      if (picked.length > room) _app.toast.show('最多 8 张');
+      if (picked.length > room) _app.toast.show('这一栏最多 $_perPhase 张');
       for (final bytes in picked.take(room)) {
         try {
           final path = await _app.native.photoWrite(bytes);
           if (!mounted) return;
           _change(() {
             _photos.add(path);
+            _phases.add(phase);
             _photoBytes[path] = bytes;
+            // 补了吃完后的照片，就不再是“吃光了”的口头说明。
+            if (phase == records.photoPhaseAfter) _afterSkipped = false;
           });
         } catch (e) {
           if (!mounted) return;
@@ -260,6 +291,10 @@ class _MealSheetState extends State<MealSheet> {
       _app.toast.show('先拍一张，或从相册选');
       return;
     }
+    if (_count(records.photoPhaseBefore) == 0) {
+      _app.toast.show('先拍一张吃之前的，才能算吃了多少');
+      return;
+    }
     final generation = ++_generation;
     setState(() {
       _analyzing = true;
@@ -268,7 +303,12 @@ class _MealSheetState extends State<MealSheet> {
       _think = '';
       _waited = 0;
     });
-    _job = _app.vision.startAnalysis(_photos.toList(), _note, _meal)['job']!;
+    _job = _app.vision.startAnalysis(
+      _photos.toList(),
+      _note,
+      _meal,
+      _phases.toList(),
+    )['job']!;
     final started = DateTime.now();
     _pollTimer?.cancel();
     _pollTimer = Timer.periodic(const Duration(milliseconds: 450), (_) {
@@ -287,6 +327,11 @@ class _MealSheetState extends State<MealSheet> {
                 .toList();
             _hasAnalysis = true;
             _analysisSig = _sig(_plain);
+            _basis = '${a['basis'] ?? ''}';
+            _warning = '${a['warning'] ?? ''}';
+            _plate = _plain;
+            _ratio = '全部';
+            _scaledSig = _analysisSig;
             _summary = [
               if ('${a['summary'] ?? ''}'.isNotEmpty) '${a['summary']}',
               if ('${a['confidence'] ?? ''}'.isNotEmpty)
@@ -325,6 +370,38 @@ class _MealSheetState extends State<MealSheet> {
         });
       }
     });
+  }
+
+  /// 只有吃之前的照片、结果还没被手动改过，才显示“吃了多少”。
+  bool get _canScale =>
+      _hasAnalysis &&
+      !_afterSkipped &&
+      _basis == records.basisBeforeOnly &&
+      _plate.isNotEmpty &&
+      _sig(_plain) == _scaledSig;
+
+  void _setRatio(String label) {
+    final r = _ratios[label] ?? 1.0;
+    _change(() {
+      _ratio = label;
+      _items = [
+        for (final it in _plate)
+          _item({
+            ...it,
+            if (r < 1) 'portion': '${it['portion']}（吃了约$label）',
+            for (final k in ['kcal', 'protein', 'carbs', 'fat'])
+              k: _scale(it[k], r, whole: k == 'kcal'),
+          }),
+      ];
+      _scaledSig = _analysisSig = _sig(_plain);
+    });
+  }
+
+  static Object _scale(Object? v, double r, {bool whole = false}) {
+    final n = records.number(v);
+    if (!n.isFinite) return '';
+    final x = n * r;
+    return whole ? x.round() : (x * 10).round() / 10;
   }
 
   Future<void> _cancelAnalysis() async {
@@ -381,6 +458,9 @@ class _MealSheetState extends State<MealSheet> {
           source: source,
           items: clean,
           photoIds: _photos.toList(),
+          photoPhases: _phases.toList(),
+          afterSkipped: _afterSkipped,
+          basis: _basis,
           photosChanged: true,
         );
       } else {
@@ -392,6 +472,9 @@ class _MealSheetState extends State<MealSheet> {
           source: source,
           items: clean,
           photoIds: _photos.toList(),
+          photoPhases: _phases.toList(),
+          afterSkipped: _afterSkipped,
+          basis: _basis,
         );
       }
       _finished = true;
@@ -417,8 +500,13 @@ class _MealSheetState extends State<MealSheet> {
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
+    final compareReady =
+        _count(records.photoPhaseAfter) > 0 &&
+        _count(records.photoPhaseBefore) > 0;
     final analyzeLabel = !_enabled
         ? '识别营养（未配置）'
+        : compareReady
+        ? (_basis == records.basisCompare ? '重新识别' : '按吃前吃后对比识别')
         : (_items.isNotEmpty || _photos.isNotEmpty && _editId != null
               ? '重新识别'
               : '识别营养');
@@ -493,88 +581,15 @@ class _MealSheetState extends State<MealSheet> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: MotionList(
-                          axis: Axis.horizontal,
-                          children: [
-                            KeyedSubtree(
-                              key: const ValueKey('camera'),
-                              child: _photoButton(
-                                '拍照',
-                                'camera',
-                                PickSource.camera,
-                              ),
-                            ),
-                            const SizedBox(
-                              key: ValueKey('photo-gap'),
-                              width: 8,
-                            ),
-                            KeyedSubtree(
-                              key: const ValueKey('gallery'),
-                              child: _photoButton(
-                                '相册',
-                                'photo',
-                                PickSource.gallery,
-                              ),
-                            ),
-                            for (final path in _photos)
-                              Padding(
-                                key: ValueKey(path),
-                                padding: const EdgeInsets.only(left: 8),
-                                child: SizedBox(
-                                  width: 104,
-                                  height: 104,
-                                  child: Stack(
-                                    children: [
-                                      PhotoImage(
-                                        path: path,
-                                        bytes: _photoBytes[path],
-                                        width: 104,
-                                        height: 104,
-                                        radius: 18,
-                                      ),
-                                      Positioned(
-                                        right: 0,
-                                        top: 0,
-                                        child: Semantics(
-                                          button: true,
-                                          label: '移除照片',
-                                          child: Pressable(
-                                            onTap: () => _change(
-                                              () => _photos.remove(path),
-                                            ),
-                                            child: SizedBox(
-                                              width: 44,
-                                              height: 44,
-                                              child: Center(
-                                                child: Container(
-                                                  width: 26,
-                                                  height: 26,
-                                                  decoration: BoxDecoration(
-                                                    color: p.scrim,
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  alignment: Alignment.center,
-                                                  child: Text(
-                                                    '×',
-                                                    style: TextStyle(
-                                                      color: p.onTint,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
+                      _phaseBlock(records.photoPhaseBefore, '开吃前', '先拍这一张'),
+                      const SizedBox(height: 12),
+                      _phaseBlock(
+                        records.photoPhaseAfter,
+                        '吃完后',
+                        _count(records.photoPhaseBefore) == 0
+                            ? '吃完再来补拍'
+                            : '拍一张，算得更准；不拍也行',
+                        skip: true,
                       ),
                       if (!_enabled)
                         Padding(
@@ -665,10 +680,19 @@ class _MealSheetState extends State<MealSheet> {
                                   borderRadius: BorderRadius.circular(22),
                                 ),
                                 child: Text(
-                                  _summary,
+                                  [
+                                    _summary,
+                                    if (_warning.isNotEmpty) '提示：$_warning',
+                                  ].join('\n'),
                                   style: TextStyle(color: p.text, fontSize: 15),
                                 ),
                               )
+                            : const SizedBox.shrink(),
+                      ),
+                      Reveal(
+                        visible: _canScale,
+                        child: _canScale
+                            ? _ratioRow()
                             : const SizedBox.shrink(),
                       ),
                       if (_items.isNotEmpty) _totals(),
@@ -710,36 +734,207 @@ class _MealSheetState extends State<MealSheet> {
     );
   }
 
-  Widget _photoButton(String label, String icon, PickSource source) {
+  /// “开吃前 / 吃完后”各一栏：缩略图 + 拍照 + 相册；吃完后那栏另有“我吃光了”。
+  Widget _phaseBlock(
+    String phase,
+    String title,
+    String hint, {
+    bool skip = false,
+  }) {
     final p = context.pal;
-    return Semantics(
-      button: true,
-      label: label,
-      child: Pressable(
-        onTap: _pickingPhotos ? null : () => _pickPhotos(source),
-        child: Container(
-          width: 104,
-          height: 104,
-          decoration: BoxDecoration(
-            color: p.card,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    final full = _count(phase) >= _perPhase || _photos.length >= 8;
+    final skipped = skip && _afterSkipped;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: p.card,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              AppIcon(icon, size: 22, color: p.secondary),
-              const SizedBox(height: 6),
               Text(
-                label,
-                style: TextStyle(
-                  color: p.text,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                title,
+                style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  skipped ? '已标记吃光了，不用补拍' : hint,
+                  style: AppText.hint(p),
                 ),
               ),
+              if (skip && _count(phase) == 0)
+                Semantics(
+                  button: true,
+                  label: '我吃光了',
+                  selected: _afterSkipped,
+                  child: Pressable(
+                    onTap: () => _change(() => _afterSkipped = !_afterSkipped),
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: _afterSkipped ? p.tint : p.fill2,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Text(
+                        '我吃光了',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _afterSkipped ? p.onTint : p.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (final (i, path) in _photos.indexed)
+                  if (_phases[i] == phase)
+                    Padding(
+                      key: ValueKey(path),
+                      padding: const EdgeInsets.only(right: 8),
+                      child: SizedBox(
+                        width: 88,
+                        height: 88,
+                        child: Stack(
+                          children: [
+                            PhotoImage(
+                              path: path,
+                              bytes: _photoBytes[path],
+                              width: 88,
+                              height: 88,
+                              radius: 16,
+                            ),
+                            Positioned(
+                              right: -6,
+                              top: -6,
+                              child: Semantics(
+                                button: true,
+                                label: '移除照片',
+                                child: Pressable(
+                                  onTap: () => _removePhoto(path),
+                                  child: SizedBox(
+                                    width: 44,
+                                    height: 44,
+                                    child: Center(
+                                      child: Container(
+                                        width: 26,
+                                        height: 26,
+                                        decoration: BoxDecoration(
+                                          color: p.scrim,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          '×',
+                                          style: TextStyle(
+                                            color: p.onTint,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                _photoButton('拍照', 'camera', PickSource.camera, phase, full),
+                const SizedBox(width: 8),
+                _photoButton('相册', 'photo', PickSource.gallery, phase, full),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _photoButton(
+    String label,
+    String icon,
+    PickSource source,
+    String phase,
+    bool full,
+  ) {
+    final p = context.pal;
+    final where = phase == records.photoPhaseBefore ? '开吃前' : '吃完后';
+    return Semantics(
+      button: true,
+      label: '$label（$where）',
+      child: Pressable(
+        onTap: _pickingPhotos || full ? null : () => _pickPhotos(source, phase),
+        child: Opacity(
+          opacity: full ? .4 : 1,
+          child: Container(
+            width: 88,
+            height: 88,
+            decoration: BoxDecoration(
+              color: p.fill2,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AppIcon(icon, size: 22, color: p.secondary),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: p.text,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  /// 只有吃之前的照片时：识别出整份，由用户说吃了几成。
+  Widget _ratioRow() {
+    final p = context.pal;
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+      decoration: BoxDecoration(
+        color: p.card,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '这一餐你吃了多少？',
+            style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 2),
+          Text('按全部吃完估算，没吃完在这里改', style: AppText.hint(p)),
+          const SizedBox(height: 10),
+          SheetSegments(
+            labels: _ratios.keys.toList(),
+            value: _ratio,
+            onChanged: _setRatio,
+            height: 40,
+          ),
+        ],
       ),
     );
   }

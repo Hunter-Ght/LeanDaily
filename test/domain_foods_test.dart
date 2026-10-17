@@ -203,8 +203,8 @@ void main() {
         'fat': 6.0,
       });
       expect(foods.entryFor(named('纯牛奶（全脂）'), units: 1)['kcal'], 163);
-      expect(foods.entryFor(named('虾仁（生）'))['portion'], '约100g');
-      expect(foods.entryFor(named('虾仁（生）'), units: 2)['portion'], '约200g');
+      expect(foods.entryFor(named('虾仁（生）'))['portion'], '约1份（100g）');
+      expect(foods.entryFor(named('虾仁（生）'), units: 2)['portion'], '约2份（200g）');
       expect(foods.entryFor(named('米饭'), grams: 0)['kcal'], 0);
       expect(foods.entryFor(named('米饭'), units: 0)['protein'], 0);
     });
@@ -328,7 +328,8 @@ void main() {
         expect(kcal, inInclusiveRange(0, 900));
         expect(units, contains(food['unit']));
         expect(food['gramsPerUnit'] as num, inInclusiveRange(1, 1000));
-        if (food['unit'] == '100g') expect(food['gramsPerUnit'], 100);
+        // 默认展示一人一次的常见份量，而不是“每 100 g”。
+        expect(food['unit'], isNot('100g'), reason: food['name'] as String);
         expect(
           foods.search(food['name'] as String).first['name'],
           food['name'],

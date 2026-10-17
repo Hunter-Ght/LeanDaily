@@ -226,6 +226,9 @@ class Repository extends ChangeNotifier {
     String source = '待分析',
     List items = const [],
     List<String> photoIds = const [],
+    List<String>? photoPhases,
+    bool afterSkipped = false,
+    String basis = '',
   }) => _meal(
     date: date,
     meal: meal,
@@ -234,6 +237,9 @@ class Repository extends ChangeNotifier {
     source: source,
     items: items,
     photoIds: photoIds,
+    photoPhases: photoPhases,
+    afterSkipped: afterSkipped,
+    basis: basis,
   );
   Future<String> updateMeal({
     required String id,
@@ -244,6 +250,9 @@ class Repository extends ChangeNotifier {
     String source = '待分析',
     List items = const [],
     List<String> photoIds = const [],
+    List<String>? photoPhases,
+    bool afterSkipped = false,
+    String basis = '',
     bool photosChanged = false,
   }) => _meal(
     id: id,
@@ -254,6 +263,9 @@ class Repository extends ChangeNotifier {
     source: source,
     items: items,
     photoIds: photoIds,
+    photoPhases: photoPhases,
+    afterSkipped: afterSkipped,
+    basis: basis,
     photosChanged: photosChanged,
   );
   Future<String> _meal({
@@ -265,6 +277,9 @@ class Repository extends ChangeNotifier {
     required String source,
     required List items,
     required List<String> photoIds,
+    List<String>? photoPhases,
+    bool afterSkipped = false,
+    String basis = '',
     bool photosChanged = true,
   }) => mutate((s) async {
     records.validDate(date);
@@ -278,9 +293,18 @@ class Repository extends ChangeNotifier {
       throw const records.DomainError('记录不存在');
     }
     final key = id ?? newId(), cleaned = records.cleanItems(items);
-    final paths = id != null && !photosChanged
+    final keep = id != null && !photosChanged;
+    final paths = keep
         ? List<String>.from(prev['photo_ids'] as List? ?? [])
         : photoIds.take(8).toList();
+    final phases = records.cleanPhases(
+      keep ? prev['photo_phases'] : photoPhases,
+      paths.length,
+    );
+    final skipped = keep
+        ? records.truthy(prev['after_skipped'])
+        : afterSkipped && !phases.contains(records.photoPhaseAfter);
+    final how = keep ? '${prev['basis'] ?? ''}' : basis;
     if (cleaned.isEmpty && paths.isEmpty && note.trim().isEmpty) {
       throw const records.DomainError('请至少保存照片、食物或备注');
     }
@@ -296,6 +320,10 @@ class Repository extends ChangeNotifier {
       'source': source.isEmpty ? '待分析' : source,
       'items': cleaned,
       'photo_ids': paths,
+      // 以下三项只在用到时才写，没用吃前/吃后功能的记录保持原样。
+      if (paths.isNotEmpty) 'photo_phases': phases,
+      if (skipped) 'after_skipped': true,
+      if (how.isNotEmpty) 'basis': records.cut(how, 20),
       ...records.sumItems(cleaned),
     };
     return key;

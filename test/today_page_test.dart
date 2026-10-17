@@ -209,7 +209,7 @@ void main() {
           ),
         )
         .toList();
-    expect(buttons.first.name, '酵母蛋白粉');
+    expect(buttons.first.name, '蛋白粉');
     expect(buttons.first.protein, 22.6);
     for (final chip in find.byType(TodayFoodChip).evaluate()) {
       final size = tester.getSize(find.byWidget(chip.widget));
@@ -222,7 +222,7 @@ void main() {
       hasLength(3),
     );
     expect(find.text('已记入 鸡蛋'), findsOneWidget);
-    await tapVisible(tester, find.text('酵母蛋白粉'));
+    await tapVisible(tester, find.text('蛋白粉'));
     expect(
       jsonMap(h.controller.repo.meals(h.controller.today)['totals'])['protein'],
       58.6,

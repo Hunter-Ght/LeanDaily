@@ -122,6 +122,32 @@ void validateSets(Object? sets) {
   }
 }
 
+/// 照片是吃之前拍的还是吃完后拍的。旧记录没有这个字段，一律当作吃之前。
+const photoPhaseBefore = 'before', photoPhaseAfter = 'after';
+
+/// 这餐的营养是怎么得来的：吃前吃后对比算出的，还是只看吃之前按吃完估算的。
+const basisCompare = '前后对比', basisBeforeOnly = '仅吃前估算';
+
+/// 与 [count] 张照片一一对应；缺失、过短或写错的位置按“吃之前”补齐。
+List<String> cleanPhases(Object? raw, int count) => [
+  for (var i = 0; i < count; i++)
+    raw is List && i < raw.length && raw[i] == photoPhaseAfter
+        ? photoPhaseAfter
+        : photoPhaseBefore,
+];
+
+/// 吃之前拍过、还没补吃完后的照片，也没选“我吃光了”。
+bool needsAfterPhoto(Map meal) {
+  final ids = meal['photo_ids'];
+  if (ids is! List || ids.isEmpty || truthy(meal['after_skipped'])) {
+    return false;
+  }
+  return !cleanPhases(
+    meal['photo_phases'],
+    ids.length,
+  ).contains(photoPhaseAfter);
+}
+
 List<Map<String, dynamic>> cleanItems(Object? items) {
   if (items is! List) throw const DomainError('食物明细无效');
   final result = <Map<String, dynamic>>[];

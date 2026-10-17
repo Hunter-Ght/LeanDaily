@@ -440,7 +440,9 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
             ),
             const GroupHeader('训练内容'),
             GroupCard(children: [for (final id in _order) _workout('$id')]),
-            for (final entry in (d['ladders'] is Map ? d['ladders'] as Map : const {}).entries) ...[
+            for (final entry
+                in (d['ladders'] is Map ? d['ladders'] as Map : const {})
+                    .entries) ...[
               const GroupHeader('进阶阶段（俯卧撑）'),
               GroupCard(
                 children: [
@@ -469,9 +471,9 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
             GroupCard(
               children: [
                 _input('每日目标 g', protein, 'goal'),
-                _input('蛋白粉每份 g', protein['powder'] as Map, 'grams'),
-                _input('每份含蛋白质 g', protein['powder'] as Map, 'protein'),
-                _input('每份热量 kcal', protein['powder'] as Map, 'kcal'),
+                _input('一勺蛋白粉 g', protein['powder'] as Map, 'grams'),
+                _input('一勺含蛋白质 g', protein['powder'] as Map, 'protein'),
+                _input('一勺热量 kcal', protein['powder'] as Map, 'kcal'),
               ],
             ),
             const GroupHeader('计划起点'),
@@ -496,7 +498,6 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
     );
   }
 }
-
 
 /// 打开编辑前补齐缺失的顶层字段（只补缺的，已有内容原样保留，不会换成默认计划）。
 /// 旧版本或手动导入的计划可能缺少 reminder / venues / protein 等字段，强制转换会直接报错。

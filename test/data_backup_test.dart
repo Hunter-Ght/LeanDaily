@@ -82,7 +82,14 @@ void main() {
       final photo = await n.photoWrite(
         Uint8List.fromList([255, 216, 255, 224, 1, 2, 3]),
       );
-      await repo.saveMeal(date: '2026-10-15', meal: '早餐', photoIds: [photo]);
+      await repo.saveMeal(
+        date: '2026-10-15',
+        meal: '早餐',
+        photoIds: [photo],
+        photoPhases: ['before'],
+        afterSkipped: true,
+        basis: basisBeforeOnly,
+      );
       final pendingSave = repo.addSets(
         date: '2026-10-15',
         exercise: '卧推',
@@ -107,6 +114,10 @@ void main() {
       expect(repo.hasTrain('2026-10-15'), true);
       expect(repo.hasMeal('2026-10-15'), true);
       expect(repo.state['meals'].values.first['photo_ids'].first, isNot(photo));
+      final restored = repo.state['meals'].values.first as Map;
+      expect(restored['photo_phases'], ['before']);
+      expect(restored['after_skipped'], true);
+      expect(restored['basis'], basisBeforeOnly);
       expect(repo.state['tasks'], isEmpty);
       expect(repo.state['revision'], 0);
     },

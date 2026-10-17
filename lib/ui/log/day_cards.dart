@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../app/routes.dart';
 import '../../domain/format.dart' as f;
+import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/badge.dart';
@@ -712,6 +713,7 @@ class DayCards extends StatelessWidget {
                         ],
                         if (f.jsNumber(m['photos']) > 0)
                           meta(c, '· ${m['photos']} 张'),
+                        if (records.needsAfterPhoto(m)) tag(c, '待补吃完后照片'),
                       ],
                     ),
                   ),

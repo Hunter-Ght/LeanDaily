@@ -7,6 +7,7 @@ import 'package:leandaily/app/routes.dart' show openQuickFood;
 import 'package:leandaily/app/app_controller.dart';
 import 'package:leandaily/domain/foods.dart';
 import 'package:leandaily/core/native.dart';
+import 'package:leandaily/ui/sheets/food/portion_panel.dart';
 import 'package:leandaily/ui/sheets/quick_food_sheet.dart' show QuickFoodSheet;
 import 'package:leandaily/ui/today/today_page.dart';
 import 'package:leandaily/ui/today/today_widgets.dart';
@@ -97,7 +98,8 @@ void main() {
       expect((stored['meals'] as Map).values.single['items'], [expected]);
       // 今日页的营养条带读同一份合计：蛋白合计包含刚记的这一项。
       expect(
-        (h.controller.repo.meals(h.controller.today)['totals'] as Map)['protein'],
+        (h.controller.repo.meals(h.controller.today)['totals']
+            as Map)['protein'],
         greaterThanOrEqualTo(expected['protein'] as num),
       );
       // The same food now appears in the actual recent-history section.
@@ -107,6 +109,38 @@ void main() {
       await settleFood(tester);
     });
   }
+
+  testWidgets('份量默认一份而不是 100 克，可半份加减并在份数与克数间换算', (tester) async {
+    await Harness.pump(tester, empty: true);
+    await openFood(tester);
+    await enterFood(tester, '搜索食物', '米饭');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await settleFood(tester);
+    await tester.tap(find.bySemanticsLabel('选择 米饭'));
+    await settleFood(tester);
+    expect(find.text('1 碗 ≈ 150 g，共约 150 g'), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.byType(FoodPortionPanel),
+        matching: find.text('＋'),
+      ),
+    );
+    await settleFood(tester);
+    expect(find.text('1 碗 ≈ 150 g，共约 225 g'), findsOneWidget);
+    await tester.tap(find.text('改用克数'));
+    await settleFood(tester);
+    expect(find.text('约 1.5 碗'), findsOneWidget);
+    expect(find.text('改用份数（碗）'), findsOneWidget);
+    await tester.tap(find.text('改用份数（碗）'));
+    await settleFood(tester);
+    expect(find.text('1 碗 ≈ 150 g，共约 225 g'), findsOneWidget);
+    await tester.tap(find.text('1碗'));
+    await settleFood(tester);
+    expect(find.text('1 碗 ≈ 150 g，共约 150 g'), findsOneWidget);
+    await tester.tap(find.text('加入'));
+    await settleFood(tester);
+    expect(find.textContaining('米饭 ×'), findsOneWidget);
+  });
 
   testWidgets('手动输入更多字段、移除、合并保存与非法值保护', (tester) async {
     final h = await Harness.pump(tester, empty: true);

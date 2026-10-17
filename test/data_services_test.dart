@@ -68,6 +68,86 @@ void main() {
       expect(result['items'].single['name'], '蛋');
     }
   });
+  test('vision labels before/after photos and reports how the result was reached', () async {
+    final n = FakeNative();
+    n.secrets = const Secrets(modelKey: 'key');
+    n.docs['android-settings'] = jsonEncode({
+      ...defaults,
+      'baseUrl': 'https://example.test',
+      'model': 'm',
+    });
+    final a = await n.photoWrite(Uint8List.fromList([255, 216, 255, 1]));
+    final b = await n.photoWrite(Uint8List.fromList([255, 216, 255, 2]));
+    final c = await n.photoWrite(Uint8List.fromList([255, 216, 255, 3]));
+    late Map sent;
+    n.onHttp = (call) {
+      sent = jsonDecode(call.body!) as Map;
+      final text = jsonEncode({
+        'items': [
+          {'name': '米饭', 'portion': '吃了约150g（剩1/4）', 'kcal': 174},
+        ],
+        'eaten_ratio': 0.75,
+        'warning': '两组照片像是不同的餐',
+        'summary': '好',
+      });
+      return HttpReply(
+        200,
+        jsonEncode({
+          'choices': [
+            {
+              'message': {'content': text},
+            },
+          ],
+        }),
+      );
+    };
+    final v = Vision(n);
+    addTearDown(v.dispose);
+    // 乱序传入：吃完后的在前，也必须按“吃之前 → 吃完后”排好并逐张标注。
+    final compare = await v.analyze(
+      [b, a, c],
+      '',
+      '午餐',
+      null,
+      ['after', 'before', 'before'],
+    );
+    final content = (sent['messages'] as List).single['content'] as List;
+    expect(content.map((e) => e['type']), [
+      'text', 'image_url', 'text', 'image_url', 'text', 'image_url', 'text',
+    ]);
+    expect(content.where((e) => e['type'] == 'text').map((e) => e['text']).take(3), [
+      '第1张（吃之前）',
+      '第2张（吃之前）',
+      '第3张（吃完后）',
+    ]);
+    expect(content.last['text'], contains('标注“吃之前”'));
+    expect(compare['basis'], basisCompare);
+    expect(compare['eaten_ratio'], 0.75);
+    expect(compare['warning'], '两组照片像是不同的餐');
+
+    final single = await v.analyze([a], '', '午餐', null, ['before']);
+    final only = ((sent['messages'] as List).single['content'] as List).last['text'];
+    expect(only, contains('没有吃完后的照片'));
+    expect(single['basis'], basisBeforeOnly);
+    expect(single.containsKey('eaten_ratio'), false);
+    expect(single.containsKey('warning'), false);
+
+    await expectLater(
+      v.analyze([b], '', '午餐', null, ['after']),
+      throwsA(
+        isA<DomainError>().having((e) => e.message, 'message', contains('请先拍一张吃之前的')),
+      ),
+    );
+  });
+  test('photo phases default to before and pending-after only applies to unsettled meals', () {
+    expect(cleanPhases(null, 2), ['before', 'before']);
+    expect(cleanPhases(['after', 'x'], 3), ['after', 'before', 'before']);
+    expect(needsAfterPhoto({'photo_ids': ['p']}), true);
+    expect(needsAfterPhoto({'photo_ids': ['p'], 'after_skipped': true}), false);
+    expect(needsAfterPhoto({'photo_ids': ['p', 'q'], 'photo_phases': ['before', 'after']}), false);
+    expect(needsAfterPhoto({'photo_ids': <String>[]}), false);
+    expect(needsAfterPhoto({'items': []}), false);
+  });
   test('vision cancellation prevents late result, failure status and missing config', () async {
     final n = FakeNative(), v = Vision(FakeNative());
     addTearDown(v.dispose);

@@ -35,7 +35,8 @@ Future<Map<String, dynamic>> validateBackup(
 
 Map<String, dynamic> _validateBackupRecords(Object? input) {
   if (input is! Map ||
-      (input['format'] != 'leandaily-backup' && input['format'] != 'lianchiji-backup') ||
+      (input['format'] != 'leandaily-backup' &&
+          input['format'] != 'lianchiji-backup') ||
       input['version'] != 1 ||
       input['state'] is! Map ||
       input['state']['version'] != 1 ||
@@ -124,6 +125,13 @@ Map<String, dynamic> _validateBackupRecords(Object? input) {
           : '手动填写',
       'items': items,
       'photo_ids': r['photo_ids'],
+      if (r['photo_phases'] is List && (r['photo_ids'] as List).isNotEmpty)
+        'photo_phases': cleanPhases(
+          r['photo_phases'],
+          (r['photo_ids'] as List).length,
+        ),
+      if (truthy(r['after_skipped'])) 'after_skipped': true,
+      if (truthy(r['basis'])) 'basis': cut(r['basis'], 20),
       ...sumItems(items),
     };
   }
@@ -166,12 +174,35 @@ Future<Map<String, dynamic>> exportBackup(
   // Export only local record fields; opaque metadata stays in on-device storage.
   const recordKeys = {
     'sets': {
-      'id', 'ts', 'flag', 'date', 'ex', 'part', 'no', 'w', 'reps',
-      'type', 'rpe', 'notes',
+      'id',
+      'ts',
+      'flag',
+      'date',
+      'ex',
+      'part',
+      'no',
+      'w',
+      'reps',
+      'type',
+      'rpe',
+      'notes',
     },
     'meals': {
-      'record_id', 'date', 'meal', 'time', 'note', 'source', 'items',
-      'photo_ids', 'kcal', 'protein', 'carbs', 'fat',
+      'record_id',
+      'date',
+      'meal',
+      'time',
+      'note',
+      'source',
+      'items',
+      'photo_ids',
+      'photo_phases',
+      'after_skipped',
+      'basis',
+      'kcal',
+      'protein',
+      'carbs',
+      'fat',
     },
   };
   for (final kind in ['sets', 'meals']) {

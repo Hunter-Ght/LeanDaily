@@ -103,7 +103,7 @@ void main() {
     await t.tap(restDay); await settle(t);
     await t.tap(find.byWidgetPredicate((w) => w is FormChoice && w.label == '周二安排')); await settle(t);
     await t.tap(find.text('胸 · 肩 · 腹').last); await settle(t);
-    for (final e in {'每日目标 g': '125', '蛋白粉每份 g': '32.5', '每份含蛋白质 g': '24', '每份热量 kcal': '135', '计划开始日': '2026-10-01'}.entries) {
+    for (final e in {'每日目标 g': '125', '一勺蛋白粉 g': '32.5', '一勺含蛋白质 g': '24', '一勺热量 kcal': '135', '计划开始日': '2026-10-01'}.entries) {
       await reveal(t, input(e.key)); await t.enterText(input(e.key), e.value);
     }
     h.native.notifyGranted = false;
