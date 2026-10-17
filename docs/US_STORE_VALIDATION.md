@@ -6,6 +6,7 @@ Verified on Flutter 3.47.6 / Dart 3.13.5 and Xcode 26.3.
 - Localization/consent suite: **10 passed** after the last wording changes. Includes catalog coverage and placeholders, device language resolution, English/Traditional Chinese at 320 and 393 widths, persisted choice without record/plan rewriting, English food search and consent enforcement/decline.
 - Native iOS XCTest: **12 passed** (storage, Keychain, photos, HTTPS, cancellation, notifications).
 - `dart analyze`: no issues. Design-token check passed. Python release-tool tests: **5 passed**.
+- Final Android APK and iOS release bundle language/legal assets were compared byte-for-byte against the working source and matched.
 - iOS Simulator debug build succeeded. Actual simulator UI inspected in English. Native `InfoPlist.strings` confirmed in the built app for en, zh-Hans and zh-Hant.
 - Unsigned iOS release build succeeded, about **23.1 MB**. This is not a signed archive or an App Store upload.
 - Local public-site preview: all six privacy/support language URLs returned HTTP 200. Traditional Chinese page visually inspected at 390 px; no horizontal overflow.
@@ -19,4 +20,4 @@ Verified on Flutter 3.47.6 / Dart 3.13.5 and Xcode 26.3.
 
 - Physical iPhone camera, locked-screen delivery and large-text acceptance; signing, TestFlight and App Store review.
 - Final App Store Connect privacy questionnaire, age rating, screenshots and legal/contact acceptance. `store_metadata.json` is draft copy, not submitted metadata.
-- Android debug build status is recorded below after the build finishes; no physical Android device acceptance was performed in this pass.
+- Android debug APK build succeeded (`build/app/outputs/flutter-apk/app-debug.apk`). Required SDK/NDK/CMake components were installed by the existing Android tooling. No physical Android device acceptance was performed in this pass.
