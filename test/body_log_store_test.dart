@@ -41,12 +41,16 @@ void main() {
       expect(await store.load(), isEmpty);
       await store.record(date: '2026-10-15', weightKg: 71);
       expect((await store.load()).single['weightKg'], 71);
+      // 读取损坏的文档时仍报错（启动时据此当作没有记录）……
       native.docs[BodyLogStore.key] = '{broken';
-      await expectLater(
-        store.record(date: '2026-10-16', weightKg: 70),
-        throwsFormatException,
-      );
-      expect(native.docs[BodyLogStore.key], '{broken');
+      await expectLater(store.load(), throwsFormatException);
+      // ……但写入不会被一份坏数据永远堵住：原文另存一份，再从空白记起。
+      await store.record(date: '2026-10-16', weightKg: 70);
+      expect(native.docs['${BodyLogStore.key}-corrupt'], '{broken');
+      expect((await store.load()).single['weightKg'], 70);
+      // JSON null（备份恢复写入的“没有数据”）等同没有记录，不算损坏。
+      native.docs[BodyLogStore.key] = 'null';
+      expect(await store.load(), isEmpty);
     },
   );
 }

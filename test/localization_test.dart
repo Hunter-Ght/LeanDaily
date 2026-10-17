@@ -204,7 +204,7 @@ void main() {
       await t.pumpAndSettle();
       await t.tap(find.text('相册').first);
       await t.pumpAndSettle();
-      await t.tap(find.text('识别营养'));
+      await t.tap(find.text('AI识别营养'));
       await t.pumpAndSettle();
       expect(find.text('发送照片给 AI 服务？'), findsOneWidget);
       expect(find.textContaining('https://example.test/v1'), findsOneWidget);

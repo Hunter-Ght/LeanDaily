@@ -538,16 +538,16 @@ class _MealSheetState extends State<MealSheet> {
         _count(records.photoPhaseAfter) > 0 &&
         _count(records.photoPhaseBefore) > 0;
     final analyzeLabel = !_enabled
-        ? '识别营养（未配置）'
+        ? 'AI识别营养（未配置）'
         : compareReady
-        ? (_basis == records.basisCompare ? '重新识别' : '按吃前吃后对比识别')
+        ? (_basis == records.basisCompare ? 'AI重新识别' : 'AI按吃前吃后对比识别')
         : (_items.isNotEmpty || _photos.isNotEmpty && _editId != null
-              ? '重新识别'
-              : '识别营养');
+              ? 'AI重新识别'
+              : 'AI识别营养');
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: AppSheet(
-        title: _editId == null ? '记一餐' : '编辑饮食',
+        title: _editId == null ? 'AI拍照记录' : '编辑饮食',
         onSave: _save,
         saveEnabled: !_saving && !_loading,
         confirmClose: _confirmClose,

@@ -45,6 +45,13 @@ void main() {
   ) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
     expect(find.text('这天还没练').hitTestable(), findsOneWidget);
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('day-section-switch')),
+        matching: find.text('饮食'),
+      ),
+    );
+    await tester.pumpAndSettle();
     expect(find.text('这天还没记饮食').hitTestable(), findsOneWidget);
     expect(find.text('本周 0/3 天'), findsOneWidget);
     await h.controller.saveGoals({...h.controller.goals, 'weekDays': 5});
@@ -85,5 +92,41 @@ void main() {
     await tester.pump();
     expect(padding(), normal);
     debugDisableShadows = true;
+  });
+
+  testWidgets('竖屏训练和饮食用切换条分开看，刚记的那一块自动显示', (tester) async {
+    final h = await Harness.pump(tester, tab: 1, empty: true);
+    Finder switchLabel(String text) => find.descendant(
+      of: find.byKey(const ValueKey('day-section-switch')),
+      matching: find.text(text),
+    );
+    // 空白一天默认先看训练；两块都在条上，饮食不用往下滑。
+    expect(switchLabel('训练'), findsOneWidget);
+    expect(switchLabel('饮食'), findsOneWidget);
+    expect(find.text('这天还没练').hitTestable(), findsOneWidget);
+    expect(find.text('这天还没记饮食'), findsNothing);
+    // 记了一餐 → 自动切到饮食，并在条上显示数量。
+    await h.controller.repo.saveMeal(
+      date: h.controller.today,
+      meal: '午餐',
+      items: [
+        {'name': '米饭', 'portion': '1碗', 'kcal': 174, 'protein': 4.5},
+      ],
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('编辑午餐').hitTestable(), findsOneWidget);
+    expect(find.text('这天还没练'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('day-section-switch')),
+        matching: find.text('1'),
+      ),
+      findsOneWidget,
+    );
+    // 手动切回训练。
+    await tester.tap(switchLabel('训练'));
+    await tester.pumpAndSettle();
+    expect(find.text('这天还没练').hitTestable(), findsOneWidget);
+    expect(find.bySemanticsLabel('编辑午餐'), findsNothing);
   });
 }

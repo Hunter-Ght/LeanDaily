@@ -46,12 +46,21 @@ void main() {
     );
     await h.shot(tester, 'log-long-light');
     final list = find.byKey(ValueKey('log-list-${h.controller.date}'));
+    // 训练很长也没关系：切到饮食，第一餐直接就在眼前。
     await tester.scrollUntilVisible(
-      find.bySemanticsLabel('编辑早餐'),
+      find.text('记另一个动作'),
       600,
       scrollable: find.descendant(of: list, matching: find.byType(Scrollable)),
     );
     await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('day-section-switch')),
+        matching: find.text('饮食'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('编辑早餐').hitTestable(), findsOneWidget);
     expect(tester.takeException(), isNull);
     await h.shot(tester, 'log-long-bottom-light');
     debugDisableShadows = true;

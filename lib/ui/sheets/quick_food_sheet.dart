@@ -13,6 +13,7 @@ import '../../domain/foods.dart';
 import '../../domain/records.dart' as records;
 import '../../domain/format.dart' hide shiftDate;
 import '../../theme/theme.dart';
+import '../kit/app_icon.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
 import '../kit/sheet.dart';
@@ -38,6 +39,10 @@ class QuickFoodSheet extends StatefulWidget {
 class _QuickFoodSheetState extends State<QuickFoodSheet> {
   final _items = <Map<String, dynamic>>[];
   String _tab = '搜食物', _query = '', _meal = '', _time = '';
+
+  /// “常见一餐”按哪一餐筛选：空 = 跟随底部选的餐次；也可选“全部”。
+  String _mealFilter = '';
+  String get _shownMeal => _mealFilter.isEmpty ? _meal : _mealFilter;
   String _name = '', _kcal = '', _protein = '', _carbs = '', _fat = '';
   bool _more = false,
       _configured = false,
@@ -272,6 +277,58 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
     );
   }
 
+  /// 记饮食入口的三个并排大按钮：AI 拍照、搜食物、手动输入。
+  Widget _modeTile(
+    String icon,
+    String label,
+    String caption,
+    bool selected,
+    VoidCallback onTap,
+  ) {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: AppMessages.of(context).text(label),
+      child: Pressable(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 84),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? p.tintSoft : p.seg,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AppIcon(icon, size: 22, color: selected ? p.tint : p.text),
+              const SizedBox(height: 6),
+              LText(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? p.tint : p.text,
+                ),
+              ),
+              const SizedBox(height: 2),
+              LText(
+                caption,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 11, color: p.secondary),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool get _hasPowder =>
+      ((context.app.plan['protein'] as Map?)?['powder'] as Map?) != null;
+
   Widget _segments(
     List<String> labels,
     String value,
@@ -328,7 +385,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
           bottom: MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: AppSheet(
-          title: '快速记饮食',
+          title: '记饮食',
           padding: const EdgeInsets.all(16),
           confirmClose: () async =>
               !_saving &&
@@ -417,14 +474,45 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _segments(['搜食物', '手动输入', if (_configured) '拍照'], _tab, (v) {
-                if (_saving) return;
-                if (v == '拍照') {
-                  _openPhoto();
-                } else {
-                  setState(() => _tab = v);
-                }
-              }),
+              Row(
+                children: [
+                  Expanded(
+                    child: _modeTile(
+                      'camera',
+                      'AI拍照识别',
+                      _configured ? '拍张照自动算' : '未配置，可存照片',
+                      false,
+                      () {
+                        if (!_saving) _openPhoto();
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _modeTile(
+                      'search',
+                      '搜食物',
+                      '常吃、常见一餐',
+                      _tab == '搜食物',
+                      () {
+                        if (!_saving) setState(() => _tab = '搜食物');
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _modeTile(
+                      'edit',
+                      '手动输入',
+                      '自己填营养',
+                      _tab == '手动输入',
+                      () {
+                        if (!_saving) setState(() => _tab = '手动输入');
+                      },
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               PushSwitcher(
                 child: Column(
@@ -449,7 +537,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                         for (final food in _search(foods)) _food(food),
                       ] else ...[
                         _heading('常吃'),
-                        if (frequent.isEmpty)
+                        if (frequent.isEmpty && !_hasPowder)
                           LText(
                             '最近 14 天还没有记录常吃的食物',
                             style: TextStyle(
@@ -457,14 +545,29 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                               color: context.pal.secondary,
                             ),
                           ),
-                        for (final food in frequent) _food(food),
-                        _heading('高蛋白推荐'),
-                        _food(_powder),
+                        if (_hasPowder) _food(_powder),
+                        // 蛋白粉已单独列在最前；常吃只留最常记的 4 项，
+                        // 把屏幕留给下面的“常见一餐”。
                         for (final food
-                            in foods
-                                .proteinRanking()
-                                .where((f) => !isProteinPowder(f['name']))
-                                .take(11))
+                            in frequent
+                                .where(
+                                  (f) =>
+                                      !_hasPowder ||
+                                      !isProteinPowder(f['name']),
+                                )
+                                .take(4))
+                          _food(food),
+                        _heading('常见一餐'),
+                        _segments(
+                          const ['早餐', '午餐', '晚餐', '加餐', '全部'],
+                          _mealFilter.isEmpty ? _meal : _mealFilter,
+                          (v) => setState(() => _mealFilter = v),
+                        ),
+                        const SizedBox(height: 4),
+                        for (final food in foods.typicalMeals(
+                          _shownMeal == '全部' ? _meal : _shownMeal,
+                          onlyThisMeal: _shownMeal != '全部',
+                        ))
                           _food(food),
                       ],
                     ] else if (_tab == '手动输入') ...[
@@ -529,17 +632,6 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                   ],
                 ),
               ),
-              if (!_configured)
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: LText(
-                    '在 我的 → 高级 里配置大模型后可用',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.pal.secondary,
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

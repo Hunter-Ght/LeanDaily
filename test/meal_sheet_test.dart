@@ -214,7 +214,7 @@ void main() {
       await openMeal(tester);
       await tester.tap(find.text('拍照').first);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('识别营养'));
+      await tester.tap(find.text('AI识别营养'));
       await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
@@ -252,7 +252,7 @@ void main() {
     await openMeal(tester);
     await tester.tap(find.text('相册').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('识别营养'));
+    await tester.tap(find.text('AI识别营养'));
     await tester.pumpAndSettle();
     expect(find.text('取消识别'), findsOneWidget);
     await tester.tap(find.text('取消识别'));
@@ -261,7 +261,7 @@ void main() {
     pending.complete(const HttpReply(500, '{}'));
     await tester.pumpAndSettle();
     h.native.onHttp = (_) => const HttpReply(500, '{}');
-    await tester.tap(find.text('识别营养'));
+    await tester.tap(find.text('AI识别营养'));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
@@ -340,8 +340,8 @@ void main() {
       await tester.tap(find.text('相册').last);
       await tester.pumpAndSettle();
       expect(find.byType(PhotoImage), findsNWidgets(2));
-      expect(find.text('按吃前吃后对比识别'), findsOneWidget);
-      await analyzeNow(tester, '按吃前吃后对比识别');
+      expect(find.text('AI按吃前吃后对比识别'), findsOneWidget);
+      await analyzeNow(tester, 'AI按吃前吃后对比识别');
       final content = (body!['messages'] as List).single['content'] as List;
       expect(
         content.where((e) => e['type'] == 'text').map((e) => e['text']).take(2),
@@ -386,7 +386,7 @@ void main() {
       await openMeal(tester);
       await tester.tap(find.text('拍照').first);
       await tester.pumpAndSettle();
-      await analyzeNow(tester, '识别营养');
+      await analyzeNow(tester, 'AI识别营养');
       expect(find.text('这一餐你吃了多少？'), findsOneWidget);
       await tester.tap(find.text('½'));
       await tester.pumpAndSettle();

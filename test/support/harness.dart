@@ -29,6 +29,12 @@ class Harness {
     await AppIcon.load();
   }
 
+  /// 截图倍率，默认 2；LEANDAILY_SHOT_SCALE=3 出 @3x（App Store 用）。
+  static final double shotScale =
+      double.tryParse(Platform.environment['LEANDAILY_SHOT_SCALE'] ?? '') ?? 2;
+  static double _envDp(String key, double fallback) =>
+      double.tryParse(Platform.environment[key] ?? '') ?? fallback;
+
   /// 把 App 画出来。[at] 是“现在”，[dark] 深色模式，[tab] 打开哪个标签（0 今日 1 记录 2 进度 3 我的）。
   /// [empty] 为 true 时不放参考记录（老用户、没有记录）；[newUser] 为 true 时什么都不放（全新安装，会进入引导）。
   static Future<Harness> pump(
@@ -43,11 +49,15 @@ class Harness {
     String updateUrl = links.updateCheckUrl,
     void Function(FakeNative native)? seed,
   }) async {
-    tester.view.devicePixelRatio = 2;
-    tester.view.physicalSize = size * 2;
+    tester.view.devicePixelRatio = shotScale;
+    tester.view.physicalSize = size * shotScale;
     // 出展示图时模拟真机的状态栏/手势条安全区：LEANDAILY_SAFE_AREA=1（顶 47dp、底 20dp）。
+    // App Store 截图可用 LEANDAILY_SAFE_TOP / LEANDAILY_SAFE_BOTTOM（dp）改成灵动岛机型的 62 / 34。
     if (Platform.environment['LEANDAILY_SAFE_AREA'] == '1') {
-      const inset = FakeViewPadding(top: 94, bottom: 40);
+      final inset = FakeViewPadding(
+        top: _envDp('LEANDAILY_SAFE_TOP', 47) * shotScale,
+        bottom: _envDp('LEANDAILY_SAFE_BOTTOM', 20) * shotScale,
+      );
       tester.view.padding = inset;
       tester.view.viewPadding = inset;
     }
@@ -115,11 +125,13 @@ class Harness {
     final boundary =
         shotKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
     await tester.runAsync(() async {
-      final image = await boundary.toImage(pixelRatio: 2);
+      final image = await boundary.toImage(pixelRatio: shotScale);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-      final dir = Platform.environment['LEANDAILY_SAFE_AREA'] == '1'
-          ? 'out/shots'
-          : 'out/shots-plain';
+      final dir =
+          Platform.environment['LEANDAILY_SHOT_DIR'] ??
+          (Platform.environment['LEANDAILY_SAFE_AREA'] == '1'
+              ? 'out/shots'
+              : 'out/shots-plain');
       final file = File('$dir/$name.png');
       await file.parent.create(recursive: true);
       await file.writeAsBytes(bytes!.buffer.asUint8List());

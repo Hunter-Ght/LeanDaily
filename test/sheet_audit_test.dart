@@ -97,7 +97,7 @@ void main() {
         showAppSheet<void>(context, (_) => content);
         await settle(tester);
         if (sheet == 'quickfood') {
-          final food = h.controller.foods!.proteinRanking().first;
+          final food = h.controller.foods!.typicalMeals('早餐').first;
           final choose = find.bySemanticsLabel('选择 ${food['name']}').first;
           // Recommendations can move below the footer as serving labels wrap.
           // Scroll to the real hit target before opening its portion panel.

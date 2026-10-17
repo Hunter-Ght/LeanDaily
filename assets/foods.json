@@ -3786,5 +3786,524 @@
     "protein100": 13,
     "carbs100": 3,
     "fat100": 10
+  },
+  {
+    "name": "鸡蛋牛奶全麦面包早餐",
+    "aliases": [
+      "鸡蛋牛奶面包"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 420,
+    "kcal100": 111.9,
+    "protein100": 6.19,
+    "carbs100": 10.71,
+    "fat100": 5.0,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "豆浆油条",
+    "aliases": [
+      "油条豆浆"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 380,
+    "kcal100": 106.58,
+    "protein100": 3.95,
+    "carbs100": 12.11,
+    "fat100": 4.74,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "肉包子配豆浆（2个）",
+    "aliases": [
+      "包子豆浆"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 500,
+    "kcal100": 111.0,
+    "protein100": 5.0,
+    "carbs100": 13.0,
+    "fat100": 4.0,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "燕麦粥配鸡蛋牛奶",
+    "aliases": [
+      "燕麦早餐"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 87.5,
+    "protein100": 4.25,
+    "carbs100": 9.5,
+    "fat100": 3.75,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "煎饼果子",
+    "aliases": [],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 280,
+    "kcal100": 171.43,
+    "protein100": 5.36,
+    "carbs100": 20.71,
+    "fat100": 7.5,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "玉米鸡蛋牛奶早餐",
+    "aliases": [
+      "玉米鸡蛋"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 450,
+    "kcal100": 83.33,
+    "protein100": 4.44,
+    "carbs100": 9.56,
+    "fat100": 3.56,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "三明治（鸡蛋火腿）",
+    "aliases": [
+      "火腿三明治"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 200,
+    "kcal100": 175.0,
+    "protein100": 9.0,
+    "carbs100": 17.5,
+    "fat100": 7.5,
+    "meals": [
+      "早餐",
+      "加餐"
+    ]
+  },
+  {
+    "name": "鸡胸肉饭（鸡胸+米饭+蔬菜）",
+    "aliases": [
+      "鸡胸饭",
+      "鸡胸肉米饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 410,
+    "kcal100": 119.51,
+    "protein100": 12.68,
+    "carbs100": 10.49,
+    "fat100": 2.68,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "减脂餐（鸡胸+西兰花+糙米）",
+    "aliases": [
+      "健身餐",
+      "减脂便当"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 420,
+    "kcal100": 109.52,
+    "protein100": 10.71,
+    "carbs100": 10.48,
+    "fat100": 2.62,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "清蒸鱼配米饭青菜",
+    "aliases": [
+      "清蒸鱼饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 96.25,
+    "protein100": 9.25,
+    "carbs100": 11.0,
+    "fat100": 2.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "黄焖鸡米饭",
+    "aliases": [],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 600,
+    "kcal100": 126.67,
+    "protein100": 6.33,
+    "carbs100": 15.0,
+    "fat100": 4.33,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "宫保鸡丁盖饭",
+    "aliases": [
+      "宫保鸡丁饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 152.5,
+    "protein100": 8.0,
+    "carbs100": 17.5,
+    "fat100": 6.75,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "番茄炒蛋盖饭",
+    "aliases": [
+      "番茄炒蛋饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 112.5,
+    "protein100": 4.5,
+    "carbs100": 15.5,
+    "fat100": 4.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "土豆炖牛肉盖饭",
+    "aliases": [
+      "牛肉盖饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 450,
+    "kcal100": 117.78,
+    "protein100": 6.89,
+    "carbs100": 12.22,
+    "fat100": 3.11,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "红烧肉盖饭",
+    "aliases": [
+      "红烧肉饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 300,
+    "kcal100": 260.0,
+    "protein100": 6.67,
+    "carbs100": 14.0,
+    "fat100": 18.67,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "食堂快餐（一荤两素+米饭）",
+    "aliases": [
+      "食堂套餐",
+      "快餐盒饭"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 600,
+    "kcal100": 108.33,
+    "protein100": 4.67,
+    "carbs100": 13.33,
+    "fat100": 4.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "猪肉水饺（12个）",
+    "aliases": [
+      "水饺",
+      "饺子"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 300,
+    "kcal100": 208.33,
+    "protein100": 8.0,
+    "carbs100": 26.0,
+    "fat100": 7.33,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "鲜肉馄饨（一碗）",
+    "aliases": [
+      "馄饨"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 106.25,
+    "protein100": 4.5,
+    "carbs100": 13.0,
+    "fat100": 3.5,
+    "meals": [
+      "午餐",
+      "晚餐",
+      "早餐"
+    ]
+  },
+  {
+    "name": "兰州牛肉拉面",
+    "aliases": [
+      "牛肉拉面"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 600,
+    "kcal100": 93.33,
+    "protein100": 4.67,
+    "carbs100": 14.17,
+    "fat100": 2.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "麻辣烫（一份）",
+    "aliases": [],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 600,
+    "kcal100": 100.0,
+    "protein100": 4.67,
+    "carbs100": 9.17,
+    "fat100": 4.67,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "过桥米线",
+    "aliases": [
+      "米线"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 700,
+    "kcal100": 82.86,
+    "protein100": 3.71,
+    "carbs100": 10.71,
+    "fat100": 2.57,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "酸辣粉",
+    "aliases": [],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 450,
+    "kcal100": 100.0,
+    "protein100": 2.0,
+    "carbs100": 14.44,
+    "fat100": 3.78,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "凉面拌面",
+    "aliases": [
+      "拌面",
+      "凉面"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 350,
+    "kcal100": 128.57,
+    "protein100": 3.43,
+    "carbs100": 21.43,
+    "fat100": 3.43,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "鸡胸肉沙拉",
+    "aliases": [
+      "轻食沙拉",
+      "鸡肉沙拉"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 380,
+    "kcal100": 92.11,
+    "protein100": 10.0,
+    "carbs100": 5.26,
+    "fat100": 3.16,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "牛排套餐（牛排+土豆+蔬菜）",
+    "aliases": [
+      "牛排"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 450,
+    "kcal100": 144.44,
+    "protein100": 12.67,
+    "carbs100": 7.78,
+    "fat100": 6.89,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "寿司（8贯）",
+    "aliases": [
+      "寿司拼盘"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 300,
+    "kcal100": 160.0,
+    "protein100": 7.33,
+    "carbs100": 26.67,
+    "fat100": 2.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "汉堡套餐（鸡肉汉堡+薯条+可乐）",
+    "aliases": [
+      "汉堡套餐",
+      "快餐套餐"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 750,
+    "kcal100": 133.33,
+    "protein100": 3.6,
+    "carbs100": 18.67,
+    "fat100": 4.8,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "披萨（2片）",
+    "aliases": [
+      "比萨"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 200,
+    "kcal100": 270.0,
+    "protein100": 12.0,
+    "carbs100": 30.0,
+    "fat100": 11.0,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "香蕉配牛奶",
+    "aliases": [
+      "香蕉牛奶"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 350,
+    "kcal100": 72.86,
+    "protein100": 2.57,
+    "carbs100": 9.71,
+    "fat100": 2.57,
+    "meals": [
+      "加餐",
+      "早餐"
+    ]
+  },
+  {
+    "name": "酸奶配坚果",
+    "aliases": [
+      "酸奶坚果"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 170,
+    "kcal100": 132.35,
+    "protein100": 5.29,
+    "carbs100": 11.18,
+    "fat100": 7.65,
+    "meals": [
+      "加餐"
+    ]
+  },
+  {
+    "name": "红薯配鸡蛋",
+    "aliases": [
+      "红薯鸡蛋"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 250,
+    "kcal100": 100.0,
+    "protein100": 3.6,
+    "carbs100": 16.8,
+    "fat100": 2.0,
+    "meals": [
+      "加餐",
+      "早餐"
+    ]
   }
 ]

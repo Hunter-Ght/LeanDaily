@@ -25,7 +25,10 @@ class LogPage extends StatefulWidget {
 
 class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   AppController? controller;
-  Set<String> knownIds = {};
+  Set<String> knownIds = {}, knownMealIds = {};
+
+  /// 竖屏当天内容显示哪一块：训练 / 饮食。空 = 还没选，按当天有什么自动定。
+  String _section = '';
   List<Map<String, dynamic>> lastAdd = [];
   @override
   void didChangeDependencies() {
@@ -35,10 +38,20 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     controller?.repo.removeListener(recordsChanged);
     controller = next;
     knownIds = (next.repo.state['sets'] as Map).keys.cast<String>().toSet();
+    knownMealIds = _mealIds(next);
     next.repo.addListener(recordsChanged);
   }
 
+  Set<String> _mealIds(AppController app) => {
+    for (final e in (app.repo.state['meals'] as Map).entries)
+      if ((e.value as Map)['deleted'] != true) '${e.key}',
+  };
+
   void recordsChanged() {
+    // 刚记了饮食就切到饮食，刚记了训练就切回训练，保存后立刻看到结果。
+    final meals = _mealIds(controller!);
+    if (meals.difference(knownMealIds).isNotEmpty) _section = '饮食';
+    knownMealIds = meals;
     final rows = controller!.repo.state['sets'] as Map;
     final added = <Map<String, dynamic>>[
       for (final entry in rows.entries)
@@ -49,6 +62,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     knownIds = rows.keys.cast<String>().toSet();
     if (added.isNotEmpty) {
       lastAdd = added;
+      _section = '训练';
     } else if (lastAdd.any(
       (s) => (rows[s['id']] as Map?)?['deleted'] == true,
     )) {
@@ -58,6 +72,11 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   }
 
   String get iso => context.app.date;
+  String get section => _section.isNotEmpty
+      ? _section
+      : context.app.repo.hasTrain(iso) || !context.app.repo.hasMeal(iso)
+      ? '训练'
+      : '饮食';
   late final AnimationController expansion = AnimationController.unbounded(
     vsync: this,
   );
@@ -87,6 +106,25 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
       expansion.value = target;
     } else {
       springTo(expansion, target);
+    }
+  }
+
+  /// 手指拖动日历：展开程度跟手，松手后按速度和位置弹到展开或收起。
+  void dragCalendar(double dy) {
+    expansion
+      ..stop()
+      ..value = (expansion.value + dy / Metrics.calExtra).clamp(0.0, 1.0);
+  }
+
+  void releaseCalendar(double velocity) {
+    final fraction = velocity / Metrics.calExtra; // 每秒展开比例
+    final open = expansion.value + fraction * .2 > .5;
+    _calendarOpen = open;
+    final target = open ? 1.0 : 0.0;
+    if (MediaQuery.disableAnimationsOf(context)) {
+      expansion.value = target;
+    } else {
+      springTo(expansion, target, velocity: fraction);
     }
   }
 
@@ -190,6 +228,8 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     persistent: persistent,
     onPick: (date) => pick(date, collapse: true),
     onToggle: toggle,
+    onDragUpdate: dragCalendar,
+    onDragEnd: releaseCalendar,
   );
 
   @override
@@ -202,15 +242,17 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
             screen.width >= Metrics.twoBreakpoint &&
             screen.height >= Metrics.minTallForWide;
         final top = Metrics.navBarHeight + MediaQuery.paddingOf(context).top;
+        final columns =
+            screen.width >= Metrics.colsBreakpoint &&
+            screen.height >= Metrics.minTallForWide;
         final dayContent = KeyedSubtree(
           key: const ValueKey('day-pager'),
           child: DayCards(
             key: PageStorageKey(iso),
             iso: iso,
-            columns:
-                screen.width >= Metrics.colsBreakpoint &&
-                screen.height >= Metrics.minTallForWide,
+            columns: columns,
             scrollController: scroll,
+            shown: section,
             lastAdd: lastAdd.isNotEmpty && lastAdd.first['date'] == iso
                 ? lastAdd
                 : const [],
@@ -255,6 +297,18 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                         hero(),
                         calendar(),
                         goal(),
+                        if (!columns)
+                          DaySectionSwitch(
+                            train: section != '饮食',
+                            sets:
+                                (context.app.repo.day(iso)['sets'] as List?)
+                                    ?.length ??
+                                0,
+                            meals:
+                                (context.app.repo.meals(iso)['meals'] as List)
+                                    .length,
+                            onSection: (v) => setState(() => _section = v),
+                          ),
                         Expanded(child: child!),
                       ],
                     ),

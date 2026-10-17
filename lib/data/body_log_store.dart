@@ -14,6 +14,8 @@ class BodyLogStore {
     final raw = (await native.all())[key];
     if (raw == null) return [];
     final doc = jsonDecode(raw);
+    // 备份恢复会把“没有这份数据”写成 JSON null，等同于还没有记录。
+    if (doc == null) return [];
     if (doc is! Map || doc['v'] != 1 || doc['entries'] is! List) {
       throw const FormatException('体重记录格式无效');
     }
@@ -21,6 +23,18 @@ class BodyLogStore {
       for (final entry in doc['entries'] as List)
         Map<String, dynamic>.from(entry as Map),
     ];
+  }
+
+  /// 写入前读取。文档损坏时，原样另存一份再从空白开始，
+  /// 否则一份坏数据会让之后每一次“记体重”都失败。
+  Future<List<Map<String, dynamic>>> _loadForWrite() async {
+    try {
+      return await load();
+    } on FormatException {
+      final raw = (await native.all())[key];
+      if (raw != null) await native.put('$key-corrupt', raw);
+      return [];
+    }
   }
 
   Future<void> record({
@@ -44,7 +58,7 @@ class BodyLogStore {
       'waistCm': ?waistCm,
     };
     final result = _lane.then((_) async {
-      final entries = await load();
+      final entries = await _loadForWrite();
       entries.removeWhere((e) => e['date'] == date);
       entries.add(entry);
       entries.sort(

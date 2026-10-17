@@ -11,8 +11,9 @@ import '../../theme/tokens.dart';
 import '../kit/app_icon.dart';
 import '../kit/pressable.dart';
 
-/// Horizontal paging only. Expansion has an explicit button, never a competing
-/// vertical recognizer. Browsing a page does not change the selected record day.
+/// Horizontal paging switches weeks/months; dragging the date rows or the grab
+/// bar vertically expands or collapses the calendar (the month title still
+/// toggles it too). Browsing a page does not change the selected record day.
 class RecordCalendar extends StatefulWidget {
   const RecordCalendar({
     super.key,
@@ -23,6 +24,8 @@ class RecordCalendar extends StatefulWidget {
     required this.persistent,
     required this.onPick,
     required this.onToggle,
+    this.onDragUpdate,
+    this.onDragEnd,
   });
   final String iso, today;
   final Marks marks;
@@ -30,6 +33,10 @@ class RecordCalendar extends StatefulWidget {
   final bool persistent;
   final ValueChanged<String> onPick;
   final VoidCallback onToggle;
+
+  /// Vertical drag on the rows / grab bar: pixels moved, then fling velocity (px/s).
+  final ValueChanged<double>? onDragUpdate;
+  final ValueChanged<double>? onDragEnd;
 
   @override
   State<RecordCalendar> createState() => _RecordCalendarState();
@@ -289,78 +296,97 @@ class _RecordCalendarState extends State<RecordCalendar> {
                 ],
               ),
             ),
-            ClipRect(
-              child: SizedBox(
-                height: Metrics.calRow + Metrics.calExtra * p,
-                child: OverflowBox(
-                  alignment: Alignment.topCenter,
-                  maxHeight: Metrics.calRow + Metrics.calExtra,
-                  child: Transform.translate(
-                    offset: Offset(0, -topClip),
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onVerticalDragUpdate: widget.persistent
+                  ? null
+                  : (d) => widget.onDragUpdate?.call(d.delta.dy),
+              onVerticalDragEnd: widget.persistent
+                  ? null
+                  : (d) =>
+                        widget.onDragEnd?.call(d.velocity.pixelsPerSecond.dy),
+              child: Column(
+                children: [
+                  ClipRect(
                     child: SizedBox(
-                      height: month
-                          ? Metrics.calRow + Metrics.calExtra
-                          : Metrics.calRow,
-                      child: PageView.builder(
-                        key: ValueKey(month ? 'month-pages' : 'week-pages'),
-                        controller: month ? _months : _weeks,
-                        physics: transitioning
-                            ? const NeverScrollableScrollPhysics()
-                            : const PageScrollPhysics(
-                                parent: ClampingScrollPhysics(),
+                      height: Metrics.calRow + Metrics.calExtra * p,
+                      child: OverflowBox(
+                        alignment: Alignment.topCenter,
+                        maxHeight: Metrics.calRow + Metrics.calExtra,
+                        child: Transform.translate(
+                          offset: Offset(0, -topClip),
+                          child: SizedBox(
+                            height: month
+                                ? Metrics.calRow + Metrics.calExtra
+                                : Metrics.calRow,
+                            child: PageView.builder(
+                              key: ValueKey(
+                                month ? 'month-pages' : 'week-pages',
                               ),
-                        itemCount: last + 1,
-                        onPageChanged: (value) => setState(() {
-                          if (month) {
-                            _month = value;
-                          } else {
-                            _week = value;
-                          }
-                        }),
-                        itemBuilder: (context, index) => month
-                            ? Column(
-                                children: monthGrid(
-                                  shiftMonth(_base, index),
-                                  widget.today,
-                                  widget.marks,
-                                ).rows.map(_row).toList(),
-                              )
-                            : Align(
-                                alignment: Alignment.topCenter,
-                                child: _row(
-                                  weekDays(
-                                    shiftDate(_base, index * weekLabels.length),
-                                    widget.today,
-                                    widget.marks,
-                                  ),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (!widget.persistent)
-              Pressable(
-                scale: 1,
-                onTap: widget.onToggle,
-                child: SizedBox(
-                  height: Metrics.calGrab,
-                  child: Center(
-                    child: Container(
-                      width: Metrics.calNum,
-                      height: Metrics.calendarGrabHeight,
-                      decoration: BoxDecoration(
-                        color: context.pal.grab,
-                        borderRadius: BorderRadius.circular(
-                          Metrics.calendarGrabHeight,
+                              controller: month ? _months : _weeks,
+                              physics: transitioning
+                                  ? const NeverScrollableScrollPhysics()
+                                  : const PageScrollPhysics(
+                                      parent: ClampingScrollPhysics(),
+                                    ),
+                              itemCount: last + 1,
+                              onPageChanged: (value) => setState(() {
+                                if (month) {
+                                  _month = value;
+                                } else {
+                                  _week = value;
+                                }
+                              }),
+                              itemBuilder: (context, index) => month
+                                  ? Column(
+                                      children: monthGrid(
+                                        shiftMonth(_base, index),
+                                        widget.today,
+                                        widget.marks,
+                                      ).rows.map(_row).toList(),
+                                    )
+                                  : Align(
+                                      alignment: Alignment.topCenter,
+                                      child: _row(
+                                        weekDays(
+                                          shiftDate(
+                                            _base,
+                                            index * weekLabels.length,
+                                          ),
+                                          widget.today,
+                                          widget.marks,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                  if (!widget.persistent)
+                    Pressable(
+                      scale: 1,
+                      onTap: widget.onToggle,
+                      child: SizedBox(
+                        height: Metrics.calGrab,
+                        child: Center(
+                          child: Container(
+                            width: Metrics.calNum,
+                            height: Metrics.calendarGrabHeight,
+                            decoration: BoxDecoration(
+                              color: context.pal.grab,
+                              borderRadius: BorderRadius.circular(
+                                Metrics.calendarGrabHeight,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
+            ),
           ],
         ),
       );

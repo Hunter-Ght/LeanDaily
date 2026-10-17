@@ -217,7 +217,7 @@ void main() {
         await settle(t);
         await t.tap(find.text(m.text('相册')).first);
         await settle(t);
-        final recognize = find.text(m.text('识别营养'));
+        final recognize = find.text(m.text('AI识别营养'));
         await t.ensureVisible(recognize);
         await settle(t);
         await t.tap(recognize);

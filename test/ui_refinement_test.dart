@@ -11,7 +11,31 @@ void main() {
   setUpAll(Harness.setUpAll);
 
   testWidgets('切换日期后保留各日滚动位置', (tester) async {
-    final h = await Harness.pump(tester, tab: 1);
+    final h = await Harness.pump(
+      tester,
+      tab: 1,
+      // 训练一天里动作很多，列表才有地方滚动。
+      seed: (native) {
+        final state =
+            jsonDecode(native.docs['android-state']!) as Map<String, dynamic>;
+        final sets = state['sets'] as Map;
+        for (var ex = 0; ex < 14; ex++) {
+          sets['scroll-$ex'] = {
+            'id': 'scroll-$ex',
+            'date': '2026-10-16',
+            'ts': ex + 1,
+            'part': '背',
+            'ex': '滚动动作$ex',
+            'no': 1,
+            'w': 30,
+            'reps': 10,
+            'rpe': 8,
+            'type': '正式',
+          };
+        }
+        native.docs['android-state'] = jsonEncode(state);
+      },
+    );
     ScrollPosition position() => tester
         .state<ScrollableState>(
           find.descendant(

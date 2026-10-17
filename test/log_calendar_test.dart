@@ -9,7 +9,7 @@ void main() {
 
   testWidgets('月历原位展开，返回键先收起，日期和列表同步', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    final row = find.byKey(const ValueKey('section-2026-10-16-训练'));
+    final row = find.byKey(const ValueKey('day-section-switch'));
     final start = tester.getTopLeft(row).dy;
     final day = find.byKey(const ValueKey('date-2026-10-16'));
     expect(tester.getSize(day), const Size(36, 36));
@@ -32,20 +32,49 @@ void main() {
     expect(tester.getTopLeft(row).dy, closeTo(start, 1));
   });
 
-  testWidgets('列表和日历的纵向操作不会误展开，轻点仍有效', (tester) async {
+  testWidgets('拖动日历展开收起，列表的纵向滑动不会误展开，轻点仍有效', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
+    RecordCalendar cal() =>
+        tester.widget<RecordCalendar>(find.byType(RecordCalendar));
+    // 列表自己的滑动不影响日历。
     await tester.drag(
       find.byKey(const ValueKey('day-pager')),
       const Offset(12, 210),
     );
     await tester.pumpAndSettle();
-    await tester.drag(
-      find.byKey(const ValueKey('week-pages')),
-      const Offset(8, 80),
+    expect(cal().progress.value, 0);
+    // 在日期行上往下拖：跟手展开，松手后吸附到月历。
+    final rows = find.byKey(const ValueKey('week-pages'));
+    final gesture = await tester.startGesture(tester.getCenter(rows));
+    await gesture.moveBy(const Offset(0, 40));
+    await gesture.moveBy(const Offset(0, 26));
+    await tester.pump();
+    // 越过触摸阈值之后的位移才算数，进度跟手。
+    expect(cal().progress.value, closeTo(26 / 260, .03));
+    await gesture.moveBy(const Offset(0, 140));
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(cal().progress.value, 1);
+    expect(find.bySemanticsLabel('收起月历'), findsOneWidget);
+    // 拖动小横条往上扫：收回周历。
+    await tester.fling(
+      find.byKey(const ValueKey('month-pages')),
+      const Offset(0, -150),
+      900,
     );
     await tester.pumpAndSettle();
-    final cal = tester.widget<RecordCalendar>(find.byType(RecordCalendar));
-    expect(cal.progress.value, 0);
+    expect(cal().progress.value, 0);
+    expect(find.bySemanticsLabel('展开月历'), findsOneWidget);
+    // 拖得不够远就弹回周历。
+    final short = await tester.startGesture(
+      tester.getCenter(find.byKey(const ValueKey('week-pages'))),
+    );
+    await short.moveBy(const Offset(0, 30));
+    await tester.pump();
+    await short.up();
+    await tester.pumpAndSettle();
+    expect(cal().progress.value, 0);
     await tester.tap(find.byKey(const ValueKey('date-2026-10-13')));
     await tester.pumpAndSettle();
     expect(h.controller.date, '2026-10-13');

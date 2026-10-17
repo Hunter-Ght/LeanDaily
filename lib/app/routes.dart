@@ -31,8 +31,8 @@ Future<void> openAddMenu(BuildContext context) async {
     context,
     actions: [
       const MenuAction(id: 'train', label: '记一组训练', icon: 'train'),
-      const MenuAction(id: 'quick', label: '快速记饮食', icon: 'meal'),
-      const MenuAction(id: 'meal', label: '记一餐（拍照/详细）', icon: 'camera'),
+      const MenuAction(id: 'quick', label: '记饮食', icon: 'meal'),
+      const MenuAction(id: 'meal', label: 'AI拍照识别营养', icon: 'camera'),
       if (grams != null)
         MenuAction(id: 'powder', label: '加一勺蛋白粉（$grams g）', icon: 'protein'),
     ],

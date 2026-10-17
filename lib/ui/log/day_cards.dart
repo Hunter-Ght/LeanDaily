@@ -17,6 +17,83 @@ import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import 'set_display.dart';
 
+/// 训练 | 饮食 切换条：固定在日历下方、列表上方，长长的训练也不用往下滑找饮食。
+/// 各带一个数量，一眼知道这天记了多少。
+class DaySectionSwitch extends StatelessWidget {
+  const DaySectionSwitch({
+    super.key,
+    required this.train,
+    required this.sets,
+    required this.meals,
+    required this.onSection,
+  });
+  final bool train;
+  final int sets, meals;
+  final ValueChanged<String> onSection;
+
+  @override
+  Widget build(BuildContext c) {
+    final p = c.pal;
+    Widget cell(String label, int count, bool on) => Expanded(
+      child: Semantics(
+        button: true,
+        selected: on,
+        label: AppMessages.of(c).text(label),
+        child: Pressable(
+          onTap: on ? null : () => onSection(label),
+          scale: 1,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: on ? p.segOn : null,
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LText(
+                  label,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: p.text,
+                  ),
+                ),
+                if (count > 0) ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    '$count',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: on ? p.tint : p.secondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    return Padding(
+      key: const ValueKey('day-section-switch'),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+      child: Container(
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: p.seg,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [cell('训练', sets, train), cell('饮食', meals, !train)],
+        ),
+      ),
+    );
+  }
+}
+
 /// Repository projections for a single date, also used by the adjacent pager panes.
 class DayCards extends StatelessWidget {
   const DayCards({
@@ -26,7 +103,11 @@ class DayCards extends StatelessWidget {
     this.scrollController,
     this.bottomPadding = 78,
     this.lastAdd = const [],
+    this.shown = '训练',
   });
+
+  /// 竖屏下一次只看一块：'训练' 或 '饮食'（切换条在列表上方，见 [DaySectionSwitch]）。
+  final String shown;
   final String iso;
   final bool columns;
   final ScrollController? scrollController;
@@ -74,11 +155,21 @@ class DayCards extends StatelessWidget {
     ]);
     final meal = section(context, '饮食', [
       if (meals.isEmpty)
-        empty(context, '这天还没记饮食', '记一餐', () => openMealSheet(context)),
+        empty(
+          context,
+          '这天还没记饮食',
+          '记饮食',
+          () => openQuickFood(context, date: iso),
+        ),
       for (final m in meals)
         mealCard(context, m, firstCard: identical(m, meals.first)),
       if (meals.isNotEmpty)
-        action(context, '记一餐', () => openMealSheet(context), centered: true),
+        action(
+          context,
+          '记饮食',
+          () => openQuickFood(context, date: iso),
+          centered: true,
+        ),
     ]);
     return SingleChildScrollView(
       controller: scrollController,
@@ -100,91 +191,91 @@ class DayCards extends StatelessWidget {
     List<List<dynamic>> groups,
     List<Map<String, dynamic>> meals,
   ) {
-    Widget heading(String title) => Padding(
-      padding: const EdgeInsets.fromLTRB(20, 18, 12, 6),
-      child: LText(
-        title,
-        key: ValueKey('section-$iso-$title'),
-        style: AppText.sect(c.pal),
-      ),
-    );
     Widget padded(Widget child) => Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: child,
     );
+    final showTrain = shown != '饮食';
     final builders = <({Key key, WidgetBuilder builder})>[
-      (key: const ValueKey('training-heading'), builder: (_) => heading('训练')),
-      if (lastAdd.isNotEmpty)
-        (key: const ValueKey('last-add'), builder: (_) => padded(banner(c))),
-      if (f.userNote(day).isNotEmpty)
-        (
-          key: const ValueKey('note'),
-          builder: (_) => padded(
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                LText('备注', style: AppText.hint(c.pal)),
-                card(
-                  c,
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(f.userNote(day)),
+      if (showTrain) ...[
+        if (lastAdd.isNotEmpty)
+          (key: const ValueKey('last-add'), builder: (_) => padded(banner(c))),
+        if (f.userNote(day).isNotEmpty)
+          (
+            key: const ValueKey('note'),
+            builder: (_) => padded(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  LText('备注', style: AppText.hint(c.pal)),
+                  card(
+                    c,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(f.userNote(day)),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      if (groups.isEmpty)
-        (
-          key: const ValueKey('empty-train'),
-          builder: (_) =>
-              padded(empty(c, '这天还没练', '记一组', () => openTrainSheet(c))),
-        ),
-      for (final group in groups)
-        (
-          key: ValueKey('exercise-${group[0]}'),
-          builder: (_) => padded(
-            training(
-              c,
-              '${group[0]}',
-              f.jsonRows(group[1]),
-              day,
-              firstCard:
-                  identical(group, groups.first) &&
-                  f.userNote(day).isEmpty &&
-                  lastAdd.isEmpty,
+        if (groups.isEmpty)
+          (
+            key: const ValueKey('empty-train'),
+            builder: (_) =>
+                padded(empty(c, '这天还没练', '记一组', () => openTrainSheet(c))),
+          ),
+        for (final group in groups)
+          (
+            key: ValueKey('exercise-${group[0]}'),
+            builder: (_) => padded(
+              training(
+                c,
+                '${group[0]}',
+                f.jsonRows(group[1]),
+                day,
+                firstCard:
+                    identical(group, groups.first) &&
+                    f.userNote(day).isEmpty &&
+                    lastAdd.isEmpty,
+              ),
             ),
           ),
-        ),
-      if (groups.isNotEmpty)
-        (
-          key: const ValueKey('add-train'),
-          builder: (_) => padded(
-            action(c, '记另一个动作', () => openTrainSheet(c), centered: true),
+        if (groups.isNotEmpty)
+          (
+            key: const ValueKey('add-train'),
+            builder: (_) => padded(
+              action(c, '记另一个动作', () => openTrainSheet(c), centered: true),
+            ),
           ),
-        ),
-      (key: const ValueKey('gap'), builder: (_) => const SizedBox(height: 28)),
-      (key: const ValueKey('meal-heading'), builder: (_) => heading('饮食')),
-      if (meals.isEmpty)
-        (
-          key: const ValueKey('empty-meal'),
-          builder: (_) =>
-              padded(empty(c, '这天还没记饮食', '记一餐', () => openMealSheet(c))),
-        ),
-      for (final meal in meals)
-        (
-          key: ValueKey('meal-${meal['record_id']}'),
-          builder: (_) => padded(
-            mealCard(c, meal, firstCard: identical(meal, meals.first)),
+      ] else ...[
+        if (meals.isEmpty)
+          (
+            key: const ValueKey('empty-meal'),
+            builder: (_) => padded(
+              empty(c, '这天还没记饮食', '记饮食', () => openQuickFood(c, date: iso)),
+            ),
           ),
-        ),
-      if (meals.isNotEmpty)
-        (
-          key: const ValueKey('add-meal'),
-          builder: (_) =>
-              padded(action(c, '记一餐', () => openMealSheet(c), centered: true)),
-        ),
+        for (final meal in meals)
+          (
+            key: ValueKey('meal-${meal['record_id']}'),
+            builder: (_) => padded(
+              mealCard(c, meal, firstCard: identical(meal, meals.first)),
+            ),
+          ),
+        if (meals.isNotEmpty)
+          (
+            key: const ValueKey('add-meal'),
+            builder: (_) => padded(
+              action(
+                c,
+                '记饮食',
+                () => openQuickFood(c, date: iso),
+                centered: true,
+              ),
+            ),
+          ),
+      ],
     ];
     return MotionLazyList(
       key: ValueKey('log-list-$iso'),
@@ -713,9 +804,32 @@ class DayCards extends StatelessWidget {
                       runSpacing: 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        if (m['source'] == '待分析' && !f.jsTruthy(m['kcal']))
-                          tag(c, '待分析')
-                        else ...[
+                        if (m['source'] == '待分析' && !f.jsTruthy(m['kcal'])) ...[
+                          tag(c, '待分析'),
+                          if (paths.isNotEmpty)
+                            Pressable(
+                              onTap: () => openMealSheet(
+                                c,
+                                preset: {...m, 'editId': m['record_id']},
+                              ),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  minHeight: 44,
+                                ),
+                                child: Center(
+                                  widthFactor: 1,
+                                  child: LText(
+                                    'AI识别 ›',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: c.pal.tint,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ] else ...[
                           LText(
                             '${f.jsNumber(m['kcal']).round()} kcal',
                             style: AppText.body(c.pal)

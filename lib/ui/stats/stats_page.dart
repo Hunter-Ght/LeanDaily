@@ -151,21 +151,23 @@ class _StatsPageState extends State<StatsPage> {
                   ),
                   const BodyRouteCard(),
                   const SizedBox(height: 12),
-                  _weekOverview(week, target),
-                  const SizedBox(height: 12),
-                  const ReviewCard(),
-                  const SizedBox(height: 12),
                   Reveal(
                     visible: bodyPaths != null,
                     child: bodyPaths != null
-                        ? MuscleCard(
-                            days: _muscleDays,
-                            nowMs: app.clock().millisecondsSinceEpoch,
-                            bodyPaths: bodyPaths!,
-                            onOpen: (id) => openMuscleExercises(context, id),
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: MuscleCard(
+                              days: _muscleDays,
+                              nowMs: app.clock().millisecondsSinceEpoch,
+                              bodyPaths: bodyPaths!,
+                              onOpen: (id) => openMuscleExercises(context, id),
+                            ),
                           )
                         : const SizedBox.shrink(),
                   ),
+                  const ReviewCard(),
+                  const SizedBox(height: 12),
+                  _weekOverview(week, target),
                   const SizedBox(height: 12),
                   StatBlock(
                     title: '动作曲线',

@@ -134,7 +134,7 @@ void main() {
     });
 
     test('empty queries return common foods plus high-protein choices', () {
-      final results = foods.search('  ', limit: 300);
+      final results = foods.search('  ', limit: foods.items.length + 10);
       expect(results.length, foods.items.length);
       expect(results.first['name'], '米饭');
       expect(results.map((f) => f['name']).toSet().length, results.length);
@@ -268,7 +268,7 @@ void main() {
   test(
     'catalogue coverage, plausible energy, unique names and legal units',
     () {
-      expect(foods.items.length, inInclusiveRange(280, 320));
+      expect(foods.items.length, inInclusiveRange(300, 360));
       expect(
         foods.items.map((f) => f['name']).toSet().length,
         foods.items.length,
@@ -284,6 +284,7 @@ void main() {
         '零食饮料',
         '常见外食/菜品',
         '蛋白粉与高蛋白即食食品',
+        '常见一餐',
       });
       const units = {
         '100g',
@@ -308,6 +309,7 @@ void main() {
         '只',
         '瓶',
         '球',
+        '顿',
       };
       for (final food in foods.items) {
         final kcal = food['kcal100'] as num;
@@ -328,6 +330,11 @@ void main() {
         expect(kcal, inInclusiveRange(0, 900));
         expect(units, contains(food['unit']));
         expect(food['gramsPerUnit'] as num, inInclusiveRange(1, 1000));
+        if (food['category'] == '常见一餐') {
+          // 整顿饭：一顿的热量和蛋白，并标注适合哪几餐。
+          expect(food['unit'], '顿', reason: food['name'] as String);
+          expect(food['meals'], isNotEmpty, reason: food['name'] as String);
+        }
         // 默认展示一人一次的常见份量，而不是“每 100 g”。
         expect(food['unit'], isNot('100g'), reason: food['name'] as String);
         expect(
@@ -337,4 +344,25 @@ void main() {
       }
     },
   );
+
+  test('typicalMeals recommends whole meals for the chosen meal first', () {
+    final foods = Foods.parse(File('assets/foods.json').readAsStringSync());
+    final lunch = foods.typicalMeals('午餐');
+    expect(lunch, isNotEmpty);
+    expect(lunch.every((f) => (f['meals'] as List).contains('午餐')), true);
+    expect(lunch.map((f) => f['name']), contains('鸡胸肉饭（鸡胸+米饭+蔬菜）'));
+    final breakfast = foods.typicalMeals('早餐');
+    expect(breakfast.map((f) => f['name']), contains('豆浆油条'));
+    final all = foods.typicalMeals('早餐', onlyThisMeal: false);
+    expect(all.length, greaterThan(breakfast.length));
+    expect(all.take(breakfast.length).toList(), breakfast);
+    // 一顿的数值直接可读：鸡胸肉饭约 490 千卡、蛋白 52 g。
+    final entry = foods.entryFor(
+      lunch.firstWhere((f) => f['name'] == '鸡胸肉饭（鸡胸+米饭+蔬菜）'),
+      units: 1,
+    );
+    expect(entry['kcal'], 490);
+    expect(entry['protein'], closeTo(52, .2));
+    expect(entry['portion'], '约1顿（410g）');
+  });
 }

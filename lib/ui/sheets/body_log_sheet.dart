@@ -104,6 +104,13 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
       final waist = _waistOpen && _waist.isNotEmpty
           ? double.tryParse(_waist) ?? double.nan
           : null;
+      // 先在这里核对输入：只有体重/腰围真的超出范围，才显示范围提示。
+      if (!weight.isFinite ||
+          weight < 30 ||
+          weight > 250 ||
+          (waist != null && (!waist.isFinite || waist < 20 || waist > 200))) {
+        throw const FormatException('请输入 30–250 kg 的体重，腰围为 20–200 cm');
+      }
       final app = context.app;
       await app.recordBody(
         weightKg: weight,
@@ -119,7 +126,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
       if (mounted) {
         setState(
           () => _error = error is FormatException
-              ? '请输入 30–250 kg 的体重，腰围为 20–200 cm'
+              ? error.message
               : AppController.message(error),
         );
       }

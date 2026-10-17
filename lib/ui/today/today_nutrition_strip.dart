@@ -374,11 +374,11 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                       spacing: 20,
                       children: [
                         TodayButton(
-                          '快速记饮食',
+                          '记饮食',
                           onTap: () => openQuickFood(context, date: m.iso),
                         ),
                         TodayButton(
-                          '拍照记录',
+                          'AI拍照记录',
                           onTap: () {
                             app.setDate(m.iso);
                             openMealSheet(context);

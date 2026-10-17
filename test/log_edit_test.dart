@@ -140,14 +140,15 @@ void main() {
     final h = await Harness.pump(tester, tab: 1);
     final meal = (h.controller.meals['meals'] as List).first as Map;
     final edit = find.bySemanticsLabel('编辑${meal['meal']}');
-    await tester.scrollUntilVisible(
-      edit,
-      200,
-      scrollable: find.descendant(
-        of: find.byKey(ValueKey('log-list-${h.controller.date}')),
-        matching: find.byType(Scrollable),
+    // 竖屏一次只看一块：切到“饮食”就能直接看到，不用在长长的训练后面往下滑。
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const ValueKey('day-section-switch')),
+        matching: find.text('饮食'),
       ),
     );
+    await tester.pumpAndSettle();
+    expect(edit.hitTestable(), findsOneWidget);
     await settle(tester);
     await tester.tap(edit);
     await settle(tester);

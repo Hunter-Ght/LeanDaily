@@ -55,8 +55,9 @@ void main() {
         seed: (n) => n.docs['fw-profile-v1'] = jsonEncode(fourProfile()),
       );
       await openFood(tester);
-      expect(find.text('拍照'), findsNothing);
-      expect(find.text('在 我的 → 高级 里配置大模型后可用'), findsOneWidget);
+      // AI 拍照入口始终在最前面；没配置模型时说明只能存照片。
+      expect(find.text('AI拍照识别'), findsOneWidget);
+      expect(find.text('未配置，可存照片'), findsOneWidget);
       await enterFood(tester, '搜索食物', '鸡胸肉');
       FocusManager.instance.primaryFocus?.unfocus();
       await settleFood(tester);
@@ -281,7 +282,7 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets('模型和密钥全部存在才显示拍照', (tester) async {
+  testWidgets('AI拍照识别入口始终显示，配置后点进拍照页', (tester) async {
     final h = await Harness.pump(
       tester,
       seed: (n) {
@@ -294,9 +295,39 @@ void main() {
       'baseUrl': 'https://example.invalid',
     });
     await openFood(tester);
-    expect(find.text('拍照'), findsOneWidget);
-    await tester.tap(find.text('拍照'));
+    expect(find.text('未配置，可存照片'), findsNothing);
+    expect(find.text('拍张照自动算'), findsOneWidget);
+    await tester.tap(find.text('AI拍照识别'));
     await settleFood(tester);
     expect(find.byType(MealSheet), findsOneWidget);
+  });
+
+  testWidgets('默认列表是常吃和常见一餐，一顿的热量蛋白直接写在后面', (tester) async {
+    await Harness.pump(
+      tester,
+      empty: true,
+      seed: (n) => n.docs['fw-profile-v1'] = jsonEncode(fourProfile()),
+    );
+    await openFood(tester);
+    // 没有再出现按蛋白密度排的“高蛋白推荐”。
+    expect(find.text('高蛋白推荐'), findsNothing);
+    expect(find.text('常见一餐'), findsOneWidget);
+    // 现在是早上 9 点，默认按早餐推荐。
+    expect(find.text('豆浆油条'), findsOneWidget);
+    expect(find.text('黄焖鸡米饭'), findsNothing);
+    expect(find.textContaining('1 顿（380 g） · 405 千卡 / 蛋白 15 g'), findsOneWidget);
+    // 切到午餐，推荐换成午餐常见的整顿饭。
+    await tester.tap(find.text('午餐').first);
+    await settleFood(tester);
+    expect(find.text('黄焖鸡米饭'), findsOneWidget);
+    expect(find.text('豆浆油条'), findsNothing);
+    // 点“＋”按一顿算，半顿也可以。
+    await tester.tap(find.bySemanticsLabel('选择 黄焖鸡米饭'));
+    await settleFood(tester);
+    expect(find.text('1 顿 ≈ 600 g，共约 600 g'), findsOneWidget);
+    await tester.tap(find.text('加入'));
+    await settleFood(tester);
+    expect(find.textContaining('黄焖鸡米饭 ×'), findsOneWidget);
+    expect(find.text('已选 1'), findsOneWidget);
   });
 }

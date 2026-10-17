@@ -3,6 +3,9 @@ import 'dart:convert';
 /// Offline estimates per 100 g (drinks treat 1 ml as 1 g). All quantities and
 /// portions are approximate; packaged foods should use their nutrition label.
 /// Loading the asset is the caller's responsibility; this library is pure Dart.
+const typicalMealCategory = '常见一餐';
+const mealNames = ['早餐', '午餐', '晚餐', '加餐'];
+
 class Foods {
   Foods._(this.items);
 
@@ -48,10 +51,18 @@ class Foods {
           )) {
         throw FormatException('食物别名无效：$name');
       }
+      // 整顿饭（category 为“常见一餐”）可以标注适合哪几餐，用来按餐次推荐。
+      final meals = raw['meals'];
+      if (meals != null &&
+          (meals is! List ||
+              meals.any((m) => m is! String || !mealNames.contains(m)))) {
+        throw FormatException('食物餐次无效：$name');
+      }
       items.add(
         Map<String, dynamic>.unmodifiable({
           'name': name,
           'aliases': List<String>.unmodifiable(aliases.cast<String>()),
+          if (meals != null) 'meals': List<String>.unmodifiable(meals.cast<String>()),
           'category': text('category'),
           'unit': text('unit'),
           'gramsPerUnit': number('gramsPerUnit', positive: true),
@@ -61,6 +72,21 @@ class Foods {
       );
     }
     return Foods._(List<Map<String, dynamic>>.unmodifiable(items));
+  }
+
+  /// “常见一餐”：一顿饭整体的热量和蛋白，按餐次排序（适合 [meal] 的在前，保持资源顺序）。
+  /// [onlyThisMeal] 为 true 时只返回适合该餐的。
+  List<Map<String, dynamic>> typicalMeals(
+    String meal, {
+    bool onlyThisMeal = true,
+  }) {
+    final all = items.where((f) => f['category'] == typicalMealCategory);
+    bool fits(Map<String, dynamic> f) =>
+        (f['meals'] as List?)?.contains(meal) ?? false;
+    return [
+      ...all.where(fits),
+      if (!onlyThisMeal) ...all.where((f) => !fits(f)),
+    ];
   }
 
   /// Exact name > name prefix > name substring > alias > pinyin initials.

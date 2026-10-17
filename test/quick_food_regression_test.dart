@@ -66,10 +66,8 @@ void main() {
       );
       final before = h.native.docs['android-state'];
       await openFood(t);
-      expect(
-        find.text('Protein powder'),
-        findsNWidgets(2),
-      ); // recent + recommended
+      // 蛋白粉只列一次（置顶在“常吃”），历史里的旧名“酵母蛋白粉”不会再多出一行。
+      expect(find.text('Protein powder'), findsOneWidget);
       expect(find.textContaining('酵母'), findsNothing);
       expect(find.textContaining('100g'), findsNothing);
       expect(find.textContaining('1 scoop (30 g)'), findsWidgets);
