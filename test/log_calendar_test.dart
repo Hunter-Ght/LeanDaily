@@ -1,11 +1,67 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/ui/log/record_calendar.dart';
+import 'package:leandaily/theme/tokens.dart';
 
 import 'support/harness.dart';
 
 void main() {
   setUpAll(Harness.setUpAll);
+
+  for (final dark in [false, true]) {
+    for (final height in [568.0, 640.0]) {
+      for (final locale in [
+        const Locale('zh', 'CN'),
+        const Locale('zh', 'TW'),
+        const Locale('en'),
+      ]) {
+        testWidgets('短屏大字体月历保留列表和切换入口 $dark/$height/$locale', (tester) async {
+          tester.platformDispatcher.textScaleFactorTestValue = 1.3;
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+          final h = await Harness.pump(
+            tester,
+            tab: 1,
+            dark: dark,
+            locale: locale,
+            size: Size(320, height),
+          );
+          final cal = tester.widget<RecordCalendar>(
+            find.byType(RecordCalendar),
+          );
+          cal.onToggle();
+          await tester.pumpAndSettle();
+          expect(cal.progress.value, 1);
+          expect(tester.takeException(), isNull);
+          expect(
+            tester.getSize(find.byKey(const ValueKey('day-pager'))).height,
+            greaterThanOrEqualTo(Metrics.dockHeight + Metrics.touchTarget),
+          );
+          expect(
+            find.byKey(const ValueKey('day-section-switch')).hitTestable(),
+            findsOneWidget,
+          );
+          final header = find.byKey(const ValueKey('record-header-scroll'));
+          final position = tester
+              .state<ScrollableState>(
+                find
+                    .descendant(of: header, matching: find.byType(Scrollable))
+                    .first,
+              )
+              .position;
+          expect(position.maxScrollExtent, greaterThan(0));
+          position.jumpTo(position.maxScrollExtent);
+          await tester.pumpAndSettle();
+          await tester.binding.handlePopRoute();
+          await tester.pumpAndSettle();
+          expect(cal.progress.value, 0);
+          await tester.tap(find.byKey(const ValueKey('date-2026-10-13')));
+          await tester.pumpAndSettle();
+          expect(h.controller.date, '2026-10-13');
+          expect(tester.takeException(), isNull);
+        });
+      }
+    }
+  }
 
   testWidgets('月历原位展开，返回键先收起，日期和列表同步', (tester) async {
     final h = await Harness.pump(tester, tab: 1);

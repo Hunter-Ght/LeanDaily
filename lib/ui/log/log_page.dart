@@ -294,9 +294,26 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        hero(),
-                        calendar(),
-                        goal(),
+                        // Leave room for the section switch and a usable list
+                        // above the dock, even with large fonts or a short screen.
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight:
+                                (box.maxHeight -
+                                        top -
+                                        Metrics.dockHeight -
+                                        MediaQuery.paddingOf(context).bottom -
+                                        Metrics.touchTarget * 3)
+                                    .clamp(0.0, double.infinity),
+                          ),
+                          child: SingleChildScrollView(
+                            key: const ValueKey('record-header-scroll'),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [hero(), calendar(), goal()],
+                            ),
+                          ),
+                        ),
                         if (!columns)
                           DaySectionSwitch(
                             train: section != '饮食',

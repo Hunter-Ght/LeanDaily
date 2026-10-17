@@ -432,13 +432,17 @@ class _DockItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 1),
-          LText(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              letterSpacing: 0.1,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-              color: color,
+          Flexible(
+            child: LText(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                letterSpacing: 0.1,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                color: color,
+              ),
             ),
           ),
         ],

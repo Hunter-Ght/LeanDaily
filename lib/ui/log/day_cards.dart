@@ -52,12 +52,16 @@ class DaySectionSwitch extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                LText(
-                  label,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: p.text,
+                Flexible(
+                  child: LText(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: p.text,
+                    ),
                   ),
                 ),
                 if (count > 0) ...[
@@ -432,9 +436,12 @@ class DayCards extends StatelessWidget {
           children: [
             AppIcon('plus', size: 16, color: c.pal.tint),
             const SizedBox(width: 6),
-            LText(
-              label,
-              style: AppText.body(c.pal).copyWith(color: c.pal.tint),
+            Flexible(
+              child: LText(
+                label,
+                textAlign: TextAlign.center,
+                style: AppText.body(c.pal).copyWith(color: c.pal.tint),
+              ),
             ),
           ],
         ),
