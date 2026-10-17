@@ -2200,7 +2200,7 @@
   "替换为 OpenAI 范例？": "替換為 OpenAI 範例？",
   "查看 OpenAI 数据处理说明": "檢視 OpenAI 資料處理說明",
   "自定义 AI 服务（非官方 OpenAI 范例）": "自定義 AI 服務（非官方 OpenAI 範例）",
-  "范例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。": "範例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 額度；ChatGPT 訂閱不等於 API 額度。範例不會自動啟用或聯網。",
+  "范例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。": "範例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 額度；ChatGPT 訂閱不等於 API 額度。範例不會自動啟用或聯網。",
   "Responses（OpenAI / 兼容接口）": "Responses（OpenAI / 相容介面）",
   "AI 照片授权": "AI 照片授權"
 }

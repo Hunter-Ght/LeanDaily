@@ -1,7 +1,7 @@
 /// Optional example only: no credentials, network calls or automatic activation.
 const openAiExample = <String, String>{
   'baseUrl': 'https://api.openai.com/v1',
-  'model': 'gpt-4.1-mini',
+  'model': 'gpt-6-luna',
   'protocol': 'responses',
 };
 const openAiDataPolicyUrl =

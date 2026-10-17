@@ -16,7 +16,7 @@ Your chosen AI provider receives this data and standard network information such
 
 ### OpenAI example and provider identification
 
-The optional OpenAI example uses https://api.openai.com/v1, gpt-4.1-mini and the Responses protocol. It does not include a key or enable recognition. You need your own eligible API account, key and API billing; a ChatGPT subscription does not include API usage. Model access and service availability depend on your provider account and region. LeanDaily is independent and is not endorsed by OpenAI.
+The optional OpenAI example uses https://api.openai.com/v1, gpt-6-luna and the Responses protocol. It does not include a key or enable recognition. You need your own eligible API account, key and API billing; a ChatGPT subscription does not include API usage. Model access and service availability depend on your provider account and region. LeanDaily is independent and is not endorsed by OpenAI.
 
 Only the exact HTTPS api.openai.com /v1 endpoint is identified as OpenAI in the app. Other endpoints are custom services, even if their model names include OpenAI or GPT. Verify their privacy, retention, training, deletion and billing terms before sending data.
 

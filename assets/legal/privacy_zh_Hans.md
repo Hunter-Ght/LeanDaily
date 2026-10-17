@@ -16,7 +16,7 @@
 
 ### OpenAI 范例与服务商识别
 
-可选的 OpenAI 范例为 https://api.openai.com/v1、gpt-4.1-mini 和 Responses 协议，不包含密钥，也不会自动启用识别。你需要自己符合服务条件的 API 账号、密钥及 API 计费额度；ChatGPT 订阅不包含 API 用量。模型权限和可用地区以服务商账号为准。LeanDaily 是独立项目，未获 OpenAI 背书。
+可选的 OpenAI 范例为 https://api.openai.com/v1、gpt-6-luna 和 Responses 协议，不包含密钥，也不会自动启用识别。你需要自己符合服务条件的 API 账号、密钥及 API 计费额度；ChatGPT 订阅不包含 API 用量。模型权限和可用地区以服务商账号为准。LeanDaily 是独立项目，未获 OpenAI 背书。
 
 App 仅将 HTTPS api.openai.com 的 /v1 地址识别为 OpenAI。其他地址均为自定义服务，即使模型名含 OpenAI 或 GPT。发送前请核实其隐私、保存、训练、删除及计费规则。
 

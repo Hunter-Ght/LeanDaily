@@ -253,7 +253,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             '地址填写到 /v1，不包含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。',
           ),
           const GroupFooter(
-            '范例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。',
+            '范例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。',
           ),
           GroupFooter(aiProviderDisclosure(_cfg!)),
           if (isOfficialOpenAi(_cfg!))

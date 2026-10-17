@@ -2283,7 +2283,7 @@
   "替换为 OpenAI 范例？": "Replace with the OpenAI example?",
   "查看 OpenAI 数据处理说明": "Read OpenAI data controls",
   "自定义 AI 服务（非官方 OpenAI 范例）": "Custom AI service (not the official OpenAI example)",
-  "范例：OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。": "Example: OpenAI · https://api.openai.com/v1 · gpt-4.1-mini · Responses. Use your own API key and available API credit. A ChatGPT subscription does not include API usage. Filling the example does not activate recognition or contact the service.",
+  "范例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。": "Example: OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses. Use your own API key and available API credit. A ChatGPT subscription does not include API usage. Filling the example does not activate recognition or contact the service.",
   "Responses（OpenAI / 兼容接口）": "Responses (OpenAI / compatible APIs)",
   "AI 照片授权": "AI photo consent"
 }

@@ -15,7 +15,7 @@
 
 ## 2. 创建 App 记录
 
-在 Apple Developer 的 Certificates, Identifiers & Profiles 注册明确的 App ID / Bundle ID。代码当前是 `app.leandaily`；先检查能否注册及是否属于该组织，不要直接假设可用。确定后，让 Xcode、App Store Connect、项目配置使用同一个 ID。
+在 Apple Developer 的 Certificates, Identifiers & Profiles 注册明确的 App ID / Bundle ID。项目初始值是 `app.leandaily`；以本机 Xcode 最终配置和组织实际注册的 ID 为准，先检查能否注册及是否属于该组织，不要直接假设可用。确定后，让 Xcode、App Store Connect、项目配置使用同一个 ID。
 
 App Store Connect → My Apps / App → ＋ → New App：
 
@@ -27,6 +27,12 @@ App Store Connect → My Apps / App → ＋ → New App：
 - User access：按组织需要设置。
 
 先创建 App 记录，再上传构建。可售地区之后设为 United States。App 的三种 UI 语言不限制销售地区。
+
+### Register an App ID 的 Capabilities
+
+当前代码不需要主动勾选额外 Capabilities，页面系统默认项保持默认。Push Notifications、iCloud、HealthKit、Sign in with Apple、App Groups、Keychain Sharing、Associated Domains、Background Modes 都无需为本版额外开启。提醒由本地 UserNotifications 安排，不向 APNs 注册。普通本设备 Keychain 存储不需要 Keychain Sharing。相机、系统照片选择器和 HTTPS AI 请求也不在这张列表申请权限；相机说明已在 Info.plist 配好，App 会在使用时申请相机/通知权限。
+
+注册时使用 Explicit Bundle ID。以你最终注册的值为准，并确保与 Xcode 和 App Store Connect 一致；能力以后需要时可以再补，不必提前全开。
 
 ## 3. Xcode 签名与上传
 
@@ -91,4 +97,4 @@ App Store Connect → LeanDaily → TestFlight → Internal Testing → 创建�
 - 隐私定义：https://developer.apple.com/app-store/app-privacy-details/
 - 审核准则：https://developer.apple.com/app-store/review/guidelines/
 - OpenAI API 数据控制：https://developers.openai.com/api/docs/guides/your-data
-- 示例图片输入模型：https://developers.openai.com/api/docs/models/gpt-4.1-mini
+- 示例图片输入模型：https://developers.openai.com/api/docs/models/gpt-6-luna
