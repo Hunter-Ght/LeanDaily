@@ -21,7 +21,7 @@ class FoodField extends StatelessWidget {
   final bool numeric;
   @override
   Widget build(BuildContext context) => Container(
-    constraints: const BoxConstraints(minHeight: 44),
+    constraints: const BoxConstraints(minHeight: 48),
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     decoration: BoxDecoration(
       color: context.pal.fill2,

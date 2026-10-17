@@ -177,13 +177,18 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
         app.repo.meals(shiftDate(_date, -i))['meals'],
       )) {
         for (final entry in jsonRows(meal['items'])) {
-          final name = '${entry['name']}';
+          final originalName = '${entry['name']}';
+          final name = isProteinPowder(originalName) ? '蛋白粉' : originalName;
           counts[name] = (counts[name] ?? 0) + 1;
           entries.putIfAbsent(name, () => entry);
         }
       }
     }
-    final catalogue = {for (final food in foods.items) '${food['name']}': food};
+    final catalogue = {
+      for (final food in foods.items)
+        if (!isProteinPowder(food['name'])) '${food['name']}': food,
+      '蛋白粉': _powder,
+    };
     final ranked = <Map<String, dynamic>>[
       for (final e in entries.entries)
         catalogue[e.key] ??
@@ -211,37 +216,61 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
       ),
     ),
   );
-  Widget _food(Map<String, dynamic> food) => Container(
-    padding: const EdgeInsets.symmetric(vertical: 6),
-    decoration: BoxDecoration(
-      border: Border(bottom: BorderSide(color: context.pal.sep, width: .5)),
-    ),
-    child: Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              LText(
-                '${food['name']}',
-                style: TextStyle(fontSize: 16, color: context.pal.text),
-              ),
-              const SizedBox(height: 4),
-              LText(
-                '${food['recent'] == true ? '每份' : '每 100g'} 约 ${fmt(food['kcal100'])} 千卡 / 蛋白 ${fmt(food['protein100'])} g',
-                style: TextStyle(fontSize: 12, color: context.pal.secondary),
-              ),
-            ],
-          ),
-        ),
-        Semantics(
-          label: AppMessages.of(context).text('选择 ${food['name']}'),
-          button: true,
-          child: FoodButton('＋', () => _portion(food)),
-        ),
-      ],
-    ),
+  Map<String, dynamic> get _powder => proteinPowderFood(
+    (context.app.plan['protein'] as Map?)?['powder'] as Map?,
   );
+
+  List<Map<String, dynamic>> _search(Foods foods) {
+    final messages = AppMessages.of(context);
+    return {
+      for (final food in [
+        ...foods.search(_query).where((f) => !isProteinPowder(f['name'])),
+        ...messages.foodSearch([
+          _powder,
+          ...foods.items.where((f) => !isProteinPowder(f['name'])),
+        ], _query),
+      ])
+        food['name']: food,
+    }.values.toList();
+  }
+
+  Widget _food(Map<String, dynamic> food) {
+    final serving = entryFor(food, units: 1);
+    final portion = food['recent'] == true
+        ? '1 份（上次份量）'
+        : '1 ${food['unit']}（${fmt(food['gramsPerUnit'])} g）';
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: context.pal.sep, width: .5)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LText(
+                  '${food['name']}',
+                  style: TextStyle(fontSize: 16, color: context.pal.text),
+                ),
+                const SizedBox(height: 4),
+                LText(
+                  '$portion · ${fmt(serving['kcal'])} 千卡 / 蛋白 ${fmt(serving['protein'])} g',
+                  style: TextStyle(fontSize: 12, color: context.pal.secondary),
+                ),
+              ],
+            ),
+          ),
+          Semantics(
+            label: AppMessages.of(context).text('选择 ${food['name']}'),
+            button: true,
+            child: FoodButton('＋', () => _portion(food)),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _segments(
     List<String> labels,
@@ -412,33 +441,12 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                         _heading('食物库加载中…')
                       else if (_query.trim().isNotEmpty) ...[
                         _heading('搜索结果'),
-                        if ((_query.trim().isEmpty
-                                ? foods.search(_query)
-                                : {
-                                    for (final food in [
-                                      ...foods.search(_query),
-                                      ...AppMessages.of(context)
-                                          .foodSearch(foods.items, _query),
-                                    ])
-                                      food['name']: food,
-                                  }.values.toList())
-                            .isEmpty)
+                        if (_search(foods).isEmpty)
                           LText(
                             '没有找到，试试手动输入',
                             style: TextStyle(color: context.pal.secondary),
                           ),
-                        for (final food
-                            in (_query.trim().isEmpty
-                                ? foods.search(_query)
-                                : {
-                                    for (final food in [
-                                      ...foods.search(_query),
-                                      ...AppMessages.of(context)
-                                          .foodSearch(foods.items, _query),
-                                    ])
-                                      food['name']: food,
-                                  }.values.toList()))
-                          _food(food),
+                        for (final food in _search(foods)) _food(food),
                       ] else ...[
                         _heading('常吃'),
                         if (frequent.isEmpty)
@@ -451,7 +459,12 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                           ),
                         for (final food in frequent) _food(food),
                         _heading('高蛋白推荐'),
-                        for (final food in foods.proteinRanking().take(12))
+                        _food(_powder),
+                        for (final food
+                            in foods
+                                .proteinRanking()
+                                .where((f) => !isProteinPowder(f['name']))
+                                .take(11))
                           _food(food),
                       ],
                     ] else if (_tab == '手动输入') ...[
@@ -478,10 +491,12 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 12),
                       FoodButton(
                         _more ? '收起更多' : '更多',
                         () => setState(() => _more = !_more),
                       ),
+                      const SizedBox(height: 8),
                       Reveal(
                         visible: _more,
                         child: _more

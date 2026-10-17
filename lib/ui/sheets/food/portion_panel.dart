@@ -1,4 +1,5 @@
 import '../../../l10n/localized_text.dart';
+import '../../../l10n/app_messages.dart';
 import '../../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
@@ -130,7 +131,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
                     if (i > 0) const SizedBox(width: 8),
                     Expanded(
                       child: FoodButton(
-                        '${fmt(q)}${widget.food['unit']}',
+                        '${fmt(q)}${AppMessages.of(context).code == 'en' ? ' ' : ''}${AppMessages.of(context).text('${widget.food['unit']}')}',
                         () => _choose(q),
                       ),
                     ),
@@ -170,7 +171,8 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
 
   /// 份数模式提示一份有多重；克数模式提示大约相当于几份。
   String _hint() {
-    final unit = '${widget.food['unit']}';
+    final messages = AppMessages.of(context);
+    final unit = messages.text('${widget.food['unit']}');
     if (_grams) {
       final n = num.tryParse(_quantity);
       if (n == null || n <= 0 || unit == '100g') return '';
@@ -180,6 +182,6 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
     final total = n == null || n <= 0
         ? ''
         : '，共约 ${fmt(_round2(n * _perUnit))} g';
-    return '1 $unit ≈ ${fmt(_perUnit)} g$total';
+    return '1 $unit ≈ ${fmt(_perUnit)} g${messages.text(total)}';
   }
 }

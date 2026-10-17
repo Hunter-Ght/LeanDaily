@@ -548,6 +548,7 @@ class AppController extends ChangeNotifier {
   Future<void> addProteinPowder(String date) async {
     final p = (plan['protein'] as Map?)?['powder'] as Map?;
     if (p == null || date.isEmpty) return;
+    final serving = entryFor(proteinPowderFood(p), units: 1);
     final t = clock();
     final time =
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
@@ -557,19 +558,10 @@ class AppController extends ChangeNotifier {
         meal: '加餐',
         time: time,
         source: '手动填写',
-        items: [
-          {
-            'name': plan_lib.powderLabel(p['name']),
-            'portion': '约1勺（${_fmt(p['grams'])}g）',
-            'kcal': p['kcal'],
-            'protein': p['protein'],
-            'carbs': 0,
-            'fat': 0,
-          },
-        ],
+        items: [serving],
       );
       haptics.saved();
-      toast.show('+${_fmt(p['protein'])} g 蛋白质（已记入饮食 · 加餐）');
+      toast.show('+${_fmt(serving['protein'])} g 蛋白质（已记入饮食 · 加餐）');
     } on Object catch (e) {
       toast.show('保存失败：${_msg(e)}');
     }
@@ -1123,7 +1115,9 @@ class AppController extends ChangeNotifier {
         powderName.isNotEmpty &&
         (repo.meals(today)['meals'] as List).any(
           (m) => ((m as Map)['items'] as List).any(
-            (i) => '${(i as Map)['name']}'.contains(powderName),
+            (i) =>
+                isProteinPowder((i as Map)['name']) ||
+                '${i['name']}'.contains(powderName),
           ),
         );
     try {

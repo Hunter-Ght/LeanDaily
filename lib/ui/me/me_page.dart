@@ -91,6 +91,8 @@ class MePage extends StatelessWidget {
                   ),
                   GroupRow(
                     label: '语言',
+                    icon: 'language',
+                    iconColor: p.tint,
                     value: switch (app.languagePreference) {
                       'en' => 'English',
                       'zh_Hans' => '简体中文',

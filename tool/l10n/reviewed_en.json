@@ -1054,5 +1054,22 @@
   "肉禽蛋": "Meat, poultry & eggs",
   "蔬菜": "Vegetables",
   "蛋白粉与高蛋白即食食品": "Protein supplements & snacks",
-  "零食饮料": "Snacks & drinks"
+  "零食饮料": "Snacks & drinks",
+  "1 {p0}（{p1} g）": "1 {p0} ({p1} g)",
+  "1 份（上次份量）": "1 portion (last logged amount)",
+  "{p0} · {p1} 千卡 / 蛋白 {p2} g": "{p0} · {p1} kcal / {p2} g protein",
+  "1 勺（30 g）": "1 scoop (30 g)",
+  "搜食物": "Search foods",
+  "搜索食物": "Search foods",
+  "手动输入": "Manual entry",
+  "热量（千卡）": "Calories (kcal)",
+  "蛋白（g）": "Protein (g)",
+  "碳水（g）": "Carbs (g)",
+  "收起更多": "Less",
+  "更多": "More",
+  "加入": "Add",
+  "在 我的 → 高级 里配置大模型后可用": "Photo logging is available after setting up AI in Me → Advanced.",
+  "展开营养条带": "Expand nutrition summary",
+  "收起营养条带": "Collapse nutrition summary",
+  "快速记饮食": "Quick food log"
 }

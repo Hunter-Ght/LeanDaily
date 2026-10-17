@@ -225,3 +225,34 @@ String _initials(String text) => text
     .where((char) => !RegExp(r'[\s（），、()·%\d]').hasMatch(char))
     .map((char) => _initialByChar[char] ?? char)
     .join();
+
+/// A single generic quick-entry powder. Keep original plans/records intact;
+/// scale their known nutrition to a 30 g scoop instead of inventing a new label.
+bool isProteinPowder(Object? name) => '$name'.contains('蛋白粉');
+
+Map<String, dynamic> proteinPowderFood([Map? configured]) {
+  num positive(String key, num fallback) {
+    final n = configured?[key];
+    return n is num && n.isFinite && n > 0 ? n : fallback;
+  }
+
+  final grams = positive('grams', 30);
+  return {
+    'name': '蛋白粉',
+    'unit': '勺',
+    'gramsPerUnit': 30,
+    'aliases': [
+      '蛋白粉',
+      '酵母蛋白粉',
+      '乳清蛋白粉',
+      'protein powder',
+      'whey',
+      'yeast',
+      'dbf',
+    ],
+    'kcal100': positive('kcal', 124) * 100 / grams,
+    'protein100': positive('protein', 22.6) * 100 / grams,
+    'carbs100': 0,
+    'fat100': 0,
+  };
+}

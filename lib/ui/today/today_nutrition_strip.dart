@@ -8,7 +8,7 @@ import '../../app/app_controller.dart';
 import '../../app/routes.dart';
 import '../../domain/calendar.dart';
 import '../../domain/format.dart' hide shiftDate;
-import '../../domain/plan.dart' show powderLabel;
+import '../../domain/foods.dart';
 import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
@@ -138,13 +138,9 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
         .where(records.needsAfterPhoto)
         .toList();
     final powder = jsonMap(jsonMap(app.plan['protein'])['powder']);
+    final powderServing = entryFor(proteinPowderFood(powder), units: 1);
     final frequent = recent
-        .where(
-          (f) =>
-              powder.isEmpty ||
-              !('${f['name']}'.startsWith(powderLabel(powder['name'])) ||
-                  '${f['name']}'.startsWith('${powder['name']}')),
-        )
+        .where((f) => powder.isEmpty || !isProteinPowder(f['name']))
         .take(powder.isEmpty ? 3 : 2);
     Widget metric(
       String label,
@@ -349,13 +345,15 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                               children: [
                                 if (powder.isNotEmpty)
                                   TodayFoodChip(
-                                    name: powderLabel(powder['name']),
-                                    protein: jsNumber(powder['protein']),
+                                    name: '蛋白粉',
+                                    portion: '1 勺（30 g）',
+                                    protein: jsNumber(powderServing['protein']),
                                     onTap: busy ? null : () => add(null),
                                   ),
                                 for (final food in frequent)
                                   TodayFoodChip(
                                     name: '${food['name']}',
+                                    portion: '${food['portion'] ?? ''}',
                                     protein: jsNumber(food['protein']),
                                     onTap: busy ? null : () => add(food),
                                   ),
@@ -409,9 +407,10 @@ class TodayFoodChip extends StatelessWidget {
     super.key,
     required this.name,
     required this.protein,
+    this.portion = '',
     required this.onTap,
   });
-  final String name;
+  final String name, portion;
   final num protein;
   final VoidCallback? onTap;
 
@@ -437,7 +436,7 @@ class TodayFoodChip extends StatelessWidget {
               children: [
                 Flexible(
                   child: LText(
-                    name,
+                    portion.isEmpty ? name : '$name · $portion',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 14, color: p.text),
