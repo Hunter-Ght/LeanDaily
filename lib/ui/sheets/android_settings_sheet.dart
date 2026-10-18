@@ -27,7 +27,7 @@ class AndroidSettingsSheet extends StatefulWidget {
 class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
   Map<String, dynamic>? _cfg;
   String _modelKey = '', _error = '';
-  bool _ready = false, _busy = false;
+  bool _ready = false, _busy = false, _more = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -82,6 +82,23 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     app.refreshRemindersNow();
     app.toast.show('设置已保存');
   });
+  Future<void> _pickProvider() async {
+    if (_busy || !_ready) return;
+    final picked = await showActionMenu(
+      context,
+      title: '服务商',
+      message: '选择后只会把示例填进下面的表单，保存前不会联网或授权。',
+      actions: [
+        for (final p in aiPresets) MenuAction(id: p.id, label: p.name),
+        const MenuAction(id: 'manual', label: '其他兼容服务（手动填写）'),
+      ],
+    );
+    if (picked == null || !mounted) return;
+    if (picked.id == 'manual') return _useExample(aiManualPreset, '');
+    final preset = aiPresets.firstWhere((p) => p.id == picked.id);
+    return _useExample(preset.settings, preset.name);
+  }
+
   Future<void> _useExample(Map<String, String> example, String provider) async {
     if (_busy || !_ready) return;
     final changedDestination =
@@ -91,9 +108,11 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
         ('${_cfg!['baseUrl']}'.isNotEmpty || _modelKey.isNotEmpty)) {
       final accepted = await showConfirm(
         context,
-        title: '替换为 $provider 范例？',
-        message: '接口、模型和协议将替换为范例，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。',
-        confirm: '使用范例',
+        title: provider.isEmpty ? '改为手动填写？' : '替换为 $provider 范例？',
+        message: provider.isEmpty
+            ? '接口地址和模型将清空，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。'
+            : '接口、模型和协议将替换为范例，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。',
+        confirm: provider.isEmpty ? '改为手动' : '使用范例',
       );
       if (!accepted || !mounted) return;
     }
@@ -145,6 +164,10 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
               _modelKey = v;
             } else {
               _cfg![key] = v;
+              if (key == 'baseUrl') {
+                if (isOfficialOpenAi(_cfg!)) _cfg!['protocol'] = 'responses';
+                if (isOfficialGemini(_cfg!)) _cfg!['protocol'] = 'chat';
+              }
             }
           }),
         ),
@@ -217,16 +240,9 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           GroupCard(
             children: [
               GroupRow(
-                label: '填入 OpenAI 范例',
-                onTap: _busy || !_ready
-                    ? null
-                    : () => _useExample(openAiExample, 'OpenAI'),
-              ),
-              GroupRow(
-                label: '填入 Google Gemini 范例',
-                onTap: _busy || !_ready
-                    ? null
-                    : () => _useExample(geminiExample, 'Google Gemini'),
+                label: '服务商',
+                value: aiProviderLabel(_cfg!),
+                onTap: _busy || !_ready ? null : _pickProvider,
               ),
               _field('接口地址', 'baseUrl', placeholder: openAiExample['baseUrl']),
               _field('模型名称', 'model', placeholder: openAiExample['model']),
@@ -242,38 +258,53 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
                 setState(() => _modelKey = key);
               }),
               GroupRow(
-                label: '接口协议',
-                value: _cfg!['protocol'] == 'responses'
-                    ? 'Responses（OpenAI / 兼容接口）'
-                    : 'Chat Completions（兼容接口）',
-                onTap: () async {
-                  final picked = await showActionMenu(
-                    context,
-                    title: '接口协议',
-                    actions: const [
-                      MenuAction(id: 'chat', label: 'Chat Completions（兼容接口）'),
-                      MenuAction(
-                        id: 'responses',
-                        label: 'Responses（OpenAI / 兼容接口）',
+                label: '更多选项',
+                value: _more ? '收起' : '',
+                onTap: () => setState(() => _more = !_more),
+              ),
+              Reveal(
+                visible: _more,
+                child: !_more
+                    ? const SizedBox.shrink()
+                    : GroupRow(
+                        label: '接口协议',
+                        value: _cfg!['protocol'] == 'responses'
+                            ? 'Responses（OpenAI / 兼容接口）'
+                            : 'Chat Completions（兼容接口）',
+                        onTap: () async {
+                          final picked = await showActionMenu(
+                            context,
+                            title: '接口协议',
+                            actions: const [
+                              MenuAction(
+                                id: 'chat',
+                                label: 'Chat Completions（兼容接口）',
+                              ),
+                              MenuAction(
+                                id: 'responses',
+                                label: 'Responses（OpenAI / 兼容接口）',
+                              ),
+                            ],
+                          );
+                          if (picked != null && mounted) {
+                            setState(() => _cfg!['protocol'] = picked.id);
+                          }
+                        },
                       ),
-                    ],
-                  );
-                  if (picked != null && mounted) {
-                    setState(() => _cfg!['protocol'] = picked.id);
-                  }
-                },
               ),
             ],
           ),
           const GroupFooter(
-            '填写服务商的基础地址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。识别由你手动发起，可能产生服务商费用。',
+            '填写服务商的基础地址，不含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。',
           ),
-          const GroupFooter(
-            '范例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。',
-          ),
-          const GroupFooter(
-            'Gemini 范例：gemini-3.5-flash-lite · Chat Completions。免费额度及可用性以 Google AI Studio 为准；请先阅读 Google 数据条款。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。',
-          ),
+          if (isOfficialOpenAi(_cfg!))
+            const GroupFooter(
+              '使用你自己的 OpenAI API Key 和 API 额度；ChatGPT 订阅不等于 API 额度。示例不会自动启用或联网。',
+            )
+          else if (isOfficialGemini(_cfg!))
+            const GroupFooter(
+              '使用你自己的 Google AI Studio API Key；额度和可用性以 Google 官方说明为准。示例不会自动启用或联网。',
+            ),
           GroupFooter(aiProviderDisclosure(_cfg!)),
           if (aiDataPolicyUrl(_cfg!) != null)
             GroupCard(
@@ -307,9 +338,16 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           ),
           const GroupHeader('时区'),
           GroupCard(
-            children: [_field('记录时区', 'tz', placeholder: 'Asia/Shanghai')],
+            children: [
+              GroupRow(
+                label: '记录时区',
+                value: '跟随系统',
+                sub: '${_cfg!['tz']}',
+                chevron: false,
+              ),
+            ],
           ),
-          const GroupFooter('更改时区只影响今天和后续日期，不改变已经保存的记录日期。'),
+          const GroupFooter('按手机系统时区计算“今天”。出差或换时区后会自动跟随，已经保存的记录日期不变。'),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
             child: FormButton(

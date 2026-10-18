@@ -59,7 +59,7 @@ void main() {
     expect(find.text('恢复备份并替换手机记录？'), findsOneWidget);
     await t.tap(find.text('恢复')); await settle(t);
     expect(h.native.secrets.modelKey, '');
-    expect(h.controller.settings.value['tz'], 'Asia/Shanghai');
+    expect(h.controller.settings.value['tz'], h.controller.settings.deviceTz);
     expect(jsonDecode(h.native.docs['android-state']!)['sets'], isEmpty);
     expect(h.controller.repo.state['sets'], isEmpty);
     await t.pump(const Duration(seconds: 3));

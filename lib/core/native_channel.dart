@@ -98,7 +98,7 @@ class ChannelNative implements Native {
   }
 
   @override
-  Future<String> deviceTz() async => (await _call<String>('deviceTz')) ?? 'Asia/Shanghai';
+  Future<String> deviceTz() async => (await _call<String>('deviceTz')) ?? 'UTC';
 
   @override
   Future<int> zonedMs(String tz, String isoDate) async =>

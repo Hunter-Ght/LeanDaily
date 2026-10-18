@@ -154,7 +154,7 @@ class AppController extends ChangeNotifier {
   }) : updateUrl = updateUrl ?? links.platformUpdateCheckUrl,
        clock = clock ?? DateTime.now,
        repo = Repository(native, clock: clock),
-       settings = Settings(native, deviceTz: deviceTz ?? 'Asia/Shanghai'),
+       settings = Settings(native, deviceTz: deviceTz ?? 'UTC'),
        goalsStore = GoalsStore(native),
        restPrefsStore = RestPrefsStore(native),
        dayStatesStore = DayStatesStore(native),
@@ -508,8 +508,9 @@ class AppController extends ChangeNotifier {
   Future<void> resume() async {
     if (!booted) return;
     final before = today;
+    final zoneChanged = await settings.syncDeviceTz();
     await _refreshToday();
-    if (today != before) {
+    if (today != before || zoneChanged) {
       final following = _date == before;
       if (following) _date = today;
       notifyListeners();

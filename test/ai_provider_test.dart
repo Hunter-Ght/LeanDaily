@@ -55,6 +55,16 @@ void main() {
       expect(openAiExample.containsKey('modelKey'), isFalse);
     },
   );
+  test('provider label follows the endpoint, not a stored name', () {
+    expect(aiProviderLabel({'baseUrl': ''}), '未设置');
+    expect(aiProviderLabel(openAiExample), 'OpenAI');
+    expect(aiProviderLabel(geminiExample), 'Google Gemini');
+    expect(aiProviderLabel({'baseUrl': 'https://example.test/v1'}), '自定义');
+    expect(aiPresets.map((p) => p.id), ['openai', 'gemini']);
+    for (final p in aiPresets) {
+      expect(p.settings.containsKey('modelKey'), isFalse);
+    }
+  });
   test('Gemini identity requires the official compatible endpoint', () {
     expect(isOfficialGemini(geminiExample), isTrue);
     expect(aiProviderName(geminiExample), 'Google Gemini');
@@ -194,10 +204,12 @@ void main() {
       (_) => const AndroidSettingsSheet(),
     );
     await settle(t);
-    final button = find.text('填入 Google Gemini 范例');
+    final button = find.text('服务商');
     await t.ensureVisible(button);
     await settle(t);
     await t.tap(button);
+    await settle(t);
+    await t.tap(find.text('Google Gemini').last);
     await settle(t);
     await t.tap(find.text('使用范例'));
     await settle(t);
@@ -296,10 +308,12 @@ void main() {
         (_) => const AndroidSettingsSheet(),
       );
       await settle(t);
-      final example = find.text('填入 OpenAI 范例');
+      final example = find.text('服务商');
       await t.ensureVisible(example);
       await settle(t);
       await t.tap(example);
+      await settle(t);
+      await t.tap(find.text('OpenAI').last);
       await settle(t);
       expect(find.text('替换为 OpenAI 范例？'), findsOneWidget);
       await t.tap(find.text('使用范例'));

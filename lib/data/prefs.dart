@@ -14,9 +14,11 @@ const defaults = <String, dynamic>{
 };
 
 class Settings {
-  Settings(this.native, {this.deviceTz = 'Asia/Shanghai'});
+  Settings(this.native, {this.deviceTz = 'UTC'});
   final Native native;
-  final String deviceTz;
+
+  /// 记录时区永远跟随手机系统；存档里的 tz 只为兼容旧版本和备份，读取时忽略。
+  String deviceTz;
   Map<String, dynamic> _value = Map.of(defaults);
   Map<String, dynamic> get value => Map.unmodifiable(_value);
   Future<Map<String, dynamic>> load() async {
@@ -24,15 +26,31 @@ class Settings {
     final decoded = raw == null ? null : jsonDecode(raw);
     _value = {
       ...defaults,
-      'tz': deviceTz,
       for (final k in defaults.keys)
-        if (decoded is Map && decoded.containsKey(k)) k: decoded[k],
+        if (k != 'tz' && decoded is Map && decoded.containsKey(k))
+          k: decoded[k],
+      'tz': deviceTz,
     };
     return value;
   }
 
+  /// 重新读取系统时区（出差、换时区后回到前台）。变了返回 true。
+  Future<bool> syncDeviceTz() async {
+    final String next;
+    try {
+      next = await native.deviceTz();
+      await native.clock(next);
+    } on Object {
+      return false;
+    }
+    if (next.isEmpty || next == deviceTz) return false;
+    deviceTz = next;
+    _value = {..._value, 'tz': next};
+    return true;
+  }
+
   Future<void> save(Map<String, dynamic> s, [Secrets? secrets]) async {
-    await native.clock('${s['tz'] ?? deviceTz}');
+    await native.clock(deviceTz);
     if (truthy(s['baseUrl'])) {
       if (!'${s['baseUrl']}'.startsWith('https://')) {
         throw const DomainError('模型接口必须使用 HTTPS');
@@ -41,7 +59,7 @@ class Settings {
     }
     final safe = {
       for (final k in defaults.keys)
-        k: s[k] ?? (k == 'tz' ? deviceTz : defaults[k]),
+        k: k == 'tz' ? deviceTz : s[k] ?? defaults[k],
     };
     if (secrets != null) await native.secretsSet(secrets);
     await native.put('android-settings', jsonEncode(safe));

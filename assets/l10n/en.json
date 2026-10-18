@@ -2344,5 +2344,18 @@
   "填写服务商的基础地址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。识别由你手动发起，可能产生服务商费用。": "Enter the provider base URL without /chat/completions or /responses. Google Gemini uses /v1beta/openai/ and Chat Completions; OpenAI uses /v1. Recognition starts only when you request it; provider fees may apply.",
   "Gemini 范例：gemini-3.5-flash-lite · Chat Completions。免费额度及可用性以 Google AI Studio 为准；请先阅读 Google 数据条款。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。": "Gemini example: gemini-3.5-flash-lite · Chat Completions. Check Google AI Studio for eligibility and quota; read Google data terms first. Long-press or use the button to paste your API key. Saved keys stay in device secure storage.",
   "接收方为 Google Gemini。免费额度受地区、账号和配额限制，不保证永久免费。免费服务可能使用输入和输出改进产品及模型，并由人工审查；不要发送敏感、保密或个人信息。付费服务和部分地区适用不同数据条款。Google 要求 API 使用者年满 18 岁。请只提交不含人物或身份信息的普通食物照片和说明，勿包含健康状况、病史或儿童信息。": "The recipient is Google Gemini. Free quota depends on region, account and limits, and may change. Free services may use inputs and outputs to improve products and models, with human review; do not send sensitive, confidential or personal information. Paid services and some regions have different data terms. Google requires API users to be at least 18. Submit only ordinary food photos and notes without people or identifying information; exclude health conditions, medical history and children’s information.",
-  "接收方是你填写的自定义服务，不能仅凭模型名认定它是官方服务。其保存、训练、删除和计费规则需由你向服务商核实。不要提交儿童照片或其他敏感个人信息。": "The recipient is your custom service. A model name does not establish an official provider. Verify its retention, training, deletion and billing rules. Do not submit children’s photos or other sensitive personal information."
+  "接收方是你填写的自定义服务，不能仅凭模型名认定它是官方服务。其保存、训练、删除和计费规则需由你向服务商核实。不要提交儿童照片或其他敏感个人信息。": "The recipient is your custom service. A model name does not establish an official provider. Verify its retention, training, deletion and billing rules. Do not submit children’s photos or other sensitive personal information.",
+  "服务商": "AI provider",
+  "未设置": "Not set",
+  "自定义": "Custom",
+  "其他兼容服务（手动填写）": "Other compatible service (manual)",
+  "选择后只会把示例填进下面的表单，保存前不会联网或授权。": "Choosing one only fills the form below. Nothing is sent or authorized until you save.",
+  "更多选项": "More options",
+  "改为手动填写？": "Switch to manual entry?",
+  "接口地址和模型将清空，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。": "The endpoint and model will be cleared, along with the key in this form. Changes apply only after Save. It does not request recognition or grant consent.",
+  "改为手动": "Switch",
+  "填写服务商的基础地址，不含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。": "Enter the provider's base URL without /chat/completions or /responses. Recognition starts only when you ask for it and may incur provider charges. Long-press or use the button to paste your API key; saved keys stay in device secure storage.",
+  "使用你自己的 OpenAI API Key 和 API 额度；ChatGPT 订阅不等于 API 额度。示例不会自动启用或联网。": "Use your own OpenAI API key and API credit; a ChatGPT subscription does not include API usage. Filling the example does not activate recognition or contact the service.",
+  "使用你自己的 Google AI Studio API Key；额度和可用性以 Google 官方说明为准。示例不会自动启用或联网。": "Use your own Google AI Studio API key; quota and availability follow Google's official terms. Filling the example does not activate recognition or contact the service.",
+  "按手机系统时区计算“今天”。出差或换时区后会自动跟随，已经保存的记录日期不变。": "“Today” follows your phone's time zone, including after you travel. Dates on saved records do not change."
 }

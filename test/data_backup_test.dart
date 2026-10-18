@@ -231,6 +231,19 @@ void main() {
     },
   );
 
+  test('record time zone always follows the device, not stored text', () async {
+    final n = FakeNative(tz: 'America/New_York');
+    n.docs['android-settings'] = jsonEncode({'tz': 'Asia/Tokyo'});
+    final settings = Settings(n, deviceTz: await n.deviceTz());
+    expect((await settings.load())['tz'], 'America/New_York');
+    await settings.save({'tz': 'Asia/Tokyo'});
+    expect(jsonDecode(n.docs['android-settings']!)['tz'], 'America/New_York');
+    n.tz = 'Europe/London';
+    expect(await settings.syncDeviceTz(), isTrue);
+    expect(settings.value['tz'], 'Europe/London');
+    expect(await settings.syncDeviceTz(), isFalse);
+  });
+
   test('preferences legacy, clamps, pruning and failed writes', () async {
     final n = FakeNative();
     final settings = Settings(n, deviceTz: 'UTC');

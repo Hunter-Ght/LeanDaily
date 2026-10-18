@@ -211,7 +211,7 @@ void main() {
         );
         await t.tap(find.text('保存').first);
         await settle(t);
-        expect(h.controller.settings.value['tz'], 'Asia/Shanghai');
+        expect(h.controller.settings.value['tz'], h.controller.settings.deviceTz);
         await t.pump(const Duration(seconds: 3));
       },
     );
@@ -292,7 +292,7 @@ void main() {
     await t.tap(find.text('恢复'));
     await settle(t);
     expect(h.controller.repo.state['sets'], isEmpty);
-    expect(h.controller.settings.value['tz'], 'Asia/Shanghai');
+    expect(h.controller.settings.value['tz'], h.controller.settings.deviceTz);
     await t.pump(const Duration(seconds: 3));
   });
 }

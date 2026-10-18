@@ -9,6 +9,26 @@ const geminiExample = <String, String>{
   'model': 'gemini-3.5-flash-lite',
   'protocol': 'chat',
 };
+
+/// 服务商快捷入口：只把示例填进表单，不保存、不联网、不授权。
+class AiPreset {
+  const AiPreset(this.id, this.name, this.settings);
+  final String id, name;
+  final Map<String, String> settings;
+}
+
+const aiPresets = <AiPreset>[
+  AiPreset('openai', 'OpenAI', openAiExample),
+  AiPreset('gemini', 'Google Gemini', geminiExample),
+];
+
+/// “其他兼容服务（手动填写）”：清空接口与模型。
+const aiManualPreset = <String, String>{
+  'baseUrl': '',
+  'model': '',
+  'protocol': 'chat',
+};
+
 const geminiDataPolicyUrl = 'https://ai.google.dev/gemini-api/terms';
 const openAiDataPolicyUrl =
     'https://developers.openai.com/api/docs/guides/your-data';
@@ -33,6 +53,16 @@ bool isOfficialGemini(Map settings) => _officialEndpoint(
   'generativelanguage.googleapis.com',
   '/v1beta/openai',
 );
+
+/// 设置页“服务商”行右侧显示的名字；以接口地址为准。
+String aiProviderLabel(Map settings) =>
+    '${settings['baseUrl'] ?? ''}'.trim().isEmpty
+    ? '未设置'
+    : isOfficialOpenAi(settings)
+    ? 'OpenAI'
+    : isOfficialGemini(settings)
+    ? 'Google Gemini'
+    : '自定义';
 
 String aiProviderName(Map settings) => isOfficialOpenAi(settings)
     ? 'OpenAI'

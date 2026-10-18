@@ -110,3 +110,12 @@ App Store Connect → LeanDaily → TestFlight → Internal Testing → 创建�
 - 审核准则：https://developer.apple.com/app-store/review/guidelines/
 - OpenAI API 数据控制：https://developers.openai.com/api/docs/guides/your-data
 - 示例图片输入模型：https://developers.openai.com/api/docs/models/gpt-6-luna
+
+## 审核备注：自带 AI 服务（拍照识别）
+
+拍照识别是可选功能，需要用户自己的 API Key，App 不内置密钥、不提供额度、不预设服务商。设置 → 高级 → 拍照识别 → “服务商”只提供 OpenAI、Google Gemini 两个示例和“手动填写”，选择后仅填入表单，保存并经用户确认授权后才会联网。
+
+为让审核员能完整体验，送审时在 App Review Information 的 Notes 里提供：
+1. 一个**小额度、可随时作废**的测试 Key，以及对应的接口地址、模型（审核通过后立即作废；不要提交到仓库或写进任何文件）。
+2. 一段录屏：选择服务商 → 粘贴 Key → 保存 → 拍照识别 → 授权弹窗 → 结果。
+3. 一句说明：不使用该功能时，其余训练、饮食（手动记录）、进度全部可用，无需账号或 Key。
