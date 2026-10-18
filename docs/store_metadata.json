@@ -1,47 +1,44 @@
 {
   "en-US": {
-    "name": "LeanDaily: Workout & Meal Log",
-    "subtitle": "Offline fitness & food journal",
-    "promotionalText": "Plan your training, log meals and follow your progress. No account, no ads. Keep your journal on your phone.",
-    "description": "Build a fitness routine you can keep.\n\nLeanDaily brings your workout plan, food journal and body measurements into one simple app. It is free, open source and works offline for everyday logging.\n\nTRAIN WITH A PLAN\nChoose a home or gym template, adjust your exercises and record sets, reps, weight and effort. Exercise demonstrations are included offline. Use the rest timer and optional local reminders to keep a steady routine.\n\nLOG YOUR MEALS\nSearch the built-in food library or enter portions and nutrition yourself. Add before-and-after meal photos if you want a visual journal. Review calorie and protein totals against your own targets.\n\nFOLLOW YOUR PROGRESS\nTrack weight, waist measurements and weekly training. View your history and adjust your routine as you learn what works for you.\n\nYOUR JOURNAL, ON YOUR DEVICE\nNo account, advertising or tracking SDKs. Core records stay on your phone. Export and restore your own backups. No automatic cloud sync.\n\nOPTIONAL AI PHOTO ESTIMATES\nIf you configure a compatible third-party AI endpoint, model and API key, you can request meal-photo nutrition estimates. The app asks for permission before sending selected photos and notes to that provider. Provider fees and privacy policies apply. You can use manual meal logging without AI.\n\nEnglish, Simplified Chinese and Traditional Chinese are available, with an in-app language selector.\n\nFitness and nutrition estimates are general references, not medical advice. AI estimates may be inaccurate; review them before saving.",
-    "keywords": "workout,training,food,meal,fitness,calorie,protein,weight,waist,offline",
+    "name": "LeanDaily: Lean Muscle Workout",
+    "subtitle": "Plans, demos & recovery map",
+    "promotionalText": "Open the app and know what to train today and how to do it. Follow plans built for a lean, athletic look, and see which muscles are ready. No account, no ads.",
+    "description": "Know what to train today, how to do it, and which muscles are ready.\n\nLeanDaily is a simple workout planner for people who want a lean, athletic look rather than bulk. It works offline, needs no account and shows no ads.\n\nA HOME SCREEN THAT ANSWERS ONE QUESTION\nOpen the app and see today's workout: which muscles you are training, how many sets, how long it takes. One big button starts your session. Every exercise has a looping demonstration, so you can see how to do it before your first set. 55 exercise demos are built in and work offline.\n\nPLANS MADE FOR A LEAN LOOK\nAnswer a few questions: how many days a week, where you train, how much experience you have. LeanDaily recommends a plan and shows the week at a glance, with a body map of the muscles each day works. Choose from 9 templates, including push/pull/legs, full body, upper/lower, bodyweight-only home plans, dumbbell plans and gym plans. Swap exercises, adjust sets and keep the plan that fits your life. As you progress, the app suggests when it may be time to add weight or reps.\n\nSEE YOUR MUSCLE RECOVERY\nA front-and-back body map shades each muscle by how recovered it is, based on what you actually trained. Switch between Recovery, Training volume and Not trained lately. Tap a muscle to see its estimated recovery time and the exercises that work it. Plan tomorrow's session at a glance.\n\nALSO INCLUDED\n- Log sets with weight, reps and how many more you could do\n- Rest timer and optional local reminders\n- Meal journal with a built-in food library and common whole meals, with calories and protein shown for each\n- Weight and waist tracking with a weekly trend\n- Before-and-after meal photos for a visual journal\n- Export and restore your own backups\n\nYOUR DATA STAYS ON YOUR PHONE\nNo account, no ads, no tracking SDKs. Core records are stored on your device and are not synced to a cloud.\n\nOPTIONAL AI PHOTO ESTIMATES\nIf you set up a compatible third-party AI service with your own API key, you can request nutrition estimates from meal photos. The app asks your permission before sending any photo or note to that provider, and provider fees and privacy terms apply. Manual meal logging works fully without AI.\n\nEnglish, Simplified Chinese and Traditional Chinese are available, with an in-app language selector.\n\nFitness and nutrition figures are general estimates, not medical advice. Muscle recovery times are approximations. AI estimates may be inaccurate; review them before saving. Talk to a doctor before starting a new exercise program.",
+    "keywords": "workout,planner,muscle,recovery,gym,home workout,dumbbell,lean,fitness,exercise,calorie,protein",
     "screenshots": [
-      "Your daily training and nutrition",
-      "Log sets, reps and effort",
-      "Record meals your way",
-      "Follow weekly progress",
-      "Keep your journal on your device",
-      "English, 简体中文 and 繁體中文"
+      "Know what to train today",
+      "Answer a few questions, get a plan",
+      "See which muscles have recovered",
+      "Log every set and effort",
+      "Follow your weekly progress"
     ]
   },
   "zh-Hans": {
     "name": "薄肌日课 LeanDaily",
-    "subtitle": "本机训练、饮食与身体记录",
-    "promotionalText": "按自己的节奏练，清楚地记下每一组、每一餐。不用注册，没有广告。",
-    "description": "把训练、饮食和身体变化记在一起。\n\n薄肌日课是一款免费、开源的健身记录工具，日常记录无需联网。\n\n训练：选择居家或健身房模板，调整动作，记录组数、次数、重量与余力。动作示范图离线可用，支持休息计时和本地提醒。\n\n饮食：搜索内置食物库，或手动填写份量和营养。可保存吃之前、吃完后的照片，查看热量和蛋白质记录。\n\n进度：记录体重与腰围，回看每周训练和历史记录。\n\n数据：无需账号，没有广告或追踪 SDK。核心记录保存在本机，可自行导出、恢复备份，不自动同步云端。\n\n可选 AI 识别：你需要自行配置兼容的服务商接口、模型和 API Key。App 会先征求同意，再把所选饮食照片和说明发给该服务商。可能产生服务商费用，适用其隐私政策。不使用 AI 也能完整手动记餐。\n\n支持英文、简体中文和繁体中文，可在 App 内切换。\n\n健身和营养估算仅为一般参考，不是医疗建议。AI 可能估算错误，保存前请核对。",
-    "keywords": "健身,训练,饮食,热量,蛋白质,体重,腰围,记录,哑铃,居家,离线",
+    "subtitle": "今日练什么、怎么练、练到哪",
+    "promotionalText": "打开就知道今天练什么、怎么练；有专为薄肌打造的训练方案，还能一眼看出哪些肌肉已经恢复。不用注册，没有广告。",
+    "description": "打开就知道：今天练什么、怎么练、肌肉恢复得怎么样。\n\n薄肌日课是一款为想练出线条、而不是增肥增块的人设计的训练工具。日常使用无需联网，不用注册，没有广告。\n\n极简首页，只回答一个问题：今天练什么\n打开 App，首页就是今天的训练：练哪几块肌肉、几组、大约多久。一个大按钮直接开始。每个动作都有循环播放的示范动图，没练过也能看懂怎么做；内置 55 个动作示范，离线可用。\n\n专为薄肌用户设计的训练方案\n先回答几个问题：每周练几天、在哪练、有没有练过。薄肌日课会推荐一套方案，并用一周条和人体图告诉你每天练哪里。内置 9 套模板：推拉腿三练、全身两练、上下肢四练、居家自重（无器械）、居家哑铃、健身房等，可以自由换动作、改组数，留下适合你生活节奏的那一套。练得稳了，App 会提示什么时候可以加重量或次数。\n\n看得见的肌肉恢复状态\n正面、背面两张人体图，按你真实的训练记录给每块肌肉染色，越累颜色越深。可以切换“恢复状态 / 训练量 / 久未练”三种视角；点一块肌肉，看大约还要几天恢复，以及哪些动作能练到它。明天练什么，一眼就有数。\n\n还有这些\n- 记录每一组的重量、次数和“还能做几次”\n- 休息计时、可选的本地提醒\n- 饮食记录：内置食物库和常见整餐，直接标出一顿的热量和蛋白质\n- 体重、腰围记录和每周趋势\n- 可保存吃之前、吃完后的照片，当作饮食日记\n- 可自行导出、恢复备份\n\n你的数据留在你的手机里\n无需账号，没有广告，没有追踪 SDK。核心记录保存在本机，不自动同步云端。\n\n可选的 AI 识别\n你需要自行配置兼容的第三方 AI 服务和 API Key，才能用饮食照片估算营养。App 会先征求你的同意，再把所选照片和说明发给该服务商；可能产生服务商费用，适用其隐私政策。不使用 AI 也能完整手动记餐。\n\n支持英文、简体中文和繁体中文，可在 App 内切换。\n\n健身和营养数据均为一般性估算，不是医疗建议；肌肉恢复天数只是近似值；AI 估算可能有误，保存前请核对。开始新的运动计划前，请先咨询医生。",
+    "keywords": "健身,训练,肌肉,恢复,计划,居家,哑铃,健身房,薄肌,热量,蛋白质,体重,腰围,离线",
     "screenshots": [
-      "看清今天的训练与饮食",
+      "看清今天练什么",
+      "先问几句，再推荐方案",
+      "看得见的肌肉恢复",
       "记录每一组与余力",
-      "按自己的方式记餐",
-      "回看每周进度",
-      "把日记保存在本机",
-      "英文、简体、繁体自由切换"
+      "回看每周进度"
     ]
   },
   "zh-Hant": {
     "name": "薄肌日課 LeanDaily",
-    "subtitle": "本機訓練、飲食與身體記錄",
-    "promotionalText": "按自己的節奏練，清楚地記下每一組、每一餐。不用註冊，沒有廣告。",
-    "description": "把訓練、飲食和身體變化記在一起。\n\n薄肌日課是一款免費、開源的健身記錄工具，日常記錄無需聯網。\n\n訓練：選擇居家或健身房模板，調整動作，記錄組數、次數、重量與餘力。動作示範圖離線可用，支援休息計時和本地提醒。\n\n飲食：搜尋內建食物庫，或手動填寫份量和營養。可儲存吃之前、吃完後的照片，檢視熱量和蛋白質記錄。\n\n進度：記錄體重與腰圍，回看每週訓練和歷史記錄。\n\n資料：無需賬號，沒有廣告或追蹤 SDK。核心記錄儲存在本機，可自行匯出、恢復備份，不自動同步雲端。\n\n可選 AI 識別：你需要自行配置相容的服務商介面、模型和 API Key。App 會先徵求同意，再把所選飲食照片和說明發給該服務商。可能產生服務商費用，適用其隱私政策。不使用 AI 也能完整手動記餐。\n\n支援英文、簡體中文和繁體中文，可在 App 內切換。\n\n健身和營養估算僅為一般參考，不是醫療建議。AI 可能估算錯誤，儲存前請核對。",
-    "keywords": "健身,訓練,飲食,熱量,蛋白質,體重,腰圍,記錄,啞鈴,居家,離線",
+    "subtitle": "今日練什麼、怎麼練、練到哪",
+    "promotionalText": "打開就知道今天練什麼、怎麼練；有專為薄肌打造的訓練方案，還能一眼看出哪些肌肉已經恢復。不用註冊，沒有廣告。",
+    "description": "打開就知道：今天練什麼、怎麼練、肌肉恢復得怎麼樣。\n\n薄肌日課是一款為想練出線條、而不是增肥增塊的人設計的訓練工具。日常使用無需聯網，不用註冊，沒有廣告。\n\n極簡首頁，只回答一個問題：今天練什麼\n打開 App，首頁就是今天的訓練：練哪幾塊肌肉、幾組、大約多久。一個大按鈕直接開始。每個動作都有循環播放的示範動圖，沒練過也能看懂怎麼做；內建 55 個動作示範，離線可用。\n\n專為薄肌用戶設計的訓練方案\n先回答幾個問題：每週練幾天、在哪練、有沒有練過。薄肌日課會推薦一套方案，並用一週條和人體圖告訴你每天練哪裡。內建 9 套模板：推拉腿三練、全身兩練、上下肢四練、居家自重（無器械）、居家啞鈴、健身房等，可以自由換動作、改組數，留下適合你生活節奏的那一套。練得穩了，App 會提示什麼時候可以加重量或次數。\n\n看得見的肌肉恢復狀態\n正面、背面兩張人體圖，按你真實的訓練記錄給每塊肌肉染色，越累顏色越深。可以切換「恢復狀態／訓練量／久未練」三種視角；點一塊肌肉，看大約還要幾天恢復，以及哪些動作能練到它。明天練什麼，一眼就有數。\n\n還有這些\n- 記錄每一組的重量、次數和「還能做幾次」\n- 休息計時、可選的本機提醒\n- 飲食記錄：內建食物庫和常見整餐，直接標出一頓的熱量和蛋白質\n- 體重、腰圍記錄和每週趨勢\n- 可儲存吃之前、吃完後的照片，當作飲食日記\n- 可自行匯出、恢復備份\n\n你的資料留在你的手機裡\n無需帳號，沒有廣告，沒有追蹤 SDK。核心記錄儲存在本機，不自動同步雲端。\n\n可選的 AI 識別\n你需要自行設定相容的第三方 AI 服務和 API Key，才能用飲食照片估算營養。App 會先徵求你的同意，再把所選照片和說明發給該服務商；可能產生服務商費用，適用其隱私政策。不使用 AI 也能完整手動記餐。\n\n支援英文、簡體中文和繁體中文，可在 App 內切換。\n\n健身和營養數據均為一般性估算，不是醫療建議；肌肉恢復天數只是近似值；AI 估算可能有誤，儲存前請核對。開始新的運動計劃前，請先諮詢醫生。",
+    "keywords": "健身,訓練,肌肉,恢復,計劃,居家,啞鈴,健身房,薄肌,熱量,蛋白質,體重,腰圍,離線",
     "screenshots": [
-      "看清今天的訓練與飲食",
+      "看清今天練什麼",
+      "先問幾句，再推薦方案",
+      "看得見的肌肉恢復",
       "記錄每一組與餘力",
-      "按自己的方式記餐",
-      "回看每週進度",
-      "把日記儲存在本機",
-      "英文、簡體、繁體自由切換"
+      "回看每週進度"
     ]
   }
 }
