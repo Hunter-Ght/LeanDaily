@@ -6,6 +6,7 @@ import '../config/ai_provider.dart';
 import '../domain/records.dart';
 import 'http_request.dart' show request;
 import 'prefs.dart';
+import 'profile_store.dart';
 import 'ai_consent.dart';
 import 'state_doc.dart';
 
@@ -96,6 +97,22 @@ class Vision {
         key = (await native.secretsGet()).modelKey;
     if (!truthy(s['baseUrl']) || !truthy(s['model']) || key.isEmpty) {
       throw const DomainError('请先在设置中配置模型');
+    }
+    if (isOfficialGemini(s)) {
+      final rawProfile = (await native.all())[ProfileStore.profileKey];
+      Object? profile;
+      try {
+        profile = rawProfile == null ? null : jsonDecode(rawProfile);
+      } on FormatException {
+        profile = null;
+      }
+      final age = profile is Map ? profile['age'] : null;
+      if (age is! num || !age.isFinite || age < 18) {
+        throw const DomainError('Google Gemini 仅支持已填写年龄的成年用户；你仍可手动记餐');
+      }
+      if (s['protocol'] != 'chat') {
+        throw const DomainError('Google Gemini 兼容接口请选择 Chat Completions');
+      }
     }
     if (!await AiConsent(native).granted(s)) {
       throw const DomainError('请先确认将照片发送到你配置的 AI 服务');

@@ -63,15 +63,15 @@ class AiConsentSheet extends StatelessWidget {
           style: TextStyle(fontSize: 15, height: 1.4, color: context.pal.text),
         ),
         const SizedBox(height: 16),
-        if (isOfficialOpenAi(settings))
+        if (aiDataPolicyUrl(settings) != null)
           GroupCard(
             children: [
               GroupRow(
-                label: '查看 OpenAI 数据处理说明',
+                label: aiDataPolicyLabel(settings),
                 onTap: () async {
                   final app = context.app;
                   try {
-                    await app.native.openUrl(openAiDataPolicyUrl);
+                    await app.native.openUrl(aiDataPolicyUrl(settings)!);
                   } on Object catch (e) {
                     app.toast.show(AppController.message(e));
                   }

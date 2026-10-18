@@ -3,6 +3,7 @@ import 'package:leandaily/l10n/app_messages.dart';
 import '../../l10n/localized_text.dart';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter/cupertino.dart' show CupertinoTextField;
 
 import '../../theme/theme.dart';
 import '../motion.dart';
@@ -94,6 +95,7 @@ class FormInput extends StatefulWidget {
     required this.label,
     this.numeric = false,
     this.obscure = false,
+    this.autocorrect = true,
     this.enabled = true,
     this.boxed = false,
     this.width,
@@ -106,7 +108,7 @@ class FormInput extends StatefulWidget {
   });
   final String value, label;
   final ValueChanged<String> onChanged;
-  final bool numeric, obscure, enabled, boxed, filled, plain;
+  final bool numeric, obscure, enabled, boxed, filled, plain, autocorrect;
   final double? fontSize;
   final double? width;
   final String? placeholder;
@@ -174,7 +176,13 @@ class _FormInputState extends State<FormInput> {
                     style: TextStyle(fontSize: 14, color: p.ph),
                   ),
                 ),
-              EditableText(
+              CupertinoTextField(
+                decoration: null,
+                padding: EdgeInsets.zero,
+                autocorrect: widget.autocorrect && !widget.obscure,
+                enableSuggestions: widget.autocorrect && !widget.obscure,
+                enableInteractiveSelection: true,
+                autofillHints: const [],
                 controller: _text,
                 focusNode: _focus,
                 readOnly: !widget.enabled,
@@ -186,8 +194,6 @@ class _FormInputState extends State<FormInput> {
                   color: !widget.enabled ? p.secondary : p.text,
                 ),
                 cursorColor: p.tint,
-                backgroundCursorColor: p.fill,
-                selectionColor: p.tintSoft,
                 textAlign: widget.align,
                 keyboardType: widget.numeric
                     ? const TextInputType.numberWithOptions(decimal: true)

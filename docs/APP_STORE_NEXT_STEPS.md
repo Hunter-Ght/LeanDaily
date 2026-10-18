@@ -70,6 +70,8 @@ App Store Connect → LeanDaily → TestFlight → Internal Testing → 创建�
 
 位置：App Store Connect → App → App Privacy。隐私 URL 用 https://hunter-ght.github.io/LeanDaily/privacy/ 。支持 URL 用 https://hunter-ght.github.io/LeanDaily/support/ 。英文入口均公开可读，不需 GitHub 登录。
 
+新增 Google Gemini 范例后，免费服务可能用于产品／模型改进；照片、说明和营养数据的用途需同时考虑 Other Purposes，不能照抄以下旧的仅功能用途草案。详细见 STORE_DATA_SAFETY.md 的 Gemini 章节。
+
 当前含可选 AI，不能直接选“Data Not Collected”。OpenAI 的默认滥用监测可能留存请求内容；`store=false` 不消除该留存。也不能因为 App 无账号，就填全部“不关联身份”：用户自己的 API Key 会关联服务商账号。
 
 对目前按默认 OpenAI API 行为及可配置自定义服务发行的版本，准备以下保守申报，并在正式提交前结合审核用服务账号、实际数据政策复核：

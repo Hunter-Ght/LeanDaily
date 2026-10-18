@@ -20,9 +20,13 @@
 
 可选的 OpenAI 范例为 https://api.openai.com/v1、gpt-6-luna 和 Responses 协议，不包含密钥，也不会自动启用识别。你需要自己符合服务条件的 API 账号、密钥及 API 计费额度；ChatGPT 订阅不包含 API 用量。模型权限和可用地区以服务商账号为准。LeanDaily 是独立项目，未获 OpenAI 背书。
 
-App 仅将 HTTPS api.openai.com 的 /v1 地址识别为 OpenAI。其他地址均为自定义服务，即使模型名含 OpenAI 或 GPT。发送前请核实其隐私、保存、训练、删除及计费规则。
+App 仅将 HTTPS api.openai.com 的 /v1 地址识别为 OpenAI。除单独识别的 Google Gemini 地址外，其他地址均为自定义服务，即使模型名含 OpenAI 或 GPT。发送前请核实其隐私、保存、训练、删除及计费规则。
 
 对官方 OpenAI 地址，App 在 Responses 和 Chat Completions 请求中设置 store=false，关闭供后续检索的响应存储；这不等于零数据留存。OpenAI 表示 API 数据默认不用于模型训练，除非你主动选择共享。滥用监测日志可能含输入和输出，通常最多保留 30 天，存在法律及安全例外；被标记的图片可能保留供安全审核。具体账号的数据控制可能不同。请阅读最新说明：https://developers.openai.com/api/docs/guides/your-data 。删除请求和账号设置需直接向 OpenAI 处理；撤回 App 授权无法删除服务商已持有的副本。不要上传儿童照片、人脸、医疗文件或其他敏感信息。我们无法认证任意自定义服务商的数据处理做法。
+
+### Google Gemini 范例
+
+可选 Google Gemini 范例为 https://generativelanguage.googleapis.com/v1beta/openai/、gemini-3.5-flash-lite 和 Chat Completions，不包含密钥；保存、授权并主动识别后才会发送请求。仅上述准确的 HTTPS 主机与兼容路径识别为 Google Gemini。免费额度受账号、地区及当前配额限制，不保证无限或永久免费。Google 的免费服务条款允许使用输入和输出改进产品及模型，并可能进行人工审查；请勿提交敏感、保密或个人信息、人脸、儿童照片、病史或健康状况。付费服务及部分地区适用不同条款。Google 要求 API 使用者年满 18 岁；本机年龄未填写或未满 18 岁时，App 阻止官方 Gemini 识别。请阅读最新条款，服务商数据或删除请求需直接向 Google 处理：https://ai.google.dev/gemini-api/terms 。仅提交普通食物照片及非敏感说明，仍可手动记餐。LeanDaily 是独立项目，未获 Google 背书。
 
 ## 3. 其他联网行为
 

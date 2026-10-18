@@ -2229,5 +2229,17 @@
   "，有训练",
   "，有饮食",
   "，编辑",
-  "：还没到计划练的日子"
+  "：还没到计划练的日子",
+  "填入 Google Gemini 范例",
+  "替换为 {p0} 范例？",
+  "粘贴 API Key",
+  "剪贴板没有文本",
+  "自定义 AI 服务",
+  "查看 Google Gemini 数据处理说明",
+  "Google Gemini 仅支持已填写年龄的成年用户；你仍可手动记餐",
+  "Google Gemini 兼容接口请选择 Chat Completions",
+  "填写服务商的基础地址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。识别由你手动发起，可能产生服务商费用。",
+  "Gemini 范例：gemini-3.5-flash-lite · Chat Completions。免费额度及可用性以 Google AI Studio 为准；请先阅读 Google 数据条款。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。",
+  "接收方为 Google Gemini。免费额度受地区、账号和配额限制，不保证永久免费。免费服务可能使用输入和输出改进产品及模型，并由人工审查；不要发送敏感、保密或个人信息。付费服务和部分地区适用不同数据条款。Google 要求 API 使用者年满 18 岁。请只提交不含人物或身份信息的普通食物照片和说明，勿包含健康状况、病史或儿童信息。",
+  "接收方是你填写的自定义服务，不能仅凭模型名认定它是官方服务。其保存、训练、删除和计费规则需由你向服务商核实。不要提交儿童照片或其他敏感个人信息。"
 ]

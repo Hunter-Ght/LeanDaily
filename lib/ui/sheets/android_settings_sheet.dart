@@ -3,6 +3,7 @@ import '../../config/ai_provider.dart';
 import '../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 
 import '../kit/transitions.dart';
 
@@ -81,21 +82,23 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     app.refreshRemindersNow();
     app.toast.show('设置已保存');
   });
-  Future<void> _useOpenAiExample() async {
+  Future<void> _useExample(Map<String, String> example, String provider) async {
     if (_busy || !_ready) return;
-    final changedDestination = !isOfficialOpenAi(_cfg!);
+    final changedDestination =
+        AiConsent.destination(example) !=
+        ('${_cfg!['baseUrl'] ?? ''}'.replaceFirst(RegExp(r'/+$'), ''));
     if (changedDestination &&
         ('${_cfg!['baseUrl']}'.isNotEmpty || _modelKey.isNotEmpty)) {
       final accepted = await showConfirm(
         context,
-        title: '替换为 OpenAI 范例？',
+        title: '替换为 $provider 范例？',
         message: '接口、模型和协议将替换为范例，并清空当前输入的密钥。点击保存后才生效；不会发起识别或授权。',
         confirm: '使用范例',
       );
       if (!accepted || !mounted) return;
     }
     setState(() {
-      _cfg!.addAll(openAiExample);
+      _cfg!.addAll(example);
       if (changedDestination) _modelKey = '';
     });
   }
@@ -122,12 +125,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
       SheetController.of(context).close();
     }
   });
-  Widget _field(
-    String label,
-    String key, {
-    String? placeholder,
-    bool secret = false,
-  }) => Padding(
+  Widget _field(String label, String key, {String? placeholder}) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -139,7 +137,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
         FormInput(
           label: label,
           value: key == 'modelKey' ? _modelKey : '${_cfg![key] ?? ''}',
-          obscure: secret,
+          autocorrect: false,
           align: TextAlign.left,
           placeholder: placeholder,
           onChanged: (v) => setState(() {
@@ -220,11 +218,29 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             children: [
               GroupRow(
                 label: '填入 OpenAI 范例',
-                onTap: _busy || !_ready ? null : _useOpenAiExample,
+                onTap: _busy || !_ready
+                    ? null
+                    : () => _useExample(openAiExample, 'OpenAI'),
+              ),
+              GroupRow(
+                label: '填入 Google Gemini 范例',
+                onTap: _busy || !_ready
+                    ? null
+                    : () => _useExample(geminiExample, 'Google Gemini'),
               ),
               _field('接口地址', 'baseUrl', placeholder: openAiExample['baseUrl']),
               _field('模型名称', 'model', placeholder: openAiExample['model']),
-              _field('API Key', 'modelKey', secret: true),
+              _field('API Key', 'modelKey'),
+              _button('粘贴 API Key', () async {
+                final data = await Clipboard.getData(Clipboard.kTextPlain);
+                if (!mounted) return;
+                final key = data?.text?.trim() ?? '';
+                if (key.isEmpty) {
+                  app.toast.show('剪贴板没有文本');
+                  return;
+                }
+                setState(() => _modelKey = key);
+              }),
               GroupRow(
                 label: '接口协议',
                 value: _cfg!['protocol'] == 'responses'
@@ -250,19 +266,22 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             ],
           ),
           const GroupFooter(
-            '地址填写到 /v1，不包含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。',
+            '填写服务商的基础地址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。识别由你手动发起，可能产生服务商费用。',
           ),
           const GroupFooter(
             '范例：OpenAI · https://api.openai.com/v1 · gpt-6-luna · Responses。需使用自己的 API Key 和可用的 API 额度；ChatGPT 订阅不等于 API 额度。范例不会自动启用或联网。',
           ),
+          const GroupFooter(
+            'Gemini 范例：gemini-3.5-flash-lite · Chat Completions。免费额度及可用性以 Google AI Studio 为准；请先阅读 Google 数据条款。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。',
+          ),
           GroupFooter(aiProviderDisclosure(_cfg!)),
-          if (isOfficialOpenAi(_cfg!))
+          if (aiDataPolicyUrl(_cfg!) != null)
             GroupCard(
               children: [
                 GroupRow(
-                  label: '查看 OpenAI 数据处理说明',
+                  label: aiDataPolicyLabel(_cfg!),
                   onTap: () =>
-                      _run(() => app.native.openUrl(openAiDataPolicyUrl)),
+                      _run(() => app.native.openUrl(aiDataPolicyUrl(_cfg!)!)),
                 ),
               ],
             ),

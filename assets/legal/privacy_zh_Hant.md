@@ -20,9 +20,13 @@
 
 可選的 OpenAI 範例為 https://api.openai.com/v1、gpt-6-luna 和 Responses 協議，不包含金鑰，也不會自動啟用識別。你需要自己符合服務條件的 API 賬號、金鑰及 API 計費額度；ChatGPT 訂閱不包含 API 用量。模型許可權和可用地區以服務商賬號為準。LeanDaily 是獨立專案，未獲 OpenAI 背書。
 
-App 僅將 HTTPS api.openai.com 的 /v1 地址識別為 OpenAI。其他地址均為自定義服務，即使模型名含 OpenAI 或 GPT。傳送前請核實其隱私、儲存、訓練、刪除及計費規則。
+App 僅將 HTTPS api.openai.com 的 /v1 地址識別為 OpenAI。除單獨識別的 Google Gemini 位址外，其他位址均為自訂服務，即使模型名含 OpenAI 或 GPT。傳送前請核實其隱私、儲存、訓練、刪除及計費規則。
 
 對官方 OpenAI 地址，App 在 Responses 和 Chat Completions 請求中設定 store=false，關閉供後續檢索的響應儲存；這不等於零資料留存。OpenAI 表示 API 資料預設不用於模型訓練，除非你主動選擇共享。濫用監測日誌可能含輸入和輸出，通常最多保留 30 天，存在法律及安全例外；被標記的圖片可能保留供安全稽核。具體賬號的資料控制可能不同。請閱讀最新說明：https://developers.openai.com/api/docs/guides/your-data 。刪除請求和賬號設定需直接向 OpenAI 處理；撤回 App 授權無法刪除服務商已持有的副本。不要上傳兒童照片、人臉、醫療檔案或其他敏感資訊。我們無法認證任意自定義服務商的資料處理做法。
+
+### Google Gemini 範例
+
+可選 Google Gemini 範例為 https://generativelanguage.googleapis.com/v1beta/openai/、gemini-3.5-flash-lite 和 Chat Completions，不包含金鑰；儲存、授權並主動識別後才會傳送請求。僅上述準確的 HTTPS 主機與相容路徑識別為 Google Gemini。免費額度受帳號、地區及目前配額限制，不保證無限或永久免費。Google 的免費服務條款允許使用輸入和輸出改進產品及模型，並可能進行人工審查；請勿提交敏感、保密或個人資訊、人臉、兒童照片、病史或健康狀況。付費服務及部分地區適用不同條款。Google 要求 API 使用者年滿 18 歲；本機年齡未填寫或未滿 18 歲時，App 阻止官方 Gemini 識別。請閱讀最新條款，服務商資料或刪除請求需直接向 Google 處理：https://ai.google.dev/gemini-api/terms 。僅提交普通食物照片及非敏感說明，仍可手動記餐。LeanDaily 是獨立專案，未獲 Google 背書。
 
 ## 3. 其他聯網行為
 

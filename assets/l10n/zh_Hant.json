@@ -2249,5 +2249,17 @@
   "鸡胸肉饭（鸡胸+米饭+蔬菜）": "雞胸肉飯（雞胸+米飯+蔬菜）",
   "鸡蛋牛奶全麦面包早餐": "雞蛋牛奶全麥麵包早餐",
   "麻辣烫（一份）": "麻辣燙（一份）",
-  "黄焖鸡米饭": "黃燜雞米飯"
+  "黄焖鸡米饭": "黃燜雞米飯",
+  "填入 Google Gemini 范例": "填入 Google Gemini 範例",
+  "替换为 {p0} 范例？": "替換為 {p0} 範例？",
+  "粘贴 API Key": "貼上 API Key",
+  "剪贴板没有文本": "剪貼簿沒有文字",
+  "自定义 AI 服务": "自訂 AI 服務",
+  "查看 Google Gemini 数据处理说明": "查看 Google Gemini 資料處理說明",
+  "Google Gemini 仅支持已填写年龄的成年用户；你仍可手动记餐": "Google Gemini 僅支援已填寫年齡的成年使用者；你仍可手動記餐",
+  "Google Gemini 兼容接口请选择 Chat Completions": "Google Gemini 相容介面請選擇 Chat Completions",
+  "填写服务商的基础地址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。识别由你手动发起，可能产生服务商费用。": "填寫服務商的基礎位址，不含 /chat/completions 或 /responses。Google Gemini 使用 /v1beta/openai/ 和 Chat Completions；OpenAI 使用 /v1。識別由你手動發起，可能產生服務商費用。",
+  "Gemini 范例：gemini-3.5-flash-lite · Chat Completions。免费额度及可用性以 Google AI Studio 为准；请先阅读 Google 数据条款。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。": "Gemini 範例：gemini-3.5-flash-lite · Chat Completions。免費額度及可用性以 Google AI Studio 為準；請先閱讀 Google 資料條款。API Key 支援長按或按鈕貼上，儲存後僅存於本機安全儲存。",
+  "接收方为 Google Gemini。免费额度受地区、账号和配额限制，不保证永久免费。免费服务可能使用输入和输出改进产品及模型，并由人工审查；不要发送敏感、保密或个人信息。付费服务和部分地区适用不同数据条款。Google 要求 API 使用者年满 18 岁。请只提交不含人物或身份信息的普通食物照片和说明，勿包含健康状况、病史或儿童信息。": "接收方為 Google Gemini。免費額度受地區、帳號和配額限制，不保證永久免費。免費服務可能使用輸入和輸出改進產品及模型，並由人工審查；不要傳送敏感、保密或個人資訊。付費服務和部分地區適用不同資料條款。Google 要求 API 使用者年滿 18 歲。請只提交不含人物或身分資訊的普通食物照片和說明，勿包含健康狀況、病史或兒童資訊。",
+  "接收方是你填写的自定义服务，不能仅凭模型名认定它是官方服务。其保存、训练、删除和计费规则需由你向服务商核实。不要提交儿童照片或其他敏感个人信息。": "接收方是你填寫的自訂服務，不能僅憑模型名稱認定它是官方服務。其儲存、訓練、刪除和計費規則需由你向服務商核實。不要提交兒童照片或其他敏感個人資訊。"
 }

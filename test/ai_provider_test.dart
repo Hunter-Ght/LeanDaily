@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/config/ai_provider.dart';
 import 'package:leandaily/core/native.dart';
@@ -55,10 +55,176 @@ void main() {
       expect(openAiExample.containsKey('modelKey'), isFalse);
     },
   );
+  test('Gemini identity requires the official compatible endpoint', () {
+    expect(isOfficialGemini(geminiExample), isTrue);
+    expect(aiProviderName(geminiExample), 'Google Gemini');
+    for (final base in [
+      'https://generativelanguage.googleapis.com/v1beta',
+      'https://generativelanguage.googleapis.com.evil.test/v1beta/openai',
+      'https://generativelanguage.googleapis.com@evil.test/v1beta/openai',
+      'https://generativelanguage.googleapis.com:444/v1beta/openai',
+      'https://generativelanguage.googleapis.com/v1beta/openai?key=x',
+    ]) {
+      expect(isOfficialGemini({...geminiExample, 'baseUrl': base}), isFalse);
+    }
+  });
+  test('Gemini sends images to chat completions only after consent', () async {
+    final n = FakeNative();
+    final settings = {...defaults, ...geminiExample};
+    n.docs['android-settings'] = jsonEncode(settings);
+    n.docs['fw-profile-v1'] = jsonEncode({'age': 30});
+    n.secrets = const Secrets(modelKey: 'test-gemini-key');
+    final photo = await n.photoWrite(Uint8List.fromList([255, 216, 255]));
+    var sent = 0;
+    n.onHttp = (call) {
+      sent++;
+      expect(
+        call.url,
+        'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+      );
+      final body = jsonDecode(call.body!) as Map;
+      expect(body['model'], 'gemini-3.5-flash-lite');
+      expect(body.containsKey('store'), false);
+      expect(body['messages'][0]['content'][0]['type'], 'image_url');
+      return HttpReply(
+        200,
+        jsonEncode({
+          'choices': [
+            {
+              'message': {
+                'content': '{"items":[{"name":"Rice","kcal":174,"protein":4.5}],"summary":"Estimate only"}',
+              },
+            },
+          ],
+        }),
+      );
+    };
+    final v = Vision(n);
+    addTearDown(v.dispose);
+    await expectLater(v.analyze([photo]), throwsA(isA<Exception>()));
+    expect(sent, 0);
+    await AiConsent(n).grant(settings);
+    await v.analyze([photo]);
+    expect(sent, 1);
+    for (final profile in [
+      {'age': 17},
+      <String, dynamic>{},
+    ]) {
+      n.docs['fw-profile-v1'] = jsonEncode(profile);
+      await expectLater(v.analyze([photo]), throwsA(isA<Exception>()));
+      expect(sent, 1);
+    }
+  });
+  testWidgets('API key uses normal editing and long-press paste', (t) async {
+    String clipboard = 'test-pasted-key';
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+          if (call.method == 'Clipboard.getData') return {'text': clipboard};
+          if (call.method == 'Clipboard.hasStrings') {
+            return {'value': clipboard.isNotEmpty};
+          }
+          if (call.method == 'Clipboard.setData') {
+            clipboard = (call.arguments as Map)['text'] as String;
+          }
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+    final h = await Harness.pump(
+      t,
+      locale: const Locale('en'),
+      empty: true,
+      updateUrl: '',
+    );
+    showAppSheet<void>(
+      t.element(find.byType(Navigator).first),
+      (_) => const AndroidSettingsSheet(),
+    );
+    await settle(t);
+    final field = find.descendant(
+      of: find.byWidgetPredicate((w) => w is FormInput && w.label == 'API Key'),
+      matching: find.byType(EditableText),
+    );
+    await t.ensureVisible(field);
+    await settle(t);
+    final input = t.widget<EditableText>(field);
+    expect(input.obscureText, false);
+    expect(input.keyboardType, TextInputType.text);
+    expect(input.autocorrect, false);
+    await t.longPress(field);
+    await settle(t);
+    expect(find.text('Paste').hitTestable(), findsOneWidget);
+    final state = t.state<EditableTextState>(field);
+    final paste = state.contextMenuButtonItems.firstWhere(
+      (b) => b.type == ContextMenuButtonType.paste,
+    );
+    expect(paste.onPressed, isNotNull);
+    paste.onPressed!();
+    await settle(t);
+    expect(t.widget<EditableText>(field).controller.text, 'test-pasted-key');
+    clipboard = 'test-button-paste';
+    FocusManager.instance.primaryFocus?.unfocus();
+    t.testTextInput.hide();
+    await settle(t);
+    await t.ensureVisible(find.text('Paste API key'));
+    await t.tap(find.text('Paste API key'));
+    await settle(t);
+    expect(t.widget<EditableText>(field).controller.text, 'test-button-paste');
+    expect(h.native.secrets.modelKey, isEmpty);
+  });
+  testWidgets('Gemini example changes draft and clears the old provider key', (
+    t,
+  ) async {
+    final h = await Harness.pump(
+      t,
+      empty: true,
+      updateUrl: '',
+      seed: (n) {
+        n.docs['android-settings'] = jsonEncode({
+          ...defaults,
+          ...openAiExample,
+        });
+        n.secrets = const Secrets(modelKey: 'old-test-key');
+      },
+    );
+    showAppSheet<void>(
+      t.element(find.byType(Navigator).first),
+      (_) => const AndroidSettingsSheet(),
+    );
+    await settle(t);
+    final button = find.text('填入 Google Gemini 范例');
+    await t.ensureVisible(button);
+    await settle(t);
+    await t.tap(button);
+    await settle(t);
+    await t.tap(find.text('使用范例'));
+    await settle(t);
+    final fields = t.widgetList<FormInput>(find.byType(FormInput));
+    expect(
+      fields.firstWhere((f) => f.label == '接口地址').value,
+      geminiExample['baseUrl'],
+    );
+    expect(fields.firstWhere((f) => f.label == 'API Key').value, isEmpty);
+    expect(h.native.secrets.modelKey, 'old-test-key');
+    expect(h.controller.settings.value['protocol'], 'responses');
+    await t.ensureVisible(
+      find.byWidgetPredicate((w) => w is FormInput && w.label == 'API Key'),
+    );
+    await settle(t);
+    await h.shot(t, 'gemini-settings-zh');
+    await t.tap(find.text('保存').first);
+    await settle(t);
+    expect(h.controller.settings.value['protocol'], 'chat');
+    expect(h.native.secrets.modelKey, isEmpty);
+    expect(await AiConsent(h.native).granted(geminiExample), false);
+    await t.pump(const Duration(seconds: 4));
+  });
   test('updated disclosure invalidates the old consent fingerprint', () async {
     final n = FakeNative();
     n.docs[AiConsent.storageKey] = sha256(
-      utf8.encode('1|${openAiExample['baseUrl']}|responses'),
+      utf8.encode('2|${openAiExample['baseUrl']}|responses'),
     );
     expect(await AiConsent(n).granted(openAiExample), isFalse);
     await AiConsent(n).grant(openAiExample);
@@ -188,6 +354,35 @@ void main() {
       await h.shot(t, 'ai-provider-large-text-en');
     },
   );
+  for (final locale in AppMessages.locales) {
+    testWidgets('Gemini data terms and actions fit at small width: $locale', (
+      t,
+    ) async {
+      final h = await Harness.pump(
+        t,
+        locale: locale,
+        empty: true,
+        updateUrl: '',
+        size: const Size(320, 568),
+      );
+      showAppSheet<bool>(
+        t.element(find.byType(Navigator).first),
+        (_) => const AiConsentSheet(settings: geminiExample),
+      );
+      await settle(t);
+      final messages = AppMessages(locale);
+      final terms = find.text(messages.text('查看 Google Gemini 数据处理说明'));
+      await t.ensureVisible(terms);
+      await settle(t);
+      expect(terms.hitTestable(), findsOneWidget);
+      expect(find.text(messages.text('同意并识别')).hitTestable(), findsOneWidget);
+      expect(t.takeException(), isNull);
+      await h.shot(t, 'gemini-consent-${messages.code}');
+      await t.tap(find.text(messages.text('取消')).last);
+      await settle(t);
+      expect(await AiConsent(h.native).granted(geminiExample), isFalse);
+    });
+  }
   for (final locale in AppMessages.locales) {
     testWidgets(
       'provider disclosure fits and declining sends nothing: $locale',

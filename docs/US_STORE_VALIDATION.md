@@ -32,3 +32,12 @@ This supersedes the earlier Flutter count for the current implementation:
 - Policy text now distinguishes optional official OpenAI usage from arbitrary custom services, explains response storage versus safety retention, and includes current OpenAI data-control links. Privacy manifest conservatively covers optional AI flows; final App Store Connect answers still require publisher acceptance.
 - No real API request was sent: API account permissions, billing, model access and live output quality are **not verified**. No production credentials are embedded.
 - User confirmed an organization Apple Developer team and App Manager role. Certificates/Identifiers/Profiles access, signed archive, live TestFlight acceptance and store submission remain unverified. Public publisher identity and support email are explicitly deferred by the user. See `APP_STORE_NEXT_STEPS.md` for the exact handoff.
+
+## API input and Google Gemini preparation — 2026-10-18
+
+- Full Flutter regression: **1,192 passed**. Provider-focused suite: **16 passed**; an additional focused check verifies the long-press Paste menu is actually visible and its action pastes text. No real credentials are used.
+- API Key is normal text input with correction/suggestions/autofill disabled. FormInput now uses the unstyled Cupertino editing wrapper for selection gestures and context menus; numeric input and app styling remain covered by the full suite. Explicit paste reads the clipboard only when tapped, stays in the draft and does not save or send automatically.
+- Gemini example: exact Google /v1beta/openai/ base, gemini-3.5-flash-lite, Chat Completions. Tests verify image payload, one /chat/completions suffix, no unsupported OpenAI store flag, consent blocking, age blocking and cross-provider key clearing.
+- Three-language Gemini disclosures fit 320px screens; settings and consent screenshots inspected. Policies and iOS privacy manifest include the Google unpaid-service distinction. Publisher still needs to confirm service eligibility, privacy questionnaire and under-18 API-client terms before distribution.
+- dart analyze and design-token lint pass; five Python release-tool tests pass. iOS unsigned Release build succeeded (23.6 MB); packaged legal assets and privacy manifest match source. This is not a new signed IPA or TestFlight upload.
+- No live Google API call, account quota or physical iPhone paste/keyboard verification was performed. The previously uploaded 2.3.2 (24) IPA does not contain these changes.

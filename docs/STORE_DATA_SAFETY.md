@@ -38,3 +38,14 @@ The app privacy manifest now declares the optional AI photo, text, meal nutritio
 ## Support contact added — 2026-10-18
 
 Publisher/operator confirmed as Skylance LLC. Support and privacy email: 2436759690@qq.com. Voluntary support emails include the sender address and any information the sender provides; they are used to respond and resolve requests. Review Email Address and Other User Content against Apple’s optional-disclosure criteria for infrequent, optional support flows before submitting the questionnaire; this is not an automatic Data Not Collected exemption. Do not ask users to send API keys, full backups or unnecessary health information.
+
+## Google Gemini example — 2026-10-18
+
+- Compatible base: https://generativelanguage.googleapis.com/v1beta/openai/ ; protocol: Chat Completions; model: gemini-3.5-flash-lite. Model accepts image input; free quota is conditional, not an unlimited service promise.
+- Exact host/path identification and destination-bound consent are shared with OpenAI. Disclosure revision 3 invalidates older grants. Switching examples changes only the draft, requires confirmation for a different destination and clears the draft key; it never sends or grants consent.
+- Google unpaid-service terms can allow product/model improvement and human review; paid-service and certain regional rules differ. Do not claim Google’s free service has OpenAI’s default no-training behavior, or that store=false disables Google processing. No unsupported store flag is sent to Gemini.
+- The manifest conservatively adds Other Purposes for AI photos, other user content and health/nutrition because Google’s unpaid terms permit model/product improvement. The questionnaire must be revisited before submission; the earlier functionality-only table must not be copied unchanged. Provider authentication/network declarations remain functionality purposes; no advertising/tracking has been added.
+- Google terms prohibit sensitive/confidential/personal inputs to unpaid services and require adult use, including restrictions on API clients likely accessed by under-18s. The UI warns before consent; the backend refuses official Gemini when profile age is missing/under 18, before photo reading or HTTP. This local age gate does not certify that the overall app meets Google’s API-client eligibility; the publisher must assess this against the app’s existing youth route before production distribution. Manual logging stays available.
+- No real Google key was supplied or used. Fake HTTP tests verify request shape, image payload, consent blocking and age blocking; account/region/quota and live recognition quality remain unverified.
+
+Sources: https://ai.google.dev/gemini-api/docs/openai , https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite , https://ai.google.dev/gemini-api/docs/pricing , https://ai.google.dev/gemini-api/terms .

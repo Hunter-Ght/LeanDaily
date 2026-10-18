@@ -10,7 +10,7 @@ class AiConsent {
   AiConsent(this.native);
   final Native native;
   static const storageKey = 'leandaily-ai-consent-v1';
-  static const revision = 2;
+  static const revision = 3;
   static String destination(Map<String, dynamic> settings) {
     final uri = Uri.tryParse('${settings['baseUrl'] ?? ''}');
     if (uri == null ||

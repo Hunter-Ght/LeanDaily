@@ -18,7 +18,7 @@
 
 1. **新包**：包含当前代码和更新政策，使用尚未使用的 build number（下一包至少 25），建议 2.3.3 (25)。App Store Connect 的版本页面与包版本一致。先确认 Apple processing 成功，再选中该构建。
 2. **商店链接**：Support URL 填 https://hunter-ght.github.io/LeanDaily/support/ ，Privacy Policy URL 填 https://hunter-ght.github.io/LeanDaily/privacy/ 。英文主链接适用于美区，各语言版本可填对应中文路径。README 并非被禁止，但独立支持页更直接。
-3. **隐私问卷**：按 docs/STORE_DATA_SAFETY.md 和 APP_STORE_NEXT_STEPS.md 复核；可选 AI 的照片、说明、营养、服务商账号关联不能忽略。支持邮件是否符合可选披露条件需一并核实；包内隐私清单不会自动填写商店问卷。
+3. **隐私问卷**：新增 Google Gemini 免费额度后，需额外考虑服务商产品／模型改进用途；见 STORE_DATA_SAFETY.md 最新章节。Google 对敏感信息与未成年人 API 客户端的条款需运营方确认，本机年龄拦截不等于完整服务条款认证。按 docs/STORE_DATA_SAFETY.md 和 APP_STORE_NEXT_STEPS.md 复核；可选 AI 的照片、说明、营养、服务商账号关联不能忽略。支持邮件是否符合可选披露条件需一并核实；包内隐私清单不会自动填写商店问卷。
 4. **审核访问 AI**：核心无登录，但审核员应能测试所声明的 AI 功能。由运营方准备可用、限额、可撤销的审核测试方式，通过 App Review 私密信息提供；Key 不放网页、GitHub 或 IPA。真实请求、额度和模型可用性尚未验收。自定义兼容接口需核实服务条款和数据保护。
 5. **真实截图与语言**：填 en-US、zh-Hans、zh-Hant 商店文案，截图对应当前界面。由于支持 iPad，还需按后台要求提供 iPad 截图并验收布局。英文长动作说明仍需逐项校对，避免草稿译文直接发布。不能把宣传动画当作全部设备规格的实际截图。
 6. **后台必填**：年龄评级、Health & Fitness 类别、内容版权、组织版权主体、真实审核联系人姓名／电话／邮箱、免费价格、美区可售。由组织 Account Holder 处理待接受协议。确认发布方式，建议首次手动发布。
