@@ -106,9 +106,9 @@ python3 tool/check_apk.py build/app/outputs/flutter-apk/app-release.apk
 
 Keep R8 minification **off** (`isMinifyEnabled = false`): the Flutter engine calls back into `FlutterJNI` by class name.
 
-[`lib/config/app_links.dart`](lib/config/app_links.dart) is configured for [Hunter-Ght/LeanDaily](https://github.com/Hunter-Ght/LeanDaily), the GitHub latest-release API, and the [online privacy policy](https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md). Contact: [Issues](https://github.com/Hunter-Ght/LeanDaily/issues).
+[`lib/config/app_links.dart`](lib/config/app_links.dart) is configured for [Hunter-Ght/LeanDaily](https://github.com/Hunter-Ght/LeanDaily), the GitHub latest-release API, and the [online privacy policy](https://hunter-ght.github.io/LeanDaily/privacy/). Support and privacy questions: [2436759690@qq.com](mailto:2436759690@qq.com); no GitHub account required. See [Help & support](https://hunter-ght.github.io/LeanDaily/support/). General bug reports can also go to [Issues](https://github.com/Hunter-Ght/LeanDaily/issues). Issues are public; never post health records, photos, API keys or backup files.
 
-Pushing `PRIVACY.md` to `main` makes it readable on GitHub without GitHub Pages. APKs must be built, signed, and uploaded to [Releases](https://github.com/Hunter-Ght/LeanDaily/releases) separately; a normal `git push` does not create them. See [the release checklist](docs/RELEASING.md).
+The public privacy and support pages are hosted on GitHub Pages. APKs must be built, signed, and uploaded to [Releases](https://github.com/Hunter-Ght/LeanDaily/releases) separately; a normal `git push` does not create them. See [the release checklist](docs/RELEASING.md).
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DESIGN.md](docs/DESIGN.md).
 
@@ -117,8 +117,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DESIGN.md](docs/DESIG
 - [ ] Bodyweight progression ladders (squat / row / bridge / crunch)
 - [ ] "Graduate to the next plan" suggestions
 - [ ] Estimated 1RM as a unified strength metric
-- [ ] English UI and more languages
-- [ ] iOS
+- [x] English, Simplified Chinese and Traditional Chinese UI
+- [x] iOS builds and TestFlight upload (App Store release pending)
 
 Issues and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -134,4 +134,4 @@ Calorie and protein targets, body-fat estimates and training suggestions are gen
 
 [MIT](LICENSE) © 2026 Hunter-Ght
 
-The Swift native layer supports local iOS builds (iOS 15+). For local builds, signing and outstanding device checks, see [docs/IOS.md](docs/IOS.md). iOS distribution is not available yet.
+The Swift native layer supports local iOS builds (iOS 15+). For local builds, signing and outstanding device checks, see [docs/IOS.md](docs/IOS.md). Signed builds have been uploaded for TestFlight; the public App Store release is pending.

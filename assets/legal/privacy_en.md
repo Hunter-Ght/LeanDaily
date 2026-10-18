@@ -1,6 +1,8 @@
 # Privacy Policy
 
-Effective: October 17, 2026
+Effective: October 18, 2026
+
+Publisher and operator: Skylance LLC.
 
 LeanDaily is a free, open-source training and food journal. No account is required. We do not operate a server for your health records, and the app contains no ads, analytics or tracking SDKs.
 
@@ -40,4 +42,6 @@ Calorie estimates, nutrition targets, body-fat estimates and training suggestion
 
 ## 7. Changes and contact
 
-Changes are published with an updated effective date in the app and on this page. A materially changed AI disclosure requires renewed consent. Questions and support: https://github.com/Hunter-Ght/LeanDaily/issues . Issues are public: do not post health records, photos, API keys or backup files there.
+Changes are published with an updated effective date in the app and on this page. A materially changed AI disclosure requires renewed consent. Support and privacy questions: 2436759690@qq.com. Please do not email API keys, full backups or unnecessary health information. General bug reports: https://github.com/Hunter-Ght/LeanDaily/issues . Issues are public: do not post health records, photos, API keys or backup files there.
+
+If you email us, we use your email address and the information you provide to respond and resolve your request. Do not send sensitive records unless necessary.

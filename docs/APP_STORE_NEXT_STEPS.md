@@ -1,6 +1,6 @@
 # 美区上架下一步：组织账号 + App Manager
 
-核对日期：2026-10-17。本文是当前发行行为的准备说明，不表示已经签名、上传或得到苹果批准。用户已确认：使用朋友的组织开发者账号，自己的角色是 App Manager。
+核对日期：2026-10-18。已完成发行签名和 TestFlight 构建上传；本文不表示已完成真机验收或获得苹果上架批准。用户已确认：使用朋友的组织开发者账号，自己的角色是 App Manager。
 
 ## 1. 先打通团队权限
 
@@ -39,7 +39,7 @@ App Store Connect → My Apps / App → ＋ → New App：
 1. Xcode → Settings → Accounts，添加你自己的 Apple Account，确认能看到朋友的组织 Team。
 2. 打开 `ios/Runner.xcworkspace`，选择 Runner target → Signing & Capabilities。
 3. 勾选 Automatically manage signing，Team 选组织，Bundle Identifier 与上一步相同。不要选择 Personal Team。
-4. 发行前增加 build number；当前源版本为 `2.3.2+23`，每次新上传使用未用过的 build number。
+4. 发行前增加 build number；当前源版本为 `2.3.3+24`，最近上传为 `2.3.2 (24)`。下一包至少用 build 25，并确认 App Store Connect 版本号与包一致。每次新上传使用未用过的 build number。
 5. 真机先跑核心流程。然后选 Any iOS Device (arm64) / Generic iOS Device，Product → Archive。
 6. Organizer 中先 Validate App，查看 Generate Privacy Report，核对 App 和 Flutter 清单，再 Distribute App → App Store Connect → Upload。
 7. 上传成功还需苹果 processing；完成后才会在 TestFlight 出现。
@@ -92,7 +92,7 @@ App Store Connect → LeanDaily → TestFlight → Internal Testing → 创建�
 - 类别建议 Health & Fitness；定位一般健身记录，不做医疗诊断、治疗或准确率承诺。
 - 按 App Store Connect 当前要求做实际界面截图，覆盖声明支持的 iPhone / iPad，展示训练、饮食和进度；README 宣传图不能直接当成所有尺寸的商店截图。
 - 年龄评级按当前问卷如实填写，不把“不面向儿童”误当作年龄评级答案。未成年人及健康建议另行审查。
-- 填组织真实版权主体、审核联系人姓名/电话/邮箱。现有公开 GitHub Issues 能提供支持，但建议另加专用支持邮箱，供不愿公开健康信息的人联系。尚未取得真实邮箱和主体资料，不要编造。
+- 已确认发行与运营主体 Skylance LLC，公开支持邮箱 2436759690@qq.com。技术支持 URL 使用 https://hunter-ght.github.io/LeanDaily/support/ ，隐私 URL 使用 https://hunter-ght.github.io/LeanDaily/privacy/ 。审核联系人姓名和电话仍需填写真实信息；公开支持邮箱与审核联系人是不同字段。
 - 免费定价、美区可售、手动发布。确认隐私答案和数据政策一致。
 - 审核说明写明：核心离线、无需 App 登录、AI 可选、配置路径、照片如何发送、如何拒绝及撤回授权。审核员需要可以测试全部声明功能；由组织确定安全的审核测试方式，例如独立、最小权限、可撤销并监控费用的测试服务账号，通过 App Review 的私密渠道提供必要信息，发布包不内置共用 Key。不得提供假的成功结果或仅对审核隐藏功能。
 - 保留正式 OpenAI 和自定义服务条款核验、英文长训练说明人工校对、真机验收作为送审前门槛。范例配置与自动化测试不代表这些门槛已完成。

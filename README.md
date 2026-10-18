@@ -165,10 +165,10 @@ python3 tool/check_apk.py build/app/outputs/flutter-apk/app-release.apk   # 发�
 | 常量 | 地址 |
 | --- | --- |
 | `updateCheckUrl` | `https://api.github.com/repos/Hunter-Ght/LeanDaily/releases/latest` |
-| `privacyPolicyUrl` | [在线隐私政策](https://github.com/Hunter-Ght/LeanDaily/blob/main/PRIVACY.md) |
+| `privacyPolicyUrl` | [在线隐私政策](https://hunter-ght.github.io/LeanDaily/privacy/) |
 | `repoUrl` | [项目主页](https://github.com/Hunter-Ght/LeanDaily) |
 
-隐私政策中的联系方式为 [Issues](https://github.com/Hunter-Ght/LeanDaily/issues)。推送 `PRIVACY.md` 到 `main` 后即可在线阅读，无需部署 GitHub Pages。
+技术支持与隐私问题：[2436759690@qq.com](mailto:2436759690@qq.com)（无需 GitHub 账号）。[帮助与支持](https://hunter-ght.github.io/LeanDaily/support/)提供英文、简体中文和繁体中文说明。也可通过 [Issues](https://github.com/Hunter-Ght/LeanDaily/issues) 反馈一般问题；Issues 公开，请勿提交健康记录、照片、接口密钥或备份文件。
 
 安装包从 [Releases](https://github.com/Hunter-Ght/LeanDaily/releases) 下载。普通 `git push` 不会自动生成 APK 或 Release；构建、签名和上传步骤见 [发布清单](docs/RELEASING.md)。
 
