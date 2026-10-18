@@ -1,0 +1,296 @@
+<!doctype html><meta charset="utf-8">
+<!-- 宣传片（电影感版）合成页：window.render(t) 画出第 t 秒。?cut=full|short 选剪辑表（film_cuts.js）。
+     需放在 out/promo/ 下运行（引用 frames/*_j、clip*/、noise.png）。 -->
+<style>
+@font-face{font-family:WM;src:url(../../assets/fonts/SmileySans-Wordmark.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#050506;font-family:-apple-system,"SF Pro Display","PingFang SC","Hiragino Sans GB",sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:#050506}
+.L{position:absolute;inset:0;display:none}
+#glow{position:absolute;left:-200px;top:500px;width:1480px;height:1480px;border-radius:50%;background:radial-gradient(circle,rgba(255,106,19,.30),rgba(255,106,19,0) 62%)}
+#dust{position:absolute;inset:0}
+#dust i{position:absolute;border-radius:50%;background:#ffb070}
+.line{position:absolute;left:0;right:0;text-align:center;overflow:hidden;font-weight:900;letter-spacing:-2px;line-height:1.16;color:#fff;white-space:nowrap}
+.line>span{display:block;will-change:transform}
+.o{color:#ff6a13;font-weight:inherit}
+.kick{position:absolute;left:0;right:0;text-align:center;font-size:34px;font-weight:700;letter-spacing:10px;color:#ff6a13}
+.glint{position:absolute;inset:0;font-style:normal;color:#fff;-webkit-mask-image:linear-gradient(100deg,transparent 42%,#000 50%,transparent 58%);-webkit-mask-size:300% 100%;opacity:0;text-shadow:0 0 30px rgba(255,220,180,.9)}
+/* 访谈 */
+#clipBand{position:absolute;left:0;top:400px;width:1080px;height:766px;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 7%,#000 93%,transparent)}
+#clip{position:absolute;inset:0;width:1080px;height:766px;filter:contrast(1.08) saturate(.78) brightness(.92)}
+#clipTone{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,40,60,.28),rgba(0,0,0,0) 45%,rgba(255,120,40,.10));mix-blend-mode:soft-light}
+#clipTag{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:28px;letter-spacing:8px;color:rgba(255,255,255,.55);font-weight:600}
+.subl{font-size:84px;font-weight:800;letter-spacing:0;height:100px}
+/* 手机 */
+#cam{position:absolute;inset:0;perspective:2600px;perspective-origin:540px 960px}
+#world{position:absolute;left:540px;top:960px;width:0;height:0;transform-style:preserve-3d}
+#phone{position:absolute;left:0;top:0;width:402px;height:874px;transform-style:preserve-3d}
+#body{position:absolute;left:-11px;top:-11px;width:424px;height:896px;border-radius:68px;background:linear-gradient(135deg,#8a8a90,#3a3a3f 22%,#17171a 50%,#35353a 78%,#77777c);box-shadow:inset 0 0 0 1.5px #a9a9ae,inset 0 0 0 5px #0a0a0b}
+#scr{position:absolute;left:0;top:0;width:402px;height:874px;border-radius:57px;overflow:hidden;background:#f2f2f7}
+#scr img{position:absolute;left:0;top:0;width:402px;height:874px}
+#dim{position:absolute;inset:0;background:#000;opacity:0}
+#sheen{position:absolute;inset:0;background:linear-gradient(112deg,rgba(255,255,255,0) 35%,rgba(255,255,255,.28) 50%,rgba(255,255,255,0) 65%);background-size:300% 100%}
+#cshadow{position:absolute;background:#000;filter:blur(22px);opacity:0}
+#card{position:absolute;overflow:hidden;background:#fff;display:none}
+#card img{position:absolute;width:402px;height:874px}
+#card img.gray{filter:grayscale(1) contrast(.85) brightness(1.08)}
+#scan{position:absolute;left:-20px;right:-20px;top:0;height:44px;margin-top:-22px;background:linear-gradient(180deg,rgba(255,106,19,0),rgba(255,150,70,.5) 50%,rgba(255,106,19,0));mix-blend-mode:multiply;opacity:0}
+.rip{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:2.5px solid rgba(255,255,255,.95);background:rgba(255,106,19,.38);opacity:0}
+/* 结尾 */
+#icon{position:absolute;left:410px;top:430px;width:260px;height:260px;border-radius:58px;box-shadow:0 30px 90px rgba(255,106,19,.45),0 0 0 1px rgba(255,255,255,.08)}
+.chip{display:inline-block;font-size:96px;font-weight:900;color:#fff;letter-spacing:2px}
+.dot{display:inline-block;width:18px;height:18px;border-radius:50%;background:#ff6a13;margin:0 34px;vertical-align:middle;position:relative;top:-20px}
+#flare{position:absolute;left:-300px;width:1680px;height:6px;margin-top:-3px;background:linear-gradient(90deg,rgba(255,150,60,0),rgba(255,170,90,.9) 50%,rgba(255,150,60,0));filter:blur(3px);opacity:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 70%,rgba(0,0,0,.42) 100%);pointer-events:none}
+#grain{position:absolute;inset:-40px;background:url(noise.png);opacity:.07;mix-blend-mode:overlay;pointer-events:none}
+#fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+</style>
+<body>
+<div id="stage">
+ <div id="glow"></div><div id="dust"></div>
+ <!-- 访谈 A / C / P -->
+ <div class="L" id="Lclip">
+  <div id="clipTag">访谈片段 · 孙宇晨</div>
+  <div id="clipBand"><img id="clip"><div id="clipTone"></div></div>
+  <div class="line subl" id="sA" style="top:1290px"><span>你说<b class="o">太对了</b></span></div>
+  <div class="line subl" id="sC1" style="top:1260px"><span>肌肉，</span></div>
+  <div class="line subl" id="sC2" style="top:1370px"><span>就是你身体的<b class="o" style="position:relative">储蓄<i class="glint" id="gC">储蓄</i></b></span></div>
+  <div class="line subl" id="sP" style="top:1290px"><span>这个 <b class="o">bó jī</b> 理论</span></div>
+ </div>
+ <!-- B：我们想说的 -->
+ <div class="L" id="LB"><div id="bGroup" style="position:absolute;inset:0">
+  <div class="line" id="b1" style="top:700px;height:176px;font-size:150px"><span>赚钱之外，</span></div>
+  <div class="line" id="b2" style="top:880px;height:196px;font-size:168px"><span style="position:relative">也要<b class="o">投资身体</b><i class="glint" id="gB">也要投资身体</i></span></div>
+  <div class="line" id="b3" style="top:1130px;height:50px;font-size:36px;font-weight:600;letter-spacing:8px;color:rgba(255,255,255,.5)"><span>—— 我们想说的</span></div>
+ </div></div>
+ <!-- P：bó jī -->
+ <div class="L" id="LP"><div id="pGroup" style="position:absolute;inset:0">
+  <div class="line" id="p0" style="top:540px;height:150px;font-size:120px;font-weight:300;letter-spacing:12px;color:rgba(255,255,255,.85)"><span>bó jī</span></div>
+  <div class="line" id="p1" style="top:720px;height:360px;font-size:300px;letter-spacing:10px"><span>搏击</span></div>
+  <div id="slash" style="position:absolute;left:170px;top:890px;height:14px;width:740px;background:linear-gradient(90deg,#ff6a13,#ffb070);border-radius:7px;transform-origin:0 50%;transform:rotate(-8deg) scaleX(0);box-shadow:0 0 40px rgba(255,120,40,.9)"></div>
+  <div class="line" id="p2" style="top:720px;height:360px;font-size:300px;letter-spacing:10px"><span style="position:relative"><b class="o" style="text-shadow:0 0 80px rgba(255,106,19,.5)">薄肌</b><i class="glint" id="gP">薄肌</i></span></div>
+  <div class="line" id="p3" style="top:1150px;height:70px;font-size:48px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,.72)"><span>#薄肌教父 &nbsp; #薄肌圣经 &nbsp; #薄肌俱乐部</span></div>
+ </div></div>
+ <!-- 亮点标题 -->
+ <div class="L" id="LH">
+  <div class="kick" id="hk" style="top:150px"></div>
+  <div class="line" id="h1" style="top:205px;height:164px;font-size:140px"><span></span></div>
+  <div class="line" id="h2" style="top:370px;height:164px;font-size:140px"><span class="o"></span></div>
+ </div>
+ <div id="cam"><div id="world"><div id="phone">
+  <div id="body"></div>
+  <div id="scr"><img id="s1"><div style="position:absolute;left:0;right:0;top:0;height:62px;background:#f2f2f7" id="sbm"></div>
+   <div style="position:absolute;left:0;right:0;top:0;height:62px;padding:14px 38px 0 50px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:17px"><span>9:41</span><span id="bars"></span></div>
+   <div style="position:absolute;left:138px;top:11px;width:126px;height:37px;border-radius:99px;background:#000"></div>
+   <div id="srips"></div><div id="dim"></div><div id="sheen"></div></div>
+  <div id="cshadow"></div>
+  <div id="card"><img id="s2"><img id="s3" class="gray"><div id="scan"></div><div id="crips"></div></div>
+ </div></div></div>
+ <!-- H3 字幕 -->
+ <div class="L" id="LC3">
+  <div class="line" id="c1" style="top:1400px;height:92px;font-size:76px;letter-spacing:2px;font-weight:600;color:rgba(255,255,255,.78)"><span>练完的肌肉会染色</span></div>
+  <div class="line" id="c2" style="top:1510px;height:166px;font-size:140px"><span>越狠，<b class="o">颜色越深</b></span></div>
+ </div>
+ <!-- D：结尾 -->
+ <div class="L" id="LD">
+  <img id="icon" src="../../ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png">
+  <div class="line" id="d1" style="top:780px;height:250px;font-family:WM,'PingFang SC';font-weight:400;font-size:200px;letter-spacing:10px"><span style="position:relative">薄肌日课<i class="glint" id="gD">薄肌日课</i></span></div>
+  <div class="line" id="d2" style="top:1030px;height:60px;font-size:40px;font-weight:600;letter-spacing:18px;color:rgba(255,255,255,.6)"><span>LEANDAILY</span></div>
+  <div id="chips" style="position:absolute;left:0;right:0;top:1210px;text-align:center;white-space:nowrap"><span class="chip">开源</span><span class="dot"></span><span class="chip">免费</span><span class="dot"></span><span class="chip">无广告</span></div>
+  <div class="line" id="d3" style="top:1430px;height:64px;font-size:44px;font-weight:500;letter-spacing:4px;color:rgba(255,255,255,.7)"><span>专为薄肌用户打造的训练 App</span></div>
+ </div>
+ <div id="flare"></div>
+ <div id="vig"></div><div id="grain"></div><div id="fade"></div>
+</div>
+<script src="film_cuts.js"></script>
+<script>
+const FPS=30;
+const CUT=CUTS[new URLSearchParams(location.search).get('cut')||'full'];
+const TOTAL=CUT.reduce((a,c)=>a+c[2]-c[1],0);
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), lerp=(a,b,t)=>a+(b-a)*t;
+const E={sm:x=>{x=clamp(x);return x*x*x*(x*(6*x-15)+10)}, out:x=>1-Math.pow(1-clamp(x),4), in:x=>Math.pow(clamp(x),3),
+ eio:x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}, expo:x=>x>=1?1:1-Math.pow(2,-10*clamp(x))};
+const $=id=>document.getElementById(id);
+const pad=(n,w=5)=>String(n).padStart(w,'0');
+
+// ---------- 通用：遮罩升起、退出、扫光
+function rv(id,t,t0,dur=.6){const x=E.expo((t-t0)/dur);$(id).firstElementChild.style.transform=`translateY(${(1-x)*112}%)`}
+function exitBlur(id,k,dy=-60){const e=$(id);e.style.opacity=1-k;e.style.filter=k>0?`blur(${k*14}px)`:'none';e.style.transform=k>0?`translateY(${k*dy}px) scale(${1+k*.08})`:'none'}
+function glint(id,t,t0,dur=.7){const e=$(id),k=(t-t0)/dur;e.style.opacity=k>0&&k<1?1:0;e.style.webkitMaskPosition=`${(1-clamp(k))*100}% 0`}
+function resetLine(id){const e=$(id);e.style.opacity=1;e.style.filter='none';e.style.transform='none'}
+
+// ---------- 氛围
+const dust=[];let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+for(let i=0;i<46;i++){const e=document.createElement('i');const z=rnd();dust.push({e,x:rnd()*1080,y:rnd()*1920,z,ph:rnd()*6.28});e.style.width=e.style.height=(2+z*5)+'px';e.style.filter=`blur(${(1-z)*2.2}px)`;$('dust').appendChild(e);}
+function ambience(t,glow,dustOn){
+ $('glow').style.opacity=glow*(.75+.25*Math.sin(t*1.6));
+ dust.forEach(d=>{const y=(d.y-t*(14+d.z*40)+1920*40)%1920,x=d.x+Math.sin(t*.6+d.ph)*20*d.z;d.e.style.transform=`translate(${x}px,${y}px)`;d.e.style.opacity=dustOn*(.25+.6*d.z)*(.5+.5*Math.sin(t*1.3+d.ph))});
+ const g=Math.floor(t*FPS);$('grain').style.transform=`translate(${(g*37)%40}px,${(g*53)%40}px)`;
+}
+function flare(y,k){$('flare').style.top=y+'px';$('flare').style.opacity=k*.9}
+
+// ---------- 手机
+function barSvg(c){return `<svg width="18" height="10" viewBox="0 0 18 10" style="margin-right:6px"><g fill="${c}"><rect x="0" y="6.5" width="3" height="3.5" rx=".8"/><rect x="4.6" y="4.5" width="3" height="5.5" rx=".8"/><rect x="9.2" y="2.3" width="3" height="7.7" rx=".8"/><rect x="13.8" y="0" width="3" height="10" rx=".8"/></g></svg><svg width="27" height="12" viewBox="0 0 27 12"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="${c}" opacity=".45"/><rect x="2" y="2" width="19" height="8" rx="2" fill="${c}"/><rect x="24" y="4" width="2" height="4" rx="1" fill="${c}" opacity=".5"/></svg>`}
+$('bars').innerHTML=barSvg('#000');
+const PH={
+ H1:{src:'train',t0:1.0,segs:[[0,164,1.6],[176,210,1.0]],taps:[[18,201,360],[45,201,797],[162,201,797]],
+  K:[{t:0,tx:0,ty:1350,rx:28,ry:28,s:1.30,cx:201,cy:437},
+     {t:1.15,tx:0,ty:300,rx:8,ry:10,s:1.42,cx:201,cy:437,e:'out'},
+     {t:1.85,tx:0,ty:260,rx:2,ry:-4,s:1.5,cx:201,cy:437},
+     {t:2.7,tx:0,ty:-40,rx:0,ry:0,s:2.75,cx:201,cy:300},
+     {t:3.9,tx:0,ty:-60,rx:0,ry:0,s:2.85,cx:201,cy:300},
+     {t:4.5,tx:0,ty:0,rx:0,ry:0,s:2.3,cx:201,cy:560},
+     {t:5.95,tx:0,ty:-20,rx:3,ry:-6,s:2.2,cx:201,cy:470},
+     {t:6.3,tx:-1800,ty:-20,rx:3,ry:-40,s:2.2,cx:201,cy:470,e:'in'}],
+  lifts:[{r:[16,178,370,294,20],a:.55,b:1.05,c:1.3,d:1.55},{r:[103,133,195,195,12],a:2.3,b:2.9,c:3.95,d:4.25}],
+  title:['01','打开就知道','今天练什么'],tIn:.25,tOut:2.2},
+ H2:{src:'plan',t0:.25,segs:[[0,156,2.2],[156,208,2.0],[208,250,1.0]],taps:[[27,201,796],[60,201,746],[93,201,796],[126,201,365]],
+  K:[{t:0,tx:1800,ty:280,rx:4,ry:40,s:1.42,cx:201,cy:437},
+     {t:.4,tx:0,ty:280,rx:6,ry:-12,s:1.42,cx:201,cy:437,e:'out'},
+     {t:2.5,tx:0,ty:260,rx:4,ry:12,s:1.5,cx:201,cy:437},
+     {t:3.25,tx:0,ty:-60,rx:0,ry:0,s:2.65,cx:201,cy:271},
+     {t:4.0,tx:0,ty:-80,rx:0,ry:0,s:2.75,cx:201,cy:271},
+     {t:4.7,tx:0,ty:0,rx:0,ry:0,s:2.5,cx:201,cy:552},
+     {t:5.85,tx:0,ty:-20,rx:3,ry:6,s:2.3,cx:201,cy:500},
+     {t:6.2,tx:-1800,ty:-20,rx:3,ry:-40,s:2.3,cx:201,cy:500,e:'in'}],
+  lifts:[{r:[20,122,362,298,20],a:2.85,b:3.4,c:3.95,d:4.35}],
+  title:['02','专为薄肌用户','设计的训练方案'],tIn:.35,tOut:2.5},
+ H3:{src:'muscle',t0:2.75,segs:[[40,185,2.4]],taps:[[60,201,123.8],[105,311.7,123.8],[150,90.3,123.8]],
+  K:[{t:0,tx:1800,ty:300,rx:8,ry:40,s:1.16,cx:201,cy:437},
+     {t:.4,tx:0,ty:300,rx:10,ry:-12,s:1.18,cx:201,cy:437,e:'out'},
+     {t:1.2,tx:0,ty:300,rx:5,ry:6,s:1.24,cx:201,cy:437},
+     {t:2.0,tx:0,ty:-40,rx:0,ry:0,s:2.45,cx:201,cy:276},
+     {t:4.75,tx:0,ty:-50,rx:0,ry:0,s:2.58,cx:201,cy:276},
+     {t:5.7,tx:0,ty:-250,rx:10,ry:18,s:.98,cx:201,cy:437},
+     {t:6.8,tx:0,ty:-270,rx:12,ry:22,s:.95,cx:201,cy:437}],
+  lifts:[{r:[16,48,370,468,24],a:.45,b:1.2,c:5.0,d:5.6}],dye:[2.05,.7],
+  title:['03','看得见的','肌肉恢复'],tIn:.3,tOut:1.3},
+};
+function segFrame(p,lt){ // 场景内时间 → 源帧号
+ let acc=p.t0;for(const [f0,f1,sp] of p.segs){const d=(f1-f0)/FPS/sp;if(lt<acc)return f0;if(lt<acc+d)return Math.floor(f0+(lt-acc)*FPS*sp);acc+=d;}
+ const l=p.segs.at(-1);return l[1]-1;
+}
+function frameTime(p,f){let acc=p.t0;for(const [f0,f1,sp] of p.segs){if(f>=f0&&f<f1)return acc+(f-f0)/FPS/sp;acc+=(f1-f0)/FPS/sp;}return null}
+function cam(K,t){
+ let i=0;while(i<K.length-2&&t>K[i+1].t)i++;
+ const a=K[i],b=K[i+1],u=(E[b.e||'sm'])((t-a.t)/(b.t-a.t)),o={};
+ for(const k of ['tx','ty','rx','ry','s','cx','cy'])o[k]=lerp(a[k],b[k],t<a.t?0:u);
+ return o;
+}
+let cur='';
+async function setFrame(src,f){const u=`frames/${src}_j/${pad(f)}.jpg`;if(u===cur)return;cur=u;for(const id of ['s1','s2','s3'])$(id).src=u;try{await Promise.all(['s1','s2','s3'].map(id=>$(id).decode()))}catch(e){}}
+const ripEls={s:[],c:[]};
+for(let i=0;i<4;i++){for(const k of ['s','c']){const r=document.createElement('div');r.className='rip';$(k+'rips').appendChild(r);ripEls[k].push(r);}}
+async function phone(key,lt,extra){
+ const p=PH[key];$('cam').style.display='block';
+ await setFrame(p.src,segFrame(p,lt));
+ let c=cam(p.K,lt);
+ if(extra)c=extra(c);
+ $('world').style.transform=`translate3d(${c.tx}px,${c.ty}px,0) rotateX(${c.rx}deg) rotateY(${c.ry}deg) scale(${c.s}) translate3d(${-c.cx}px,${-c.cy}px,0)`;
+ // 卡片浮起
+ let L=p.lifts[0],lift=0;
+ for(const l of p.lifts){const v=E.eio((lt-l.a)/(l.b-l.a))*(1-E.eio((lt-l.c)/(l.d-l.c)));if(v>0.0005||lt<l.a){L=l;lift=v;if(v>0.0005)break;}}
+ const [x,y,w,h,r]=L.r, card=$('card'), sh=$('cshadow');
+ card.style.display=lift>0.0005?'block':'none';
+ Object.assign(card.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',borderRadius:r+'px'});
+ for(const id of ['s2','s3']){$(id).style.left=-x+'px';$(id).style.top=-y+'px'}
+ card.style.transform=`translateZ(${lift*70}px)`;
+ card.style.boxShadow=`0 0 0 .6px rgba(0,0,0,.08),0 ${8+lift*40}px ${20+lift*70}px rgba(0,0,0,${.18+lift*.3})`;
+ Object.assign(sh.style,{left:x+'px',top:(y+10)+'px',width:w+'px',height:h+'px',borderRadius:r+'px'});
+ sh.style.opacity=lift*.5;sh.style.transform=`translate(${lift*10}px,${lift*26}px)`;
+ $('dim').style.opacity=lift*.6;
+ // H3 染色
+ if(p.dye){const [d0,dd]=p.dye, dye=E.eio((lt-d0)/dd), gray=E.eio((lt-.5)/.7)*(dye>=1?0:1);
+  $('s3').style.display='block';$('s3').style.opacity=gray;$('s3').style.clipPath=`inset(${dye*100}% 0 0 0)`;
+  $('scan').style.top=(dye*h)+'px';$('scan').style.opacity=dye>0&&dye<1?1:0;
+ } else {$('s3').style.display='none';$('scan').style.opacity=0}
+ $('sheen').style.backgroundPosition=`${(-.3+((c.ry+40)/80)*1.6)*100}% 0`;
+ // 点按
+ p.taps.forEach(([f,tx,ty],i)=>{const tt=frameTime(p,f),d=tt==null?-1:lt-tt,k=clamp(d/.5),on=d>=0&&d<.5;
+  for(const kk of ['s','c']){const e=ripEls[kk][i];const ox=kk==='c'?x:0,oy=kk==='c'?y:0;e.style.left=(tx-ox)+'px';e.style.top=(ty-oy)+'px';e.style.opacity=on?(1-k)*.95:0;e.style.transform=`scale(${.4+k*1.4})`}});
+ for(let i=p.taps.length;i<4;i++)for(const kk of ['s','c'])ripEls[kk][i].style.opacity=0;
+ return {c,lift};
+}
+function titles(p,lt){
+ $('LH').style.display='block';
+ $('hk').textContent=p.title[0];$('h1').firstElementChild.textContent=p.title[1];$('h2').firstElementChild.textContent=p.title[2];
+ $('hk').style.opacity=clamp((lt-p.tIn)/.3);
+ rv('h1',lt,p.tIn+.05);rv('h2',lt,p.tIn+.25);
+ const k=clamp((lt-p.tOut)/.5);for(const id of ['hk','h1','h2'])exitBlur(id,k);
+}
+
+// ---------- 场景
+const SC={
+ async A(lt){ // 你说太对了
+  $('Lclip').style.display='block';await clip('A',lt,60);
+  for(const id of ['sC1','sC2','sP'])$(id).style.display='none';$('sA').style.display='block';rv('sA',lt,.5,.5);
+  ambience(lt,0,0);$('fade').style.opacity=1-clamp(lt/.3);
+ },
+ async B(lt){
+  $('LB').style.display='block';
+  rv('b1',lt,.08,.55);rv('b2',lt,.5,.55);rv('b3',lt,1.3,.6);glint('gB',lt,1.1,.8);
+  $('bGroup').style.transform=`scale(${1+.04*lt/2.6})`;
+  flare(990,Math.exp(-Math.pow((lt-.62)/.12,2)));ambience(lt,.25*E.out((lt-.5)/.6),.6);
+ },
+ async C(lt){
+  $('Lclip').style.display='block';await clip('C',lt,116);
+  for(const id of ['sA','sP'])$(id).style.display='none';$('sC1').style.display=$('sC2').style.display='block';
+  rv('sC1',lt,.45,.5);rv('sC2',lt,1.2,.5);glint('gC',lt,2.45,.7);
+  ambience(lt,0,0);
+ },
+ async P(lt){
+  if(lt<.9){$('Lclip').style.display='block';await clip('P',lt,27);
+   for(const id of ['sA','sC1','sC2'])$(id).style.display='none';$('sP').style.display='block';rv('sP',lt,.05,.45);ambience(lt,0,0);return;}
+  $('LP').style.display='block';
+  rv('p0',lt,.95,.5);rv('p1',lt,1.02,.5);
+  const sl=E.out((lt-1.45)/.14);$('slash').style.transform=`rotate(-8deg) scaleX(${sl})`;$('slash').style.opacity=1-clamp((lt-1.65)/.2);
+  const drop=E.in((lt-1.58)/.25);$('p1').firstElementChild.style.transform=`translateY(${drop*112}%)`;
+  if(lt<1.58)rv('p1',lt,1.02,.5);
+  rv('p2',lt,1.72,.5);glint('gP',lt,2.0,.6);rv('p3',lt,2.05,.5);
+  // 穿过“薄肌”推进
+  const z=E.in((lt-2.6)/.4);
+  $('pGroup').style.transform=`scale(${1+z*11})`;$('pGroup').style.transformOrigin='540px 900px';$('pGroup').style.opacity=1-clamp((lt-2.75)/.25);
+  flare(890,Math.exp(-Math.pow((lt-1.5)/.1,2)));ambience(lt,.35*E.out((lt-1.7)/.5),.6);
+ },
+ async H1(lt){await hScene('H1',lt)},
+ async H2(lt){await hScene('H2',lt)},
+ async H3(lt){
+  await hScene('H3',lt);
+  $('LC3').style.display='block';resetLine('c1');resetLine('c2');rv('c1',lt,5.4,.6);rv('c2',lt,5.6,.7);
+  flare(960+cam(PH.H3.K,lt).ty-300,Math.exp(-Math.pow((lt-1.7)/.16,2)));
+ },
+ async D(lt){
+  // 手机接着 H3 的姿态退入远处
+  const k=E.eio(lt/1.0);
+  if(lt<1.05) await phone('H3',6.8,c=>({...c,s:c.s*(1-.65*k),ty:c.ty-180*k,ry:c.ry+30*k}));
+  $('cam').style.opacity=1-clamp((lt-.3)/.7);
+  $('LC3').style.display='block';for(const id of ['c1','c2']){rv(id,99,0);exitBlur(id,clamp(lt/.45),40)}
+  $('LD').style.display='block';
+  const ik=E.expo((lt-.7)/.8);$('icon').style.opacity=clamp((lt-.7)/.3);$('icon').style.transform=`scale(${.7+.3*ik})`;$('icon').style.filter=`blur(${(1-clamp((lt-.7)/.35))*16}px)`;
+  rv('d1',lt,1.0,.6);rv('d2',lt,1.35,.6);glint('gD',lt,3.2,.7);rv('d3',lt,3.5,.6);
+  [...$('chips').querySelectorAll('.chip')].forEach((e,i)=>{const t0=2.0+i*.4,q=E.expo((lt-t0)/.35);e.style.opacity=clamp((lt-t0)/.08);e.style.transform=`scale(${1.6-.6*q})`;e.style.filter=`blur(${(1-clamp((lt-t0)/.2))*10}px)`;e.style.display='inline-block'});
+  [...$('chips').querySelectorAll('.dot')].forEach((e,i)=>{e.style.opacity=clamp((lt-2.25-i*.4)/.15)});
+  ambience(lt,.6+.4*E.out((lt-.7)/.8),1);
+ },
+};
+async function hScene(key,lt){
+ const p=PH[key];titles(p,lt);
+ await phone(key,lt);$('cam').style.opacity=1;
+ ambience(lt,.55+.3*E.out(lt/1),1);
+}
+async function clip(n,lt,count){
+ const i=clamp(Math.floor(lt*FPS)+1,1,count);const u=`clip${n}/${pad(i,4)}.jpg`;
+ if($('clip').dataset.u!==u){$('clip').dataset.u=u;$('clip').src=u;try{await $('clip').decode()}catch(e){}}
+ $('clip').style.transform=`scale(${1+.05*lt/3})`;
+}
+window.render=async function(t){
+ let acc=0,seg=CUT.at(-1),lt=0;
+ for(const c of CUT){const d=c[2]-c[1];if(t<acc+d){seg=c;lt=c[1]+(t-acc);break;}acc+=d;}
+ if(t>=TOTAL)lt=seg[2];
+ for(const id of ['Lclip','LB','LP','LH','LC3','LD'])$(id).style.display='none';
+ $('cam').style.display='none';$('fade').style.opacity=0;flare(0,0);$('glow').style.opacity=0;
+ await SC[seg[0]](lt);
+};
+window.TOTAL=TOTAL;
+window.render(0);
+</script>

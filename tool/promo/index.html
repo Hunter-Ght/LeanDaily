@@ -1,0 +1,230 @@
+<!doctype html><meta charset="utf-8">
+<style>
+@font-face{font-family:WM;src:url(__ROOT__/assets/fonts/SmileySans-Wordmark.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#000;font-family:-apple-system,"SF Pro Display","PingFang SC","Hiragino Sans GB",sans-serif;-webkit-font-smoothing:antialiased}
+.scene{position:absolute;inset:0;overflow:hidden;display:none}
+.abs{position:absolute}
+.hl{position:absolute;left:80px;right:80px;font-weight:800;letter-spacing:-2px;line-height:1.12;will-change:transform,opacity}
+.pill{position:absolute;padding:0 30px;height:60px;line-height:60px;border-radius:30px;font-size:34px;font-weight:700;letter-spacing:2px}
+.sub{position:absolute;left:80px;right:80px;font-size:44px;font-weight:500;line-height:1.35}
+.phone{position:absolute;background:linear-gradient(145deg,#4a4a4f,#1c1c1f 40%,#2d2d31);box-shadow:0 70px 120px rgba(0,0,0,.38),0 14px 30px rgba(0,0,0,.28),inset 0 0 0 3px #5b5b60,inset 0 0 0 7px #0b0b0c}
+.scr{position:relative;overflow:hidden;background:#f2f2f7}
+.scr img.app{display:block;position:absolute;left:0;top:0;width:100%;height:100%}
+.sb{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;color:#000;font-weight:600}
+.sb .r{display:flex;align-items:center}
+.di{position:absolute;left:50%;transform:translateX(-50%);background:#000;border-radius:999px}
+.ripple{position:absolute;border-radius:50%;border:5px solid rgba(255,255,255,.95);background:rgba(255,106,19,.35);transform:translate(-50%,-50%);opacity:0}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:50}
+</style>
+<body>
+<div id="stage" style="position:absolute;inset:0">
+ <!-- A：你说太对了 -->
+ <div class="scene" id="sA" style="background:#0c0c0e">
+  <img id="aBlur" class="abs" style="left:-140px;top:-60px;width:1360px;height:1060px;object-fit:cover;filter:blur(46px) brightness(.45) saturate(1.2);top:340px">
+  <img id="aClip" class="abs" style="left:0;top:520px;width:1080px;height:766px">
+  <div class="abs" style="left:0;top:520px;width:1080px;height:766px;box-shadow:inset 0 0 120px rgba(0,0,0,.45)"></div>
+  <div id="aCap" class="hl" style="top:1360px;font-size:176px;color:#fff;text-align:center;left:0;right:0;text-shadow:0 8px 40px rgba(0,0,0,.5)">你说<span style="color:#ff6a13">太对了</span></div>
+  <div class="abs" style="left:48px;bottom:84px;font-size:30px;color:rgba(255,255,255,.6)">访谈片段 · 孙宇晨</div>
+ </div>
+ <!-- B：赚钱之外，也要投资身体（重击） -->
+ <div class="scene" id="sB" style="background:#0a0a0c">
+  <div id="bShake" class="abs" style="inset:0">
+   <div id="bRays" class="abs" style="left:-660px;top:-300px;width:2400px;height:2400px;border-radius:50%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,106,19,.34) 0deg 7deg,rgba(255,106,19,0) 7deg 20deg);-webkit-mask-image:radial-gradient(circle,#000 8%,transparent 46%);mask-image:radial-gradient(circle,#000 8%,transparent 46%)"></div>
+   <div id="bGlow" class="abs" style="left:-100px;top:420px;width:1280px;height:1080px;border-radius:50%;background:radial-gradient(circle,rgba(255,106,19,.55),rgba(255,106,19,0) 62%)"></div>
+   <div id="bFx" class="abs" style="inset:0"></div>
+   <div id="bRing" class="abs" style="left:290px;top:760px;width:500px;height:500px;border-radius:50%;border:14px solid #ffb347;opacity:0"></div>
+   <div id="bT1" class="abs" style="left:0;right:0;top:640px;text-align:center;font-size:196px;font-weight:900;letter-spacing:-2px;line-height:1.1;color:#fff;-webkit-text-stroke:16px #0a0a0c;paint-order:stroke fill;text-shadow:0 14px 50px rgba(0,0,0,.6)">赚钱之外</div>
+   <div id="bT2" class="abs" style="left:0;right:0;top:850px;text-align:center;font-size:92px;font-weight:800;color:#fff;letter-spacing:10px">也要</div>
+   <div id="bT3" class="abs" style="left:0;right:0;top:1020px;text-align:center;font-size:226px;font-weight:900;letter-spacing:-2px;line-height:1.05;white-space:nowrap">
+    <span id="bT3s" style="position:absolute;left:0;right:0;color:#0a0a0c;-webkit-text-stroke:30px #0a0a0c">投资身体</span>
+    <span id="bT3f" style="position:relative;background:linear-gradient(180deg,#ffd9a8 0%,#ff9a3c 42%,#ff5a05 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 46px rgba(255,106,19,.75))">投资身体</span>
+   </div>
+   <div id="bLab" class="pill" style="left:380px;top:1330px;background:rgba(255,255,255,.14);color:#fff">我们想说的</div>
+  </div>
+ </div>
+ <!-- C：身体的储蓄 -->
+ <div class="scene" id="sC" style="background:#0c0c0e">
+  <img id="cBlur" class="abs" style="left:-140px;width:1360px;height:1060px;object-fit:cover;filter:blur(46px) brightness(.45) saturate(1.2);top:340px">
+  <img id="cClip" class="abs" style="left:0;top:520px;width:1080px;height:766px">
+  <div class="abs" style="left:0;top:520px;width:1080px;height:766px;box-shadow:inset 0 0 120px rgba(0,0,0,.45)"></div>
+  <div id="cC1" class="hl" style="top:1350px;font-size:120px;color:#fff;text-align:center;left:0;right:0">肌肉，</div>
+  <div id="cC2" class="hl" style="top:1480px;font-size:120px;color:#fff;text-align:center;left:0;right:0">就是你身体的<span id="cC3" style="color:#ff6a13;display:inline-block">储蓄</span></div>
+  <div class="abs" style="left:48px;bottom:84px;font-size:30px;color:rgba(255,255,255,.6)">访谈片段 · 孙宇晨</div>
+ </div>
+ <!-- P：搏击 → 薄肌 -->
+ <div class="scene" id="sP" style="background:linear-gradient(170deg,#17171a,#241309 70%,#3a1c08)">
+  <div id="pLab1" class="abs" style="left:0;right:0;top:520px;text-align:center;font-size:64px;color:rgba(255,255,255,.7);font-weight:600">他说的是</div>
+  <div id="pLab2" class="abs" style="left:0;right:0;top:520px;text-align:center;font-size:64px;color:rgba(255,255,255,.7);font-weight:600">我们做的是</div>
+  <div class="abs" style="left:0;right:0;top:610px;height:380px;overflow:hidden">
+   <div id="pOld" class="abs" style="left:0;right:0;top:0;text-align:center;font-size:330px;font-weight:800;color:#fff;letter-spacing:6px">搏击</div>
+   <div id="pNew" class="abs" style="left:0;right:0;top:0;text-align:center;font-size:330px;font-weight:800;color:#ff6a13;letter-spacing:6px;text-shadow:0 0 90px rgba(255,106,19,.55)">薄肌</div>
+  </div>
+  <div id="pPin" class="abs" style="left:0;right:0;top:1010px;text-align:center;font-size:76px;color:#ff9a4a;font-weight:600;letter-spacing:8px">bó jī</div>
+  <div id="pTags" class="abs" style="left:0;right:0;top:1290px;display:flex;flex-direction:column;align-items:center;gap:22px">
+   <div class="tg" style="font-size:54px;color:#fff;background:rgba(255,255,255,.12);padding:14px 40px;border-radius:50px">#薄肌教父</div>
+   <div class="tg" style="font-size:54px;color:#fff;background:rgba(255,255,255,.12);padding:14px 40px;border-radius:50px">#薄肌圣经</div>
+   <div class="tg" style="font-size:54px;color:#fff;background:rgba(255,255,255,.12);padding:14px 40px;border-radius:50px">#薄肌俱乐部</div>
+  </div>
+ </div>
+ <!-- H1 H2 H3 -->
+ <div class="scene" id="sH1" style="background:linear-gradient(170deg,#fff7ef,#ffe6d2 60%,#ffd2b0)"></div>
+ <div class="scene" id="sH2" style="background:linear-gradient(170deg,#ff7a26,#ff6a13 55%,#e8560a)"></div>
+ <div class="scene" id="sH3" style="background:linear-gradient(170deg,#2a2622,#1b1917 60%,#101010)"></div>
+ <!-- CTA -->
+ <div class="scene" id="sD" style="background:linear-gradient(160deg,#ff9150,#ff6a13 55%,#e8560a)">
+  <div class="abs" style="left:-200px;top:-260px;width:1200px;height:1200px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.3),rgba(255,255,255,0) 65%)"></div>
+  <img id="dIcon" class="abs" src="__ROOT__/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png" style="left:370px;top:330px;width:340px;height:340px;border-radius:76px;box-shadow:0 40px 80px rgba(120,40,0,.4)">
+  <div id="dName" class="abs" style="left:0;right:0;top:740px;text-align:center;font-family:WM,'PingFang SC';font-size:210px;color:#fff;letter-spacing:8px">薄肌日课</div>
+  <div id="dEn" class="abs" style="left:0;right:0;top:1000px;text-align:center;font-size:56px;color:rgba(255,255,255,.88);font-weight:600;letter-spacing:10px">LEANDAILY</div>
+  <div id="dChips" class="abs" style="left:0;right:0;top:1190px;display:flex;justify-content:center;gap:28px">
+   <div class="chip" style="font-size:84px;font-weight:800;color:#ff6a13;background:#fff;padding:20px 44px;border-radius:70px">开源</div>
+   <div class="chip" style="font-size:84px;font-weight:800;color:#ff6a13;background:#fff;padding:20px 44px;border-radius:70px">免费</div>
+   <div class="chip" style="font-size:84px;font-weight:800;color:#ff6a13;background:#fff;padding:20px 44px;border-radius:70px">无广告</div>
+  </div>
+  <div id="dTag" class="abs" style="left:0;right:0;top:1480px;text-align:center;font-size:52px;color:rgba(255,255,255,.92);font-weight:600">专为薄肌用户打造的训练 App</div>
+ </div>
+ <div class="flash" id="flash"></div>
+</div>
+<script src="timeline.js"></script>
+<script>
+const W=1080,H=1920,FPS=30;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const eo=x=>1-Math.pow(1-clamp(x),3);
+const eob=x=>{x=clamp(x);const c=1.9;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const eio=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const $=id=>document.getElementById(id);
+const S=T.scenes;
+function setAnim(el,t,t0,dur,{dy=60,sc=1,fn=eob}={}){const k=fn((t-t0)/dur);const vis=t>=t0;el.style.opacity=vis?clamp((t-t0)/(dur*.5)):0;el.style.transform=`translateY(${(1-k)*dy}px) scale(${sc+(1-sc)*k})`;}
+function barSvg(color,s){let sig='';[3,5,7,9].forEach((h,i)=>sig+=`<rect x="${i*4.4}" y="${9-h}" width="3" height="${h}" rx="1" fill="${color}"/>`);
+ return `<svg width="${18*s}" height="${10*s}" viewBox="0 0 18 10">${sig}</svg><svg width="${16*s}" height="${11*s}" viewBox="0 0 16 11" style="margin-left:${6*s}px"><path d="M8 10.2 5.9 8a3 3 0 0 1 4.2 0L8 10.2Z" fill="${color}"/><path d="M3.4 5.6a6.4 6.4 0 0 1 9.2 0l-1.3 1.3a4.6 4.6 0 0 0-6.6 0L3.4 5.6Z" fill="${color}"/><path d="M.8 3a10 10 0 0 1 14.4 0l-1.3 1.3a8.2 8.2 0 0 0-11.8 0L.8 3Z" fill="${color}"/></svg><svg width="${27*s}" height="${12*s}" viewBox="0 0 27 12" style="margin-left:${6*s}px"><rect x=".5" y=".5" width="22" height="11" rx="3.2" fill="none" stroke="${color}" opacity=".45"/><rect x="2" y="2" width="19" height="8" rx="2" fill="${color}"/><rect x="24" y="4" width="2" height="4" rx="1" fill="${color}" opacity=".5"/></svg>`}
+// ---- 手机
+const SW=760, PT=SW/402, BZ=18, SH=SW*2185/1005, PHONE_TOP=520, PHONE_LEFT=(W-SW-2*BZ)/2;
+function makePhone(scene){
+ const p=document.createElement('div');p.className='phone';
+ p.style.cssText=`left:${PHONE_LEFT}px;top:${PHONE_TOP}px;width:${SW+2*BZ}px;height:${SH+2*BZ}px;border-radius:${55*PT+BZ}px;padding:${BZ}px;`;
+ p.innerHTML=`<div class="scr" style="width:${SW}px;height:${SH}px;border-radius:${55*PT}px"><img class="app"><div class="mask abs" style="left:0;right:0;top:0;height:${62*PT}px;background:#f2f2f7"></div><div class="sb" style="height:${62*PT}px;padding:${14*PT}px ${38*PT}px 0 ${50*PT}px;font-size:${17*PT}px"><span>9:41</span><span class="r">${barSvg('#000',PT*.9)}</span></div><div class="di" style="top:${11*PT}px;width:${126*PT}px;height:${37*PT}px"></div><div class="rip"></div></div>`;
+ scene.appendChild(p);return {el:p,img:p.querySelector('img.app'),rip:p.querySelector('.rip')};
+}
+const phones={};
+['H1','H2','H3'].forEach(k=>{
+ const sc=$('s'+k), c=T.captions[k];
+ const dark=k==='H3', orange=k==='H2';
+ const hc=dark||orange?'#fff':'#1d1d1f', sc2=dark?'rgba(255,255,255,.72)':orange?'rgba(255,255,255,.9)':'#6e5a4c';
+ sc.insertAdjacentHTML('beforeend',`<div class="pill" id="${k}pill" style="left:80px;top:92px;background:${orange?'rgba(255,255,255,.22)':'#ff6a13'};color:#fff">${c.pill}</div><div class="hl" id="${k}hl" style="top:172px;font-size:110px;color:${hc}">${c.head}</div><div class="sub" id="${k}sub" style="top:${172+110*1.12*2+14}px;color:${sc2}">${c.sub}</div>`);
+ phones[k]=makePhone(sc);
+});
+const imgCache={};
+async function setSrc(img,src){ if(img.dataset.src===src) return; img.dataset.src=src; img.src=src; try{await img.decode();}catch(e){} }
+function pad(n,w){return String(n).padStart(w,'0')}
+// ---- 手机画面时间映射
+function appFrame(k,lt){ // lt：手机出现后的秒数
+ let acc=0;
+ for(const s of T.segs[k]){const dur=(s.f1-s.f0)/FPS/s.speed; if(lt<=acc+dur||s===T.segs[k].at(-1)){const f=s.f0+clamp((lt-acc)*s.speed*FPS,0,s.f1-s.f0-1);return {scene:s.scene,frame:Math.floor(f),seg:s,tt:acc+ (Math.floor(f)-s.f0)/FPS/s.speed};} acc+=dur;}
+}
+function timeOfFrame(k,scene,frame){ // 某个源帧对应的“手机出现后秒数”
+ let acc=0;for(const s of T.segs[k]){const dur=(s.f1-s.f0)/FPS/s.speed; if(s.scene===scene&&frame>=s.f0&&frame<s.f1) return acc+(frame-s.f0)/FPS/s.speed; acc+=dur;} return null;
+}
+const PH_IN=.55;
+async function phoneScene(k,t){
+ const [a,b]=S[k], lt=t-a, P=phones[k];
+ // 文案
+ setAnim($(k+'pill'),lt,.05,.4,{dy:30}); setAnim($(k+'hl'),lt,.12,.55,{dy:80}); setAnim($(k+'sub'),lt,.4,.5,{dy:40,fn:eo});
+ // 手机进入 / 退出
+ const inK=eob((lt-.1)/PH_IN), outK=eio((lt-(b-a-.28))/.28);
+ P.el.style.transform=`translateY(${(1-inK)*900+outK*300}px) scale(${.94+.06*inK}) rotateZ(${(1-inK)*-3}deg)`;
+ P.el.style.opacity=1-outK*.0;
+ const pl=Math.max(0,lt-.1-PH_IN*.55);
+ const af=appFrame(k,pl); if(!af) return;
+ await setSrc(P.img,`frames/${af.scene}/${pad(af.frame,5)}.png`);
+ // 触点
+ P.rip.innerHTML='';
+ (T.events[k]||[]).forEach(e=>{const et=timeOfFrame(k,e.scene,e.frame); if(et==null)return; const d=pl-et; if(d>=0&&d<.55){const r=document.createElement('div');r.className='ripple';const k2=eo(d/.5);const sz=70+90*k2;r.style.cssText=`left:${e.x*PT}px;top:${e.y*PT}px;width:${sz}px;height:${sz}px;opacity:${(1-d/.55)*.95}`;P.rip.appendChild(r);}});
+}
+
+// ---- B：重击场景
+function rnd(i){const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+const SPARKS=[...Array(46)].map((_,i)=>({a:rnd(i)*Math.PI*2,v:380+rnd(i+90)*900,s:6+rnd(i+30)*14,c:['#ffd27a','#ff9a3c','#fff','#ff6a13'][i%4],g:900+rnd(i+7)*700,l:.55+rnd(i+55)*.7}));
+const COINS=[...Array(9)].map((_,i)=>({a:(i/9)*Math.PI*2+rnd(i)*.5,v:650+rnd(i+3)*420,r:rnd(i+12)*6}));
+const BELLS=[...Array(6)].map((_,i)=>({a:(i/6)*Math.PI*2+.4,v:560+rnd(i+20)*380,r:rnd(i+5)*3-1.5}));
+function dumbbellSvg(c){return `<svg width="120" height="60" viewBox="0 0 120 60"><rect x="30" y="24" width="60" height="12" rx="3" fill="${c}"/><rect x="18" y="10" width="14" height="40" rx="6" fill="${c}"/><rect x="88" y="10" width="14" height="40" rx="6" fill="${c}"/><rect x="6" y="18" width="10" height="24" rx="4" fill="${c}"/><rect x="104" y="18" width="10" height="24" rx="4" fill="${c}"/></svg>`}
+const bFx=document.getElementById('bFx');
+bFx.innerHTML=COINS.map((c,i)=>`<div class="coin" style="position:absolute;left:0;top:0;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3b0,#ffc23a 55%,#d98a00);border:6px solid #b87400;color:#8a5200;font:900 56px/84px -apple-system,PingFang SC;text-align:center">¥</div>`).join('')
+ +BELLS.map(()=>`<div class="bell" style="position:absolute;left:0;top:0">${dumbbellSvg('#fff')}</div>`).join('')
+ +SPARKS.map(()=>`<div class="sp" style="position:absolute;left:0;top:0;border-radius:2px"></div>`).join('');
+const coinEls=[...bFx.querySelectorAll('.coin')], bellEls=[...bFx.querySelectorAll('.bell')], spEls=[...bFx.querySelectorAll('.sp')];
+function shake(t,t0,amp){const d=t-t0;if(d<0||d>.5)return[0,0];const e=Math.exp(-d*9)*amp;return[Math.sin(d*95)*e,Math.cos(d*83)*e*.7]}
+async function sceneB(lt){
+ const T1=0.08,T3=0.72, CX=540, CY=1040;
+ // 抖动
+ const [sx1,sy1]=shake(lt,T1,26), [sx2,sy2]=shake(lt,T3,40);
+ const zoom=1+.05*lt/2;
+ $('bShake').style.transform=`translate(${sx1+sx2}px,${sy1+sy2}px) scale(${zoom})`;
+ // 放射光
+ $('bRays').style.transform=`rotate(${lt*22}deg)`; $('bRays').style.opacity=clamp(lt/.15);
+ $('bGlow').style.opacity=.55+.45*eo((lt-T3)/.3);
+ // 赚钱之外：从大放小砸下
+ const k1=eob((lt-T1)/.32); const e1=$('bT1');
+ e1.style.opacity=lt>=T1?1:0; e1.style.transform=`scale(${1+(1-k1)*1.5}) translateY(${(1-k1)*-90}px)`; e1.style.filter=`blur(${(1-clamp((lt-T1)/.2))*14}px)`;
+ // 也要
+ const k2=eo((lt-.5)/.25); $('bT2').style.opacity=clamp((lt-.5)/.18); $('bT2').style.transform=`translateY(${(1-k2)*40}px)`;
+ // 投资身体：更大的一击
+ const k3=eob((lt-T3)/.34); const e3=$('bT3'); e3.style.opacity=lt>=T3?1:0; e3.style.transform=`scale(${1+(1-k3)*2.2})`; e3.style.filter=`blur(${(1-clamp((lt-T3)/.18))*18}px)`;
+ // 余震：图字轻轻呼吸
+ if(lt>T3+.4) e3.style.transform=`scale(${1+.018*Math.sin((lt-T3)*7)})`;
+ // 标签
+ const k4=eo((lt-1.2)/.3); $('bLab').style.opacity=clamp((lt-1.2)/.2); $('bLab').style.transform=`translateY(${(1-k4)*30}px)`;
+ // 冲击环
+ const r=$('bRing'),d=lt-T3; if(d>=0&&d<.6){const k=eo(d/.6);r.style.opacity=(1-k)*.9;r.style.transform=`scale(${.3+k*3.4})`;}else r.style.opacity=0;
+ // 金币：随“赚钱之外”炸开
+ coinEls.forEach((el,i)=>{const c=COINS[i],d=lt-T1; if(d<0||d>1.1){el.style.opacity=0;return;}
+   const x=CX+Math.cos(c.a)*c.v*d, y=CY-120+Math.sin(c.a)*c.v*d+700*d*d;
+   el.style.opacity=clamp(1-(d-.7)/.4); el.style.transform=`translate(${x-48}px,${y-48}px) scaleX(${Math.cos(d*10+c.r)}) rotate(${d*140}deg)`;});
+ // 哑铃：随“投资身体”炸开
+ bellEls.forEach((el,i)=>{const c=BELLS[i],d=lt-T3; if(d<0||d>1.0){el.style.opacity=0;return;}
+   const x=CX+Math.cos(c.a)*c.v*d, y=CY+60+Math.sin(c.a)*c.v*d+520*d*d;
+   el.style.opacity=clamp(1-(d-.55)/.45); el.style.transform=`translate(${x-60}px,${y-30}px) rotate(${c.a*57+d*260*c.r}deg) scale(${.8+d*.5})`;});
+ // 火花：两次冲击各一团
+ spEls.forEach((el,i)=>{const sp=SPARKS[i], t0=(i%2?T3:T1), d=lt-t0; if(d<0||d>sp.l){el.style.opacity=0;return;}
+   const x=CX+Math.cos(sp.a)*sp.v*d, y=CY+Math.sin(sp.a)*sp.v*d+sp.g*d*d*.5;
+   el.style.opacity=1-d/sp.l; el.style.width=sp.s+'px'; el.style.height=sp.s*(1.2+d*3)+'px'; el.style.background=sp.c;
+   el.style.transform=`translate(${x}px,${y}px) rotate(${Math.atan2(Math.sin(sp.a)*sp.v+sp.g*d,Math.cos(sp.a)*sp.v)*57.3+90}deg)`;});
+}
+async function render(t){
+ // 场景显示
+ for(const [id,key] of [['sA','A'],['sB','B'],['sC','C'],['sP','P'],['sH1','H1'],['sH2','H2'],['sH3','H3'],['sD','D']]){const [a,b]=S[key];$(id).style.display=(t>=a&&t<b)?'block':'none';}
+ // flash：每个场景切换处一次短白闪
+ let fl=0;for(const k of Object.keys(S)){const a=S[k][0];if(a===0)continue;const d=t-a;if(d>=-.05&&d<.16)fl=Math.max(fl,1-clamp((d+.05)/.21));}
+ $('flash').style.opacity=fl*.85;
+ if(t<S.A[1]){ const lt=t-S.A[0]; const i=clamp(Math.floor(lt*FPS)+1,1,60);
+   await setSrc($('aClip'),`clipA/${pad(i,4)}.jpg`); $('aBlur').src=$('aClip').src;
+   const z=1+.07*lt/2; $('aClip').style.transform=`scale(${z})`;
+   const e=$('aCap'); const k=eob((lt-.55)/.28); e.style.opacity=lt>=.55?1:0; e.style.transform=`scale(${.55+.45*k})`;
+ } else if(t<S.B[1]){ await sceneB(t-S.B[0]);
+ } else if(t<S.C[1]){ const lt=t-S.C[0]; const i=clamp(Math.floor(lt*FPS)+1,1,116);
+   await setSrc($('cClip'),`clipC/${pad(i,4)}.jpg`); $('cBlur').src=$('cClip').src;
+   $('cClip').style.transform=`scale(${1+.07*lt/4})`;
+   setAnim($('cC1'),lt,.15,.3,{dy:40}); setAnim($('cC2'),lt,1.2,.3,{dy:40});
+   const k=eob((lt-2.4)/.35); $('cC3').style.transform=`scale(${1+.0*k})`; $('cC3').style.opacity=lt>=2.4?1:0;
+   // 储蓄 单独弹出
+   $('cC3').style.display='inline-block'; $('cC3').style.transform=`scale(${lt>=2.4?(1+.28*(1-clamp((lt-2.4)/.4))):1})`;
+ } else if(t<S.P[1]){ const lt=t-S.P[0];
+   $('pLab1').style.opacity=lt<1.15?clamp(lt/.25):0; $('pLab2').style.opacity=lt>=1.15?clamp((lt-1.15)/.25):0;
+   const old=$('pOld'),nw=$('pNew'); const sw=eio((lt-1.15)/.35);
+   old.style.opacity=lt>=.12?1:0; old.style.transform=`translateY(${-sw*420}px) scale(${lt>=.12?1+.0:1})`;
+   nw.style.opacity=lt>=1.15?1:0; nw.style.transform=`translateY(${(1-sw)*420}px) translateX(${lt>1.5&&lt<1.7?Math.sin(lt*180)*10:0}px)`;
+   const pop=eob((lt-.12)/.35); if(lt<1.15) old.style.transform=`translateY(0) scale(${.6+.4*pop})`;
+   $('pPin').style.opacity=clamp((lt-.5)/.3); $('pPin').style.transform=`translateY(${(1-eo((lt-.5)/.4))*30}px)`;
+   [...$('pTags').children].forEach((c,i)=>setAnim(c,lt,1.75+i*.16,.35,{dy:50}));
+ } else if(t<S.H1[1]){ await phoneScene('H1',t);
+ } else if(t<S.H2[1]){ await phoneScene('H2',t);
+ } else if(t<S.H3[1]){ await phoneScene('H3',t);
+ } else { const lt=t-S.D[0];
+   setAnim($('dIcon'),lt,.05,.5,{dy:160,sc:.6});
+   setAnim($('dName'),lt,.3,.5,{dy:90,sc:.9}); setAnim($('dEn'),lt,.55,.4,{dy:30,fn:eo});
+   [...$('dChips').children].forEach((c,i)=>setAnim(c,lt,1.0+i*.42,.4,{dy:70,sc:.8}));
+   setAnim($('dTag'),lt,2.5,.5,{dy:30,fn:eo});
+ }
+}
+window.render=render;window.TOTAL=T.total;
+</script>
