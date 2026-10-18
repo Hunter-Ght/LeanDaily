@@ -14,7 +14,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/ui/kit/plan_widgets.dart';
 import 'package:leandaily/ui/stats/stats_page.dart';
 
-import '../../test/onboarding_test.dart' show settle;
 import '../../test/support/harness.dart';
 import '../../test/today_sheets_test.dart' show loadExerciseImages;
 import '../../test/training_mode_test.dart' show seedPlan, images;
