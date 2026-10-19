@@ -20,7 +20,11 @@ import '../../test/onboarding_test.dart' show next, settle;
 import '../../test/today_sheets_test.dart' show loadExerciseImages;
 import '../../test/training_mode_test.dart' show seedPlan, enter, tap, images;
 
-const _size = Size(402, 874);
+// iPad 13" 用 LEANDAILY_SHOT_SIZE=1032x1376（@2x = 2064×2752）；默认是 iPhone 18 Pro。
+final _size = () {
+  final v = Platform.environment['LEANDAILY_SHOT_SIZE']?.split('x');
+  return v == null ? const Size(402, 874) : Size(double.parse(v[0]), double.parse(v[1]));
+}();
 
 Map<String, dynamic> _profile() => {
   'sex': 'male',
