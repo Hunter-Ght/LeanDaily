@@ -34,10 +34,8 @@ void main() {
         },
       );
       expect(TodayModel(h.controller).workout['hasGym'], isTrue);
-      expect(
-        find.byType(VenueChip),
-        venue == null || venue == 'both' ? findsOneWidget : findsNothing,
-      );
+      // 场地选了什么都保留切换：进入主界面后随时可以改。
+      expect(find.byType(VenueChip), findsOneWidget);
     });
   }
   todayTest('wide layout uses same venue menu without premature weekly hint', (
@@ -51,7 +49,7 @@ void main() {
     expect(find.text('以后每周五都在健身房练？'), findsNothing);
     await h.controller.setProfile({...fourProfile(), 'venue': 'dumbbell'});
     await settle(t);
-    expect(find.byType(VenueChip), findsNothing);
+    expect(find.byType(VenueChip), findsOneWidget);
   });
   todayTest('rest and home-only workout do not expose venue', (t) async {
     final h = await Harness.pump(t, empty: true);
@@ -175,8 +173,7 @@ void main() {
       await settle(t);
       await h.controller.setProfile({...fourProfile(), 'venue': 'gym'});
       await settle(t);
-      expect(find.byType(VenueChip), findsNothing);
-      await h.shot(t, 'r-venue-today-none-$mode');
+      expect(find.byType(VenueChip), findsOneWidget);
     });
   }
 }

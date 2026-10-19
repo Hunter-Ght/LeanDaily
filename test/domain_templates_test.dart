@@ -54,7 +54,7 @@ void main() {
           final workouts = map(plan['workouts']);
           expect(workouts.length, template['days']);
           expect(map(plan['schedule']).length, template['days']);
-          final homeOnly = ['bodyweight-3', 'dumbbell-3'].contains(id);
+          final homeOnly = id == 'dumbbell-3';
           for (final w in workouts.values.map(map)) {
             expect(w.containsKey('gym'), !homeOnly);
             for (final variant in [w, if (!homeOnly) map(w['gym'])]) {

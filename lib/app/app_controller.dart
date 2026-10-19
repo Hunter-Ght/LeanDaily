@@ -899,9 +899,6 @@ class AppController extends ChangeNotifier {
     return today.compareTo(calendar.shiftDate(last, 7)) > 0;
   }
 
-  /// 今日页是否显示“居家/健身房”小标签：只给“两边都去”的人，以及还没填资料的老用户（旧计划带健身房版）。
-  bool get showVenueSwitch => profile == null || profile!['venue'] == 'both';
-
   /// [iso] 这天刚手动切到 [venue] 后，是否该问“以后每周X都这样”：
   /// 上周同一个星期几也手动选了同一个场地、计划的默认场地不同、且没拒绝过。
   bool shouldAskVenueDefault(String iso, String venue) {

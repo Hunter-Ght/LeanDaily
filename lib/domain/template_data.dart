@@ -205,21 +205,21 @@ const TemplateDay bwA = (
   short: '全',
   coreCount: 3,
   home: ['高位俯卧撑', '反向划船', '深蹲', '臀桥', '死虫式'],
-  gym: [],
+  gym: ['哑铃平板卧推', '高位下拉', '腿举机', '臀桥', '死虫式'],
 );
 const TemplateDay bwB = (
   name: '自重 B',
   short: '全',
   coreCount: 3,
   home: ['高位俯卧撑', '反向划船', '分腿蹲', '单腿臀桥', '反向卷腹'],
-  gym: [],
+  gym: ['上斜哑铃卧推', '坐姿划船机', '分腿蹲', '单腿臀桥', '反向卷腹'],
 );
 const TemplateDay bwC = (
   name: '自重 C',
   short: '全',
   coreCount: 3,
   home: ['高位俯卧撑', '反向划船', '深蹲', '站姿提踵', '平板支撑'],
-  gym: [],
+  gym: ['哑铃平板卧推', '高位下拉', '深蹲', '站姿提踵', '平板支撑'],
 );
 const Map<String, List<TemplateDay>> templateDays = {
   'bochi-ppl-3': [push, pull, legs],

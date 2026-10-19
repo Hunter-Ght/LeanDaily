@@ -33,7 +33,8 @@ Map<String, dynamic> buildPlan(
       5 => [1, 2, 3, 5, 6],
       _ => [1, 3, 5],
     };
-    final homeOnly = bodyweight || templateId == 'dumbbell-3';
+    // 自重计划也带一套健身房版：没选场地的新用户默认拿到它，今日页仍能切到健身房。
+    final homeOnly = templateId == 'dumbbell-3';
     final chestSeen = <String, bool>{};
     final workouts = <String, dynamic>{};
     final schedule = <String, dynamic>{};

@@ -636,9 +636,8 @@ class _TodayPageState extends State<TodayPage> {
                     color: p.secondary,
                   ),
                 ),
-                if (app.showVenueSwitch &&
-                    m.train &&
-                    m.workout['hasGym'] == true) ...[
+                // 只要这一练有健身房版本就给切换，不看引导页选了什么。
+                if (m.train && m.workout['hasGym'] == true) ...[
                   const SizedBox(width: 8),
                   VenueChip(
                     gym: m.workout['venue'] == 'gym',
