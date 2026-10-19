@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show SynchronousFuture;
 import 'package:flutter/widgets.dart';
 import 'package:path_drawing/path_drawing.dart';
+
+import '../../theme/tokens.dart';
 
 /// 线条图标。图形来自 Web 版 Icon.svelte（导出到 assets/icons.json）。
 /// 少数图标（more / rings / 实心 train、meal、chart）在 Web 版里是单独画的，这里同样处理。
@@ -36,6 +40,47 @@ class AppIcon extends StatelessWidget {
           for (final d in (e.value as List)) parseSvgPathData(d as String),
         ],
     };
+  }
+
+  static Future<List<Uint8List>>? _navigationImages;
+  static List<Uint8List>? _navigationImageBytes;
+
+  /// The native iOS bar uses the very same painter as the Flutter dock.
+  /// Export both outline/selected variants at 3x; UIKit applies the tint.
+  static Future<List<Uint8List>> navigationImages() {
+    final cached = _navigationImageBytes;
+    if (cached != null) return SynchronousFuture(cached);
+    return _navigationImages ??= _renderNavigationImages();
+  }
+
+  static Future<List<Uint8List>> _renderNavigationImages() async {
+    if (_paths.isEmpty) await load();
+    final images = <Uint8List>[];
+    for (final name in ['flame', 'train', 'rings', 'me']) {
+      for (final solid in [false, true]) {
+        final recorder = ui.PictureRecorder();
+        final canvas = Canvas(recorder)..scale(3);
+        _IconPainter(
+          name,
+          AppPalette.light.text, // UIKit templates use only the alpha channel.
+          solid,
+          _paths[name] ?? const [],
+        ).paint(canvas, const Size.square(25));
+        final picture = recorder.endRecording();
+        final image = await picture.toImage(75, 75);
+        try {
+          final data = await image.toByteData(format: ui.ImageByteFormat.png);
+          images.add(
+            data!.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+          );
+        } finally {
+          image.dispose();
+          picture.dispose();
+        }
+      }
+    }
+    _navigationImageBytes = images;
+    return images;
   }
 
   @override

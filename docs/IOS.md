@@ -103,3 +103,22 @@ flutter run --no-resident -d <模拟器ID> -t tool/ios_smoke.dart \
 实际执行结果另见 [IOS_VALIDATION.md](IOS_VALIDATION.md)；未勾选的项目不代表已经验证。
 
 当前图标复用 Android 启动图并去除透明通道；`swift tool/ios_icons.swift` 可重新生成。正式商店素材建议提供原始高分辨率图稿。
+
+## iOS 26 底部原生标签栏
+
+- iOS 手机底栏相对原位置下移 8pt（底部边距为 `max(10, safe.bottom - 8)`），休息条沿用同一基准同步下移；无底部安全区时保留 10pt 最小边距，Android/Web 不变。
+
+- 只有手机布局的底部四标签 Dock 使用 `IosDockGlass`。宽屏竖栏、顶部圆按钮、休息条、训练页按钮及通用 `GlassSurface` 保持原实现。
+- Swift 使用 `#available(iOS 26.0, *)` 返回能力；Dart 通过 UIKit Platform View 嵌入完整的系统 `UITabBar`，保留系统默认外观和选中交互。没有自绘选中块或给系统标签栏覆盖自定义玻璃背景。不解析系统版本字符串、不加插件，部署目标仍为 iOS 15。
+- Android/Web 不调用原生探测。旧 iOS、原生桥不可用或探测失败继续使用原来的 `GlassSurface`；Android 的静态玻璃策略不变。
+- 原生标签栏负责按钮、选中效果、触感和系统无障碍。四个图标复用 Flutter `AppIcon` 的同一绘制器，输出普通／选中两套 3x 透明 PNG 模板给 UIKit 着色；不使用 SF Symbols 替换原图标。Flutter 管理当前页面，并同步四个本地化标题、选中索引、主题色、深浅色及“我的”更新提示。每个平台视图有独立 MethodChannel，销毁时移除回调。
+- 冷启动时必须在创建 `UITabBarItem` 时就带上本地化标题，再将 items 安装到标签栏。先安装空标题、随后修改 `title` 会让未选中项缓存为仅图标布局，文字偏低，直到点击才恢复。原生回归测试模拟零尺寸创建后再挂载，并在没有点击的情况下检查四个标题的底边对齐。
+- Flutter 弹窗会对底层场景做缩放与模糊；原生视图叠加该过程可能出现矩形亮块。`sheetDepth > 0` 的完整弹窗动画期间回退原有 Dock，完全关闭后以当前选中页重建原生标签栏。
+- 这是嵌入现有 Flutter 页面导航的原生标签栏，没有接入 UIKit 滚动收缩导航模式。实际折射和交互表现由系统、背景及辅助功能设置决定。
+- 编译需要 iOS 26 SDK（当前 Xcode 26.3 / SDK 26.2）。旧系统路径通过能力响应回归测试覆盖，实际 iOS 15–25 和 iPhone 真机外观／性能仍需验收。底栏效果已随 2.3.4 (26) 上传；动作图片加载修复包含在 2.3.5 (27) 中，需安装对应构建体验。
+
+## 动作示范冷加载
+
+手机 `SheetGuideBody` 和宽屏 `GuideBody` 复用 `GuideImage`：首次解码前保持 3:2 占位，预加载两帧，等待下一帧时保留旧图，仅第一帧淡入。切换不同动作时重置旧图，避免显示上一动作。
+
+`test/guide_image_loading_test.dart` 独立延迟两张真实图片，覆盖 Android/iOS、深浅色和两种页面，检查加载前后占位、文字相对位置与下一帧等待期间的可见图片。不能用预先缓存全部图片的截图测试替代这组验证。

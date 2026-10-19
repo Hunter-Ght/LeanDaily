@@ -4,6 +4,7 @@ import '../l10n/localized_text.dart';
 
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
@@ -11,6 +12,7 @@ import '../theme/theme.dart';
 import '../theme/tokens.dart';
 import '../ui/kit/app_icon.dart';
 import '../ui/kit/glass.dart';
+import '../ui/kit/ios_dock_glass.dart';
 import '../ui/kit/pressable.dart';
 import '../ui/kit/rest_bar.dart';
 import '../ui/kit/render_effects.dart';
@@ -101,7 +103,12 @@ class _Chrome extends StatelessWidget {
     final app = context.app;
     final safe = MediaQuery.paddingOf(context);
     final railW = rail ? Metrics.railWidth : 0.0;
-    final dockBottom = math.max(10.0, safe.bottom);
+    // Bring the floating iOS dock 8pt closer to the home indicator, while
+    // keeping the existing minimum margin on devices without a bottom inset.
+    final iosDockOffset = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS
+        ? 8.0
+        : 0.0;
+    final dockBottom = math.max(10.0, safe.bottom - iosDockOffset);
     return Stack(
       children: [
         Positioned.fill(
@@ -343,60 +350,66 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
     final vertical = widget.vertical;
     final itemH = vertical ? 60.0 : 48.0;
     const gap = 2.0;
-    return GlassSurface(
-      radius: vertical ? 32 : 30,
-      child: Padding(
-        padding: const EdgeInsets.all(4),
-        child: LayoutBuilder(
-          builder: (context, box) {
-            final itemW = vertical ? box.maxWidth : box.maxWidth / 4;
-            final step = vertical ? itemH + gap : itemW;
-            return SizedBox(
-              height: vertical ? itemH * 4 + gap * 3 : itemH + 4,
-              child: Stack(
-                children: [
-                  AnimatedBuilder(
-                    animation: _pos,
-                    builder: (context, _) => Positioned(
-                      left: vertical ? 0 : _pos.value * step,
-                      top: vertical ? _pos.value * step : 0,
-                      width: itemW,
-                      height: itemH,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: p.tintSoft,
-                          borderRadius: BorderRadius.circular(
-                            vertical ? 28 : 24,
-                          ),
-                        ),
+    final content = Padding(
+      padding: const EdgeInsets.all(4),
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final itemW = vertical ? box.maxWidth : box.maxWidth / 4;
+          final step = vertical ? itemH + gap : itemW;
+          return SizedBox(
+            height: vertical ? itemH * 4 + gap * 3 : itemH + 4,
+            child: Stack(
+              children: [
+                AnimatedBuilder(
+                  animation: _pos,
+                  builder: (context, _) => Positioned(
+                    left: vertical ? 0 : _pos.value * step,
+                    top: vertical ? _pos.value * step : 0,
+                    width: itemW,
+                    height: itemH,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: p.tintSoft,
+                        borderRadius: BorderRadius.circular(vertical ? 28 : 24),
                       ),
                     ),
                   ),
-                  for (var i = 0; i < 4; i++)
-                    Positioned(
-                      left: vertical ? 0 : i * step,
-                      top: vertical ? i * step : 0,
-                      width: itemW,
-                      height: itemH,
-                      child: Pressable(
-                        scale: 0.94,
-                        haptic: widget.tab != i,
-                        onTap: () => widget.onTab(i),
-                        child: _DockItem(
-                          icon: _icons[i],
-                          label: _labels[i],
-                          selected: widget.tab == i,
-                          updateDot: i == 3 && context.app.hasUnseenUpdate,
-                        ),
+                ),
+                for (var i = 0; i < 4; i++)
+                  Positioned(
+                    left: vertical ? 0 : i * step,
+                    top: vertical ? i * step : 0,
+                    width: itemW,
+                    height: itemH,
+                    child: Pressable(
+                      scale: 0.94,
+                      haptic: widget.tab != i,
+                      onTap: () => widget.onTab(i),
+                      child: _DockItem(
+                        icon: _icons[i],
+                        label: _labels[i],
+                        selected: widget.tab == i,
+                        updateDot: i == 3 && context.app.hasUnseenUpdate,
                       ),
                     ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
+    return vertical
+        ? GlassSurface(radius: 32, child: content)
+        : IosDockGlass(
+            tab: widget.tab,
+            labels: _labels.map(AppMessages.of(context).text).toList(),
+            onTab: widget.onTab,
+            tint: p.tint,
+            dark: MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+            updateDot: context.app.hasUnseenUpdate,
+            child: content,
+          );
   }
 }
 

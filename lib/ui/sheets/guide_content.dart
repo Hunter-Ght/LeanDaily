@@ -14,6 +14,7 @@ import '../../domain/guide.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/guide_image.dart';
 import '../kit/app_icon.dart';
 import '../today/today_widgets.dart';
 
@@ -150,12 +151,9 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
                 borderRadius: BorderRadius.circular(20),
                 child: Stack(
                   children: [
-                    Image.asset(
-                      '${(g['frames'] as List)[_frame]}',
-                      width: double.infinity,
-                      frameBuilder: revealImageFrame,
-                      fit: BoxFit.fitWidth,
-                      errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                    GuideImage(
+                      frames: (g['frames'] as List).cast<String>(),
+                      frame: _frame,
                     ),
                     Positioned(
                       left: 10,
