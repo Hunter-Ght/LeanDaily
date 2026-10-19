@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../domain/goals.dart';
 import '../../domain/format.dart' show fmt;
+import '../../core/haptics.dart';
 import '../kit/pressable.dart';
 
 import '../../theme/theme.dart';
@@ -119,6 +120,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   void releaseCalendar(double velocity) {
     final fraction = velocity / Metrics.calExtra; // 每秒展开比例
     final open = expansion.value + fraction * .2 > .5;
+    if (open != _calendarOpen) HapticScope.of(context)?.selection();
     _calendarOpen = open;
     final target = open ? 1.0 : 0.0;
     if (MediaQuery.disableAnimationsOf(context)) {

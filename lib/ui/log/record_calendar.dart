@@ -2,6 +2,7 @@ import 'package:leandaily/l10n/app_messages.dart';
 
 import '../../l10n/localized_text.dart';
 
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/widgets.dart';
 
 import '../../core/haptics.dart';
@@ -331,6 +332,13 @@ class _RecordCalendarState extends State<RecordCalendar> {
                                     ),
                               itemCount: last + 1,
                               onPageChanged: (value) => setState(() {
+                                // 只在手指翻页时震；点选日期带动的自动翻页不重复震。
+                                if ((month ? _months : _weeks)
+                                        .position
+                                        .userScrollDirection !=
+                                    ScrollDirection.idle) {
+                                  HapticScope.of(context)?.selection();
+                                }
                                 if (month) {
                                   _month = value;
                                 } else {

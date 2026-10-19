@@ -41,6 +41,7 @@ class DaySectionSwitch extends StatelessWidget {
         label: AppMessages.of(c).text(label),
         child: Pressable(
           onTap: on ? null : () => onSection(label),
+          haptic: !on,
           scale: 1,
           child: Container(
             constraints: const BoxConstraints(minHeight: 44),

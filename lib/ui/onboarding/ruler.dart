@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
 
+import '../../core/haptics.dart';
 import '../../theme/theme.dart';
 
 /// Scrollable ticks repaint independently. Only the local value label listens
@@ -48,12 +49,15 @@ class _ProfileRulerState extends State<ProfileRuler> {
   void initState() {
     super.initState();
     _scroll.addListener(() {
-      _value.value = double.parse(
+      final next = double.parse(
         (widget.min +
                 (_scroll.offset / spacing).round().clamp(0, count) *
                     widget.step)
             .toStringAsFixed(1),
       );
+      // 每滑过一格轻触一下；tick() 自带节流，快速甩动不会连成一片。
+      if (next != _value.value) HapticScope.of(context)?.tick();
+      _value.value = next;
     });
   }
 

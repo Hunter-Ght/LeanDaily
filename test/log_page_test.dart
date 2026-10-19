@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/ui/log/record_calendar.dart';
@@ -128,5 +129,31 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('这天还没练').hitTestable(), findsOneWidget);
     expect(find.bySemanticsLabel('编辑午餐'), findsNothing);
+  });
+
+  testWidgets('训练 | 饮食切换有触感，点已选中的那一项不震', (tester) async {
+    final effects = <String>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(SystemChannels.platform, (call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            effects.add('${call.arguments}');
+          }
+          return null;
+        });
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+    await Harness.pump(tester, tab: 1, empty: true);
+    Finder label(String text) => find.descendant(
+      of: find.byKey(const ValueKey('day-section-switch')),
+      matching: find.text(text),
+    );
+    await tester.tap(label('训练'));
+    await tester.pumpAndSettle();
+    expect(effects.where((e) => e.endsWith('selectionClick')), isEmpty);
+    await tester.tap(label('饮食'));
+    await tester.pumpAndSettle();
+    expect(effects.where((e) => e.endsWith('selectionClick')), hasLength(1));
   });
 }
