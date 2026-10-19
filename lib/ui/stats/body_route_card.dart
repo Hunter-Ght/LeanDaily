@@ -38,7 +38,7 @@ class BodyRouteCard extends StatelessWidget {
     return StatBlock(
       title: routeName(stage),
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         if (mean == null) ...[
           LText(
             '记录体重，看见趋势',
@@ -51,44 +51,71 @@ class BodyRouteCard extends StatelessWidget {
           const SizedBox(height: 14),
           FormButton('记体重', filled: true, onTap: () => openBodyLog(context)),
         ] else ...[
-          LText(
-            '${mean.toStringAsFixed(1)} kg',
-            style: TextStyle(
-              fontSize: 44,
-              fontWeight: FontWeight.w700,
-              color: p.text,
-            ),
-          ),
-          LText(
-            change == null
-                ? (trend['count'] == 1 ? '再记几天就能看到趋势' : '7 日平均体重 · 继续记录，看见本周变化')
-                : '本周 ${change == 0 ? '持平' : '${change > 0 ? '↑' : '↓'}${change.abs().toStringAsFixed(1)} 公斤'} · 7 日平均',
-            style: AppText.hint(p),
-          ),
-          if (series.length > 1 && (trend['count'] as int) > 1) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 100,
-              child: CustomPaint(
-                painter: BodyTrendLine(series, p.tint, p.fill),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                LText(
-                  _shortDate(series.first['date'] as String),
-                  style: AppText.hint(p),
+          // 数字和折线左右并排：卡片矮一半，下面的“肌肉状态”第一屏就能露出来。
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: LText(
+                        '${mean.toStringAsFixed(1)} kg',
+                        style: TextStyle(
+                          fontSize: 34,
+                          fontWeight: FontWeight.w700,
+                          color: p.text,
+                        ),
+                      ),
+                    ),
+                    LText(
+                      change == null
+                          ? (trend['count'] == 1
+                                ? '再记几天就能看到趋势'
+                                : '7 日平均体重 · 继续记录，看见本周变化')
+                          : '本周 ${change == 0 ? '持平' : '${change > 0 ? '↑' : '↓'}${change.abs().toStringAsFixed(1)} 公斤'} · 7 日平均',
+                      style: AppText.hint(p),
+                    ),
+                  ],
                 ),
-                LText(
-                  _shortDate(series.last['date'] as String),
-                  style: AppText.hint(p),
+              ),
+              if (series.length > 1 && (trend['count'] as int) > 1) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(
+                        height: 56,
+                        child: CustomPaint(
+                          painter: BodyTrendLine(series, p.tint, p.fill),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          LText(
+                            _shortDate(series.first['date'] as String),
+                            style: AppText.hint(p).copyWith(fontSize: 11),
+                          ),
+                          LText(
+                            _shortDate(series.last['date'] as String),
+                            style: AppText.hint(p).copyWith(fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
-          ],
+            ],
+          ),
           if (trend['progress'] != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -123,8 +150,11 @@ class BodyRouteCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            LText('体脂根据体重变化估算，仅供参考。', style: AppText.hint(p)),
+            const SizedBox(height: 6),
+            LText(
+              '体脂根据体重变化估算，仅供参考。',
+              style: AppText.hint(p).copyWith(fontSize: 12),
+            ),
           ],
           if (stage == 'bulk' || stage == 'youth') ...[
             const SizedBox(height: 12),
