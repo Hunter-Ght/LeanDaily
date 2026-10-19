@@ -165,7 +165,7 @@ void main() {
     expect(input.autocorrect, false);
     await t.longPress(field);
     await settle(t);
-    expect(find.text('Paste').hitTestable(), findsOneWidget);
+    expect(find.text('Paste').hitTestable(), findsWidgets);
     final state = t.state<EditableTextState>(field);
     final paste = state.contextMenuButtonItems.firstWhere(
       (b) => b.type == ContextMenuButtonType.paste,
@@ -178,8 +178,8 @@ void main() {
     FocusManager.instance.primaryFocus?.unfocus();
     t.testTextInput.hide();
     await settle(t);
-    await t.ensureVisible(find.text('Paste API key'));
-    await t.tap(find.text('Paste API key'));
+    await t.ensureVisible(find.bySemanticsLabel('Paste API key'));
+    await t.tap(find.bySemanticsLabel('Paste API key'));
     await settle(t);
     expect(t.widget<EditableText>(field).controller.text, 'test-button-paste');
     expect(h.native.secrets.modelKey, isEmpty);

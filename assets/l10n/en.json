@@ -2357,5 +2357,14 @@
   "填写服务商的基础地址，不含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。": "Enter the provider's base URL without /chat/completions or /responses. Recognition starts only when you ask for it and may incur provider charges. Long-press or use the button to paste your API key; saved keys stay in device secure storage.",
   "使用你自己的 OpenAI API Key 和 API 额度；ChatGPT 订阅不等于 API 额度。示例不会自动启用或联网。": "Use your own OpenAI API key and API credit; a ChatGPT subscription does not include API usage. Filling the example does not activate recognition or contact the service.",
   "使用你自己的 Google AI Studio API Key；额度和可用性以 Google 官方说明为准。示例不会自动启用或联网。": "Use your own Google AI Studio API key; quota and availability follow Google's official terms. Filling the example does not activate recognition or contact the service.",
-  "按手机系统时区计算“今天”。出差或换时区后会自动跟随，已经保存的记录日期不变。": "“Today” follows your phone's time zone, including after you travel. Dates on saved records do not change."
+  "按手机系统时区计算“今天”。出差或换时区后会自动跟随，已经保存的记录日期不变。": "“Today” follows your phone's time zone, including after you travel. Dates on saved records do not change.",
+  "从备份恢复": "Restore from backup",
+  "包含记录、照片和设置，不含密钥。单个备份最多 100MB。卸载 APP 会删除手机记录，请定期导出。": "Includes records, photos and settings, but no API keys. Maximum size: 100 MB. Deleting the app deletes local records, so export backups regularly.",
+  "拍照识别（AI）": "AI photo recognition",
+  "接口地址填基础地址，不含 /chat/completions 或 /responses。": "Enter the base URL, without /chat/completions or /responses.",
+  "粘贴": "Paste",
+  "识别由你手动发起，可能产生服务商费用。只发送所选照片、餐次和补充说明；撤回授权不会删除已发送的数据。API Key 只保存在本机安全存储。": "Recognition starts only when you ask for it and may incur provider charges. Only the selected photos, meal and your note are sent; revoking consent does not delete data already sent. Your API key stays in this device's secure storage.",
+  "选择时轻触，完成训练时双震": "Light taps on selection, a double pulse when you finish",
+  "通用": "General",
+  "锁屏休息提醒": "Rest notifications"
 }

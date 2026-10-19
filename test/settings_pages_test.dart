@@ -47,7 +47,7 @@ void main() {
     expect(find.text('模型接口必须使用 HTTPS'), findsOneWidget);
     await t.enterText(input('接口地址'), '');
     h.native.notifyGranted = false;
-    await reveal(t, find.text('开启锁屏休息提醒')); await t.tap(find.text('开启锁屏休息提醒')); await settle(t);
+    await reveal(t, find.text('锁屏休息提醒')); await t.tap(find.text('锁屏休息提醒')); await settle(t);
     expect(find.text('通知权限未开启，将仅显示页面倒计时'), findsOneWidget);
     await reveal(t, find.text('导出备份')); await t.tap(find.text('导出备份')); await settle(t);
     final exported = h.native.exported!;
@@ -55,7 +55,7 @@ void main() {
     await h.controller.repo.addSets(date: h.controller.today, part: '胸', exercise: '恢复前新增', rows: [{'weight': 5, 'reps': 8, 'type': '正式'}]);
     expect((jsonDecode(h.native.docs['android-state']!)['sets'] as Map).length, 1);
     h.native.importData = exported;
-    await reveal(t, find.text('选择备份并恢复')); await t.tap(find.text('选择备份并恢复')); await settle(t);
+    await reveal(t, find.text('从备份恢复')); await t.tap(find.text('从备份恢复')); await settle(t);
     expect(find.text('恢复备份并替换手机记录？'), findsOneWidget);
     await t.tap(find.text('恢复')); await settle(t);
     expect(h.native.secrets.modelKey, '');

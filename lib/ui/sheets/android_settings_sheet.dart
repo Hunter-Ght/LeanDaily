@@ -1,6 +1,5 @@
 import '../../l10n/localized_text.dart';
 import '../../config/ai_provider.dart';
-import '../../core/haptics.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +15,9 @@ import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
 import '../kit/menu.dart';
+import '../kit/pressable.dart';
 import '../kit/sheet.dart';
+import '../../l10n/app_messages.dart';
 
 class AndroidSettingsSheet extends StatefulWidget {
   const AndroidSettingsSheet({super.key});
@@ -27,30 +28,27 @@ class AndroidSettingsSheet extends StatefulWidget {
 class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
   Map<String, dynamic>? _cfg;
   String _modelKey = '', _error = '';
-  bool _ready = false, _busy = false, _more = false;
+  bool _ready = false, _busy = false, _consented = false;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_cfg != null) return;
     _cfg = Map.of(context.app.settings.value);
-    _haptics = context.app.haptics;
     _loadKeys();
   }
 
-  @override
-  void dispose() {
-    _haptics?.enabledOverride = null;
-    super.dispose();
-  }
-
-  AppHaptics? _haptics;
-
   Future<void> _loadKeys() async {
     try {
-      final keys = await context.app.settings.secrets();
+      final app = context.app;
+      final keys = await app.settings.secrets();
+      // 还没填有效接口地址时 granted 会抛错，等同于没授权过；不影响读取密钥。
+      final consented = await AiConsent(
+        app.native,
+      ).granted(app.settings.value).catchError((Object _) => false);
       if (mounted) {
         setState(() {
           _modelKey = keys.modelKey;
+          _consented = consented;
           _ready = true;
         });
       }
@@ -144,43 +142,108 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
       SheetController.of(context).close();
     }
   });
-  Widget _field(String label, String key, {String? placeholder}) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+
+  /// 标签在左、输入框在右的一行，和普通设置行同高，不再“标签一行、输入框一行”。
+  Widget _field(
+    String label,
+    String key, {
+    String? placeholder,
+    Widget? trailing,
+  }) => Container(
+    constraints: const BoxConstraints(minHeight: 48),
+    padding: EdgeInsets.fromLTRB(16, 4, trailing == null ? 16 : 8, 4),
+    child: Row(
       children: [
-        LText(
-          label,
-          style: TextStyle(fontSize: 13, color: context.pal.secondary),
+        SizedBox(
+          width: 88,
+          child: LText(
+            label,
+            maxLines: 2,
+            style: TextStyle(
+              fontSize: 17,
+              height: 1.25,
+              color: context.pal.text,
+            ),
+          ),
         ),
-        FormInput(
-          label: label,
-          value: key == 'modelKey' ? _modelKey : '${_cfg![key] ?? ''}',
-          autocorrect: false,
-          align: TextAlign.left,
-          placeholder: placeholder,
-          onChanged: (v) => setState(() {
-            if (key == 'modelKey') {
-              _modelKey = v;
-            } else {
-              _cfg![key] = v;
-              if (key == 'baseUrl') {
-                if (isOfficialOpenAi(_cfg!)) _cfg!['protocol'] = 'responses';
-                if (isOfficialGemini(_cfg!)) _cfg!['protocol'] = 'chat';
+        Expanded(
+          child: FormInput(
+            label: label,
+            value: key == 'modelKey' ? _modelKey : '${_cfg![key] ?? ''}',
+            autocorrect: false,
+            align: TextAlign.left,
+            fontSize: 15,
+            placeholder: placeholder,
+            onChanged: (v) => setState(() {
+              if (key == 'modelKey') {
+                _modelKey = v;
+              } else {
+                _cfg![key] = v;
+                if (key == 'baseUrl') {
+                  if (isOfficialOpenAi(_cfg!)) _cfg!['protocol'] = 'responses';
+                  if (isOfficialGemini(_cfg!)) _cfg!['protocol'] = 'chat';
+                }
               }
-            }
-          }),
+            }),
+          ),
         ),
+        ?trailing,
       ],
     ),
   );
+
+  /// API Key 输入框右侧的小“粘贴”按钮。
+  Widget _pasteButton() {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      label: AppMessages.of(context).text('粘贴 API Key'),
+      excludeSemantics: true,
+      child: Pressable(
+        onTap: _busy || !_ready ? null : _paste,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Container(
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: p.fill2,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: LText(
+              '粘贴',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: p.tint,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _paste() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (!mounted) return;
+    final key = data?.text?.trim() ?? '';
+    if (key.isEmpty) {
+      context.app.toast.show('剪贴板没有文本');
+      return;
+    }
+    setState(() => _modelKey = key);
+  }
+
   Widget _button(String s, Future<void> Function() action) =>
       GroupRow(label: s, onTap: _busy || !_ready ? null : () => _run(action));
   @override
   Widget build(BuildContext context) {
     final app = context.app;
+    final official = isOfficialOpenAi(_cfg!) || isOfficialGemini(_cfg!);
     return AppSheet(
-      title: '高级',
+      title: '备份与高级',
       onSave: _save,
       saveEnabled: _ready && !_busy,
       confirmClose: () async => !_busy,
@@ -200,26 +263,6 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
                   )
                 : const SizedBox.shrink(),
           ),
-          const GroupFooter('记录和照片保存在这部手机。'),
-          const GroupHeader('交互'),
-          GroupCard(
-            children: [
-              GroupRow(
-                label: '触感反馈',
-                trailing: FormSwitch(
-                  label: '触感反馈',
-                  haptic: false,
-                  value: _cfg!['haptics'] != false,
-                  onChanged: (v) {
-                    context.app.haptics.enabledOverride = v;
-                    setState(() => _cfg!['haptics'] = v);
-                    if (v) context.app.haptics.selection();
-                  },
-                ),
-              ),
-            ],
-          ),
-          const GroupFooter('选择与调数时轻触，保存后轻震，完成训练和休息到点时给短双震。'),
           const GroupHeader('备份与恢复'),
           GroupCard(
             children: [
@@ -228,15 +271,15 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
                 app.toast.show('备份已导出');
               }),
               GroupRow(
-                label: '选择备份并恢复',
+                label: '从备份恢复',
                 onTap: _busy || !_ready ? null : _restore,
               ),
             ],
           ),
           const GroupFooter(
-            '备份包含记录、照片和普通设置，不包含密钥。第一版单个备份最多100MB。卸载 APP 会删除手机记录，请定期导出。',
+            '包含记录、照片和设置，不含密钥。单个备份最多 100MB。卸载 APP 会删除手机记录，请定期导出。',
           ),
-          const GroupHeader('拍照识别（大模型）'),
+          const GroupHeader('拍照识别（AI）'),
           GroupCard(
             children: [
               GroupRow(
@@ -246,56 +289,44 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
               ),
               _field('接口地址', 'baseUrl', placeholder: openAiExample['baseUrl']),
               _field('模型名称', 'model', placeholder: openAiExample['model']),
-              _field('API Key', 'modelKey'),
-              _button('粘贴 API Key', () async {
-                final data = await Clipboard.getData(Clipboard.kTextPlain);
-                if (!mounted) return;
-                final key = data?.text?.trim() ?? '';
-                if (key.isEmpty) {
-                  app.toast.show('剪贴板没有文本');
-                  return;
-                }
-                setState(() => _modelKey = key);
-              }),
-              GroupRow(
-                label: '更多选项',
-                value: _more ? '收起' : '',
-                onTap: () => setState(() => _more = !_more),
-              ),
-              Reveal(
-                visible: _more,
-                child: !_more
-                    ? const SizedBox.shrink()
-                    : GroupRow(
-                        label: '接口协议',
-                        value: _cfg!['protocol'] == 'responses'
-                            ? 'Responses（OpenAI / 兼容接口）'
-                            : 'Chat Completions（兼容接口）',
-                        onTap: () async {
-                          final picked = await showActionMenu(
-                            context,
-                            title: '接口协议',
-                            actions: const [
-                              MenuAction(
-                                id: 'chat',
-                                label: 'Chat Completions（兼容接口）',
-                              ),
-                              MenuAction(
-                                id: 'responses',
-                                label: 'Responses（OpenAI / 兼容接口）',
-                              ),
-                            ],
-                          );
-                          if (picked != null && mounted) {
-                            setState(() => _cfg!['protocol'] = picked.id);
-                          }
-                        },
-                      ),
-              ),
+              _field('API Key', 'modelKey', trailing: _pasteButton()),
+              // 官方服务商的协议是固定的；只有自定义服务才需要手动选。
+              if (!official && '${_cfg!['baseUrl'] ?? ''}'.trim().isNotEmpty)
+                GroupRow(
+                  label: '接口协议',
+                  value: _cfg!['protocol'] == 'responses'
+                      ? 'Responses'
+                      : 'Chat Completions',
+                  onTap: () async {
+                    final picked = await showActionMenu(
+                      context,
+                      title: '接口协议',
+                      actions: const [
+                        MenuAction(id: 'chat', label: 'Chat Completions（兼容接口）'),
+                        MenuAction(
+                          id: 'responses',
+                          label: 'Responses（OpenAI / 兼容接口）',
+                        ),
+                      ],
+                    );
+                    if (picked != null && mounted) {
+                      setState(() => _cfg!['protocol'] = picked.id);
+                    }
+                  },
+                ),
+              if (aiDataPolicyUrl(_cfg!) != null)
+                GroupRow(
+                  label: aiDataPolicyLabel(_cfg!),
+                  onTap: () =>
+                      _run(() => app.native.openUrl(aiDataPolicyUrl(_cfg!)!)),
+                ),
+              if (_consented)
+                _button('撤回 AI 照片授权', () async {
+                  await AiConsent(app.native).revoke();
+                  if (mounted) setState(() => _consented = false);
+                  app.toast.show('已撤回授权，下次识别前会重新询问');
+                }),
             ],
-          ),
-          const GroupFooter(
-            '填写服务商的基础地址，不含 /chat/completions 或 /responses。识别由你手动发起，可能产生服务商费用。API Key 支持长按或按钮粘贴，保存后仅存于本机安全存储。',
           ),
           if (isOfficialOpenAi(_cfg!))
             const GroupFooter(
@@ -304,41 +335,35 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           else if (isOfficialGemini(_cfg!))
             const GroupFooter(
               '使用你自己的 Google AI Studio API Key；额度和可用性以 Google 官方说明为准。示例不会自动启用或联网。',
-            ),
+            )
+          else
+            const GroupFooter('接口地址填基础地址，不含 /chat/completions 或 /responses。'),
           GroupFooter(aiProviderDisclosure(_cfg!)),
-          if (aiDataPolicyUrl(_cfg!) != null)
-            GroupCard(
-              children: [
-                GroupRow(
-                  label: aiDataPolicyLabel(_cfg!),
-                  onTap: () =>
-                      _run(() => app.native.openUrl(aiDataPolicyUrl(_cfg!)!)),
-                ),
-              ],
-            ),
-          GroupCard(
-            children: [
-              _button('撤回 AI 照片授权', () async {
-                await AiConsent(app.native).revoke();
-                app.toast.show('已撤回授权，下次识别前会重新询问');
-              }),
-            ],
-          ),
           const GroupFooter(
-            '仅发送所选照片、餐次和补充说明。服务商可能保存数据；请先阅读其隐私政策。撤回授权不会删除已发送的数据。',
+            '识别由你手动发起，可能产生服务商费用。只发送所选照片、餐次和补充说明；撤回授权不会删除已发送的数据。API Key 只保存在本机安全存储。',
           ),
-          const GroupHeader('提醒'),
+          const GroupHeader('通用'),
           GroupCard(
             children: [
-              _button('开启锁屏休息提醒', () async {
+              GroupRow(
+                label: '触感反馈',
+                sub: '选择时轻触，完成训练时双震',
+                trailing: FormSwitch(
+                  label: '触感反馈',
+                  haptic: false,
+                  value: _cfg!['haptics'] != false,
+                  onChanged: (v) async {
+                    setState(() => _cfg!['haptics'] = v);
+                    // 开关立即生效，不必再点保存。
+                    await app.setHaptics(v);
+                    if (v) app.haptics.selection();
+                  },
+                ),
+              ),
+              _button('锁屏休息提醒', () async {
                 await app.reminders.enableReminders();
                 app.toast.show('已检查提醒权限');
               }),
-            ],
-          ),
-          const GroupHeader('时区'),
-          GroupCard(
-            children: [
               GroupRow(
                 label: '记录时区',
                 value: '跟随系统',
@@ -348,14 +373,6 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             ],
           ),
           const GroupFooter('按手机系统时区计算“今天”。出差或换时区后会自动跟随，已经保存的记录日期不变。'),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 22, 16, 0),
-            child: FormButton(
-              _busy ? '正在处理…' : '保存设置',
-              onTap: _ready && !_busy ? _save : null,
-              filled: true,
-            ),
-          ),
           const GroupFooter('薄肌日课 $appVersion · 本地版'),
         ],
       ),

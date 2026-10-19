@@ -204,14 +204,17 @@ void main() {
         h.open(const AndroidSettingsSheet());
         await settle(t);
         await h.shot(t, 'advanced-${dark ? 'dark' : 'light'}');
-        expect(find.text('高级'), findsOneWidget);
+        expect(find.text('备份与高级'), findsOneWidget);
         expect(
           t.getTopLeft(find.text('备份与恢复')).dy,
-          lessThan(t.getTopLeft(find.text('拍照识别（大模型）')).dy),
+          lessThan(t.getTopLeft(find.text('拍照识别（AI）')).dy),
         );
         await t.tap(find.text('保存').first);
         await settle(t);
-        expect(h.controller.settings.value['tz'], h.controller.settings.deviceTz);
+        expect(
+          h.controller.settings.value['tz'],
+          h.controller.settings.deviceTz,
+        );
         await t.pump(const Duration(seconds: 3));
       },
     );
@@ -269,8 +272,8 @@ void main() {
     expect(find.text('模型接口必须使用 HTTPS'), findsOneWidget);
     await t.enterText(input('接口地址'), '');
     h.native.notifyGranted = false;
-    await reveal(t, find.text('开启锁屏休息提醒'));
-    await t.tap(find.text('开启锁屏休息提醒'));
+    await reveal(t, find.text('锁屏休息提醒'));
+    await t.tap(find.text('锁屏休息提醒'));
     await settle(t);
     expect(find.text('通知权限未开启，将仅显示页面倒计时'), findsOneWidget);
     await reveal(t, find.text('导出备份'));
@@ -286,8 +289,8 @@ void main() {
         {'weight': 5, 'reps': 8, 'type': '正式'},
       ],
     );
-    await reveal(t, find.text('选择备份并恢复'));
-    await t.tap(find.text('选择备份并恢复'));
+    await reveal(t, find.text('从备份恢复'));
+    await t.tap(find.text('从备份恢复'));
     await settle(t);
     await t.tap(find.text('恢复'));
     await settle(t);

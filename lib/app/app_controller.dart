@@ -220,6 +220,15 @@ class AppController extends ChangeNotifier {
     }
   }
 
+  Future<void> setHaptics(bool value) async {
+    try {
+      await settings.save({...settings.value, 'haptics': value});
+      if (!_updateDisposed) notifyListeners();
+    } on Object {
+      toast.show('设置未保存，请稍后再试');
+    }
+  }
+
   Future<void> markUpdateSeen() async {
     if (updateInfo == null) return;
     _hints['updateSeen'] = updateInfo!.identity;
