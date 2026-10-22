@@ -66,6 +66,7 @@ void main() {
               );
               for (final e in exercises) {
                 final name = e['name'] as String;
+                expect(guideFor(e), isNotNull, reason: '$id: $name');
                 expect(musclesOf(name)?['muscles'], isNotEmpty, reason: name);
                 expect(
                   musclesOf(name)?['matched'],
@@ -212,20 +213,45 @@ void main() {
     }
     expect(() => buildPlan('missing'), throwsArgumentError);
   });
-  test(
-    'missing demonstrations are explicit and never use unrelated images',
-    () {
-      final plan = buildPlan(defaultTemplateId);
-      final pull = map(map(plan['workouts'])['t2']);
-      for (final e in rows(
-        map(pull['gym'])['exercises'],
-      ).where((e) => ['硬拉', '引体向上'].contains(e['name']))) {
-        expect(guideFor(e), isNull);
-        expect(e['img'], '');
-        expect(e['alts'], isNotEmpty);
+  test('all built-in alternatives and ladder stages have demonstrations', () {
+    void checkExercise(Map<String, dynamic> e) {
+      expect(guideFor(e), isNotNull, reason: '${e['name']}');
+      for (final alt in rows(e['alts'] ?? [])) {
+        checkExercise(alt);
       }
-    },
-  );
+      if (e['alt'] is String) checkExercise({'name': e['alt']});
+    }
+
+    for (final t in templates) {
+      final plan = buildPlan(t['id'] as String);
+      for (final w in map(plan['workouts']).values.map(map)) {
+        for (final variant in [w, if (w['gym'] != null) map(w['gym'])]) {
+          for (final e in rows(variant['exercises'])) {
+            checkExercise(e);
+          }
+        }
+      }
+      for (final ladder in map(plan['ladders']).values.map(map)) {
+        for (final step in rows(ladder['steps'])) {
+          checkExercise(step);
+        }
+      }
+    }
+  });
+  test('saved template names resolve without rewriting the plan', () {
+    for (final (name, key) in [
+      ('硬拉', 'deadlift'),
+      ('引体向上', 'pullup'),
+      ('反向划船', 'inverted-row'),
+      ('桌下反向划船', 'inverted-row'),
+    ]) {
+      final e = {'name': name, 'img': ''};
+      final before = jsonEncode(e);
+      expect(guideFor(e)?['key'], key);
+      expect(jsonEncode(e), before);
+    }
+    expect(guideFor({'name': '用户自定义动作'}), isNull);
+  });
   group('explainable recommendations', () {
     Map<String, dynamic> profile({
       String sex = 'male',

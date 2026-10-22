@@ -172,6 +172,7 @@ class _GuideBodyState extends State<GuideBody> {
               ),
             ),
           ),
+        if (g?['demoNote'] != null) line(g!['demoNote'] as String, top: 10),
         Padding(
           padding: const EdgeInsets.fromLTRB(4, 14, 4, 0),
           child: LText(

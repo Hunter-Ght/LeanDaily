@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/yuhonas/free-exercise-db",
+  "revision": "f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5",
+  "license": "Unlicense",
+  "processing": "Original JPEGs, unchanged",
+  "files": [
+    {
+      "asset": "assets/exercises/inverted-row/0.jpg",
+      "source": "exercises/Inverted_Row/0.jpg",
+      "sha256": "cab05c22ab07eb560c05cfe0e56029b25d4222092201fb00557ac190c64a1657"
+    },
+    {
+      "asset": "assets/exercises/inverted-row/1.jpg",
+      "source": "exercises/Inverted_Row/1.jpg",
+      "sha256": "c4c44d1ceeee8ae86a0c14fe82e4d9990f245054d9915f92cbcc94492053ef0b"
+    },
+    {
+      "asset": "assets/exercises/deadlift/0.jpg",
+      "source": "exercises/Barbell_Deadlift/0.jpg",
+      "sha256": "f032a7e4566eb3e73258580add64bf2756cb465bfcee22fdfffbed0f43f1eae6"
+    },
+    {
+      "asset": "assets/exercises/deadlift/1.jpg",
+      "source": "exercises/Barbell_Deadlift/1.jpg",
+      "sha256": "cf206d0738830af831872cfb054c7cf91a43b435f4cc20f4fdb00a2664654e90"
+    },
+    {
+      "asset": "assets/exercises/pullup/0.jpg",
+      "source": "exercises/Pullups/0.jpg",
+      "sha256": "e56c8c43a41cfe2489dcfffc2c8195fd9e8897ba25165dbc34a4154ed6df5c7a"
+    },
+    {
+      "asset": "assets/exercises/pullup/1.jpg",
+      "source": "exercises/Pullups/1.jpg",
+      "sha256": "40549a52b064e5084a85e2c36afb51438df6ac1097169379a05f21565f8b4f3f"
+    }
+  ]
+}

@@ -52,6 +52,7 @@ flutter:
     - assets/exercises/db-shoulder-press/
     - assets/exercises/db-tricep-ext/
     - assets/exercises/dead-bug/
+    - assets/exercises/deadlift/
     - assets/exercises/face-pull/
     - assets/exercises/feet-up-pushup/
     - assets/exercises/floor-press/
@@ -61,6 +62,7 @@ flutter:
     - assets/exercises/hammer-curl/
     - assets/exercises/incline-pushup/
     - assets/exercises/incline-pushup-low/
+    - assets/exercises/inverted-row/
     - assets/exercises/kickback/
     - assets/exercises/lat-pulldown/
     - assets/exercises/lateral-raise/
@@ -74,6 +76,7 @@ flutter:
     - assets/exercises/plank/
     - assets/exercises/pushdown/
     - assets/exercises/pushup/
+    - assets/exercises/pullup/
     - assets/exercises/rdl/
     - assets/exercises/rear-delt-fly/
     - assets/exercises/reverse-crunch/

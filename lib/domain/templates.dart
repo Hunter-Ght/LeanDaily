@@ -163,8 +163,8 @@ Map<String, dynamic> _exercise(String name) {
       'img': '',
     };
   }
-  // Template-owned specs for names absent from catalog/guide. Muscle mappings
-  // exist in movements.dart; no demonstration image is invented.
+  // Template-owned prescriptions for names absent from the editable catalog.
+  // Demonstrations resolve by canonical name through guideFor, including old plans.
   final (part, gear, tip, alts) = switch (name) {
     '硬拉' => (
       '腿',

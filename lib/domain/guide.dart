@@ -1,4 +1,4 @@
-// Content copied verbatim from Web guide.js and guide-extra.js.
+// Legacy content from Web guide.js and guide-extra.js, plus template guides.
 // ignore_for_file: constant_identifier_names
 const Map<String, dynamic> LIB = {
   "incline-pushup": {
@@ -400,8 +400,40 @@ const Map<String, dynamic> LIB = {
     ],
     "mistakes": ["抬得太高，腰部过度后伸", "甩着上来", "圆背向下"],
   },
+  "deadlift": {
+    "label": "硬拉",
+    "steps": [
+      "双脚约与髋同宽，杠铃靠近小腿；屈髋屈膝，双手在双腿外侧握杠",
+      "收紧腹部，背保持自然平直；脚踩地站起，让杠铃贴近腿移动",
+      "站直时收紧臀部，不向后仰；髋向后推，控制杠铃落地后重新准备",
+    ],
+    "mistakes": ["弓背或猛拽杠铃", "杠铃离腿太远", "顶端过度后仰；先用轻重量练习"],
+  },
+  "pullup": {
+    "label": "引体向上",
+    "steps": [
+      "确认单杠固定牢固，正手握杠，双手略宽于肩，双脚离地",
+      "收紧腹部，肩胛下沉后屈肘上拉，让下巴接近或超过杠，不伸脖子硬够",
+      "控制下降到手臂接近伸直，不甩腿；做不到目标次数时改辅助引体向上机",
+    ],
+    "mistakes": ["甩腿或摆动借力", "耸肩、伸脖子硬够杠", "突然松力下落或只做半程"],
+  },
+  "inverted-row": {
+    "label": "反向划船",
+    "demoNote": "图示为固定横杆版，展示拉起与放下的轨迹。居家计划使用桌下版本：仅用稳固、能承重且不翻倒的桌子；无法确认时改超人式。",
+    "steps": [
+      "先确认桌子稳固、能承重且不翻倒，桌边可牢牢握住；不满足条件就改超人式",
+      "进入桌下，双手握稳桌边，脚跟着地，收紧腹部，让肩、髋和脚跟保持一条线",
+      "屈肘把胸口拉向桌边，肩胛向后收；控制放下到手臂接近伸直，不塌腰、不甩身体",
+    ],
+    "mistakes": ["桌子滑动、倾倒或桌边握不牢仍继续做", "塌腰、抬臀或借惯性甩起", "耸肩，头向前伸而胸口没有拉近"],
+  },
 };
 const Map<String, String> NAME_MAP = {
+  "硬拉": "deadlift",
+  "引体向上": "pullup",
+  "反向划船": "inverted-row",
+  "桌下反向划船": "inverted-row",
   "高位俯卧撑": "incline-pushup",
   "低台面俯卧撑": "incline-pushup-low",
   "跪姿俯卧撑": "pushup",
@@ -522,6 +554,9 @@ const List<Map<String, String>> LIB_OPTIONS = [
   {"key": "reverse-pec-deck", "label": "反向蝴蝶机"},
   {"key": "seated-calf", "label": "坐姿提踵机"},
   {"key": "back-extension", "label": "背部伸展"},
+  {"key": "deadlift", "label": "硬拉"},
+  {"key": "pullup", "label": "引体向上"},
+  {"key": "inverted-row", "label": "反向划船"},
 ];
 
 String frameAsset(String key, int i) => 'assets/exercises/$key/$i.jpg';

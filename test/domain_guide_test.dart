@@ -8,9 +8,14 @@ void main() {
   final g =
       jsonDecode(File('test/golden/catalog.json').readAsStringSync()) as Map;
   test('all Web guide content, overrides, fallbacks and video URLs', () {
-    expect(LIB, g['lib']);
-    expect(NAME_MAP, g['nameMap']);
-    expect(LIB_OPTIONS, g['options']);
+    // Keep the historical Web fixture as an independent compatibility check.
+    for (final entry in (g['lib'] as Map).entries) {
+      expect(LIB[entry.key], entry.value);
+    }
+    for (final entry in (g['nameMap'] as Map).entries) {
+      expect(NAME_MAP[entry.key], entry.value);
+    }
+    expect(LIB_OPTIONS.take((g['options'] as List).length), g['options']);
     for (final c in g['guides']) {
       final expected = c['expected'] == null
           ? null
@@ -42,6 +47,13 @@ void main() {
         expect(file.existsSync(), isTrue, reason: '${file.path} 缺失');
         expect(file.lengthSync(), greaterThan(1000), reason: '${file.path} 太小');
       }
+    }
+  });
+  test('every demonstration is selectable in the exercise editor', () {
+    expect(LIB_OPTIONS.map((o) => o['key']).toSet(), LIB.keys.toSet());
+    expect(LIB_OPTIONS.length, LIB.length);
+    for (final key in NAME_MAP.values) {
+      expect(LIB.containsKey(key), isTrue, reason: key);
     }
   });
 }
