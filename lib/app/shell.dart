@@ -364,7 +364,8 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
                   animation: _pos,
                   builder: (context, _) => Positioned(
                     left: vertical ? 0 : _pos.value * step,
-                    top: vertical ? _pos.value * step : 0,
+                    // Split the horizontal container's extra 4pt evenly.
+                    top: vertical ? _pos.value * step : 2,
                     width: itemW,
                     height: itemH,
                     child: DecoratedBox(
@@ -378,7 +379,7 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
                 for (var i = 0; i < 4; i++)
                   Positioned(
                     left: vertical ? 0 : i * step,
-                    top: vertical ? i * step : 0,
+                    top: vertical ? i * step : 2,
                     width: itemW,
                     height: itemH,
                     child: Pressable(
