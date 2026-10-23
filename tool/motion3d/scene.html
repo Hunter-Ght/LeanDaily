@@ -632,7 +632,126 @@ EXTRA_MODES.kneel = (spec, v) => {
 
 // ==== 家族 machine（引体向上架、固定器械）姿势扩展 开始 ====
 
+// 坐姿器械（EXTRA_MODES.seat）：先按 stand 摆好（drop≈0.45、back≈0.4，骨盆在 (0, 0.5, -0.44)），再接管：
+// ① 腿（可选）：v.shin 小腿相对竖直向前摆的角度（0 垂下，90 水平伸直，负数向后收），v.thigh 大腿向下倾角，
+//    kx 脚的横向位置，fpitch 脚面；spec.plate:[高, 前脚掌 z] 前脚掌踩踏板时 v.heelAng 是脚跟抬起的角度（坐姿提踵）。
+// ② 手掌转到贴合握把的方向（spec.roll / v.roll 是绕前臂的额外翻转，单位度）。
+// ③ 连杆 spec.links：[{ from, to, off, fOff, r, m }]，from/to 是 [x,y,z] 或跟随目标名
+//    handL handR feet kneeL kneeR ankleL ankleR，圆杆（r 粗时就是软垫）。
+const linkMeshes = new Map();
+function fitHands(spec, v) {
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const d = wpos(bones['hand_' + s]).sub(wpos(bones['lowerarm_' + s])).normalize();
+    palm(s, d);
+    const roll = rad(v['roll' + s.toUpperCase()] ?? v.roll ?? spec.roll ?? 0) * k;
+    if (roll) setWorldQuat(bones['hand_' + s], new THREE.Quaternion().setFromAxisAngle(d, roll).multiply(wquat(bones['hand_' + s])));
+    const fist = v.fist ?? spec.fist ?? 0.9;
+    if (fist) curlFingers(s, fist, q.get('fax') || 'x');
+  }
+}
+// 握拳：四指各关节绕局部轴弯曲（amt 0~1），握住把手。
+function curlFingers(s, amt, ax = 'x') {
+  const axis = ax === 'x' ? V(1, 0, 0) : V(0, 0, 1);
+  for (const f of ['index', 'middle', 'ring', 'pinky'])
+    [[1, 0.8], [2, 1.0], [3, 0.9]].forEach(([n, w]) => {
+      const b = bones[f + '_0' + n + '_' + s];
+      b.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(axis, amt * w * 1.1));
+    });
+  bones['hand_' + s].updateWorldMatrix(false, true);
+}
+function seatLegs(spec, v) {
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hip = wpos(bones['thigh_' + s]);
+    const x = k * (v.kx ?? 0.12);
+    let ankle, pitch = rad(v.fpitch || 0);
+    if (spec.plate) {
+      // 前脚掌踩在踏板上，脚跟抬起 heelAng 度。
+      const th = rad(v.heelAng || 0);
+      const ballOff = V(0, bindPos.ball_l.y - bindPos.foot_l.y, bindPos.ball_l.z - bindPos.foot_l.z).applyAxisAngle(X, th);
+      ankle = V(x, spec.plate[0], spec.plate[1]).sub(ballOff);
+      pitch += th;
+    } else if (v.ay !== undefined) {
+      // 直接给脚踝位置（腿举：直坐坐标里脚踝在 (ay, az)）。
+      ankle = V(x, v.ay, v.az);
+    } else {
+      const td = rad(v.thigh || 0), a = rad(v.shin || 0);
+      const knee = hip.clone().add(V(0, -Math.sin(td), Math.cos(td)).multiplyScalar(L.thigh));
+      ankle = knee.add(V(0, -Math.cos(a), Math.sin(a)).multiplyScalar(L.shin));
+      ankle.x = x;
+      pitch += -a * 0.85 + rad(8);
+    }
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], ankle, V(0.1 * k, 1, 0.35), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], new THREE.Quaternion().setFromAxisAngle(X, pitch).multiply(bindQuat['foot_' + s].clone()));
+  }
+}
+function linkPoint(t, off) {
+  let p;
+  if (t && t.t) {
+    // 带参数的目标：{ t:'handL', along, off } 沿前臂（手腕→手指）前移 along；
+    // { t:'ankleL', along, perp } 沿小腿（膝→踝）前移 along，perp 朝小腿前侧；
+    // { t:'chest', up, fwd, x } 胸口（躯干随前屈转动）：沿躯干向上 up、朝胸前 fwd、横向 x。
+    const side = t.t.slice(-1).toLowerCase();
+    if (t.t.startsWith('hand')) {
+      const hp = wpos(bones['hand_' + side]);
+      p = hp.clone().add(hp.clone().sub(wpos(bones['lowerarm_' + side])).normalize().multiplyScalar(t.along || 0));
+    } else if (t.t.startsWith('ankle')) {
+      const fp = wpos(bones['foot_' + side]), d = fp.clone().sub(wpos(bones['calf_' + side])).normalize();
+      p = fp.clone().add(d.clone().multiplyScalar(t.along || 0)).add(V(0, d.z, -d.y).multiplyScalar(t.perp || 0));
+    } else if (t.t.startsWith('knee')) p = wpos(bones['calf_' + side]);
+    else if (t.t === 'chest') {
+      const c = wpos(bones.spine_03), u = c.clone().sub(wpos(bones.pelvis)).normalize();
+      p = c.add(u.clone().multiplyScalar(t.up || 0)).add(V(0, -u.z, u.y).multiplyScalar(t.fwd || 0)).add(V(t.x || 0, 0, 0));
+    }
+    if (t.off) p.add(V(...t.off));
+    if (t.y !== undefined) p.y = t.y;
+  } else if (Array.isArray(t)) p = V(...t);
+  else if (t === 'kneeL' || t === 'kneeR') p = wpos(bones['calf_' + t.slice(-1).toLowerCase()]);
+  else if (t === 'ankleL' || t === 'ankleR') p = wpos(bones['foot_' + t.slice(-1).toLowerCase()]);
+  else p = followPoint(t);
+  return off ? p.add(V(...off)) : p;
+}
+function updateLinks(spec) {
+  for (const l of spec.links || []) {
+    let m = linkMeshes.get(l);
+    if (!m) { m = mesh(new THREE.CylinderGeometry(l.r || 0.014, l.r || 0.014, 1, 16), PM[l.m || 'frame'], rig); linkMeshes.set(l, m); }
+    const a = linkPoint(l.from, l.fOff), b = linkPoint(l.to, l.off), dir = b.clone().sub(a);
+    m.position.copy(a).add(b).multiplyScalar(0.5);
+    m.scale.set(1, dir.length(), 1);
+    m.quaternion.setFromUnitVectors(V(0, 1, 0), dir.normalize());
+  }
+}
+EXTRA_MODES.seat = (spec, v) => {
+  if (spec.arc) {
+    // 前臂绕固定的肘（spec.arc.c）转动：v.fa 是前臂仰角（0 水平向前，90 竖直向上，负数向下），肘位置不会漂。
+    const a = rad(v.fa);
+    v = { ...v, hx: spec.arc.c[0], hy: spec.arc.c[1] + spec.arc.r * Math.sin(a), hz: spec.arc.c[2] + spec.arc.r * Math.cos(a) };
+    // 肘的位置由 pole 决定：让 pole 指向“肩–手连线到固定肘点”的垂直方向，肘就停在 c 上。
+    const sh = bindPos.upperarm_l.clone().add(V(0, -v.drop, -v.back)), hd = V(v.hx, v.hy, v.hz);
+    const u = hd.clone().sub(sh).normalize(), w = V(...spec.arc.c).sub(sh);
+    const pl = w.sub(u.multiplyScalar(w.dot(u)));
+    spec = { ...spec, pole: [pl.x, pl.y, pl.z] };
+  }
+  if (spec.rel) {
+    // 手相对肩的位置（躯干前屈时手跟着肩走）：先摆一遍取肩位置，再复位按肩 + (rx,ry,rz) 重摆。
+    poseStand(spec, v);
+    const sh = wpos(bones.upperarm_l);
+    reset();
+    v = { ...v, hx: sh.x + v.rx, hy: sh.y + v.ry, hz: sh.z + v.rz };
+  }
+  poseStand(spec, v);
+  if (v.shin !== undefined || v.ay !== undefined || spec.plate) seatLegs(spec, v);
+  if (spec.arms === 'ik') fitHands(spec, v);
+  updateLinks(spec);
+};
 
+// 反向划船：poseUnder + 握拳 + 连杆。
+EXTRA_MODES.underRow = (spec, v) => {
+  poseUnder(spec, v);
+  fitHands(spec, v);
+  updateLinks(spec);
+};
 // ==== 家族 machine 结束 ====
 
 // 仰身悬挂（反向划船）：脚跟踩地，身体绕脚跟转动，脸朝上，双手抓头顶的横杆。

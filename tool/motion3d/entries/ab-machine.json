@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/ab-machine.webp",
+ "frames": 86,
+ "periodMs": 4000,
+ "peakMs": 1550,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   400,
+   "收紧"
+  ],
+  [
+   1500,
+   "顶峰"
+  ],
+  [
+   2000,
+   "收回"
+  ]
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/reverse-pec-deck.webp",
+ "frames": 91,
+ "periodMs": 4000,
+ "peakMs": 1450,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "发力"
+  ],
+  [
+   1400,
+   "顶峰"
+  ],
+  [
+   1800,
+   "下放"
+  ]
+ ]
+}

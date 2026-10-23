@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/pullup.webp",
+ "frames": 102,
+ "periodMs": 4400,
+ "peakMs": 1650,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "发力"
+  ],
+  [
+   1600,
+   "顶峰"
+  ],
+  [
+   2000,
+   "下放"
+  ]
+ ]
+}
