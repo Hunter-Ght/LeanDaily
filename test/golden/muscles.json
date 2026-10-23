@@ -773,9 +773,9 @@
   "setCount": 57,
   "muscles": {
    "chest_up": {
-    "fatigue": 0.424018,
+    "fatigue": 0.327657,
     "ref": 6,
-    "ratio": 0.07067,
+    "ratio": 0.05461,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -786,12 +786,12 @@
     "daysSince": null
    },
    "chest": {
-    "fatigue": 1.563441,
+    "fatigue": 1.208143,
     "ref": 6,
-    "ratio": 0.260574,
-    "heat": 0.260574,
+    "ratio": 0.201357,
+    "heat": 0.201357,
     "recovered": false,
-    "daysLeft": 0.572536,
+    "daysLeft": 0.012196,
     "sets7": 4.95,
     "sets30": 14.85,
     "sets90": 14.85,
@@ -799,9 +799,9 @@
     "daysSince": 3
    },
    "delt_front": {
-    "fatigue": 0.848036,
+    "fatigue": 0.452301,
     "ref": 6,
-    "ratio": 0.141339,
+    "ratio": 0.075384,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -812,9 +812,9 @@
     "daysSince": 3
    },
    "delt_side": {
-    "fatigue": 0.663155,
+    "fatigue": 0.353665,
     "ref": 6,
-    "ratio": 0.110526,
+    "ratio": 0.058944,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -825,12 +825,12 @@
     "daysSince": 3
    },
    "delt_rear": {
-    "fatigue": 1.386319,
+    "fatigue": 1.132238,
     "ref": 6,
-    "ratio": 0.231053,
-    "heat": 0.231053,
-    "recovered": false,
-    "daysLeft": 0.312337,
+    "ratio": 0.188706,
+    "heat": 0,
+    "recovered": true,
+    "daysLeft": 0,
     "sets7": 1.995,
     "sets30": 5.985,
     "sets90": 5.985,
@@ -838,12 +838,12 @@
     "daysSince": 1
    },
    "biceps": {
-    "fatigue": 2.924735,
+    "fatigue": 2.476164,
     "ref": 6,
-    "ratio": 0.487456,
-    "heat": 0.487456,
+    "ratio": 0.412694,
+    "heat": 0.412694,
     "recovered": false,
-    "daysLeft": 1.927907,
+    "daysLeft": 1.045072,
     "sets7": 3.675,
     "sets30": 11.025,
     "sets90": 11.025,
@@ -851,9 +851,9 @@
     "daysSince": 1
    },
    "triceps": {
-    "fatigue": 0.781721,
+    "fatigue": 0.416935,
     "ref": 6,
-    "ratio": 0.130287,
+    "ratio": 0.069489,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -864,9 +864,9 @@
     "daysSince": 3
    },
    "abs": {
-    "fatigue": 0.631577,
+    "fatigue": 0.336824,
     "ref": 6,
-    "ratio": 0.105263,
+    "ratio": 0.056137,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -877,9 +877,9 @@
     "daysSince": 3
    },
    "obliques": {
-    "fatigue": 0.126315,
+    "fatigue": 0.067365,
     "ref": 6,
-    "ratio": 0.021053,
+    "ratio": 0.011227,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -890,12 +890,12 @@
     "daysSince": null
    },
    "lats": {
-    "fatigue": 2.507375,
+    "fatigue": 2.331002,
     "ref": 6,
-    "ratio": 0.417896,
-    "heat": 0.417896,
+    "ratio": 0.3885,
+    "heat": 0.3885,
     "recovered": false,
-    "daysLeft": 1.594715,
+    "daysLeft": 1.197395,
     "sets7": 3.15,
     "sets30": 9.45,
     "sets90": 9.45,
@@ -903,12 +903,12 @@
     "daysSince": 1
    },
    "mid_back": {
-    "fatigue": 1.755163,
+    "fatigue": 1.631702,
     "ref": 6,
-    "ratio": 0.292527,
-    "heat": 0.292527,
+    "ratio": 0.27195,
+    "heat": 0.27195,
     "recovered": false,
-    "daysLeft": 0.822856,
+    "daysLeft": 0.554179,
     "sets7": 2.205,
     "sets30": 6.615,
     "sets90": 6.615,
@@ -916,9 +916,9 @@
     "daysSince": 1
    },
    "lower_back": {
-    "fatigue": 1.00295,
+    "fatigue": 1.12948,
     "ref": 6,
-    "ratio": 0.167158,
+    "ratio": 0.188247,
     "heat": 0,
     "recovered": true,
     "daysLeft": 0,
@@ -929,12 +929,12 @@
     "daysSince": null
    },
    "quads": {
-    "fatigue": 2.746096,
+    "fatigue": 3.092558,
     "ref": 6,
-    "ratio": 0.457683,
-    "heat": 0.457683,
+    "ratio": 0.515426,
+    "heat": 0.515426,
     "recovered": false,
-    "daysLeft": 1.791522,
+    "daysLeft": 2.731532,
     "sets7": 3.45,
     "sets30": 10.35,
     "sets90": 10.35,
@@ -942,12 +942,12 @@
     "daysSince": 1
    },
    "hamstrings": {
-    "fatigue": 1.388802,
+    "fatigue": 1.564067,
     "ref": 6,
-    "ratio": 0.231467,
-    "heat": 0.231467,
+    "ratio": 0.260678,
+    "heat": 0.260678,
     "recovered": false,
-    "daysLeft": 0.31621,
+    "daysLeft": 0.764536,
     "sets7": 1.745,
     "sets30": 5.235,
     "sets90": 5.235,
@@ -955,12 +955,12 @@
     "daysSince": null
    },
    "glutes": {
-    "fatigue": 3.095899,
+    "fatigue": 3.486613,
     "ref": 6,
-    "ratio": 0.515983,
-    "heat": 0.515983,
+    "ratio": 0.581102,
+    "heat": 0.581102,
     "recovered": false,
-    "daysLeft": 2.050986,
+    "daysLeft": 3.077583,
     "sets7": 3.89,
     "sets30": 11.67,
     "sets90": 11.67,

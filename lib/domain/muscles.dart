@@ -5,8 +5,19 @@ export 'movements.dart' show MUSCLE;
 
 // Names match the web model's public constants.
 // ignore_for_file: constant_identifier_names
-const HALF_LIFE_H = 36;
 const RECOVERED_SETS = 1.2;
+
+/// 单次训练里一块肌肉最多计入的有效组数：超过 10–12 组后刺激几乎不再增加，
+/// 多出来的“垃圾容量”不该把恢复时间线性拉长。只限制疲劳，组数统计照实计。
+const SESSION_CAP_SETS = 12.0;
+
+/// 每块肌肉的恢复半衰期（小时）。大肌群、重负荷的下肢恢复更慢：
+/// 例如 10RM 深蹲 36 小时后力量仍下降约 6.6%，卧推约 3%；小肌群和核心恢复更快。
+double halfLifeHours(String muscleId) => switch (muscleId) {
+  'quads' || 'hamstrings' || 'glutes' || 'calves' || 'lower_back' => 48,
+  'chest' || 'chest_up' || 'lats' || 'mid_back' => 30,
+  _ => 24,
+};
 const REF_FLOOR = 6;
 const REF_CAP = 14;
 const REF_DAYS = 84;
@@ -89,6 +100,8 @@ Map<String, dynamic> muscleStatus(
     for (final g in GROUPS)
       g['id']!: <String, dynamic>{...g, 'sets7': 0, 'sets30': 0, 'sets90': 0},
   };
+  // 每块肌肉每天已计入疲劳的有效组数（封顶用）。
+  final used = <String, Map<String, double>>{};
   for (final s in sets) {
     final mv = musclesOf(s['ex'], s['part'] as String?);
     if (mv == null) continue;
@@ -99,14 +112,21 @@ Map<String, dynamic> muscleStatus(
     final hours = math.max(0, (nowMs - t) / 3600000), age = hours / 24;
     final load =
         (s['type'] == '递减' ? 0.75 : 1) * intensityOf(s, best[s['ex']] ?? 0);
-    final decay = math.pow(0.5, hours / HALF_LIFE_H).toDouble();
     final dg = direct[mv['group']]!;
     for (final n in [7, 30, 90]) {
       if (age <= n) dg['sets$n'] = (dg['sets$n'] as num) + 1;
     }
     for (final e in (mv['muscles'] as Map<String, num>).entries) {
       final id = e.key, w = e.value, m = byMuscle[id]!, eff = load * w;
-      m['fatigue'] = (m['fatigue'] as num) + eff * decay;
+      final decay = math.pow(0.5, hours / halfLifeHours(id)).toDouble();
+      final day = (used[id] ??= {});
+      final date = s['date'] as String;
+      final counted = math.min(
+        eff,
+        math.max(0.0, SESSION_CAP_SETS - (day[date] ?? 0)),
+      );
+      day[date] = (day[date] ?? 0) + counted;
+      m['fatigue'] = (m['fatigue'] as num) + counted * decay;
       for (final n in [7, 30, 90]) {
         if (age <= n) m['sets$n'] = (m['sets$n'] as num) + eff;
       }
@@ -147,7 +167,10 @@ Map<String, dynamic> muscleStatus(
         : (m['ratio'] as num).clamp(0.2, 1.0);
     m['daysLeft'] = m['recovered'] as bool
         ? 0.0
-        : HALF_LIFE_H / 24 * math.log(fatigue / RECOVERED_SETS) / math.ln2;
+        : halfLifeHours(m['id'] as String) /
+              24 *
+              math.log(fatigue / RECOVERED_SETS) /
+              math.ln2;
     (m['from'] as List<Map<String, dynamic>>).sort(
       (a, b) => (b['load'] as num).compareTo(a['load'] as num),
     );
