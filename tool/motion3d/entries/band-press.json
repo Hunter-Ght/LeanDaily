@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/band-press.webp",
+ "frames": 85,
+ "periodMs": 3800,
+ "peakMs": 1350,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "发力"
+  ],
+  [
+   1300,
+   "顶峰"
+  ],
+  [
+   1800,
+   "收回"
+  ]
+ ]
+}

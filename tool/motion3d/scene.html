@@ -355,7 +355,48 @@ const EXTRA_MODES = {};
 // ==== 家族 floor 结束 ====
 
 // ==== 家族 free（站姿自由重量、弹力带）姿势扩展 开始 ====
-
+// hinge：站姿髋铰链（俯身划船、飞鸟、硬拉）。先按 stand 摆好骨盆/腿/躯干，再用 IK 摆手臂。
+// spec.rel 为真时，hx/hy/hz 是相对本侧肩膀的偏移（hx 向外为正），否则是世界坐标；pole 决定肘朝哪弯。
+EXTRA_MODES.hinge = (spec, v) => {
+  poseStand({ ...spec, arms: 'front' }, { arm: 0, el: 0, ...v });
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1, S = s.toUpperCase();
+    const g = n => v[n + S] ?? v[n];
+    const t = spec.rel ? wpos(bones['upperarm_' + s]).add(V(k * g('hx'), g('hy'), g('hz'))) : V(k * g('hx'), g('hy'), g('hz'));
+    const pole = V((spec.pole?.[0] ?? 0.5) * k, spec.pole?.[1] ?? -1, spec.pole?.[2] ?? -0.3);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], t, pole, L.uarm, L.farm);
+  }
+};
+// benchOne：一手一膝撑在长凳上的俯身动作（单臂划船、臂后伸）。左手（+x）干活，右手右膝在凳上。
+// spec.bench = { x, top }：凳面中线 x 与凳面高度。左脚踩地（spec.stance.l）。
+// 干活的手臂：给 ua（上臂相对水平向后抬起的角度）和 fa（前臂同样的角度，负数朝下）走“角度”；否则 hx/hy/hz 是相对左肩的偏移，走 IK。
+EXTRA_MODES.benchOne = (spec, v) => {
+  poseStand({ ...spec, arms: 'front' }, { arm: 0, el: 0, ...v });
+  const { x: bx, top } = spec.bench;
+  // 右腿：膝落在凳面上（大腿向后斜到膝），小腿沿凳子向后，脚背贴凳。
+  const hipR = wpos(bones.thigh_r);
+  const kneeY = top + 0.06, dy = hipR.y - kneeY;
+  const horiz = Math.sqrt(Math.max(0, L.thigh * L.thigh - dy * dy));
+  const kk = V(bx, kneeY, hipR.z - Math.sqrt(Math.max(0, horiz * horiz - (bx - hipR.x) ** 2)));
+  aim(bones.thigh_r, bones.calf_r, kk);
+  aim(bones.calf_r, bones.foot_r, kk.clone().add(V(0, 0.0, -L.shin)));
+  setWorldQuat(bones.foot_r, new THREE.Quaternion().setFromAxisAngle(X, rad(spec.footRot ?? 135)).multiply(bindQuat.foot_r.clone()));
+  // 右手撑在凳面上，位于右肩正下方稍前。
+  const shR = wpos(bones.upperarm_r);
+  twoBone(bones.upperarm_r, bones.lowerarm_r, bones.hand_r, V(shR.x, top + 0.04, shR.z + 0.03), V(-0.6, -0.2, -1), L.uarm, L.farm);
+  palm('r', V(-0.05, 0, 1));
+  // 干活的左臂
+  const sh = wpos(bones.upperarm_l);
+  if (v.ua !== undefined) {
+    const a = rad(v.ua), f = rad(v.fa);
+    const elbow = sh.clone().add(V(0.02, Math.sin(a), -Math.cos(a)).normalize().multiplyScalar(L.uarm));
+    aim(bones.upperarm_l, bones.lowerarm_l, elbow);
+    aim(bones.lowerarm_l, bones.hand_l, elbow.clone().add(V(0, Math.sin(f), -Math.cos(f)).multiplyScalar(L.farm)));
+  } else {
+    const pole = V(spec.pole?.[0] ?? 0.3, spec.pole?.[1] ?? 1, spec.pole?.[2] ?? -0.8);
+    twoBone(bones.upperarm_l, bones.lowerarm_l, bones.hand_l, sh.clone().add(V(v.hx, v.hy, v.hz)), pole, L.uarm, L.farm);
+  }
+};
 
 // ==== 家族 free 结束 ====
 
@@ -457,6 +498,7 @@ const PM = {
   steel: new THREE.MeshStandardMaterial({ color: 0xa4a4ab, roughness: 0.3, metalness: 0.85, envMapIntensity: 0.9 }),
   plate: new THREE.MeshStandardMaterial({ color: 0x2c2c30, roughness: 0.5, metalness: 0.3, envMapIntensity: 0.6 }),
   cable: new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.6 }),
+  band: new THREE.MeshStandardMaterial({ color: 0x2f7d86, roughness: 0.55, envMapIntensity: 0.5 }),
 };
 const dyn = [];
 function mesh(geo, mat, parent) {
@@ -499,15 +541,19 @@ function buildProps(spec) {
   for (const c of spec.cables || []) {
     const m = mesh(new THREE.CylinderGeometry(0.006, 0.006, 1, 8), PM.cable, rig);
     m.castShadow = false;
-    dyn.push({ cable: m, from: V(...c.from), to: c.to });
+    if (c.r) m.scale.set(c.r / 0.006, 1, c.r / 0.006);
+    if (c.m) m.material = PM[c.m];
+    dyn.push({ cable: m, from: c.from, to: c.to, r: c.r });
   }
 }
 function updateProps() {
   for (const d of dyn) {
     if (d.cable) {
-      const to = followPoint(d.to), dir = to.clone().sub(d.from), len = dir.length();
-      d.cable.position.copy(d.from).add(to).multiplyScalar(0.5);
-      d.cable.scale.set(1, len, 1);
+      const pt = p => (Array.isArray(p) ? V(...p) : followPoint(p));
+      const from = pt(d.from), to = pt(d.to), dir = to.clone().sub(from), len = dir.length();
+      d.cable.position.copy(from).add(to).multiplyScalar(0.5);
+      const rs = d.r ? d.r / 0.006 : 1;
+      d.cable.scale.set(rs, len, rs);
       d.cable.quaternion.setFromUnitVectors(V(0, 1, 0), dir.normalize());
     } else d.m.position.copy(followPoint(d.follow)).add(d.offset);
   }
@@ -574,12 +620,13 @@ function sample(t) {
 }
 function placeBells() {
   if (!spec.props) return;
+  if (spec.oneBell) bells[spec.oneBell === 'l' ? 'r' : 'l'].visible = false;
   if (spec.props === 'goblet') {
     // 一个哑铃竖着托在胸前，两手托住上端。
     const a = wpos(bones.hand_l), b = wpos(bones.hand_r);
     bells.l.visible = true;
     bells.r.visible = false;
-    bells.l.position.copy(a.add(b).multiplyScalar(0.5)).add(V(0, -0.03, 0.0));
+    bells.l.position.copy(a.add(b).multiplyScalar(0.5)).add(V(0, -0.03, 0.0)).add(V(...(spec.gobletOff || [0, 0, 0])));
     bells.l.quaternion.identity();
     bells.l.scale.setScalar(1.55);
     return;
