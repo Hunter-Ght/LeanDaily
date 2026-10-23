@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/single-leg-bridge.webp",
+ "frames": 79,
+ "periodMs": 4400,
+ "peakMs": 1550,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   400,
+   "发力"
+  ],
+  [
+   1500,
+   "顶峰"
+  ],
+  [
+   2600,
+   "下放"
+  ]
+ ]
+}

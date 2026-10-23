@@ -352,6 +352,181 @@ const EXTRA_MODES = {};
 // ==== 家族 floor（地面、长凳、仰卧俯卧）姿势扩展 开始 ====
 
 
+// supineX：poseSupine 的扩展版（地面/长凳仰卧）。与 poseSupine 的区别：
+//  · curl 往上卷（肩胛离地，躯干上半段绕下背转），neck 单独控制抬头；
+//  · 腿按侧选：该侧给了 hipFlex{L,R}（和 knee）就悬空，否则脚踩 spec.feet；
+//  · 手臂 spec.arms：'head' 手托在头后/耳侧（肘外展）、'ik' 绝对位置、其余按 armUp。
+// 握哑铃：四指绕世界轴 axis 卷 deg 度（手指指向 +y、握把沿 x 时，绕 +x 正向卷向 +z）。
+function gripFingers(s, axis, deg) {
+  for (const f of ['index', 'middle', 'ring', 'pinky']) {
+    for (let i = 1; i <= 3; i++) rotWorld(bones[`${f}_0${i}_${s}`], axis, deg * (i === 1 ? 0.7 : 1));
+  }
+}
+EXTRA_MODES.supineX = (spec, v) => {
+  const shoulder = V(0, spec.shoulder[0], spec.shoulder[1]);
+  rotWorld(bones.pelvis, X, -90);
+  const len = spec.torso ?? 0.5;
+  const hip = V(0, v.hip, shoulder.z + len * Math.cos(Math.asin(Math.min(0.95, (v.hip - shoulder.y) / len))));
+  setWorldPos(bones.pelvis, hip);
+  const shMid = wpos(bones.upperarm_l).add(wpos(bones.upperarm_r)).multiplyScalar(0.5);
+  const turn = new THREE.Quaternion().setFromUnitVectors(shMid.sub(hip).normalize(), shoulder.clone().sub(hip).normalize());
+  setWorldQuat(bones.pelvis, turn.multiply(wquat(bones.pelvis)));
+  if (v.curl) {
+    rotWorld(bones.spine_01, X, v.curl * 0.2);
+    rotWorld(bones.spine_02, X, v.curl * 0.4);
+    rotWorld(bones.spine_03, X, v.curl * 0.4);
+  }
+  const neck = wpos(bones.neck_01), headLen = neck.distanceTo(wpos(bones.Head));
+  const lift = rad(v.neck || 0);
+  aim(bones.neck_01, bones.Head, neck.clone().add(V(0, Math.sin(lift), -Math.cos(lift)).multiplyScalar(headLen)));
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const side = s === 'l' ? 'L' : 'R';
+    const hipF = v['hipFlex' + side] ?? v.hipFlex, knee = v['knee' + side] ?? v.knee;
+    if (hipF === undefined) {
+      const f = spec['feet' + side] ?? spec.feet;
+      const foot = V(k * (v['fx' + side] ?? f[0]), v['fy' + side] ?? v.fy ?? f[1], v['fz' + side] ?? v.fz ?? f[2]);
+      twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], foot, V(0.15 * k, 1, 0.3), L.thigh, L.shin);
+      setWorldQuat(bones['foot_' + s], bindQuat['foot_' + s].clone());
+    } else {
+      const th = wpos(bones['thigh_' + s]);
+      const a = rad(hipF), b = rad(hipF - (knee ?? 0));
+      const sp = v['spread' + side] ?? v.spread ?? 0.04;
+      const d1 = V(sp * k, Math.sin(a), Math.cos(a)), d2 = V(sp * 0.5 * k, Math.sin(b), Math.cos(b));
+      const kneeP = th.clone().add(d1.multiplyScalar(L.thigh));
+      aim(bones['thigh_' + s], bones['calf_' + s], kneeP);
+      aim(bones['calf_' + s], bones['foot_' + s], kneeP.clone().add(d2.multiplyScalar(L.shin)));
+      if (v.fpitch !== undefined) setWorldQuat(bones['foot_' + s], new THREE.Quaternion().setFromAxisAngle(X, rad(v.fpitch)).multiply(bindQuat['foot_' + s].clone()));
+    }
+    const up = v['armUp' + side] ?? v.armUp ?? 0;
+    if (spec.arms === 'head') {
+      const hd = wpos(bones.Head);
+      const pole = V(1 * k, 0.15, 0.2);
+      twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], hd.clone().add(V(k * (v.hx ?? 0.12), v.hy ?? 0.02, v.hz ?? -0.02)), pole, L.uarm, L.farm);
+      palm(s, V(-0.6 * k, 0, 0.6));
+    } else if (spec.arms === 'ik') {
+      const pole = V((spec.pole?.[0] ?? 0.8) * k, spec.pole?.[1] ?? -0.5, spec.pole?.[2] ?? 0.1);
+      twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], V(k * (v['hx' + side] ?? v.hx), v['hy' + side] ?? v.hy, v['hz' + side] ?? v.hz), pole, L.uarm, L.farm);
+    } else if (up < 1) {
+      twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], V(k * (spec.handX ?? 0.33), 0.035 + (spec.handY ?? 0), shoulder.z + 0.46), V(k, -0.4, 0), L.uarm, L.farm);
+      palm(s, V(0.15 * k, 0, 1));
+    } else {
+      const sh = wpos(bones['upperarm_' + s]);
+      const dir = V(0.12 * k, Math.sin(rad(up)), Math.cos(rad(up))).normalize();
+      const elbow = sh.clone().add(dir.clone().multiplyScalar(L.uarm));
+      aim(bones['upperarm_' + s], bones['lowerarm_' + s], elbow);
+      aim(bones['lowerarm_' + s], bones['hand_' + s], elbow.clone().add(dir.multiplyScalar(L.farm)));
+    }
+    if (spec.grip) gripFingers(s, V(...spec.grip.axis), spec.grip.deg);
+  }
+};
+
+// facedownX：poseFacedown 的扩展版（背部伸展）。arms:'cross' 双手交叉搭在对侧肩上（跟着胸走）。
+EXTRA_MODES.facedownX = (spec, v) => {
+  // 髋铰链：骨盆整体前折 hinge（正数朝下），大腿反向转回，腿留在垫子上；脊柱保持平直。
+  const hinge = (v.flex || 0) - (v.arch || 0);
+  rotWorld(bones.pelvis, X, 90 + hinge);
+  setWorldPos(bones.pelvis, V(0, v.h ?? spec.h, spec.hipZ));
+  for (const s of ['l', 'r']) rotWorld(bones['thigh_' + s], X, -hinge + (v.legLift || 0));
+  rotWorld(bones.neck_01, X, v.neck || 0);
+  const qRel = wquat(bones.spine_03).multiply(bindQuat.spine_03.clone().invert());
+  const chest = wpos(bones.spine_03);
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const off = V(-k * 0.13, 0.1, 0.12).applyQuaternion(qRel);
+    const pole = V(k * 0.9, 0.2, 0.9).applyQuaternion(qRel);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], chest.clone().add(off), pole, L.uarm, L.farm);
+  }
+};
+
+// sidePlank：侧平板支撑。人左侧朝下躺，头朝 +z，脸朝 -x（相机放在 -x 侧，yaw 取负）；
+// 左前臂撑地、肘在肩正下方，双脚上下叠放，身体绕左脚外侧抬起 lean 度（头高脚低）；
+// 右臂（上方）指向天花板（armTop）或叉腰。ankle:[y,z] 左踝位置。
+EXTRA_MODES.sidePlank = (spec, v) => {
+  const R = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(V(0, -1, 0), V(0, 0, 1), V(-1, 0, 0)));
+  setWorldQuat(bones.pelvis, R.clone().multiply(bindQuat.pelvis.clone()));
+  rotWorld(bones.pelvis, X, -v.lean);
+  const a = wpos(bones.foot_l);
+  setWorldPos(bones.pelvis, wpos(bones.pelvis).add(V(0, spec.ankle[0], spec.ankle[1]).sub(a)));
+  rotWorld(bones.neck_01, X, v.neck || 0);
+  // 腿：左腿保持原样（直腿），右腿并拢叠在左腿上方（踝 = 左踝上方 stack 米）
+  const al = wpos(bones.foot_l);
+  const target = {
+    l: al,
+    r: al.clone().add(V(spec.stackX ?? 0, spec.stack ?? 0.105, spec.stackZ ?? 0.0)),
+  };
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hp = wpos(bones['thigh_' + s]);
+    // 目标距髋不超过腿长，保持直腿
+    const d = target[s].clone().sub(hp);
+    const maxLen = (L.thigh + L.shin) * 0.998;
+    if (d.length() > maxLen) target[s] = hp.clone().add(d.setLength(maxLen));
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], target[s], V(-1, 0, 0.1), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], R.clone().multiply(new THREE.Quaternion().setFromAxisAngle(X, rad(-v.lean))).multiply(bindQuat['foot_' + s].clone()));
+  }
+  // 下方（左）臂：肘在肩正下方撑地，前臂朝前（-x）放平
+  const shL = wpos(bones.upperarm_l);
+  twoBone(bones.upperarm_l, bones.lowerarm_l, bones.hand_l, V(shL.x - (spec.forearm ?? 0.2), 0.065, shL.z + 0.0), V(0.2, -1, 0), L.uarm, L.farm);
+  palm('l', V(-1, 0, 0));
+  // 上方（右）臂
+  const shR = wpos(bones.upperarm_r);
+  if (spec.armTop === 'hip') {
+    const hip = wpos(bones.pelvis);
+    twoBone(bones.upperarm_r, bones.lowerarm_r, bones.hand_r, hip.clone().add(V(0.08, 0.14, 0.03)), V(0.3, 0.6, 0), L.uarm, L.farm);
+  } else {
+    twoBone(bones.upperarm_r, bones.lowerarm_r, bones.hand_r, shR.clone().add(V(-0.02, v.armTopY ?? 0.47, 0.03)), V(-1, 0.2, 0), L.uarm, L.farm);
+  }
+};
+
+// russianTwist：坐在地上（骨盆贴地），躯干后倾 recline 度，腿悬空（大腿抬 thigh 度、小腿再折 knee），
+// 双手合握在胸前跟着胸转；tw 是躯干绕自身长轴转的角度（正数转向人的左侧）。
+EXTRA_MODES.russianTwist = (spec, v) => {
+  setWorldPos(bones.pelvis, bindPos.pelvis.clone().add(V(0, -(spec.sit ?? 0.84), -(spec.back ?? 0.05))));
+  rotWorld(bones.pelvis, X, -v.recline);
+  const axis = V(0, Math.cos(rad(v.recline)), -Math.sin(rad(v.recline)));
+  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], axis, (v.tw || 0) / 3);
+  rotWorld(bones.neck_01, X, v.recline * 0.7 + (v.neckX || 0));
+  const qRel = wquat(bones.spine_03).multiply(bindQuat.spine_03.clone().invert());
+  const chest = wpos(bones.spine_03);
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const th = wpos(bones['thigh_' + s]);
+    const a = rad(v.thigh), b = rad(v.thigh - v.knee);
+    const kneeP = th.clone().add(V(0.02 * k, Math.sin(a), Math.cos(a)).multiplyScalar(L.thigh));
+    aim(bones['thigh_' + s], bones['calf_' + s], kneeP);
+    aim(bones['calf_' + s], bones['foot_' + s], kneeP.clone().add(V(0, Math.sin(b), Math.cos(b)).multiplyScalar(L.shin)));
+    const off = V(k * 0.035, spec.handY ?? -0.06, spec.handZ ?? 0.3).applyQuaternion(qRel);
+    const pole = V(k * 1, -0.5, 0.1).applyQuaternion(qRel);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], chest.clone().add(off), pole, L.uarm, L.farm);
+    // 合握：手指朝前，掌心相对（拇指朝上）
+    const fwd = V(0, 0, 1).applyQuaternion(qRel).normalize();
+    palm(s, fwd);
+    rotWorld(bones['hand_' + s], fwd, -k * 80);
+  }
+};
+
+// benchDip：背对长凳，双手撑在身后凳沿（spec.hand:[x, y, z]），双腿向前伸直、脚跟着地（腿长不够时脚会略微抬起）；
+// v.sh 是肩的高度，躯干竖直（微后倚 lean 度），骨盆随肩上下。
+EXTRA_MODES.benchDip = (spec, v) => {
+  const lean = v.lean ?? 4;
+  setWorldPos(bones.pelvis, bindPos.pelvis.clone().add(V(0, v.sh - 1.455, 0)).setZ(spec.hipZ));
+  rotWorld(bones.pelvis, X, -lean);
+  rotWorld(bones.neck_01, X, lean * 0.8 + (v.neck || 0));
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hp = wpos(bones['thigh_' + s]);
+    const fx = k * (spec.feetX ?? 0.1), fy = spec.heelY ?? 0.09;
+    const dy = hp.y - fy, dx = fx - hp.x;
+    const dz = Math.sqrt(Math.max(0.01, (L.thigh + L.shin) ** 2 * 0.998 ** 2 - dy * dy - dx * dx));
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], V(fx, fy, hp.z + dz), V(0, 1, 0.2), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], new THREE.Quaternion().setFromAxisAngle(X, rad(spec.toesUp ?? 28)).multiply(bindQuat['foot_' + s].clone()));
+    const pole = V(k * 0.35, 0.1, -1);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], V(k * spec.hand[0], spec.hand[1], spec.hand[2]), pole, L.uarm, L.farm);
+    palm(s, V(0.1 * k, 0, 1));
+  }
+};
+
 // ==== 家族 floor 结束 ====
 
 // ==== 家族 free（站姿自由重量、弹力带）姿势扩展 开始 ====

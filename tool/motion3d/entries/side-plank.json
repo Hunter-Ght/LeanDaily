@@ -1,0 +1,16 @@
+{
+ "file": "assets/motion3d/side-plank.webp",
+ "frames": 12,
+ "periodMs": 3000,
+ "peakMs": 1600,
+ "phases": [
+  [
+   0,
+   "保持"
+  ],
+  [
+   1500,
+   "收紧"
+  ]
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/db-incline-press.webp",
+ "frames": 86,
+ "periodMs": 3800,
+ "peakMs": 1550,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "发力"
+  ],
+  [
+   1500,
+   "顶峰"
+  ],
+  [
+   1900,
+   "下放"
+  ]
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/incline-pushup-low.webp",
+ "frames": 86,
+ "periodMs": 3600,
+ "peakMs": 2350,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "下放"
+  ],
+  [
+   2000,
+   "停顿"
+  ],
+  [
+   2300,
+   "发力"
+  ]
+ ]
+}
