@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/lat-pulldown.webp",
+ "frames": 90,
+ "periodMs": 4000,
+ "peakMs": 1550,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "下放"
+  ],
+  [
+   1500,
+   "顶峰"
+  ],
+  [
+   2000,
+   "下放"
+  ]
+ ]
+}

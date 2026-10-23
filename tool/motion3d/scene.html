@@ -360,7 +360,57 @@ const EXTRA_MODES = {};
 // ==== 家族 free 结束 ====
 
 // ==== 家族 cable（拉索、龙门架）姿势扩展 开始 ====
+// cstand：站姿身体和脚用 poseStand（stance/drop/lean/tilt 照用），手臂按“从肩出发的方向 + 伸出长度”摆，
+// 这样手的轨迹是绕肩的圆弧（夹胸这类手臂接近伸直的动作）：sx 向外分量、ang 从下往前抬的角度、reach 伸出长度（米）。
+EXTRA_MODES.cstand = (spec, v) => {
+  poseStand({ ...spec, arms: 'front' }, { arm: 0, el: 0, ...v });
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const sh = wpos(bones['upperarm_' + s]);
+    const dir = V(k * v.sx, -Math.cos(rad(v.ang)), Math.sin(rad(v.ang))).normalize();
+    const pole = V((spec.pole?.[0] ?? 0.5) * k, spec.pole?.[1] ?? -0.7, spec.pole?.[2] ?? -0.4);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], sh.add(dir.multiplyScalar(v.reach)), pole, L.uarm, L.farm);
+  }
+};
 
+// cgrip：poseStand（含 IK 手臂）之后再摆手的朝向：手指指向正前方，roll 把掌心往内翻（90 = 掌心相对的中立握），
+// up 手指再向上抬的角度（负数向下），握拉杆/手柄时手不会像“招手”。spec.grip = { up, roll }，参数里 grip 可按段覆盖。
+EXTRA_MODES.cgrip = (spec, v) => {
+  poseStand(spec, v);
+  const g = spec.grip || {};
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    palm(s, V(0, 0, 1));
+    if (g.roll) rotWorld(bones['hand_' + s], V(0, 0, 1), -k * g.roll);
+    if (g.up) rotWorld(bones['hand_' + s], X, -(g.up));
+  }
+};
+
+// kneel（绳索卷腹）：双膝着地，小腿平放在地上，髋在膝盖正上方。
+// spec.kz 膝盖前后位置；tilt 髋前屈、lean 脊柱卷曲；手在头两侧（跟着头走）。
+EXTRA_MODES.kneel = (spec, v) => {
+  const kz = spec.kz ?? 0;
+  const kneeY = 0.075;
+  setWorldPos(bones.pelvis, V(0, kneeY + L.thigh * 0.97 + 0.0, kz - 0.02 + (v.back || 0)));
+  if (v.tilt) rotWorld(bones.pelvis, X, v.tilt);
+  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, (v.lean || 0) / 3);
+  rotWorld(bones.neck_01, X, -((v.lean || 0) + (v.tilt || 0)) * 0.5 + (v.neck || 0));
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const ankle = V(k * 0.11, 0.095, kz - L.shin * 0.96);
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], ankle, V(0, 0, 1), L.thigh, L.shin);
+    // 脚背贴地：脚尖朝后，脚掌朝上。
+    setWorldQuat(bones['foot_' + s], new THREE.Quaternion().setFromAxisAngle(X, rad(180 - 12)).multiply(bindQuat['foot_' + s].clone()));
+  }
+  root.updateMatrixWorld(true);
+  const head = wpos(bones.Head), hq = wquat(bones.Head);
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hand = head.clone().add(V(k * (spec.handOff?.[0] ?? 0.17), spec.handOff?.[1] ?? -0.02, spec.handOff?.[2] ?? 0.05).applyQuaternion(hq.clone().multiply(bindQuat.Head.clone().invert())));
+    const pole = V((spec.pole?.[0] ?? 0.6) * k, spec.pole?.[1] ?? -0.5, spec.pole?.[2] ?? 0.5);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], hand, pole, L.uarm, L.farm);
+  }
+};
 
 // ==== 家族 cable 结束 ====
 
