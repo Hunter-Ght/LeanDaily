@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/front-raise.webp",
+ "frames": 95,
+ "periodMs": 4200,
+ "peakMs": 1750,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   400,
+   "发力"
+  ],
+  [
+   1700,
+   "顶峰"
+  ],
+  [
+   2100,
+   "下放"
+  ]
+ ]
+}
