@@ -7,8 +7,10 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 import '../../domain/guide.dart';
+import '../../domain/motion_library.dart';
 import '../../theme/theme.dart';
 import 'badge.dart';
+import 'motion_demo.dart';
 import 'pressable.dart';
 import 'transitions.dart';
 
@@ -69,8 +71,11 @@ class _ExerciseDemoState extends State<ExerciseDemo>
   }
 
   void syncTimer() {
-    final frames = guideFor(widget.ex)?['frames'] as List?;
-    if (!_visible ||
+    final guide = guideFor(widget.ex);
+    final frames = guide?['frames'] as List?;
+    // 矢量示范自己带动画时钟，不需要换帧计时器。
+    if (motionLibrary[guide?['key']] != null ||
+        !_visible ||
         !_foreground ||
         _reduce ||
         _paused ||
@@ -102,7 +107,9 @@ class _ExerciseDemoState extends State<ExerciseDemo>
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
-    final frames = guideFor(widget.ex)?['frames'] as List?;
+    final guide = guideFor(widget.ex);
+    final frames = guide?['frames'] as List?;
+    final motion = motionLibrary[guide?['key']];
     if (frames == null || frames.isEmpty) {
       return SizedBox.square(
         dimension: widget.size,
@@ -114,14 +121,16 @@ class _ExerciseDemoState extends State<ExerciseDemo>
         ),
       );
     }
-    final manual = _reduce || !widget.autoplay;
+    final manual = motion == null && (_reduce || !widget.autoplay);
+    // 矢量示范：autoplay 关闭时默认停着，点一下开始播。
+    final stopped = motion != null && !widget.autoplay ? !_paused : _paused;
     return Semantics(
       button: true,
       excludeSemantics: true,
       label: AppMessages.of(context).text(
         manual
             ? '切换示范帧'
-            : _paused
+            : stopped
             ? '继续播放示范'
             : '暂停示范',
       ),
@@ -142,33 +151,40 @@ class _ExerciseDemoState extends State<ExerciseDemo>
           child: SizedBox.square(
             dimension: widget.size,
             child: ColoredBox(
-              color: p.fill,
+              color: motion != null ? p.fill2 : p.fill,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  for (var i = 0; i < frames.length.clamp(0, 2); i++)
-                    AnimatedOpacity(
-                      key: ValueKey('demo-frame-$i'),
-                      opacity: _frame == i ? 1 : 0,
-                      duration: Duration(milliseconds: _reduce ? 0 : 450),
-                      child: Image.asset(
-                        '${frames[i]}',
-                        fit: BoxFit.cover,
-                        cacheWidth:
-                            (widget.size *
-                                    MediaQuery.devicePixelRatioOf(context))
-                                .round(),
-                        gaplessPlayback: true,
-                        frameBuilder: revealImageFrame,
-                        errorBuilder: (_, _, _) => Center(
-                          child: ToneBadge.part(
-                            '${widget.ex['part'] ?? ''}',
-                            size: widget.size,
+                  if (motion != null)
+                    MotionDemo(
+                      spec: motion,
+                      paused: stopped || !_visible || !_foreground,
+                      still: _reduce,
+                    )
+                  else
+                    for (var i = 0; i < frames.length.clamp(0, 2); i++)
+                      AnimatedOpacity(
+                        key: ValueKey('demo-frame-$i'),
+                        opacity: _frame == i ? 1 : 0,
+                        duration: Duration(milliseconds: _reduce ? 0 : 450),
+                        child: Image.asset(
+                          '${frames[i]}',
+                          fit: BoxFit.cover,
+                          cacheWidth:
+                              (widget.size *
+                                      MediaQuery.devicePixelRatioOf(context))
+                                  .round(),
+                          gaplessPlayback: true,
+                          frameBuilder: revealImageFrame,
+                          errorBuilder: (_, _, _) => Center(
+                            child: ToneBadge.part(
+                              '${widget.ex['part'] ?? ''}',
+                              size: widget.size,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  if (_paused || manual)
+                  if ((stopped || manual) && !(motion != null && _reduce))
                     Positioned(
                       right: 8,
                       bottom: 8,

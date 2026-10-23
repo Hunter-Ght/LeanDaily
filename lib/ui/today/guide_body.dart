@@ -12,7 +12,7 @@ import '../../domain/guide.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
-import '../kit/guide_image.dart';
+import '../kit/guide_demo.dart';
 import '../kit/app_icon.dart';
 import 'today_widgets.dart';
 
@@ -139,36 +139,7 @@ class _GuideBodyState extends State<GuideBody> {
               onTap: () => setState(() => _paused = !_paused),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Stack(
-                  children: [
-                    GuideImage(
-                      frames: (g['frames'] as List).cast<String>(),
-                      frame: _frame,
-                    ),
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: p.scrim,
-                          borderRadius: BorderRadius.circular(999),
-                        ),
-                        child: LText(
-                          '${_frame == 0 ? '起始' : '发力'}${_paused ? ' · 已暂停' : ''}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: p.onTint,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                child: GuideDemo(guide: g, frame: _frame, paused: _paused),
               ),
             ),
           ),
