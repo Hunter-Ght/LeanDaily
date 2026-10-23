@@ -6,9 +6,10 @@ import '../../l10n/localized_text.dart';
 import '../../theme/theme.dart';
 import 'guide_image.dart';
 import 'motion_demo.dart';
+import 'motion3d_demo.dart';
 import 'pressable.dart';
 
-/// 动作要点里的示范：有矢量动画的动作默认播动画，右上角可切到真人照片；
+/// 动作要点里的示范：有动画的动作默认播动画，右上角可切到真人照片；
 /// 其余动作照旧两张照片交替。[frame] 只用于照片。
 class GuideDemo extends StatefulWidget {
   const GuideDemo({
@@ -34,10 +35,21 @@ class _GuideDemoState extends State<GuideDemo> {
     if (old.guide['key'] != widget.guide['key']) _photo = false;
   }
 
+  late final _library = Motion3dLibrary.load();
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      FutureBuilder<Map<String, Motion3dClip>>(
+        future: _library,
+        initialData: Motion3dLibrary.loaded,
+        builder: (context, snapshot) => _buildDemo(context, snapshot.data),
+      );
+
+  Widget _buildDemo(BuildContext context, Map<String, Motion3dClip>? clips) {
     final p = context.pal;
     final motion = motionLibrary[widget.guide['key']];
+    final clip = clips?[widget.guide['key']];
+    final animated = clip != null || motion != null;
     final frames = (widget.guide['frames'] as List).cast<String>();
     Widget pill(String text) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
@@ -54,7 +66,7 @@ class _GuideDemoState extends State<GuideDemo> {
         ),
       ),
     );
-    if (motion == null || _photo) {
+    if (!animated || _photo) {
       return Stack(
         children: [
           GuideImage(frames: frames, frame: widget.frame),
@@ -65,7 +77,7 @@ class _GuideDemoState extends State<GuideDemo> {
               '${widget.frame == 0 ? '起始' : '发力'}${widget.paused ? ' · 已暂停' : ''}',
             ),
           ),
-          if (motion != null) _switch(context, '动画示范', pill),
+          if (animated) _switch(context, '动画示范', pill),
         ],
       );
     }
@@ -74,13 +86,25 @@ class _GuideDemoState extends State<GuideDemo> {
         AspectRatio(
           aspectRatio: 3 / 2,
           child: ColoredBox(
-            color: p.fill2,
-            child: MotionDemo(
-              spec: motion,
-              paused: widget.paused,
-              still: MediaQuery.disableAnimationsOf(context),
-              showPhase: true,
-            ),
+            color: clip != null ? p.studio : p.fill2,
+            child: clip != null
+                ? Center(
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: Motion3dDemo(
+                        clip: clip,
+                        paused: widget.paused,
+                        still: MediaQuery.disableAnimationsOf(context),
+                        showPhase: true,
+                      ),
+                    ),
+                  )
+                : MotionDemo(
+                    spec: motion!,
+                    paused: widget.paused,
+                    still: MediaQuery.disableAnimationsOf(context),
+                    showPhase: true,
+                  ),
           ),
         ),
         _switch(context, '真人照片', pill),

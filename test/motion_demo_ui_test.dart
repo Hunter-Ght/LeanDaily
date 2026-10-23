@@ -24,10 +24,10 @@ Widget host(Widget child, {bool reduce = false, bool dark = false}) =>
 
 void main() {
   setUpAll(Harness.setUpAll);
-  const squat = {'name': '深蹲', 'part': '腿'};
+  const pushup = {'name': '标准俯卧撑', 'part': '胸'};
 
   testWidgets('有矢量示范的动作播动画，点击暂停与继续', (t) async {
-    await t.pumpWidget(host(const ExerciseDemo(ex: squat)));
+    await t.pumpWidget(host(const ExerciseDemo(ex: pushup)));
     expect(find.byType(MotionDemo), findsOneWidget);
     expect(find.byKey(const ValueKey('demo-frame-0')), findsNothing);
     expect(t.widget<MotionDemo>(find.byType(MotionDemo)).paused, isFalse);
@@ -43,7 +43,7 @@ void main() {
   });
 
   testWidgets('减少动态效果：停在发力姿势，不显示播放键', (t) async {
-    await t.pumpWidget(host(const ExerciseDemo(ex: squat), reduce: true));
+    await t.pumpWidget(host(const ExerciseDemo(ex: pushup), reduce: true));
     final demo = t.widget<MotionDemo>(find.byType(MotionDemo));
     expect(demo.still, isTrue);
     expect(find.text('▶'), findsNothing);
