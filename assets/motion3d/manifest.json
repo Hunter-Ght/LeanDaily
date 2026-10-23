@@ -1,6 +1,78 @@
 {
  "version": 1,
  "exercises": {
+  "calf-raise": {
+   "file": "assets/motion3d/calf-raise.webp",
+   "frames": 80,
+   "periodMs": 3600,
+   "peakMs": 1250,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1200,
+     "顶峰"
+    ],
+    [
+     1700,
+     "下放"
+    ]
+   ]
+  },
+  "db-curl": {
+   "file": "assets/motion3d/db-curl.webp",
+   "frames": 81,
+   "periodMs": 3800,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1700,
+     "下放"
+    ]
+   ]
+  },
+  "db-shoulder-press": {
+   "file": "assets/motion3d/db-shoulder-press.webp",
+   "frames": 92,
+   "periodMs": 4000,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     1900,
+     "下放"
+    ]
+   ]
+  },
   "dead-bug": {
    "file": "assets/motion3d/dead-bug.webp",
    "frames": 152,
@@ -61,6 +133,54 @@
     ]
    ]
   },
+  "goblet-squat": {
+   "file": "assets/motion3d/goblet-squat.webp",
+   "frames": 91,
+   "periodMs": 4000,
+   "peakMs": 2850,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2500,
+     "停顿"
+    ],
+    [
+     2800,
+     "发力"
+    ]
+   ]
+  },
+  "incline-pushup": {
+   "file": "assets/motion3d/incline-pushup.webp",
+   "frames": 85,
+   "periodMs": 3600,
+   "peakMs": 2350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2000,
+     "停顿"
+    ],
+    [
+     2300,
+     "发力"
+    ]
+   ]
+  },
   "lateral-raise": {
    "file": "assets/motion3d/lateral-raise.webp",
    "frames": 89,
@@ -85,6 +205,22 @@
     ]
    ]
   },
+  "plank": {
+   "file": "assets/motion3d/plank.webp",
+   "frames": 11,
+   "periodMs": 3000,
+   "peakMs": 1600,
+   "phases": [
+    [
+     0,
+     "保持"
+    ],
+    [
+     1500,
+     "收紧"
+    ]
+   ]
+  },
   "pushup": {
    "file": "assets/motion3d/pushup.webp",
    "frames": 86,
@@ -105,6 +241,54 @@
     ],
     [
      2400,
+     "发力"
+    ]
+   ]
+  },
+  "rdl": {
+   "file": "assets/motion3d/rdl.webp",
+   "frames": 95,
+   "periodMs": 4200,
+   "peakMs": 2850,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "下放"
+    ],
+    [
+     2400,
+     "停顿"
+    ],
+    [
+     2800,
+     "发力"
+    ]
+   ]
+  },
+  "split-squat": {
+   "file": "assets/motion3d/split-squat.webp",
+   "frames": 92,
+   "periodMs": 4000,
+   "peakMs": 2750,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2400,
+     "停顿"
+    ],
+    [
+     2700,
      "发力"
     ]
    ]

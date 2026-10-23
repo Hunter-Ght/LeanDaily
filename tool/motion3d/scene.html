@@ -140,6 +140,21 @@ function dumbbell() {
   return g;
 }
 const bells = { l: dumbbell(), r: dumbbell() };
+// 桌台（高位俯卧撑）：哑光浅灰块，比影棚底略深。
+const table = new THREE.Mesh(
+  new THREE.BoxGeometry(0.9, 0.04, 0.34),
+  new THREE.MeshStandardMaterial({ color: 0xa9a29a, roughness: 0.7, envMapIntensity: 0.4 }),
+);
+table.castShadow = table.receiveShadow = true;
+table.visible = false;
+scene.add(table);
+const tableLegs = [-1, 1].map(k => {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1, 0.05), table.material);
+  m.castShadow = true;
+  m.visible = false;
+  scene.add(m);
+  return m;
+});
 
 // ---------------------------------------------------------------- 骨骼工具
 const bind = new Map();
@@ -197,14 +212,41 @@ function reset() {
 // 站立（深蹲、侧平举）：drop 骨盆下沉、back 后移、lean 躯干前倾；脚踩在原地。
 // 手臂 front：arm 前举角（0 垂下、90 平举）、el 肘再往前屈；手臂 side：abd 外展角、el 肘微屈（向前）。
 function poseStand(spec, v) {
-  setWorldPos(bones.pelvis, bindPos.pelvis.clone().add(V(0, -(v.drop || 0), -(v.back || 0))));
+  // 抬脚跟时脚踝上升并前移：骨盆跟着走，膝盖才不会被顶弯。
+  let rise = 0, shift = 0;
+  if (v.heel && !spec.stance) {
+    const th0 = Math.asin(Math.min(0.99, v.heel / 0.16));
+    const off = V(0, bindPos.ball_l.y - bindPos.foot_l.y, bindPos.ball_l.z - bindPos.foot_l.z).applyAxisAngle(X, th0);
+    rise = bindPos.ball_l.y - off.y - bindPos.foot_l.y;
+    shift = bindPos.ball_l.z - off.z - bindPos.foot_l.z;
+  }
+  setWorldPos(bones.pelvis, bindPos.pelvis.clone().add(V(0, -(v.drop || 0) + rise, -(v.back || 0) + shift)));
+  // tilt：骨盆整体前倾（髋铰链），脊柱 lean 是在此之上再弯的角度。
+  if (v.tilt) rotWorld(bones.pelvis, X, v.tilt);
   for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, (v.lean || 0) / 3);
-  rotWorld(bones.neck_01, X, -(v.lean || 0) * 0.55);
+  // 头颈：回正抵消躯干前倾，视线大致朝前（headUp 额外抬头）。
+  rotWorld(bones.neck_01, X, -((v.lean || 0) + (v.tilt || 0)) * 0.55 - (v.headUp || 0));
   for (const s of ['l', 'r']) {
     const k = s === 'l' ? 1 : -1;
-    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], bindPos['foot_' + s], V(0.22 * k, 0, 1), L.thigh, L.shin);
-    setWorldQuat(bones['foot_' + s], bindQuat['foot_' + s].clone());
+    // 脚：默认原地；spec.stance 给前后站位；heel（米）抬脚跟，脚掌前部（ball）始终踩在地面。
+    const st = spec.stance?.[s];
+    const heel = v['heel' + s.toUpperCase()] ?? v.heel ?? st?.[2] ?? 0;
+    const bx = st ? k * st[0] : bindPos['foot_' + s].x, bz = st ? st[1] : bindPos['foot_' + s].z + 0.0;
+    const th = Math.asin(Math.min(0.99, heel / 0.16));
+    const ballOff = V(0, bindPos['ball_' + s].y - bindPos['foot_' + s].y, bindPos['ball_' + s].z - bindPos['foot_' + s].z);
+    const rotated = ballOff.clone().applyAxisAngle(X, th);
+    const ballGround = V(bx, bindPos['ball_' + s].y, bindPos['ball_' + s].z + (st ? bz - bindPos['foot_' + s].z : 0));
+    const ankleT = ballGround.clone().sub(rotated);
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], ankleT, V(0.22 * k, 0, 1), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], new THREE.Quaternion().setFromAxisAngle(X, th).multiply(bindQuat['foot_' + s].clone()));
     const sh = wpos(bones['upperarm_' + s]);
+    if (spec.arms === 'ik') {
+      // 手到指定位置：hx 距中线、hy 高度、hz 向前（米，世界坐标，右手取反）；肘朝 pole 方向弯。
+      const hx = (v['hx' + s.toUpperCase()] ?? v.hx), hy = (v['hy' + s.toUpperCase()] ?? v.hy), hz = (v['hz' + s.toUpperCase()] ?? v.hz);
+      const pole = V((spec.pole?.[0] ?? 0.7) * k, spec.pole?.[1] ?? -0.7, spec.pole?.[2] ?? -0.2);
+      twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], V(k * hx, hy, hz), pole, L.uarm, L.farm);
+      continue;
+    }
     let dir, dir2;
     if (spec.arms === 'side') {
       const a = rad(v.abd), e = rad(v.el);
@@ -231,7 +273,8 @@ function poseProne(spec, v) {
     const k = s === 'l' ? 1 : -1;
     rotWorld(bones['foot_' + s], X, spec.foot);
     const hand = V(k * spec.hand[0], spec.hand[1], spec.hand[2]);
-    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], hand, V(0.75 * k, 0.5, -1), L.uarm, L.farm);
+    const pole = spec.pole ? V(spec.pole[0] * k, spec.pole[1], spec.pole[2]) : V(0.75 * k, 0.5, -1);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], hand, pole, L.uarm, L.farm);
     palm(s, V(0.1 * k, 0, 1));
   }
 }
@@ -358,6 +401,109 @@ const LIB = {
     spheres: [[0, 1.12, 0.12, 0.17, 1.3], [0, 1.0, 0.13, 0.15, 1.2]],
     camera: { yaw: 64, dist: 2.45, target: [0, 0.3, -0.12], fov: 28 },
   },
+
+  // —— 哑铃肩推：哑铃从肩旁推到头顶，肘微外展，顶端手臂接近伸直但不锁死。
+  'db-shoulder-press': {
+    mode: 'stand', arms: 'ik', props: 'dumbbells', bellAxis: 'x', pole: [0.8, -1, -0.15],
+    base: { drop: 0.01, hx: 0.27, hy: 1.5, hz: 0.02 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.3, {}, 0.9, '发力'],
+      [1.5, { hx: 0.2, hy: 1.9, hz: -0.04 }, 1, '顶峰'],
+      [1.9, { hx: 0.2, hy: 1.9, hz: -0.04 }, 0.6, '下放'],
+      [4.0],
+    ],
+    spheres: [[0.25, 1.45, -0.03, 0.13, 1], [-0.25, 1.45, -0.03, 0.13, 1], [0.36, 1.44, -0.1, 0.1, 0.8], [-0.36, 1.44, -0.1, 0.1, 0.8]],
+    camera: { yaw: 32, dist: 2.45, target: [0, 1.14, 0], fov: 28 },
+  },
+  // —— 罗马尼亚硬拉：髋铰链，背保持挺直，哑铃贴着大腿滑到小腿中段再回来。
+  rdl: {
+    mode: 'stand', arms: 'ik', props: 'dumbbells', bellAxis: 'z', pole: [0.5, -1, -0.6],
+    base: { drop: 0.02, back: 0, tilt: 0, lean: 2, hx: 0.2, hy: 0.78, hz: -0.02 },
+    keys: [
+      [0, {}, 0.25, '起始'], [0.4, {}, 0.7, '下放'],
+      [2.4, { drop: 0.1, back: 0.3, tilt: 66, lean: 4, hx: 0.19, hy: 0.5, hz: 0.1 }, 0.9, '停顿'],
+      [2.8, { drop: 0.1, back: 0.3, tilt: 66, lean: 4, hx: 0.19, hy: 0.5, hz: 0.1 }, 1, '发力'],
+      [4.2],
+    ],
+    glow: { thigh_l: [0, 1], thigh_r: [0, 1], pelvis: [0, 1], spine_01: [0, 0.5] },
+    camera: { yaw: 60, dist: 2.3, target: [0, 0.88, -0.05], fov: 28 },
+  },
+  // —— 高脚杯深蹲：一个哑铃竖着托在胸前，躯干比徒手深蹲更直。
+  'goblet-squat': {
+    mode: 'stand', arms: 'ik', props: 'goblet', pole: [0.5, -1, -0.5],
+    base: { drop: 0.015, back: 0, lean: 4, hx: 0.07, hy: 1.28, hz: 0.12 },
+    keys: [
+      [0, {}, 0.15, '起始'], [0.5, {}, 0.55, '下放'],
+      [2.5, { drop: 0.46, back: 0.15, lean: 22, hx: 0.08, hy: 0.9, hz: 0.2 }, 0.8, '停顿'],
+      [2.8, { drop: 0.46, back: 0.15, lean: 22, hx: 0.08, hy: 0.9, hz: 0.2 }, 1, '发力'],
+      [4.0],
+    ],
+    glow: { thigh_l: [1, 0.25], thigh_r: [1, 0.25], pelvis: [0, 0.95] },
+    camera: { yaw: 55, dist: 2.25, target: [0, 0.9, -0.02], fov: 28 },
+  },
+  // —— 哑铃弯举：上臂贴身不动，前臂把哑铃弯到肩前，顶端停一下。
+  'db-curl': {
+    mode: 'stand', arms: 'ik', props: 'dumbbells', bellAxis: 'x', pole: [0.3, -1, -0.8],
+    base: { drop: 0.01, hx: 0.25, hy: 0.98, hz: 0.02 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.3, {}, 0.9, '发力'],
+      [1.3, { hx: 0.2, hy: 1.4, hz: 0.2 }, 1, '顶峰'],
+      [1.7, { hx: 0.2, hy: 1.4, hz: 0.2 }, 0.6, '下放'],
+      [3.8],
+    ],
+    spheres: [[0.3, 1.34, 0.0, 0.1, 1.2], [-0.3, 1.34, 0.0, 0.1, 1.2]],
+    camera: { yaw: 38, dist: 2.1, target: [0, 1.0, 0.0], fov: 28 },
+  },
+  // —— 高位俯卧撑（手撑桌面）：身体一直线，角度比地面俯卧撑大，肘朝后外。
+  'incline-pushup': {
+    mode: 'prone', ankle: [0.11, -0.66], foot: -62, hand: [0.26, 0.77, 0.38], table: [0.77, 0.38],
+    pole: [0.75, 0.5, -1],
+    base: { lean: 36, neck: -4 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.3, {}, 0.6, '下放'],
+      [2.0, { lean: 24 }, 0.85, '停顿'],
+      [2.3, { lean: 24 }, 1, '发力'],
+      [3.6],
+    ],
+    spheres: [[0.1, 1.33, 0.09, 0.15, 1], [-0.1, 1.33, 0.09, 0.15, 1], [0.2, 1.43, 0.03, 0.09, 0.7], [-0.2, 1.43, 0.03, 0.09, 0.7]],
+    glow: { upperarm_l: [0.2, 0.85], upperarm_r: [0.2, 0.85] },
+    camera: { yaw: 60, dist: 2.0, target: [0, 0.55, 0.15], fov: 28 },
+  },
+  // —— 平板支撑：前臂撑地，身体一直线；静态保持，只有发力程度轻轻起伏（呼吸）。
+  plank: {
+    mode: 'prone', ankle: [0.13, -0.7], foot: -62, hand: [0.1, 0.045, 0.95], pole: [0, -1, -0.15],
+    base: { lean: 10, neck: 8 },
+    keys: [[0, {}, 0.6, '保持'], [1.5, {}, 1, '收紧'], [3.0]],
+    spheres: [[0, 1.12, 0.12, 0.17, 1.3], [0, 1.0, 0.13, 0.15, 1.2], [0.1, 1.33, 0.09, 0.13, 0.5], [-0.1, 1.33, 0.09, 0.13, 0.5]],
+    still: 1.6,
+    camera: { yaw: 58, dist: 2.45, target: [0, 0.22, 0.28], fov: 28 },
+  },
+  // —— 提踵：脚尖踩地，脚跟尽量抬高，顶端停一下，慢慢放下。
+  'calf-raise': {
+    mode: 'stand', arms: 'front',
+    base: { drop: 0.0, arm: 6, el: 6, heel: 0 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.3, {}, 0.8, '发力'],
+      [1.2, { heel: 0.11 }, 1, '顶峰'],
+      [1.7, { heel: 0.11 }, 0.6, '下放'],
+      [3.6],
+    ],
+    glow: { calf_l: [0.1, 1], calf_r: [0.1, 1] },
+    camera: { yaw: 50, dist: 2.3, target: [0, 0.92, 0], fov: 28 },
+  },
+  // —— 分腿蹲：前后站开，身体垂直下降到后膝接近地面，前脚发力站起。
+  'split-squat': {
+    mode: 'stand', arms: 'front', stance: { l: [0.1, 0.4], r: [0.1, -0.38, 0.1] },
+    base: { drop: 0.02, back: 0, lean: 3, arm: 6, el: 6 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.5, {}, 0.55, '下放'],
+      [2.4, { drop: 0.36 }, 0.8, '停顿'],
+      [2.7, { drop: 0.36 }, 1, '发力'],
+      [4.0],
+    ],
+    glow: { thigh_l: [1, 0.3], thigh_r: [1, 0.3], pelvis: [0, 0.9] },
+    camera: { yaw: 70, dist: 2.2, target: [0, 0.8, 0], fov: 28 },
+  },
 };
 const spec = LIB[q.get('ex')] || LIB.squat;
 for (const [name, [f, b]] of Object.entries(spec.glow || {})) {
@@ -369,7 +515,17 @@ for (const [name, [f, b]] of Object.entries(spec.glow || {})) {
   glow.uSph.value[i].set(x, y, z, r);
   glow.uSphW.value[i] = w;
 });
-bells.l.visible = bells.r.visible = spec.props === 'dumbbells';
+bells.l.visible = bells.r.visible = !!spec.props;
+if (spec.table) {
+  const [ty, tz] = spec.table;
+  table.visible = true;
+  table.position.set(0, ty - 0.02, tz);
+  tableLegs.forEach((m, i) => {
+    m.visible = true;
+    m.scale.y = ty - 0.04;
+    m.position.set((i ? 1 : -1) * 0.4, (ty - 0.04) / 2, tz);
+  });
+}
 
 // 机位
 const h = box.max.y - box.min.y;
@@ -401,12 +557,23 @@ function sample(t) {
   return { v, load: prev + (l0 - prev) * bl * bl * (3 - 2 * bl) };
 }
 function placeBells() {
-  if (spec.props !== 'dumbbells') return;
+  if (!spec.props) return;
+  if (spec.props === 'goblet') {
+    // 一个哑铃竖着托在胸前，两手托住上端。
+    const a = wpos(bones.hand_l), b = wpos(bones.hand_r);
+    bells.l.visible = true;
+    bells.r.visible = false;
+    bells.l.position.copy(a.add(b).multiplyScalar(0.5)).add(V(0, -0.03, 0.0));
+    bells.l.quaternion.identity();
+    bells.l.scale.setScalar(1.55);
+    return;
+  }
   for (const s of ['l', 'r']) {
     const hand = wpos(bones['hand_' + s]), mid = wpos(bones['middle_01_' + s]);
     const grip = hand.clone().add(mid.sub(hand).multiplyScalar(0.8)).add(V(0, -0.025, 0));
     bells[s].position.copy(grip);
-    bells[s].quaternion.setFromUnitVectors(V(0, 1, 0), V(0, 0, 1));
+    const axis = spec.bellAxis === 'x' ? V(1, 0, 0) : spec.bellAxis === 'y' ? V(0, 1, 0) : V(0, 0, 1);
+    bells[s].quaternion.setFromUnitVectors(V(0, 1, 0), axis);
   }
 }
 
