@@ -40,7 +40,7 @@ void main() {
           (t) async {
             final h = await Harness.pump(t, dark: dark);
             final context = t.element(find.byType(TodayPage));
-            final frames = (guideFor({'name': '高位俯卧撑'})!['frames'] as List)
+            final frames = (guideFor({'name': '哑铃地板卧推'})!['frames'] as List)
                 .cast<String>();
             final bundle = _DelayedFrames(frames);
             const rootKey = ValueKey('cold-guide-under-test');
@@ -54,7 +54,7 @@ void main() {
                         title: '动作',
                         child: GuideBody(
                           exercise: {
-                            'name': '高位俯卧撑',
+                            'name': '哑铃地板卧推',
                             'part': '胸',
                             'sets': 2,
                             'min': 8,
@@ -63,7 +63,7 @@ void main() {
                           iso: h.controller.today,
                         ),
                       )
-                    : const GuideSheet(exercise: '高位俯卧撑'),
+                    : const GuideSheet(exercise: '哑铃地板卧推'),
               ),
             );
             await t.pump();
