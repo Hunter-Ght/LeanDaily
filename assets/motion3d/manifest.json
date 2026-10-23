@@ -1,6 +1,66 @@
 {
  "version": 1,
  "exercises": {
+  "dead-bug": {
+   "file": "assets/motion3d/dead-bug.webp",
+   "frames": 163,
+   "period": 6.8,
+   "peakFrame": 11,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     10,
+     "伸展"
+    ],
+    [
+     48,
+     "停顿"
+    ],
+    [
+     58,
+     "收回"
+    ],
+    [
+     86,
+     "伸展"
+    ],
+    [
+     125,
+     "停顿"
+    ],
+    [
+     134,
+     "收回"
+    ]
+   ]
+  },
+  "glute-bridge": {
+   "file": "assets/motion3d/glute-bridge.webp",
+   "frames": 96,
+   "period": 4,
+   "peakFrame": 35,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     10,
+     "发力"
+    ],
+    [
+     34,
+     "顶峰"
+    ],
+    [
+     58,
+     "下放"
+    ]
+   ]
+  },
   "lateral-raise": {
    "file": "assets/motion3d/lateral-raise.webp",
    "frames": 96,

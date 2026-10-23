@@ -236,6 +236,56 @@ function poseProne(spec, v) {
   }
 }
 
+// 仰卧（臀桥、死虫式、卷腹类）：肩背在 spec.shoulder 处贴地，hip 是骨盆离地高度；
+// 躯干从肩指向骨盆。腿二选一：feet（脚踩地，IK 定膝，膝朝上）或 legs（hipFlex 屈髋、knee 屈膝，悬空）。
+// 手臂：armUp 从身侧（0）往头顶方向抬的角度（90 指向天花板）。curl 卷腹抬肩的角度。
+function poseSupine(spec, v) {
+  const shoulder = V(0, spec.shoulder[0], spec.shoulder[1]);
+  // 先整体转成仰卧：头朝 -z，正面朝上。
+  rotWorld(bones.pelvis, X, -90);
+  const hip = V(0, v.hip, shoulder.z + 0.5 * Math.cos(Math.asin(Math.min(0.95, (v.hip - shoulder.y) / 0.5))));
+  setWorldPos(bones.pelvis, hip);
+  // 躯干对准肩部支点（用左右上臂中点代表肩）。
+  const shMid = wpos(bones.upperarm_l).add(wpos(bones.upperarm_r)).multiplyScalar(0.5);
+  const turn = new THREE.Quaternion().setFromUnitVectors(shMid.sub(hip).normalize(), shoulder.clone().sub(hip).normalize());
+  setWorldQuat(bones.pelvis, turn.multiply(wquat(bones.pelvis)));
+  if (v.curl) for (const n of ['spine_02', 'spine_03']) rotWorld(bones[n], X, -v.curl / 2);
+  // 头平躺：颈部把头摆回水平（朝 -z），再按 neck 抬起（卷腹时下巴微收）。
+  const neck = wpos(bones.neck_01), headLen = neck.distanceTo(wpos(bones.Head));
+  const lift = rad(v.neck || 0);
+  aim(bones.neck_01, bones.Head, neck.clone().add(V(0, Math.sin(lift), -Math.cos(lift)).multiplyScalar(headLen)));
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const side = s === 'l' ? 'L' : 'R';
+    const hipF = v['hipFlex' + side] ?? v.hipFlex, knee = v['knee' + side] ?? v.knee;
+    if (spec.feet) {
+      const foot = V(k * spec.feet[0], spec.feet[1], spec.feet[2]);
+      twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], foot, V(0.15 * k, 1, 0.3), L.thigh, L.shin);
+      setWorldQuat(bones['foot_' + s], bindQuat['foot_' + s].clone());
+    } else {
+      // 大腿方向：从躯干延长线（0）往天花板转 hipF；小腿再往回折 knee。
+      const th = wpos(bones['thigh_' + s]);
+      const a = rad(hipF), b = rad(hipF - knee);
+      const d1 = V(0.04 * k, Math.sin(a), Math.cos(a)), d2 = V(0.02 * k, Math.sin(b), Math.cos(b));
+      const kneeP = th.clone().add(d1.multiplyScalar(L.thigh));
+      aim(bones['thigh_' + s], bones['calf_' + s], kneeP);
+      aim(bones['calf_' + s], bones['foot_' + s], kneeP.clone().add(d2.multiplyScalar(L.shin)));
+    }
+    const up = v['armUp' + side] ?? v.armUp ?? 0;
+    if (up < 1) {
+      // 手臂平放在身侧地面，掌心朝下。
+      twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], V(k * 0.33, 0.035, shoulder.z + 0.46), V(k, -0.4, 0), L.uarm, L.farm);
+      palm(s, V(0.15 * k, 0, 1));
+    } else {
+      const sh = wpos(bones['upperarm_' + s]);
+      const dir = V(0.12 * k, Math.sin(rad(up)), Math.cos(rad(up))).normalize();
+      const elbow = sh.clone().add(dir.clone().multiplyScalar(L.uarm));
+      aim(bones['upperarm_' + s], bones['lowerarm_' + s], elbow);
+      aim(bones['lowerarm_' + s], bones['hand_' + s], elbow.clone().add(dir.multiplyScalar(L.farm)));
+    }
+  }
+}
+
 // ---------------------------------------------------------------- 动作库
 // keys：[秒, 姿势, 发力程度, 阶段名]；最后一帧只标结束时间（回到第一帧）。
 // glow：骨头名 → [前侧, 后侧]；spheres：[x, y, z, 半径, 强度]（绑定姿势、世界坐标、米）。
@@ -278,6 +328,35 @@ const LIB = {
     glow: {},
     spheres: [[0.245, 1.42, -0.05, 0.15, 1], [-0.245, 1.42, -0.05, 0.15, 1]],
     camera: { yaw: 22, dist: 2.25, target: [0, 0.98, 0], fov: 28 },
+  },
+  'glute-bridge': {
+    mode: 'supine', shoulder: [0.1, -0.55], feet: [0.15, 0.07, 0.42],
+    base: { hip: 0.13, neck: 0, armUp: 0 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.4, {}, 0.9, '发力'],
+      [1.4, { hip: 0.46 }, 1, '顶峰'],
+      [2.4, { hip: 0.46 }, 0.6, '下放'],
+      [4.0],
+    ],
+    glow: { pelvis: [0, 1], thigh_l: [0, 0.45], thigh_r: [0, 0.45] },
+    camera: { yaw: 62, dist: 1.75, target: [0, 0.2, -0.05], fov: 28 },
+  },
+  // 死虫式：桌面式起始，对侧手脚慢慢伸远，回来换另一侧；下背始终贴地。
+  'dead-bug': {
+    mode: 'supine', shoulder: [0.1, -0.55],
+    base: { hip: 0.11, neck: 4, hipFlexL: 90, kneeL: 90, hipFlexR: 90, kneeR: 90, armUpL: 90, armUpR: 90 },
+    keys: [
+      [0, {}, 0.3, '起始'], [0.4, {}, 1, '伸展'],
+      [2.0, { armUpL: 165, hipFlexR: 18, kneeR: 4 }, 0.8, '停顿'],
+      [2.4, { armUpL: 165, hipFlexR: 18, kneeR: 4 }, 0.5, '收回'],
+      [3.6, {}, 1, '伸展'],
+      [5.2, { armUpR: 165, hipFlexL: 18, kneeL: 4 }, 0.8, '停顿'],
+      [5.6, { armUpR: 165, hipFlexL: 18, kneeL: 4 }, 0.5, '收回'],
+      [6.8],
+    ],
+    glow: { spine_01: [1, 0], pelvis: [0.6, 0] },
+    spheres: [[0, 1.12, 0.12, 0.17, 1.3], [0, 1.0, 0.13, 0.15, 1.2]],
+    camera: { yaw: 64, dist: 2.45, target: [0, 0.3, -0.12], fov: 28 },
   },
 };
 const spec = LIB[q.get('ex')] || LIB.squat;
@@ -340,7 +419,7 @@ window.meta = {
 window.renderAt = t => {
   const { v, load } = sample(t);
   reset();
-  (spec.mode === 'prone' ? poseProne : poseStand)(spec, v);
+  ({ prone: poseProne, supine: poseSupine, stand: poseStand })[spec.mode](spec, v);
   root.updateMatrixWorld(true);
   placeBells();
   glow.uLevel.value = 0.2 + 0.8 * load;
