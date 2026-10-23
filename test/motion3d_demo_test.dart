@@ -19,6 +19,8 @@ Future<void> decode(WidgetTester tester, [int milliseconds = 150]) async {
 
 void main() {
   setUpAll(Harness.setUpAll);
+  // 这里测真实的 3D 片段库。
+  setUpAll(() => Motion3dLibrary.debugOverride(null));
   const squat = {'name': '深蹲', 'part': '腿'};
   Motion3dDemoState state(WidgetTester t) =>
       t.state<Motion3dDemoState>(find.byType(Motion3dDemo));

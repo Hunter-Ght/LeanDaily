@@ -54,7 +54,7 @@
   },
   "back-extension": {
    "file": "assets/motion3d/back-extension.webp",
-   "frames": 92,
+   "frames": 91,
    "periodMs": 4200,
    "peakMs": 2850,
    "phases": [
@@ -318,7 +318,7 @@
   },
   "db-bench": {
    "file": "assets/motion3d/db-bench.webp",
-   "frames": 86,
+   "frames": 84,
    "periodMs": 3800,
    "peakMs": 1550,
    "phases": [
@@ -366,7 +366,7 @@
   },
   "db-incline-press": {
    "file": "assets/motion3d/db-incline-press.webp",
-   "frames": 86,
+   "frames": 85,
    "periodMs": 3800,
    "peakMs": 1550,
    "phases": [
@@ -554,7 +554,7 @@
   },
   "feet-up-pushup": {
    "file": "assets/motion3d/feet-up-pushup.webp",
-   "frames": 85,
+   "frames": 84,
    "periodMs": 3600,
    "peakMs": 2450,
    "phases": [
@@ -578,7 +578,7 @@
   },
   "floor-press": {
    "file": "assets/motion3d/floor-press.webp",
-   "frames": 86,
+   "frames": 87,
    "periodMs": 3800,
    "peakMs": 1550,
    "phases": [
@@ -698,7 +698,7 @@
   },
   "incline-pushup-low": {
    "file": "assets/motion3d/incline-pushup-low.webp",
-   "frames": 86,
+   "frames": 85,
    "periodMs": 3600,
    "peakMs": 2350,
    "phases": [
@@ -746,7 +746,7 @@
   },
   "inverted-row": {
    "file": "assets/motion3d/inverted-row.webp",
-   "frames": 97,
+   "frames": 98,
    "periodMs": 4200,
    "peakMs": 1650,
    "phases": [
@@ -1050,7 +1050,7 @@
   },
   "pushdown": {
    "file": "assets/motion3d/pushdown.webp",
-   "frames": 83,
+   "frames": 84,
    "periodMs": 3800,
    "peakMs": 1350,
    "phases": [

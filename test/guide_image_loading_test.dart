@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/guide.dart';
 import 'package:leandaily/ui/kit/guide_image.dart';
+import 'package:leandaily/ui/kit/motion3d_demo.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
 import 'package:leandaily/ui/sheets/guide_sheet.dart';
 import 'package:leandaily/ui/today/guide_body.dart';
@@ -32,6 +33,9 @@ class _DelayedFrames extends CachingAssetBundle {
 
 void main() {
   setUpAll(Harness.setUpAll);
+  // 这里测的是照片示范：声明“没有 3D 片段”，走照片路径（3D 路径见 motion3d_demo_test）。
+  setUp(() => Motion3dLibrary.debugOverride({}));
+  tearDown(() => Motion3dLibrary.debugOverride(null));
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
     for (final wideBody in [false, true]) {
       for (final dark in [false, true]) {

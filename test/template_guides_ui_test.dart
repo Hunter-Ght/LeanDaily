@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/guide.dart';
 import 'package:leandaily/l10n/app_messages.dart';
 import 'package:leandaily/ui/kit/guide_image.dart';
+import 'package:leandaily/ui/kit/motion3d_demo.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
 import 'package:leandaily/ui/sheets/guide_content.dart';
 import 'package:leandaily/ui/today/guide_body.dart';
@@ -12,6 +13,9 @@ import 'support/harness.dart';
 
 void main() {
   setUpAll(Harness.setUpAll);
+  // 这里测的是照片示范（反向划船、硬拉、引体向上现在都有 3D）：声明“没有 3D 片段”走照片路径。
+  setUp(() => Motion3dLibrary.debugOverride({}));
+  tearDown(() => Motion3dLibrary.debugOverride(null));
   for (final wide in [false, true]) {
     for (final locale in AppMessages.locales) {
       testWidgets('template demos play and switch wide=$wide $locale', (

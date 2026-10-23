@@ -40,6 +40,13 @@ class Motion3dLibrary {
   static Future<Map<String, Motion3dClip>> load([AssetBundle? bundle]) =>
       _loading ??= _load(bundle ?? rootBundle);
 
+  /// 测试用：把 3D 片段库换成 [clips]（传 `{}` 表示“没有 3D”，走照片路径）；传 null 恢复。
+  @visibleForTesting
+  static void debugOverride(Map<String, Motion3dClip>? clips) {
+    loaded = clips;
+    _loading = clips == null ? null : Future.value(clips);
+  }
+
   static Future<Map<String, Motion3dClip>> _load(AssetBundle bundle) async {
     final manifest = jsonDecode(
       await bundle.loadString('assets/motion3d/manifest.json'),

@@ -941,7 +941,7 @@ window.meta = {
   // still：减少动态效果时停的那一刻；不写就取发力最大那段的开头。
   peak: spec.still ?? spec.keys.slice(0, -1).reduce((a, k) => (k[2] > a[2] ? k : a))[0] + 0.05,
 };
-window.renderAt = t => {
+function applyPose(t) {
   const { v, load } = sample(t);
   reset();
   rig.rotation.set(0, 0, 0);
@@ -958,7 +958,41 @@ window.renderAt = t => {
     rig.position.copy(pv.clone().sub(pv.clone().applyEuler(rig.rotation)));
   }
   glow.uLevel.value = 0.2 + 0.8 * load;
+  return load;
+}
+window.renderAt = t => {
+  applyPose(t);
   renderer.render(scene, camera);
 };
+
+// 自动取景：摆遍整个循环，取人体（和手持的哑铃/杆）的最大范围，算出镜头中心和距离，
+// 让人在整个循环里完整入画并占满 fill 比例的画面。spec.camera.auto = { fill: 0.84 }。
+function autoFit(auto) {
+  const fill = auto.fill ?? 0.84, pitch = rad(auto.pitch ?? 6);
+  const f = V(-Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch)).normalize();
+  const right = V().crossVectors(f, V(0, 1, 0)).normalize();
+  const up = V().crossVectors(right, f).normalize();
+  let r0 = 1e9, r1 = -1e9, u0 = 1e9, u1 = -1e9, f0 = 1e9, f1 = -1e9;
+  const box = new THREE.Box3(), c = V();
+  const N = 28;
+  for (let i = 0; i < N; i++) {
+    applyPose((i / N) * window.period);
+    box.makeEmpty().setFromObject(body, true);
+    for (const b of [bells.l, bells.r]) if (b.visible) box.expandByObject(b);
+    for (const d of dyn) if (d.m && d.m.visible !== false && d.keep) box.expandByObject(d.m);
+    for (let k = 0; k < 8; k++) {
+      c.set(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z);
+      const a = c.dot(right), b = c.dot(up), d = c.dot(f);
+      r0 = Math.min(r0, a); r1 = Math.max(r1, a); u0 = Math.min(u0, b); u1 = Math.max(u1, b); f0 = Math.min(f0, d); f1 = Math.max(f1, d);
+    }
+  }
+  const half = Math.max(r1 - r0, u1 - u0) / 2 / fill;
+  const dist = half / Math.tan(rad(camera.fov / 2)) + (f1 - f0) / 2;
+  const target = right.clone().multiplyScalar((r0 + r1) / 2).add(up.clone().multiplyScalar((u0 + u1) / 2)).add(f.clone().multiplyScalar((f0 + f1) / 2));
+  camera.position.copy(target).sub(f.clone().multiplyScalar(dist));
+  camera.lookAt(target);
+  window.fit = { target: target.toArray(), dist };
+}
+if (spec.camera.auto || q.has('auto')) autoFit(spec.camera.auto === true || !spec.camera.auto ? {} : spec.camera.auto);
 window.ready = true;
 </script>

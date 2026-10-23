@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:leandaily/ui/kit/motion3d_demo.dart';
 import 'package:leandaily/app/app.dart';
 import 'package:leandaily/app/app_controller.dart';
 import 'package:leandaily/core/native.dart';
@@ -27,6 +28,9 @@ class Harness {
     TestWidgetsFlutterBinding.ensureInitialized();
     await loadTestFonts();
     await AppIcon.load();
+    // 3D 示范是永远循环的动画，pumpAndSettle 等不到停下；多数测试测的是别的东西，
+    // 默认“没有 3D 片段”（走照片路径）。要测 3D 的测试自己 debugOverride(null) 恢复真实库。
+    Motion3dLibrary.debugOverride({});
   }
 
   /// 截图倍率，默认 2；LEANDAILY_SHOT_SCALE=3 出 @3x（App Store 用）。

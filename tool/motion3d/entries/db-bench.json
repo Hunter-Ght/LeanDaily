@@ -1,6 +1,6 @@
 {
  "file": "assets/motion3d/db-bench.webp",
- "frames": 86,
+ "frames": 84,
  "periodMs": 3800,
  "peakMs": 1550,
  "phases": [

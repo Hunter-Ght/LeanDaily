@@ -17,7 +17,7 @@ export const SPECS = {
       [3.8],
     ],
     glow: { upperarm_l: [0.1, 1], upperarm_r: [0.1, 1], lowerarm_l: [0, 0.35], lowerarm_r: [0, 0.35] },
-    camera: { yaw: 62, dist: 2.5, target: [0, 1.02, 0.25], fov: 28 },
+    camera: { auto: true, yaw: 62, dist: 2.5, target: [0, 1.02, 0.25], fov: 28 },
   },
 
   // —— 绳索面拉：绳索与脸同高，把绳索拉向脸两侧，肘高于腕、向外打开，肩胛后收。

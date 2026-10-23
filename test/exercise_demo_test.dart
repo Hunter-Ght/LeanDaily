@@ -4,11 +4,15 @@ import 'package:leandaily/theme/theme.dart';
 import 'package:leandaily/theme/tokens.dart';
 import 'package:leandaily/ui/kit/badge.dart';
 import 'package:leandaily/ui/kit/exercise_demo.dart';
+import 'package:leandaily/ui/kit/motion3d_demo.dart';
 
 import 'support/harness.dart';
 
 void main() {
   setUpAll(Harness.setUpAll);
+  // 这里测的是照片示范：声明“没有 3D 片段”，走照片路径（3D 路径见 motion3d_demo_test）。
+  setUp(() => Motion3dLibrary.debugOverride({}));
+  tearDown(() => Motion3dLibrary.debugOverride(null));
   const exercise = {'name': '哑铃地板卧推', 'part': '胸'};
   int frame(WidgetTester t) =>
       t
