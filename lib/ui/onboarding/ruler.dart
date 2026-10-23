@@ -2,6 +2,7 @@ import 'package:leandaily/l10n/app_messages.dart';
 
 import '../../l10n/localized_text.dart';
 
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
@@ -45,6 +46,8 @@ class _ProfileRulerState extends State<ProfileRuler> {
     widget.value.clamp(widget.min, widget.max),
   );
   int get count => ((widget.max - widget.min) / widget.step).round();
+  bool _commitQueued = false;
+  late double _lastCommittedValue = widget.value;
   @override
   void initState() {
     super.initState();
@@ -62,10 +65,36 @@ class _ProfileRulerState extends State<ProfileRuler> {
   }
 
   @override
+  void didUpdateWidget(ProfileRuler oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) _lastCommittedValue = widget.value;
+  }
+
+  @override
   void dispose() {
     _scroll.dispose();
     _value.dispose();
     super.dispose();
+  }
+
+  void _queueCommit() {
+    if (_commitQueued) return;
+    _commitQueued = true;
+    // ScrollEnd can be dispatched before the old scrolling activity is
+    // replaced. A short animateTo becomes jumpTo, which would synchronously
+    // dispatch ScrollEnd again. Also leave any current layout before notifying
+    // the parent. A microtask runs after the whole activity transition/frame.
+    scheduleMicrotask(() {
+      try {
+        if (mounted &&
+            _scroll.hasClients &&
+            !_scroll.position.isScrollingNotifier.value) {
+          _commit();
+        }
+      } finally {
+        _commitQueued = false;
+      }
+    });
   }
 
   void _commit() {
@@ -78,7 +107,10 @@ class _ProfileRulerState extends State<ProfileRuler> {
         curve: Curves.easeOut,
       );
     }
-    widget.onChanged(_value.value);
+    if (_value.value != _lastCommittedValue) {
+      _lastCommittedValue = _value.value;
+      widget.onChanged(_value.value);
+    }
   }
 
   @override
@@ -101,14 +133,14 @@ class _ProfileRulerState extends State<ProfileRuler> {
                 duration: const Duration(milliseconds: 120),
                 curve: Curves.easeOut,
               )
-              .then((_) => _commit()),
+              .then((_) => _queueCommit()),
           onDecrease: () => _scroll
               .animateTo(
                 math.max(0, _scroll.offset - spacing),
                 duration: const Duration(milliseconds: 120),
                 curve: Curves.easeOut,
               )
-              .then((_) => _commit()),
+              .then((_) => _queueCommit()),
           child: Center(
             child: LText(
               '${value.toStringAsFixed(widget.step < 1 ? 1 : 0)} ${widget.unit}',
@@ -124,8 +156,8 @@ class _ProfileRulerState extends State<ProfileRuler> {
           builder: (context, constraints) => Stack(
             children: [
               NotificationListener<ScrollEndNotification>(
-                onNotification: (_) {
-                  _commit();
+                onNotification: (notification) {
+                  if (notification.depth == 0) _queueCommit();
                   return false;
                 },
                 child: SingleChildScrollView(
