@@ -4,6 +4,54 @@
  "fps": 25,
  "background": "#ebebef",
  "exercises": {
+  "ab-machine": {
+   "file": "assets/motion3d/ab-machine.webp",
+   "frames": 86,
+   "periodMs": 4000,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "收紧"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     2000,
+     "收回"
+    ]
+   ]
+  },
+  "assisted-pullup": {
+   "file": "assets/motion3d/assisted-pullup.webp",
+   "frames": 102,
+   "periodMs": 4400,
+   "peakMs": 1650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1600,
+     "顶峰"
+    ],
+    [
+     2000,
+     "下放"
+    ]
+   ]
+  },
   "back-extension": {
    "file": "assets/motion3d/back-extension.webp",
    "frames": 92,
@@ -144,6 +192,30 @@
     ],
     [
      1700,
+     "下放"
+    ]
+   ]
+  },
+  "butterfly": {
+   "file": "assets/motion3d/butterfly.webp",
+   "frames": 90,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "收紧"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1800,
      "下放"
     ]
    ]
@@ -672,6 +744,30 @@
     ]
    ]
   },
+  "inverted-row": {
+   "file": "assets/motion3d/inverted-row.webp",
+   "frames": 97,
+   "periodMs": 4200,
+   "peakMs": 1650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1600,
+     "顶峰"
+    ],
+    [
+     2000,
+     "下放"
+    ]
+   ]
+  },
   "kickback": {
    "file": "assets/motion3d/kickback.webp",
    "frames": 91,
@@ -744,6 +840,174 @@
     ]
    ]
   },
+  "leg-curl": {
+   "file": "assets/motion3d/leg-curl.webp",
+   "frames": 88,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "leg-extension": {
+   "file": "assets/motion3d/leg-extension.webp",
+   "frames": 88,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "leg-press": {
+   "file": "assets/motion3d/leg-press.webp",
+   "frames": 53,
+   "periodMs": 3600,
+   "peakMs": 2250,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     1900,
+     "停顿"
+    ],
+    [
+     2200,
+     "发力"
+    ]
+   ]
+  },
+  "machine-chest-press": {
+   "file": "assets/motion3d/machine-chest-press.webp",
+   "frames": 90,
+   "periodMs": 4000,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "machine-curl": {
+   "file": "assets/motion3d/machine-curl.webp",
+   "frames": 83,
+   "periodMs": 4000,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "machine-incline-press": {
+   "file": "assets/motion3d/machine-incline-press.webp",
+   "frames": 90,
+   "periodMs": 4000,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "machine-shoulder-press": {
+   "file": "assets/motion3d/machine-shoulder-press.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     1900,
+     "下放"
+    ]
+   ]
+  },
   "plank": {
    "file": "assets/motion3d/plank.webp",
    "frames": 11,
@@ -757,6 +1021,30 @@
     [
      1500,
      "收紧"
+    ]
+   ]
+  },
+  "pullup": {
+   "file": "assets/motion3d/pullup.webp",
+   "frames": 102,
+   "periodMs": 4400,
+   "peakMs": 1650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1600,
+     "顶峰"
+    ],
+    [
+     2000,
+     "下放"
     ]
    ]
   },
@@ -880,6 +1168,30 @@
     ]
    ]
   },
+  "reverse-pec-deck": {
+   "file": "assets/motion3d/reverse-pec-deck.webp",
+   "frames": 91,
+   "periodMs": 4000,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
   "russian-twist": {
    "file": "assets/motion3d/russian-twist.webp",
    "frames": 93,
@@ -917,6 +1229,30 @@
     [
      3150,
      "收回"
+    ]
+   ]
+  },
+  "seated-calf": {
+   "file": "assets/motion3d/seated-calf.webp",
+   "frames": 79,
+   "periodMs": 3600,
+   "peakMs": 1250,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1200,
+     "顶峰"
+    ],
+    [
+     1700,
+     "下放"
     ]
    ]
   },
