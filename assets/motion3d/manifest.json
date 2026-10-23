@@ -4,6 +4,30 @@
  "fps": 25,
  "background": "#ebebef",
  "exercises": {
+  "back-extension": {
+   "file": "assets/motion3d/back-extension.webp",
+   "frames": 92,
+   "periodMs": 4200,
+   "peakMs": 2850,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2500,
+     "停顿"
+    ],
+    [
+     2800,
+     "发力"
+    ]
+   ]
+  },
   "band-fly": {
    "file": "assets/motion3d/band-fly.webp",
    "frames": 89,
@@ -73,6 +97,30 @@
     [
      1900,
      "收回"
+    ]
+   ]
+  },
+  "bench-dip": {
+   "file": "assets/motion3d/bench-dip.webp",
+   "frames": 86,
+   "periodMs": 3600,
+   "peakMs": 2350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2000,
+     "停顿"
+    ],
+    [
+     2300,
+     "发力"
     ]
    ]
   },
@@ -172,6 +220,54 @@
     ]
    ]
   },
+  "crunch": {
+   "file": "assets/motion3d/crunch.webp",
+   "frames": 68,
+   "periodMs": 3600,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     2200,
+     "下放"
+    ]
+   ]
+  },
+  "db-bench": {
+   "file": "assets/motion3d/db-bench.webp",
+   "frames": 86,
+   "periodMs": 3800,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     1900,
+     "下放"
+    ]
+   ]
+  },
   "db-curl": {
    "file": "assets/motion3d/db-curl.webp",
    "frames": 81,
@@ -192,6 +288,30 @@
     ],
     [
      1700,
+     "下放"
+    ]
+   ]
+  },
+  "db-incline-press": {
+   "file": "assets/motion3d/db-incline-press.webp",
+   "frames": 86,
+   "periodMs": 3800,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     1900,
      "下放"
     ]
    ]
@@ -360,6 +480,54 @@
     ]
    ]
   },
+  "feet-up-pushup": {
+   "file": "assets/motion3d/feet-up-pushup.webp",
+   "frames": 85,
+   "periodMs": 3600,
+   "peakMs": 2450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2100,
+     "停顿"
+    ],
+    [
+     2400,
+     "发力"
+    ]
+   ]
+  },
+  "floor-press": {
+   "file": "assets/motion3d/floor-press.webp",
+   "frames": 86,
+   "periodMs": 3800,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     1900,
+     "下放"
+    ]
+   ]
+  },
   "front-raise": {
    "file": "assets/motion3d/front-raise.webp",
    "frames": 95,
@@ -453,6 +621,30 @@
     [
      1700,
      "下放"
+    ]
+   ]
+  },
+  "incline-pushup-low": {
+   "file": "assets/motion3d/incline-pushup-low.webp",
+   "frames": 86,
+   "periodMs": 3600,
+   "peakMs": 2350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2000,
+     "停顿"
+    ],
+    [
+     2300,
+     "发力"
     ]
    ]
   },
@@ -664,6 +856,70 @@
     ]
    ]
   },
+  "reverse-crunch": {
+   "file": "assets/motion3d/reverse-crunch.webp",
+   "frames": 71,
+   "periodMs": 3800,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     2300,
+     "下放"
+    ]
+   ]
+  },
+  "russian-twist": {
+   "file": "assets/motion3d/russian-twist.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 1050,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1000,
+     "顶峰"
+    ],
+    [
+     1250,
+     "收回"
+    ],
+    [
+     2100,
+     "起始"
+    ],
+    [
+     2200,
+     "发力"
+    ],
+    [
+     2900,
+     "顶峰"
+    ],
+    [
+     3150,
+     "收回"
+    ]
+   ]
+  },
   "seated-row": {
    "file": "assets/motion3d/seated-row.webp",
    "frames": 89,
@@ -684,6 +940,46 @@
     ],
     [
      1900,
+     "下放"
+    ]
+   ]
+  },
+  "side-plank": {
+   "file": "assets/motion3d/side-plank.webp",
+   "frames": 12,
+   "periodMs": 3000,
+   "peakMs": 1600,
+   "phases": [
+    [
+     0,
+     "保持"
+    ],
+    [
+     1500,
+     "收紧"
+    ]
+   ]
+  },
+  "single-leg-bridge": {
+   "file": "assets/motion3d/single-leg-bridge.webp",
+   "frames": 79,
+   "periodMs": 4400,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     2600,
      "下放"
     ]
    ]
@@ -756,6 +1052,30 @@
     ],
     [
      2000,
+     "下放"
+    ]
+   ]
+  },
+  "superman": {
+   "file": "assets/motion3d/superman.webp",
+   "frames": 75,
+   "periodMs": 4400,
+   "peakMs": 1650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "发力"
+    ],
+    [
+     1600,
+     "顶峰"
+    ],
+    [
+     3000,
      "下放"
     ]
    ]
