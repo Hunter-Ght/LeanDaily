@@ -1,2 +1,2 @@
 const appVersion = '2.3.5';
-const appBuild = 27;
+const appBuild = 29;
