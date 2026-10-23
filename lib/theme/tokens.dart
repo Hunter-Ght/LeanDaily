@@ -16,6 +16,7 @@ class AppPalette {
     required this.err,
     required this.fill,
     required this.fill2,
+    required this.studio,
     required this.ph,
     required this.seg,
     required this.segOn,
@@ -48,6 +49,7 @@ class AppPalette {
   final Color err;
   final Color fill;
   final Color fill2;
+  final Color studio; // 3D 示范影棚底色，烘焙进动画，两种主题相同
   final Color ph;
   final Color seg;
   final Color segOn;
@@ -81,6 +83,7 @@ class AppPalette {
     err: Color(0xFFFF3B30),
     fill: Color(0x29787880),
     fill2: Color(0x1F787880),
+    studio: Color(0xFFEBEBEF),
     ph: Color(0x4C3C3C43),
     seg: Color(0x29787880),
     segOn: Color(0xFFFFFFFF),
@@ -115,6 +118,7 @@ class AppPalette {
     err: Color(0xFFFF3B30),
     fill: Color(0x52787880),
     fill2: Color(0x3D787880),
+    studio: Color(0xFFEBEBEF),
     ph: Color(0x4CEBEBF5),
     seg: Color(0x52787880),
     segOn: Color(0xFF636366),

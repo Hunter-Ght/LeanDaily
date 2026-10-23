@@ -11,6 +11,7 @@ import '../../domain/motion_library.dart';
 import '../../theme/theme.dart';
 import 'badge.dart';
 import 'motion_demo.dart';
+import 'motion3d_demo.dart';
 import 'pressable.dart';
 import 'transitions.dart';
 
@@ -73,8 +74,9 @@ class _ExerciseDemoState extends State<ExerciseDemo>
   void syncTimer() {
     final guide = guideFor(widget.ex);
     final frames = guide?['frames'] as List?;
-    // 矢量示范自己带动画时钟，不需要换帧计时器。
-    if (motionLibrary[guide?['key']] != null ||
+    // 动画示范自己带时钟，不需要照片换帧计时器。
+    if (Motion3dLibrary.loaded?[guide?['key']] != null ||
+        motionLibrary[guide?['key']] != null ||
         !_visible ||
         !_foreground ||
         _reduce ||
@@ -94,6 +96,7 @@ class _ExerciseDemoState extends State<ExerciseDemo>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _foreground = state == AppLifecycleState.resumed;
+    setState(() {});
     syncTimer();
   }
 
@@ -104,13 +107,27 @@ class _ExerciseDemoState extends State<ExerciseDemo>
     super.dispose();
   }
 
+  late final _library = Motion3dLibrary.load().then((clips) {
+    if (mounted) syncTimer();
+    return clips;
+  });
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      FutureBuilder<Map<String, Motion3dClip>>(
+        future: _library,
+        initialData: Motion3dLibrary.loaded,
+        builder: (context, snapshot) => _buildDemo(context, snapshot.data),
+      );
+
+  Widget _buildDemo(BuildContext context, Map<String, Motion3dClip>? clips) {
     final p = context.pal;
     final guide = guideFor(widget.ex);
     final frames = guide?['frames'] as List?;
     final motion = motionLibrary[guide?['key']];
-    if (frames == null || frames.isEmpty) {
+    final clip = clips?[guide?['key']];
+    final animated = clip != null || motion != null;
+    if (!animated && (frames == null || frames.isEmpty)) {
       return SizedBox.square(
         dimension: widget.size,
         child: Center(
@@ -121,9 +138,9 @@ class _ExerciseDemoState extends State<ExerciseDemo>
         ),
       );
     }
-    final manual = motion == null && (_reduce || !widget.autoplay);
-    // 矢量示范：autoplay 关闭时默认停着，点一下开始播。
-    final stopped = motion != null && !widget.autoplay ? !_paused : _paused;
+    final manual = !animated && (_reduce || !widget.autoplay);
+    // 动画示范：autoplay 关闭时默认停着，点一下开始播。
+    final stopped = animated && !widget.autoplay ? !_paused : _paused;
     return Semantics(
       button: true,
       excludeSemantics: true,
@@ -151,18 +168,28 @@ class _ExerciseDemoState extends State<ExerciseDemo>
           child: SizedBox.square(
             dimension: widget.size,
             child: ColoredBox(
-              color: motion != null ? p.fill2 : p.fill,
+              color: clip != null
+                  ? p.studio
+                  : motion != null
+                  ? p.fill2
+                  : p.fill,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  if (motion != null)
+                  if (clip != null)
+                    Motion3dDemo(
+                      clip: clip,
+                      paused: stopped || !_visible || !_foreground,
+                      still: _reduce,
+                    )
+                  else if (motion != null)
                     MotionDemo(
                       spec: motion,
                       paused: stopped || !_visible || !_foreground,
                       still: _reduce,
                     )
                   else
-                    for (var i = 0; i < frames.length.clamp(0, 2); i++)
+                    for (var i = 0; i < frames!.length.clamp(0, 2); i++)
                       AnimatedOpacity(
                         key: ValueKey('demo-frame-$i'),
                         opacity: _frame == i ? 1 : 0,
@@ -184,7 +211,7 @@ class _ExerciseDemoState extends State<ExerciseDemo>
                           ),
                         ),
                       ),
-                  if ((stopped || manual) && !(motion != null && _reduce))
+                  if ((stopped || manual) && !(animated && _reduce))
                     Positioned(
                       right: 8,
                       bottom: 8,

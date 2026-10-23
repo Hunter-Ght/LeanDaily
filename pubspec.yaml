@@ -26,6 +26,7 @@ flutter:
       fonts:
         - asset: assets/fonts/SmileySans-Wordmark.ttf
   assets:
+    - assets/motion3d/
     - assets/legal/
     - assets/l10n/
     - assets/state.json
