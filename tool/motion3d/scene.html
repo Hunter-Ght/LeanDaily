@@ -1,0 +1,244 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">
+{"imports":{"three":"/out/motion3d/node_modules/three/build/three.module.js","three/addons/":"/out/motion3d/node_modules/three/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+console.log('module start');
+const q = new URLSearchParams(location.search);
+const size = +(q.get('size') || 640);
+const MODEL = '/out/models/quaternius-ubc/Universal Base Characters[Standard]/Base Characters/Godot - UE/';
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(size, size);
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(2.2, 4, 3);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.radius = 6;
+key.shadow.bias = -0.0004;
+key.shadow.normalBias = 0.02;
+Object.assign(key.shadow.camera, { left: -1.5, right: 1.5, top: 2.5, bottom: -0.5, near: 0.5, far: 12 });
+scene.add(key);
+
+const loader = new GLTFLoader();
+const gltf = await loader.loadAsync(MODEL + 'Superhero_Male_FullBody.gltf');
+console.log('gltf loaded');
+const root = gltf.scene;
+scene.add(root);
+let body;
+root.traverse(o => {
+  if (o.isMesh) {
+    console.log('mesh', o.name, o.isSkinnedMesh, o.geometry.attributes.position.count);
+    o.visible = false;
+    if (!body || o.geometry.attributes.position.count > body.geometry.attributes.position.count) body = o;
+  }
+});
+body.visible = true;
+const box = new THREE.Box3().setFromObject(body);
+console.log('box', JSON.stringify(box.min), JSON.stringify(box.max));
+const bones = {};
+body.skeleton.bones.forEach(b => (bones[b.name] = b));
+for (const n of ['pelvis', 'spine_03', 'Head', 'upperarm_l', 'lowerarm_l', 'hand_l', 'thigh_l', 'calf_l', 'foot_l', 'ball_l']) {
+  const p = bones[n].getWorldPosition(new THREE.Vector3());
+  console.log(n, p.x.toFixed(3), p.y.toFixed(3), p.z.toFixed(3));
+}
+
+// ---- 材质：哑光雕塑感，保留原模型的法线贴图（肌肉线条靠它）----
+const orig = body.material;
+const mat = new THREE.MeshStandardMaterial({
+  color: 0xb8b0a7, roughness: 0.62, metalness: 0,
+  normalMap: orig.normalMap || null, normalScale: new THREE.Vector2(1, 1),
+  envMapIntensity: 0.5,
+});
+// 肌肉发光：每根骨头给“前侧/后侧”两个强度，按蒙皮权重和绑定姿势下的法线朝向混合。
+const N = body.skeleton.bones.length;
+const glowUniforms = {
+  uFront: { value: new Float32Array(N) },
+  uBack: { value: new Float32Array(N) },
+  uLevel: { value: 0 },
+  uTint: { value: new THREE.Color(0xff6a13) },
+  uBind: { value: new THREE.Matrix3().setFromMatrix4(body.matrixWorld) },
+};
+mat.onBeforeCompile = sh => {
+  Object.assign(sh.uniforms, glowUniforms);
+  sh.vertexShader = sh.vertexShader
+    .replace('#include <common>', `#include <common>
+      uniform float uFront[${N}]; uniform float uBack[${N}]; uniform mat3 uBind; varying float vGlow;`)
+    .replace('#include <begin_vertex>', `#include <begin_vertex>
+      float nz = (uBind * normal).z;
+      float side = smoothstep(-0.3, 0.3, nz);
+      vGlow = 0.0;
+      for (int i = 0; i < 4; i++) {
+        int b = int(skinIndex[i]);
+        vGlow += skinWeight[i] * mix(uBack[b], uFront[b], side);
+      }`);
+  sh.fragmentShader = sh.fragmentShader
+    .replace('#include <common>', `#include <common>
+      uniform float uLevel; uniform vec3 uTint; varying float vGlow;`)
+    .replace('#include <color_fragment>', `#include <color_fragment>
+      float gl = clamp(vGlow * uLevel, 0.0, 1.0);
+      diffuseColor.rgb = mix(diffuseColor.rgb, uTint, gl * 0.85);`)
+    .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+      totalEmissiveRadiance += uTint * clamp(vGlow * uLevel, 0.0, 1.0) * 0.28;`);
+};
+body.material = mat;
+body.castShadow = true;
+body.receiveShadow = true;
+renderer.toneMappingExposure = 0.9;
+// 轮廓光：从背后打亮边缘，把人从背景里分出来。
+const rim = new THREE.DirectionalLight(0xfff1e6, 1.4);
+rim.position.set(-2.5, 2.6, -3);
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0xdfe8ff, 0.35);
+fill.position.set(-3, 1.2, 2);
+scene.add(fill);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.ShadowMaterial({ opacity: 0.18 }));
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = box.min.y;
+ground.receiveShadow = true;
+// shadow=0：不画地面阴影（透明通道更省），由 App 自己画接触阴影。
+if (q.get('shadow') !== '0') scene.add(ground);
+
+const h = box.max.y - box.min.y, cy = box.min.y + h * 0.5;
+const yaw = THREE.MathUtils.degToRad(+(q.get('yaw') || 55));
+const dist = h * 2.05;
+// 深蹲时骨盆后移约 17 cm：取景中心放在前后中点，蹲下时人不跑到画面边上。
+const tz = -0.07;
+camera.position.set(Math.sin(yaw) * dist, cy + h * 0.06, tz + Math.cos(yaw) * dist);
+camera.lookAt(0, cy - h * 0.04, tz);
+
+// ---- 骨骼工具：绑定姿势、世界空间旋转、两段式瞄准（IK）----
+console.log('material ok');
+const bind = new Map();
+body.skeleton.bones.forEach(b => bind.set(b, { q: b.quaternion.clone(), p: b.position.clone() }));
+const V = () => new THREE.Vector3();
+const wpos = b => (b.updateWorldMatrix(true, false), b.getWorldPosition(V()));
+const bindWorld = {};
+for (const n of ['pelvis', 'foot_l', 'foot_r', 'upperarm_l', 'upperarm_r']) bindWorld[n] = wpos(bones[n]);
+const footQ = { l: bones.foot_l.getWorldQuaternion(new THREE.Quaternion()), r: bones.foot_r.getWorldQuaternion(new THREE.Quaternion()) };
+const len = (a, b) => wpos(bones[a]).distanceTo(wpos(bones[b]));
+const L = { thigh: len('thigh_l', 'calf_l'), shin: len('calf_l', 'foot_l'), uarm: len('upperarm_l', 'lowerarm_l'), farm: len('lowerarm_l', 'hand_l') };
+
+function setWorldQuat(bone, wq) {
+  const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+  bone.quaternion.copy(pq.multiply(wq));
+  bone.updateWorldMatrix(false, true);
+}
+function rotWorld(bone, axis, deg) {
+  const wq = bone.getWorldQuaternion(new THREE.Quaternion());
+  setWorldQuat(bone, new THREE.Quaternion().setFromAxisAngle(axis, THREE.MathUtils.degToRad(deg)).multiply(wq));
+}
+// 转动 bone，让它的子骨头 child 落到 target（世界坐标）。
+function aim(bone, child, target) {
+  const bp = wpos(bone), cp = wpos(child);
+  const d = new THREE.Quaternion().setFromUnitVectors(cp.sub(bp).normalize(), target.clone().sub(bp).normalize());
+  setWorldQuat(bone, d.multiply(bone.getWorldQuaternion(new THREE.Quaternion())));
+}
+// 两段式 IK：根 a、中 b、末 c，末端到 target，中间关节朝 pole 方向弯。
+function twoBone(a, b, c, target, pole, l1, l2) {
+  const ap = wpos(a);
+  const toT = target.clone().sub(ap);
+  const d = THREE.MathUtils.clamp(toT.length(), Math.abs(l1 - l2) + 1e-4, l1 + l2 - 1e-4);
+  const u = toT.normalize();
+  const v = pole.clone().sub(u.clone().multiplyScalar(pole.dot(u))).normalize();
+  const cos = (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d);
+  const mid = ap.clone().add(u.clone().multiplyScalar(l1 * cos)).add(v.multiplyScalar(l1 * Math.sqrt(Math.max(0, 1 - cos * cos))));
+  aim(a, b, mid);
+  aim(b, c, ap.clone().add(u.clone().multiplyScalar(d)));
+}
+const X = new THREE.Vector3(1, 0, 0);
+const rad = THREE.MathUtils.degToRad;
+
+/// 姿势参数（米、度）：drop 骨盆下沉、back 骨盆后移、lean 躯干前倾、arm 手臂前举（0 = 垂下）、el 肘屈。
+function pose(v) {
+  for (const [b, s] of bind) { b.quaternion.copy(s.q); b.position.copy(s.p); }
+  root.updateMatrixWorld(true);
+  const pelvis = bones.pelvis;
+  const target = bindWorld.pelvis.clone().add(new THREE.Vector3(0, -v.drop, -v.back));
+  pelvis.position.copy(pelvis.parent.worldToLocal(target));
+  pelvis.updateWorldMatrix(false, true);
+  // 躯干前倾分到三节脊柱；头颈往回收一部分，视线保持向前。
+  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, v.lean / 3);
+  rotWorld(bones.neck_01, X, -v.lean * 0.55);
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const ankle = bindWorld['foot_' + s];
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], ankle, new THREE.Vector3(0.22 * k, 0, 1), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], footQ[s].clone());
+    const sh = wpos(bones['upperarm_' + s]);
+    const dir = new THREE.Vector3(0.12 * k, -Math.cos(rad(v.arm)), Math.sin(rad(v.arm))).normalize();
+    const a2 = rad(v.arm + v.el);
+    const dir2 = new THREE.Vector3(0.06 * k, -Math.cos(a2), Math.sin(a2)).normalize();
+    const elbow = sh.clone().add(dir.multiplyScalar(L.uarm));
+    aim(bones['upperarm_' + s], bones['lowerarm_' + s], elbow);
+    aim(bones['lowerarm_' + s], bones['hand_' + s], elbow.clone().add(dir2.multiplyScalar(L.farm)));
+  }
+  root.updateMatrixWorld(true);
+}
+
+// ---- 动作库：关键帧与 Dart 版 motion_library 同节奏 ----
+const ease = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+const LIB = {
+  squat: {
+    base: { drop: 0.015, back: 0, lean: 4, arm: 10, el: 14 },
+    keys: [
+      [0, {}, 0.15], [0.5, {}, 0.55],
+      [2.5, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 0.8],
+      [2.8, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 1],
+      [4.0],
+    ],
+    // 发力肌肉：骨头名 → [前侧, 后侧]
+    glow: { thigh_l: [1, 0.25], thigh_r: [1, 0.25], pelvis: [0, 0.95], spine_01: [0, 0.2] },
+  },
+};
+const spec = LIB[q.get('ex')] || LIB.squat;
+for (const [name, [f, b]] of Object.entries(spec.glow)) {
+  const i = body.skeleton.bones.indexOf(bones[name]);
+  glowUniforms.uFront.value[i] = f;
+  glowUniforms.uBack.value[i] = b;
+}
+function sample(t) {
+  const K = spec.keys, P = K[K.length - 1][0];
+  t = ((t % P) + P) % P;
+  let i = 0;
+  while (i < K.length - 2 && K[i + 1][0] <= t) i++;
+  const [t0, v0 = {}, l0] = K[i], [t1, v1 = {}] = K[i + 1];
+  const e = ease(Math.min(1, (t - t0) / (t1 - t0)));
+  const v = {};
+  for (const k of Object.keys(spec.base)) {
+    const a = v0[k] ?? spec.base[k], b = v1[k] ?? spec.base[k];
+    v[k] = a + (b - a) * e;
+  }
+  const prev = K[(i - 1 + K.length - 1) % (K.length - 1)][2];
+  const bl = Math.min(1, (t - t0) / 0.25);
+  return { v, load: prev + (l0 - prev) * bl * bl * (3 - 2 * bl) };
+}
+
+window.period = spec.keys[spec.keys.length - 1][0];
+window.renderAt = t => {
+  const { v, load } = sample(t);
+  pose(v);
+  glowUniforms.uLevel.value = 0.2 + 0.8 * load;
+  renderer.render(scene, camera);
+};
+window.ready = true;
+</script>
