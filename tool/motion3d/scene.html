@@ -5,31 +5,36 @@
 {"imports":{"three":"/out/motion3d/node_modules/three/build/three.module.js","three/addons/":"/out/motion3d/node_modules/three/examples/jsm/"}}
 </script>
 <script type="module">
+// 3D 动作示范场景：Quaternius Universal Base Characters（CC0）人体，哑光雕塑材质，发力肌肉着橙色。
+// 由 render.cjs 驱动：window.renderAt(t) 画出第 t 秒的姿势，window.meta 给 App 节奏信息。
+// 页面参数：ex 动作、size 画布边长、bg 不透明底色（RRGGBB，不传则透明）、yaw 覆盖机位水平角、shadow=0 不画地面阴影。
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-console.log('module start');
 const q = new URLSearchParams(location.search);
 const size = +(q.get('size') || 640);
 const MODEL = '/out/models/quaternius-ubc/Universal Base Characters[Standard]/Base Characters/Godot - UE/';
+const rad = THREE.MathUtils.degToRad;
+const X = new THREE.Vector3(1, 0, 0);
+const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
 
+// ---------------------------------------------------------------- 渲染器、灯光
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setSize(size, size);
-// bg=RRGGBB：不透明影棚底（App 里用的版本，透明通道太占体积）；不传则透明（调试用）。
 const bg = q.get('bg');
 renderer.setClearColor(bg ? new THREE.Color('#' + bg) : 0x000000, bg ? 1 : 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.9;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const pmrem = new THREE.PMREMGenerator(renderer);
-scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+
 const key = new THREE.DirectionalLight(0xffffff, 1.6);
 key.position.set(2.2, 4, 3);
 key.castShadow = true;
@@ -37,60 +42,69 @@ key.shadow.mapSize.set(2048, 2048);
 key.shadow.radius = 6;
 key.shadow.bias = -0.0004;
 key.shadow.normalBias = 0.02;
-Object.assign(key.shadow.camera, { left: -1.5, right: 1.5, top: 2.5, bottom: -0.5, near: 0.5, far: 12 });
+Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2.5, bottom: -1, near: 0.5, far: 12 });
 scene.add(key);
+// 轮廓光：从背后打亮边缘，把人从背景里分出来；冷色补光压一点暗部。
+const rim = new THREE.DirectionalLight(0xfff1e6, 1.4);
+rim.position.set(-2.5, 2.6, -3);
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0xdfe8ff, 0.35);
+fill.position.set(-3, 1.2, 2);
+scene.add(fill);
 
-const loader = new GLTFLoader();
-const gltf = await loader.loadAsync(MODEL + 'Superhero_Male_FullBody.gltf');
-console.log('gltf loaded');
+// ---------------------------------------------------------------- 模型
+const gltf = await new GLTFLoader().loadAsync(MODEL + 'Superhero_Male_FullBody.gltf');
 const root = gltf.scene;
 scene.add(root);
 let body;
 root.traverse(o => {
-  if (o.isMesh) {
-    console.log('mesh', o.name, o.isSkinnedMesh, o.geometry.attributes.position.count);
-    o.visible = false;
-    if (!body || o.geometry.attributes.position.count > body.geometry.attributes.position.count) body = o;
-  }
+  if (!o.isMesh) return;
+  o.visible = false;
+  if (!body || o.geometry.attributes.position.count > body.geometry.attributes.position.count) body = o;
 });
 body.visible = true;
+body.castShadow = true;
+body.receiveShadow = true;
+root.updateMatrixWorld(true);
 const box = new THREE.Box3().setFromObject(body);
-console.log('box', JSON.stringify(box.min), JSON.stringify(box.max));
 const bones = {};
 body.skeleton.bones.forEach(b => (bones[b.name] = b));
-for (const n of ['pelvis', 'spine_03', 'Head', 'upperarm_l', 'lowerarm_l', 'hand_l', 'thigh_l', 'calf_l', 'foot_l', 'ball_l']) {
-  const p = bones[n].getWorldPosition(new THREE.Vector3());
-  console.log(n, p.x.toFixed(3), p.y.toFixed(3), p.z.toFixed(3));
-}
 
-// ---- 材质：哑光雕塑感，保留原模型的法线贴图（肌肉线条靠它）----
-const orig = body.material;
-const mat = new THREE.MeshStandardMaterial({
-  color: 0xb8b0a7, roughness: 0.62, metalness: 0,
-  normalMap: orig.normalMap || null, normalScale: new THREE.Vector2(1, 1),
-  envMapIntensity: 0.5,
-});
-// 肌肉发光：每根骨头给“前侧/后侧”两个强度，按蒙皮权重和绑定姿势下的法线朝向混合。
-const N = body.skeleton.bones.length;
-const glowUniforms = {
+// ---------------------------------------------------------------- 材质与肌肉发光
+// 发光两种来源取最大：① 骨头：按蒙皮权重，前侧/后侧各一个强度（看绑定姿势下法线朝前还是朝后）；
+// ② 球形区域：绑定姿势下的位置落在球里就亮，边缘柔和衰减（三角肌、胸这类不跟整根骨头走的肌肉）。
+const N = body.skeleton.bones.length, S = 8;
+const glow = {
   uFront: { value: new Float32Array(N) },
   uBack: { value: new Float32Array(N) },
+  uSph: { value: Array.from({ length: S }, () => new THREE.Vector4(0, -9, 0, 0.001)) },
+  uSphW: { value: new Float32Array(S) },
   uLevel: { value: 0 },
   uTint: { value: new THREE.Color(0xff6a13) },
-  uBind: { value: new THREE.Matrix3().setFromMatrix4(body.matrixWorld) },
+  uBindM: { value: body.matrixWorld.clone() },
 };
+const mat = new THREE.MeshStandardMaterial({
+  color: 0xb8b0a7, roughness: 0.62, metalness: 0,
+  normalMap: body.material.normalMap || null, envMapIntensity: 0.5,
+});
 mat.onBeforeCompile = sh => {
-  Object.assign(sh.uniforms, glowUniforms);
+  Object.assign(sh.uniforms, glow);
   sh.vertexShader = sh.vertexShader
     .replace('#include <common>', `#include <common>
-      uniform float uFront[${N}]; uniform float uBack[${N}]; uniform mat3 uBind; varying float vGlow;`)
+      uniform float uFront[${N}]; uniform float uBack[${N}];
+      uniform vec4 uSph[${S}]; uniform float uSphW[${S}];
+      uniform mat4 uBindM; varying float vGlow;`)
     .replace('#include <begin_vertex>', `#include <begin_vertex>
-      float nz = (uBind * normal).z;
-      float side = smoothstep(-0.3, 0.3, nz);
+      float side = smoothstep(-0.3, 0.3, (mat3(uBindM) * normal).z);
       vGlow = 0.0;
       for (int i = 0; i < 4; i++) {
         int b = int(skinIndex[i]);
         vGlow += skinWeight[i] * mix(uBack[b], uFront[b], side);
+      }
+      vec3 bp = (uBindM * vec4(position, 1.0)).xyz;
+      for (int i = 0; i < ${S}; i++) {
+        float d = distance(bp, uSph[i].xyz);
+        vGlow = max(vGlow, uSphW[i] * (1.0 - smoothstep(uSph[i].w * 0.45, uSph[i].w, d)));
       }`);
   sh.fragmentShader = sh.fragmentShader
     .replace('#include <common>', `#include <common>
@@ -102,58 +116,59 @@ mat.onBeforeCompile = sh => {
       totalEmissiveRadiance += uTint * clamp(vGlow * uLevel, 0.0, 1.0) * 0.28;`);
 };
 body.material = mat;
-body.castShadow = true;
-body.receiveShadow = true;
-renderer.toneMappingExposure = 0.9;
-// 轮廓光：从背后打亮边缘，把人从背景里分出来。
-const rim = new THREE.DirectionalLight(0xfff1e6, 1.4);
-rim.position.set(-2.5, 2.6, -3);
-scene.add(rim);
-const fill = new THREE.DirectionalLight(0xdfe8ff, 0.35);
-fill.position.set(-3, 1.2, 2);
-scene.add(fill);
 
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.ShadowMaterial({ opacity: 0.18 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.ShadowMaterial({ opacity: 0.18 }));
 ground.rotation.x = -Math.PI / 2;
 ground.position.y = box.min.y;
 ground.receiveShadow = true;
-// shadow=0：不画地面阴影（透明通道更省），由 App 自己画接触阴影。
 if (q.get('shadow') !== '0') scene.add(ground);
 
-const h = box.max.y - box.min.y, cy = box.min.y + h * 0.5;
-const yaw = THREE.MathUtils.degToRad(+(q.get('yaw') || 55));
-const dist = h * 2.05;
-// 深蹲时骨盆后移约 17 cm：取景中心放在前后中点，蹲下时人不跑到画面边上。
-const tz = -0.07;
-camera.position.set(Math.sin(yaw) * dist, cy + h * 0.06, tz + Math.cos(yaw) * dist);
-camera.lookAt(0, cy - h * 0.04, tz);
+// 哑铃：深灰金属，握把沿世界前后方向（侧平举的中立握法）。
+const metal = new THREE.MeshStandardMaterial({ color: 0x3a3a3e, roughness: 0.35, metalness: 0.6, envMapIntensity: 0.8 });
+function dumbbell() {
+  const g = new THREE.Group();
+  const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.16, 20), metal);
+  g.add(bar);
+  for (const s of [-1, 1]) {
+    const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.05, 32), metal);
+    plate.position.y = s * 0.085;
+    g.add(plate);
+  }
+  g.traverse(o => o.isMesh && (o.castShadow = true));
+  g.visible = false;
+  scene.add(g);
+  return g;
+}
+const bells = { l: dumbbell(), r: dumbbell() };
 
-// ---- 骨骼工具：绑定姿势、世界空间旋转、两段式瞄准（IK）----
-console.log('material ok');
+// ---------------------------------------------------------------- 骨骼工具
 const bind = new Map();
 body.skeleton.bones.forEach(b => bind.set(b, { q: b.quaternion.clone(), p: b.position.clone() }));
-const V = () => new THREE.Vector3();
 const wpos = b => (b.updateWorldMatrix(true, false), b.getWorldPosition(V()));
-const bindWorld = {};
-for (const n of ['pelvis', 'foot_l', 'foot_r', 'upperarm_l', 'upperarm_r']) bindWorld[n] = wpos(bones[n]);
-const footQ = { l: bones.foot_l.getWorldQuaternion(new THREE.Quaternion()), r: bones.foot_r.getWorldQuaternion(new THREE.Quaternion()) };
-const len = (a, b) => wpos(bones[a]).distanceTo(wpos(bones[b]));
-const L = { thigh: len('thigh_l', 'calf_l'), shin: len('calf_l', 'foot_l'), uarm: len('upperarm_l', 'lowerarm_l'), farm: len('lowerarm_l', 'hand_l') };
+const wquat = b => b.getWorldQuaternion(new THREE.Quaternion());
+const bindPos = {}, bindQuat = {};
+for (const n of Object.keys(bones)) { bindPos[n] = wpos(bones[n]); bindQuat[n] = wquat(bones[n]); }
+const L = {
+  thigh: bindPos.thigh_l.distanceTo(bindPos.calf_l), shin: bindPos.calf_l.distanceTo(bindPos.foot_l),
+  uarm: bindPos.upperarm_l.distanceTo(bindPos.lowerarm_l), farm: bindPos.lowerarm_l.distanceTo(bindPos.hand_l),
+};
 
 function setWorldQuat(bone, wq) {
-  const pq = bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
-  bone.quaternion.copy(pq.multiply(wq));
+  bone.quaternion.copy(wquat(bone.parent).invert().multiply(wq));
   bone.updateWorldMatrix(false, true);
 }
 function rotWorld(bone, axis, deg) {
-  const wq = bone.getWorldQuaternion(new THREE.Quaternion());
-  setWorldQuat(bone, new THREE.Quaternion().setFromAxisAngle(axis, THREE.MathUtils.degToRad(deg)).multiply(wq));
+  setWorldQuat(bone, new THREE.Quaternion().setFromAxisAngle(axis, rad(deg)).multiply(wquat(bone)));
+}
+function setWorldPos(bone, p) {
+  bone.position.copy(bone.parent.worldToLocal(p.clone()));
+  bone.updateWorldMatrix(false, true);
 }
 // 转动 bone，让它的子骨头 child 落到 target（世界坐标）。
 function aim(bone, child, target) {
   const bp = wpos(bone), cp = wpos(child);
   const d = new THREE.Quaternion().setFromUnitVectors(cp.sub(bp).normalize(), target.clone().sub(bp).normalize());
-  setWorldQuat(bone, d.multiply(bone.getWorldQuaternion(new THREE.Quaternion())));
+  setWorldQuat(bone, d.multiply(wquat(bone)));
 }
 // 两段式 IK：根 a、中 b、末 c，末端到 target，中间关节朝 pole 方向弯。
 function twoBone(a, b, c, target, pole, l1, l2) {
@@ -161,64 +176,134 @@ function twoBone(a, b, c, target, pole, l1, l2) {
   const toT = target.clone().sub(ap);
   const d = THREE.MathUtils.clamp(toT.length(), Math.abs(l1 - l2) + 1e-4, l1 + l2 - 1e-4);
   const u = toT.normalize();
-  const v = pole.clone().sub(u.clone().multiplyScalar(pole.dot(u))).normalize();
+  const v = pole.clone().normalize().sub(u.clone().multiplyScalar(pole.clone().normalize().dot(u))).normalize();
   const cos = (l1 * l1 + d * d - l2 * l2) / (2 * l1 * d);
   const mid = ap.clone().add(u.clone().multiplyScalar(l1 * cos)).add(v.multiplyScalar(l1 * Math.sqrt(Math.max(0, 1 - cos * cos))));
   aim(a, b, mid);
   aim(b, c, ap.clone().add(u.clone().multiplyScalar(d)));
 }
-const X = new THREE.Vector3(1, 0, 0);
-const rad = THREE.MathUtils.degToRad;
-
-/// 姿势参数（米、度）：drop 骨盆下沉、back 骨盆后移、lean 躯干前倾、arm 手臂前举（0 = 垂下）、el 肘屈。
-function pose(v) {
+// 手掌朝下、手指指向 dir（绑定姿势是 T 字、掌心朝下，绕竖直轴转过去即可）。
+function palm(s, dir) {
+  const k = s === 'l' ? 1 : -1;
+  const turn = new THREE.Quaternion().setFromUnitVectors(V(k, 0, 0), dir.clone().normalize());
+  setWorldQuat(bones['hand_' + s], turn.multiply(bindQuat['hand_' + s].clone()));
+}
+function reset() {
   for (const [b, s] of bind) { b.quaternion.copy(s.q); b.position.copy(s.p); }
   root.updateMatrixWorld(true);
-  const pelvis = bones.pelvis;
-  const target = bindWorld.pelvis.clone().add(new THREE.Vector3(0, -v.drop, -v.back));
-  pelvis.position.copy(pelvis.parent.worldToLocal(target));
-  pelvis.updateWorldMatrix(false, true);
-  // 躯干前倾分到三节脊柱；头颈往回收一部分，视线保持向前。
-  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, v.lean / 3);
-  rotWorld(bones.neck_01, X, -v.lean * 0.55);
+}
+
+// ---------------------------------------------------------------- 三种姿势模式
+// 站立（深蹲、侧平举）：drop 骨盆下沉、back 后移、lean 躯干前倾；脚踩在原地。
+// 手臂 front：arm 前举角（0 垂下、90 平举）、el 肘再往前屈；手臂 side：abd 外展角、el 肘微屈（向前）。
+function poseStand(spec, v) {
+  setWorldPos(bones.pelvis, bindPos.pelvis.clone().add(V(0, -(v.drop || 0), -(v.back || 0))));
+  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, (v.lean || 0) / 3);
+  rotWorld(bones.neck_01, X, -(v.lean || 0) * 0.55);
   for (const s of ['l', 'r']) {
     const k = s === 'l' ? 1 : -1;
-    const ankle = bindWorld['foot_' + s];
-    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], ankle, new THREE.Vector3(0.22 * k, 0, 1), L.thigh, L.shin);
-    setWorldQuat(bones['foot_' + s], footQ[s].clone());
+    twoBone(bones['thigh_' + s], bones['calf_' + s], bones['foot_' + s], bindPos['foot_' + s], V(0.22 * k, 0, 1), L.thigh, L.shin);
+    setWorldQuat(bones['foot_' + s], bindQuat['foot_' + s].clone());
     const sh = wpos(bones['upperarm_' + s]);
-    const dir = new THREE.Vector3(0.12 * k, -Math.cos(rad(v.arm)), Math.sin(rad(v.arm))).normalize();
-    const a2 = rad(v.arm + v.el);
-    const dir2 = new THREE.Vector3(0.06 * k, -Math.cos(a2), Math.sin(a2)).normalize();
+    let dir, dir2;
+    if (spec.arms === 'side') {
+      const a = rad(v.abd), e = rad(v.el);
+      dir = V(k * Math.sin(a), -Math.cos(a), 0.06).normalize();
+      dir2 = V(k * Math.sin(a) * Math.cos(e), -Math.cos(a) * Math.cos(e), Math.sin(e) + 0.06).normalize();
+    } else {
+      dir = V(0.12 * k, -Math.cos(rad(v.arm)), Math.sin(rad(v.arm))).normalize();
+      dir2 = V(0.06 * k, -Math.cos(rad(v.arm + v.el)), Math.sin(rad(v.arm + v.el))).normalize();
+    }
     const elbow = sh.clone().add(dir.multiplyScalar(L.uarm));
     aim(bones['upperarm_' + s], bones['lowerarm_' + s], elbow);
     aim(bones['lowerarm_' + s], bones['hand_' + s], elbow.clone().add(dir2.multiplyScalar(L.farm)));
   }
-  root.updateMatrixWorld(true);
 }
 
-// ---- 动作库：关键帧与 Dart 版 motion_library 同节奏 ----
-const ease = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+// 俯卧（俯卧撑）：以脚尖为支点整块转动，lean 是身体与地面的夹角；手掌平放在固定位置，肘朝后外。
+function poseProne(spec, v) {
+  rotWorld(bones.pelvis, X, 90 - v.lean);
+  // 平移骨盆，让左踝落到支点。
+  const ankle = wpos(bones.foot_l);
+  setWorldPos(bones.pelvis, wpos(bones.pelvis).add(V(bindPos.foot_l.x, spec.ankle[0], spec.ankle[1]).sub(ankle)));
+  rotWorld(bones.neck_01, X, v.neck || 0);
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    rotWorld(bones['foot_' + s], X, spec.foot);
+    const hand = V(k * spec.hand[0], spec.hand[1], spec.hand[2]);
+    twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], hand, V(0.75 * k, 0.5, -1), L.uarm, L.farm);
+    palm(s, V(0.1 * k, 0, 1));
+  }
+}
+
+// ---------------------------------------------------------------- 动作库
+// keys：[秒, 姿势, 发力程度, 阶段名]；最后一帧只标结束时间（回到第一帧）。
+// glow：骨头名 → [前侧, 后侧]；spheres：[x, y, z, 半径, 强度]（绑定姿势、世界坐标、米）。
+// camera：yaw 水平角、dist 距离（身高倍数）、target 注视点、fov。
 const LIB = {
   squat: {
+    mode: 'stand', arms: 'front',
     base: { drop: 0.015, back: 0, lean: 4, arm: 10, el: 14 },
-    // [秒, 姿势, 发力程度, 阶段名]：阶段名会显示在示范左下角。
     keys: [
       [0, {}, 0.15, '起始'], [0.5, {}, 0.55, '下放'],
       [2.5, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 0.8, '停顿'],
       [2.8, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 1, '发力'],
       [4.0],
     ],
-    // 发力肌肉：骨头名 → [前侧, 后侧]
     glow: { thigh_l: [1, 0.25], thigh_r: [1, 0.25], pelvis: [0, 0.95], spine_01: [0, 0.2] },
+    camera: { yaw: 55, dist: 2.05, target: [0, 0.83, -0.07], fov: 28 },
+  },
+  pushup: {
+    mode: 'prone', ankle: [0.11, -0.66], foot: -62, hand: [0.27, 0.035, 0.64],
+    base: { lean: 18, neck: -6 },
+    keys: [
+      [0, {}, 0.2, '起始'], [0.3, {}, 0.6, '下放'],
+      [2.1, { lean: 4 }, 0.85, '停顿'],
+      [2.4, { lean: 4 }, 1, '发力'],
+      [3.6],
+    ],
+    glow: { upperarm_l: [0.2, 0.85], upperarm_r: [0.2, 0.85] },
+    spheres: [[0.1, 1.33, 0.09, 0.15, 1], [-0.1, 1.33, 0.09, 0.15, 1], [0.2, 1.43, 0.03, 0.09, 0.7], [-0.2, 1.43, 0.03, 0.09, 0.7]],
+    camera: { yaw: 60, dist: 1.85, target: [0, 0.22, 0.28], fov: 28 },
+  },
+  'lateral-raise': {
+    mode: 'stand', arms: 'side', props: 'dumbbells',
+    base: { drop: 0.01, abd: 12, el: 10 },
+    keys: [
+      [0, {}, 0.15, '起始'], [0.4, {}, 0.9, '发力'],
+      [1.6, { abd: 84, el: 8 }, 1, '顶峰'],
+      [2.0, { abd: 84, el: 8 }, 0.6, '下放'],
+      [4.0],
+    ],
+    glow: {},
+    spheres: [[0.245, 1.42, -0.05, 0.15, 1], [-0.245, 1.42, -0.05, 0.15, 1]],
+    camera: { yaw: 22, dist: 2.25, target: [0, 0.98, 0], fov: 28 },
   },
 };
 const spec = LIB[q.get('ex')] || LIB.squat;
-for (const [name, [f, b]] of Object.entries(spec.glow)) {
+for (const [name, [f, b]] of Object.entries(spec.glow || {})) {
   const i = body.skeleton.bones.indexOf(bones[name]);
-  glowUniforms.uFront.value[i] = f;
-  glowUniforms.uBack.value[i] = b;
+  glow.uFront.value[i] = f;
+  glow.uBack.value[i] = b;
 }
+(spec.spheres || []).slice(0, S).forEach(([x, y, z, r, w], i) => {
+  glow.uSph.value[i].set(x, y, z, r);
+  glow.uSphW.value[i] = w;
+});
+bells.l.visible = bells.r.visible = spec.props === 'dumbbells';
+
+// 机位
+const h = box.max.y - box.min.y;
+const cam = spec.camera;
+const yaw = rad(q.has('yaw') ? +q.get('yaw') : cam.yaw);
+const [tx, ty, tz] = cam.target;
+camera.fov = cam.fov;
+camera.updateProjectionMatrix();
+camera.position.set(tx + Math.sin(yaw) * h * cam.dist, ty + h * 0.08, tz + Math.cos(yaw) * h * cam.dist);
+camera.lookAt(tx, ty, tz);
+
+// ---------------------------------------------------------------- 播放
+const ease = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
 function sample(t) {
   const K = spec.keys, P = K[K.length - 1][0];
   t = ((t % P) + P) % P;
@@ -231,13 +316,22 @@ function sample(t) {
     const a = v0[k] ?? spec.base[k], b = v1[k] ?? spec.base[k];
     v[k] = a + (b - a) * e;
   }
+  // 发力程度按段给，段与段之间 0.25 秒内平滑过渡。
   const prev = K[(i - 1 + K.length - 1) % (K.length - 1)][2];
   const bl = Math.min(1, (t - t0) / 0.25);
   return { v, load: prev + (l0 - prev) * bl * bl * (3 - 2 * bl) };
 }
+function placeBells() {
+  if (spec.props !== 'dumbbells') return;
+  for (const s of ['l', 'r']) {
+    const hand = wpos(bones['hand_' + s]), mid = wpos(bones['middle_01_' + s]);
+    const grip = hand.clone().add(mid.sub(hand).multiplyScalar(0.8)).add(V(0, -0.025, 0));
+    bells[s].position.copy(grip);
+    bells[s].quaternion.setFromUnitVectors(V(0, 1, 0), V(0, 0, 1));
+  }
+}
 
 window.period = spec.keys[spec.keys.length - 1][0];
-// 给 App 的节奏信息：各阶段起点（秒）与发力最大的那一刻（减少动态效果时停在这里）。
 window.meta = {
   period: window.period,
   phases: spec.keys.slice(0, -1).map(k => [k[0], k[3]]),
@@ -245,8 +339,11 @@ window.meta = {
 };
 window.renderAt = t => {
   const { v, load } = sample(t);
-  pose(v);
-  glowUniforms.uLevel.value = 0.2 + 0.8 * load;
+  reset();
+  (spec.mode === 'prone' ? poseProne : poseStand)(spec, v);
+  root.updateMatrixWorld(true);
+  placeBells();
+  glow.uLevel.value = 0.2 + 0.8 * load;
   renderer.render(scene, camera);
 };
 window.ready = true;

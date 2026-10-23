@@ -1,6 +1,54 @@
 {
  "version": 1,
  "exercises": {
+  "lateral-raise": {
+   "file": "assets/motion3d/lateral-raise.webp",
+   "frames": 96,
+   "period": 4,
+   "peakFrame": 40,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     10,
+     "发力"
+    ],
+    [
+     38,
+     "顶峰"
+    ],
+    [
+     48,
+     "下放"
+    ]
+   ]
+  },
+  "pushup": {
+   "file": "assets/motion3d/pushup.webp",
+   "frames": 86,
+   "period": 3.6,
+   "peakFrame": 59,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     7,
+     "下放"
+    ],
+    [
+     50,
+     "停顿"
+    ],
+    [
+     58,
+     "发力"
+    ]
+   ]
+  },
   "squat": {
    "file": "assets/motion3d/squat.webp",
    "frames": 96,
