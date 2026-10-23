@@ -1,0 +1,32 @@
+{
+ "version": 1,
+ "exercises": {
+  "squat": {
+   "file": "assets/motion3d/squat.webp",
+   "frames": 96,
+   "period": 4,
+   "peakFrame": 68,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     12,
+     "下放"
+    ],
+    [
+     60,
+     "停顿"
+    ],
+    [
+     67,
+     "发力"
+    ]
+   ]
+  }
+ },
+ "size": 256,
+ "fps": 24,
+ "background": "#ebebef"
+}

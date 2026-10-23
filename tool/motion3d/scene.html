@@ -16,7 +16,9 @@ const MODEL = '/out/models/quaternius-ubc/Universal Base Characters[Standard]/Ba
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setSize(size, size);
-renderer.setClearColor(0x000000, 0);
+// bg=RRGGBB：不透明影棚底（App 里用的版本，透明通道太占体积）；不传则透明（调试用）。
+const bg = q.get('bg');
+renderer.setClearColor(bg ? new THREE.Color('#' + bg) : 0x000000, bg ? 1 : 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.shadowMap.enabled = true;
@@ -200,10 +202,11 @@ const ease = u => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
 const LIB = {
   squat: {
     base: { drop: 0.015, back: 0, lean: 4, arm: 10, el: 14 },
+    // [秒, 姿势, 发力程度, 阶段名]：阶段名会显示在示范左下角。
     keys: [
-      [0, {}, 0.15], [0.5, {}, 0.55],
-      [2.5, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 0.8],
-      [2.8, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 1],
+      [0, {}, 0.15, '起始'], [0.5, {}, 0.55, '下放'],
+      [2.5, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 0.8, '停顿'],
+      [2.8, { drop: 0.42, back: 0.17, lean: 40, arm: 86, el: 4 }, 1, '发力'],
       [4.0],
     ],
     // 发力肌肉：骨头名 → [前侧, 后侧]
@@ -234,6 +237,12 @@ function sample(t) {
 }
 
 window.period = spec.keys[spec.keys.length - 1][0];
+// 给 App 的节奏信息：各阶段起点（秒）与发力最大的那一刻（减少动态效果时停在这里）。
+window.meta = {
+  period: window.period,
+  phases: spec.keys.slice(0, -1).map(k => [k[0], k[3]]),
+  peak: spec.keys.slice(0, -1).reduce((a, k) => (k[2] > a[2] ? k : a))[0] + 0.05,
+};
 window.renderAt = t => {
   const { v, load } = sample(t);
   pose(v);

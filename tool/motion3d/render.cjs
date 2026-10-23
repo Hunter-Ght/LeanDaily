@@ -34,6 +34,7 @@ server.listen(0, async () => {
     await page.evaluate(t => window.renderAt(t), times[i]);
     await page.screenshot({ path: path.join(outDir, String(i).padStart(4, '0') + '.png'), omitBackground: true });
   }
+  fs.writeFileSync(path.join(outDir, 'meta.json'), JSON.stringify(await page.evaluate(() => window.meta)));
   console.log('frames', times.length, 'period', period);
   await browser.close();
   server.close();
