@@ -66,3 +66,4 @@ android/key.properties
 
 # Resumable local translation cache (packaged catalogs are tracked)
 /tool/l10n/draft_en.json
+.claude/
