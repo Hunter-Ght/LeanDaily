@@ -1,5 +1,8 @@
 {
  "version": 1,
+ "size": 448,
+ "fps": 25,
+ "background": "#ebebef",
  "exercises": {
   "calf-raise": {
    "file": "assets/motion3d/calf-raise.webp",
@@ -317,8 +320,5 @@
     ]
    ]
   }
- },
- "size": 448,
- "fps": 25,
- "background": "#ebebef"
+ }
 }

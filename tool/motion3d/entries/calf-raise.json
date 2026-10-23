@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/calf-raise.webp",
+ "frames": 80,
+ "periodMs": 3600,
+ "peakMs": 1250,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "发力"
+  ],
+  [
+   1200,
+   "顶峰"
+  ],
+  [
+   1700,
+   "下放"
+  ]
+ ]
+}
