@@ -59,7 +59,7 @@ class _StatsPageState extends State<StatsPage> {
   @override
   void initState() {
     super.initState();
-    rootBundle.loadString('assets/body_paths.json').then((value) {
+    rootBundle.loadString('assets/muscle_map.json').then((value) {
       if (mounted) {
         setState(() => bodyPaths = jsonDecode(value) as Map<String, dynamic>);
       }

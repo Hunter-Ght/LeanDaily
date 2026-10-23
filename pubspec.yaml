@@ -30,7 +30,6 @@ flutter:
     - assets/l10n/
     - assets/state.json
     - assets/foods.json
-    - assets/body_paths.json
     - assets/muscle_map.json
     - assets/icons.json
     - assets/exercises/ab-machine/

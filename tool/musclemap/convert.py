@@ -64,16 +64,15 @@ def convert(source):
     report = ['# MuscleMap 肌群映射', '', f'来源：[{REPO}]({REPO})；作者 Melih Colpan；MIT。',
               f'固定提交：`{commit}`。', '',
               '复现：`python3 tool/musclemap/convert.py /tmp/musclemap-src`。仅读取该仓库，不使用其他来源。', '',
-              '四视图保留上游坐标及 viewBox。`groups` 额外保存每个原始组／子组，便于追溯；',
-              '`muscles` 按我们的 id 汇总，完全相同的路径去重，不合并子区几何。',
-              '`other` 保存未跟踪肌群及非肌肉部位，并逐条加入 `inert`。', '',
+              '四视图保留上游坐标及 viewBox。运行时资源只含 `muscles`（按我们的 id 汇总，完全相同的路径去重，不合并子区几何）',
+              '和 `other`（未跟踪肌群及非肌肉部位，界面画成中性轮廓）；原始组／子组只记录在本报告里。', '',
               '## 映射判断与限制', '',
               '- 正面 `deltoids` 是整块肩部，单独归 `delt_side`；`frontDeltoid` 归前束。两者有覆盖，未来绘制应先画中束再画前束；没有独立中束几何，不自行裁剪。',
-              '- 背面 `deltoids` 由 `rearDeltoid` 替代；胸、腹、斜方肌使用子区替代父区，父区仅归档于 `groups`。',
+              '- 背面 `deltoids` 由 `rearDeltoid` 替代；胸、腹、斜方肌使用子区替代父区，父区不进资源。',
               '- `upperBack` 是背阔主体，归 `lats`；肩袖 `rotatorCuff` 保留中性。菱形肌与下斜方肌归 `mid_back`；上斜方肌保持中性。',
               '- 股四头父区含中央区域，不能只保留内／外侧子区；保留全部独立形状，同一路径只计一次。',
               '- 两种性别均覆盖全部 16 个 id，无缺失例外。女性背面无 head，头部由 hair 覆盖。',
-              '- 致谢页为 UI 硬编码，许可证页使用 Flutter LicenseRegistry，无许可数据文件；本次按范围不改 UI，完整许可随 assets/legal/ 打包。', '']
+              '- 完整许可随 assets/legal/ 打包，并在“开源与致谢”页署名。', '']
     for sex in ('male', 'female'):
         result[sex] = {}
         for view in ('front', 'back'):
@@ -83,12 +82,12 @@ def convert(source):
                 raise ValueError(f'缺少 viewBox: {key}')
             groups = read_groups((data_dir / f'{sex.title()}{view.title()}Paths.swift').read_text())
             output = {'viewBox': [float(n) for n in box.groups()],
-                      'inert': [], 'muscles': {}, 'other': {}, 'groups': groups}
+                      'muscles': {}, 'other': {}}
             report += [f'## {sex} / {view}', '', '| 上游组／子组 | 路径数 | 处理 |', '| --- | ---: | --- |']
             for name, paths in groups.items():
                 replacement = REPLACED.get(name)
                 if replacement and all(child in groups for child in replacement) and (name != 'deltoids' or view == 'back'):
-                    target = '由 ' + '、'.join(replacement) + ' 子区替代（父区仅归档）'
+                    target = '由 ' + '、'.join(replacement) + ' 子区替代（父区不进资源）'
                 else:
                     muscle = 'delt_side' if name == 'deltoids' and view == 'front' else MAPPING.get(name)
                     if muscle:
@@ -97,17 +96,17 @@ def convert(source):
                         target = f'`{muscle}`'
                     elif name in NEUTRAL:
                         output['other'][name] = paths
-                        output['inert'].extend(paths)
-                        target = '`other` + `inert`（未跟踪／非肌肉）'
+                        target = '`other`（中性轮廓）'
                     else:
                         raise ValueError(f'未审核的上游组: {key}/{name}')
                 report.append(f'| {name} | {len(paths)} | {target} |')
             result[sex][view] = output
             report.append('')
     asset = ROOT / 'assets/muscle_map.json'
-    asset.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+    # 紧凑写出：约 100 KB，App 启动时整份读入。
+    asset.write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':')) + '\n')
     (ROOT / 'assets/legal/MuscleMap-LICENSE.txt').write_bytes((source / 'LICENSE').read_bytes())
-    report += [f'JSON 文件大小：**{asset.stat().st_size:,} 字节**（UTF-8，含原始 groups 归档）。', '']
+    report += [f'JSON 文件大小：**{asset.stat().st_size:,} 字节**（UTF-8，紧凑格式）。', '']
     (ROOT / 'docs/musclemap-mapping.md').write_text('\n'.join(report))
 
 

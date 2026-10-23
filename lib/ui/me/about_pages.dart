@@ -222,7 +222,10 @@ class _PrivacyPageState extends State<PrivacyPage> {
                   onTap: () => openAboutUrl(
                     context,
                     widget.onlineUrl == links.privacyPolicyUrl
-                        ? links.localizedPage(widget.onlineUrl, AppMessages.of(context).code)
+                        ? links.localizedPage(
+                            widget.onlineUrl,
+                            AppMessages.of(context).code,
+                          )
                         : widget.onlineUrl,
                   ),
                 ),
@@ -259,6 +262,7 @@ class CreditsPage extends StatelessWidget {
                 label: 'free-exercise-db',
                 sub: '动作示范图 · Unlicense（公共领域）',
               ),
+              GroupRow(label: 'MuscleMap', sub: '人体肌肉图 · Melih Colpan · MIT'),
               GroupRow(label: '得意黑', sub: '字标字体 · SIL OFL 1.1'),
               GroupRow(label: 'Flutter', sub: '界面框架 · BSD 3-Clause'),
               GroupRow(label: '薄肌日课', sub: '本项目 · MIT'),

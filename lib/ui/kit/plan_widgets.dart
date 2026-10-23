@@ -93,20 +93,18 @@ class MiniBody extends StatelessWidget {
   const MiniBody({super.key, required this.levels, this.height = 84});
   final Map<String, int> levels;
   final double height;
-  static Future<BodyGeometry>? _geometry;
-  static BodyGeometry? _parsed;
-  static Future<BodyGeometry> load() => _geometry ??= rootBundle
-      .loadString('assets/body_paths.json')
-      .then(
-        (s) => _parsed = BodyGeometry(jsonDecode(s) as Map<String, dynamic>),
-      );
+  static Future<Map<String, dynamic>>? _data;
+  static Map<String, dynamic>? _loaded;
+  static Future<Map<String, dynamic>> load() => _data ??= rootBundle
+      .loadString('assets/muscle_map.json')
+      .then((s) => _loaded = jsonDecode(s) as Map<String, dynamic>);
   @override
   Widget build(BuildContext context) => SizedBox(
     height: height,
-    width: height * .9,
-    child: FutureBuilder<BodyGeometry>(
+    width: height * 1.1,
+    child: FutureBuilder<Map<String, dynamic>>(
       future: load(),
-      initialData: _parsed,
+      initialData: _loaded,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return const SizedBox.shrink();
         return TweenAnimationBuilder<double>(
@@ -143,9 +141,12 @@ class MiniBody extends StatelessWidget {
                 for (final back in [false, true])
                   Expanded(
                     child: CustomPaint(
-                      size: Size(height * .45, height),
+                      size: Size(height * .55, height),
                       painter: BodyPainter(
-                        geometry: snapshot.data!,
+                        geometry: BodyGeometry(
+                          snapshot.data!,
+                          female: BodySexScope.of(context),
+                        ),
                         back: back,
                         colors: colors,
                         palette: p,

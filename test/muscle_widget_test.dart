@@ -1,9 +1,12 @@
+import 'dart:math' as math;
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'support/fixture_store.dart';
+
 import 'package:leandaily/domain/movements.dart';
 import 'package:leandaily/theme/theme.dart';
 import 'package:leandaily/theme/tokens.dart';
@@ -12,7 +15,7 @@ import 'package:leandaily/ui/stats/muscle/muscle_card.dart';
 
 AppData fixture() => AppData.parse(
   File('assets/state.json').readAsStringSync(),
-  File('assets/body_paths.json').readAsStringSync(),
+  File('assets/muscle_map.json').readAsStringSync(),
 );
 Widget host(Widget child, {AppPalette palette = AppPalette.light}) =>
     MediaQuery(
@@ -26,37 +29,71 @@ Widget host(Widget child, {AppPalette palette = AppPalette.light}) =>
       ),
     );
 void main() {
-  test('SVG paths, mirror hit testing, full paths and neutral areas', () {
-    final geometry = BodyGeometry(
-      jsonDecode(File('assets/body_paths.json').readAsStringSync()),
-    );
-    final painter = BodyPainter(
-      geometry: geometry,
-      back: false,
-      colors: {for (final m in MUSCLES) m['id']!: AppPalette.light.fill},
-      palette: AppPalette.light,
-      selected: '',
-    );
-    expect(
-      painter.muscleAt(const Offset(50, 65), const Size(120, 280)),
-      'chest',
-    );
-    expect(
-      painter.muscleAt(const Offset(70, 65), const Size(120, 280)),
-      'chest',
-    );
-    expect(
-      painter.muscleAt(const Offset(60, 100), const Size(120, 280)),
-      'abs',
-    );
-    expect(painter.muscleAt(const Offset(60, 15), const Size(120, 280)), null);
-    expect(painter.muscleAt(const Offset(100, 15), const Size(120, 280)), null);
-    // Same location after SVG preserveAspectRatio letterboxing.
-    expect(
-      painter.muscleAt(const Offset(130, 130), const Size(300, 560)),
-      'chest',
-    );
-  });
+  for (final female in [false, true]) {
+    test('MuscleMap hit testing female=$female', () {
+      final geometry = BodyGeometry(
+        jsonDecode(File('assets/muscle_map.json').readAsStringSync()),
+        female: female,
+      );
+      const size = Size(160, 300);
+      for (final back in [false, true]) {
+        final painter = BodyPainter(
+          geometry: geometry,
+          back: back,
+          colors: {for (final m in MUSCLES) m['id']!: AppPalette.light.fill},
+          palette: AppPalette.light,
+          selected: '',
+        );
+        final view = back ? geometry.back : geometry.front;
+        final e = geometry.extent;
+        final scale = math.min(size.width / e.width, size.height / e.height);
+        final origin = Offset(
+          (size.width - view.box.width * scale) / 2 - view.box.left * scale,
+          (size.height - view.box.height * scale) / 2 - view.box.top * scale,
+        );
+        Offset screen(Offset p) => origin + p * scale;
+        final ids = back
+            ? ['glutes', 'lats', 'hamstrings', 'lower_back']
+            : ['chest', 'abs', 'quads', 'biceps'];
+        for (final id in ids) {
+          final shape = view.shapes.firstWhere((s) => s.id == id);
+          final c = shape.path.getBounds().center;
+          // 取轮廓内的一点（中心不在里面时沿竖线找）。
+          final inside = [
+            for (var dy = 0.0; dy < 60; dy += 2) ...[
+              c.translate(0, dy),
+              c.translate(0, -dy),
+            ],
+          ].firstWhere(shape.path.contains);
+          expect(
+            painter.muscleAt(screen(inside), size),
+            id,
+            reason: '$back $id',
+          );
+        }
+        // 头部是中性轮廓，点不中肌肉。
+        final head = view.shapes.firstWhere(
+          (s) => s.id == 'head' || s.id == 'hair',
+        );
+        expect(
+          painter.muscleAt(
+            screen(head.path.getBounds().topCenter.translate(0, 4)),
+            size,
+          ),
+          isNull,
+        );
+        // 小肌肉旁边 6 点以内也算点中。
+        final calf = view.shapes
+            .firstWhere((s) => s.id == 'calves')
+            .path
+            .getBounds();
+        expect(
+          painter.muscleAt(screen(calf.centerLeft) - const Offset(6, 0), size),
+          isNotNull,
+        );
+      }
+    });
+  }
   for (final width in [320.0, 780.0, 850.0, 1000.0]) {
     testWidgets('muscle modes fit width $width', (tester) async {
       tester.view.physicalSize = Size(width, 2000);

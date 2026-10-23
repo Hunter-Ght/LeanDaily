@@ -76,8 +76,14 @@ class _MuscleCardState extends State<MuscleCard> {
   void initState() {
     super.initState();
     mode = widget.initialMode;
-    geometry = BodyGeometry(widget.bodyPaths);
     _load();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 资料里改了性别，人体图跟着换；解析结果有缓存。
+    geometry = BodyGeometry(widget.bodyPaths, female: BodySexScope.of(context));
   }
 
   void _load() {
@@ -88,7 +94,10 @@ class _MuscleCardState extends State<MuscleCard> {
   void didUpdateWidget(MuscleCard old) {
     super.didUpdateWidget(old);
     if (old.bodyPaths != widget.bodyPaths) {
-      geometry = BodyGeometry(widget.bodyPaths);
+      geometry = BodyGeometry(
+        widget.bodyPaths,
+        female: BodySexScope.of(context),
+      );
     }
     if (old.days != widget.days ||
         old.nowMs != widget.nowMs ||

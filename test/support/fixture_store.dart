@@ -24,7 +24,7 @@ class AppData {
   /// All meal rows: {record_id, date, meal, time, items, kcal, protein, carbs, fat, ...}.
   final List<Map<String, dynamic>> meals;
 
-  /// Body figure shapes (see assets/body_paths.json).
+  /// Body figure shapes (see assets/muscle_map.json).
   final Map<String, dynamic> bodyPaths;
 
   /// {'YYYY-MM-DD': {'sets': [...]}} — the day map the domain functions take.
@@ -67,6 +67,6 @@ class AppData {
 
   static Future<AppData> load() async => parse(
     await rootBundle.loadString('assets/state.json'),
-    await rootBundle.loadString('assets/body_paths.json'),
+    await rootBundle.loadString('assets/muscle_map.json'),
   );
 }

@@ -15,6 +15,7 @@ import 'body_fat_step.dart';
 import 'diagnosis_step.dart';
 import 'onboarding_widgets.dart';
 import 'plan_step.dart';
+import '../stats/muscle/body_map.dart' show BodySexScope;
 import 'profile_steps.dart';
 
 /// Full-screen assessment, shared by installation, upgrade and reassessment.
@@ -315,27 +316,30 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                 onGoalChanged: (v) =>
                                     _change('goalBodyFatPct', v),
                               ),
-                              PlanStep(
-                                onProfileChanged: _change,
-                                profile: _profile,
-                                upgrade: widget.upgrade,
-                                selected:
-                                    _selected ??
-                                    (widget.upgrade
-                                        ? null
-                                        : recommend(
-                                                {
-                                                  ..._profile,
-                                                  'venue':
-                                                      _profile['venue'] ??
-                                                      'bodyweight',
-                                                },
-                                                buildTargets(_profile),
-                                              ).first['templateId']
-                                              as String),
-                                onSelected: (id) =>
-                                    setState(() => _selected = id),
-                                onConfirm: _finish,
+                              BodySexScope(
+                                female: _profile['sex'] == 'female',
+                                child: PlanStep(
+                                  onProfileChanged: _change,
+                                  profile: _profile,
+                                  upgrade: widget.upgrade,
+                                  selected:
+                                      _selected ??
+                                      (widget.upgrade
+                                          ? null
+                                          : recommend(
+                                                  {
+                                                    ..._profile,
+                                                    'venue':
+                                                        _profile['venue'] ??
+                                                        'bodyweight',
+                                                  },
+                                                  buildTargets(_profile),
+                                                ).first['templateId']
+                                                as String),
+                                  onSelected: (id) =>
+                                      setState(() => _selected = id),
+                                  onConfirm: _finish,
+                                ),
                               ),
                             ],
                           ),

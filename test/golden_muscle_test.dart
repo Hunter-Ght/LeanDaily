@@ -31,7 +31,7 @@ void main() {
         final p = dark ? AppPalette.dark : AppPalette.light;
         final data = AppData.parse(
           File('assets/state.json').readAsStringSync(),
-          File('assets/body_paths.json').readAsStringSync(),
+          File('assets/muscle_map.json').readAsStringSync(),
         );
         final key = GlobalKey();
         await tester.pumpWidget(

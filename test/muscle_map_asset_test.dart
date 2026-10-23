@@ -30,14 +30,11 @@ void main() {
         final muscles = view['muscles'] as Map<String, dynamic>;
         covered.addAll(muscles.keys);
         expect(ids.containsAll(muscles.keys), isTrue);
-        final inert = (view['inert'] as List).cast<String>();
-        expect(inert, isNotEmpty);
+        expect(view.keys.toSet(), {'viewBox', 'muscles', 'other'});
         final other = view['other'] as Map<String, dynamic>;
         expect(other, isNotEmpty);
-        expect(inert, [for (final paths in other.values) ...paths as List]);
         final collections = <String, List<dynamic>>{
-          'inert': inert,
-          for (final section in ['muscles', 'other', 'groups'])
+          for (final section in ['muscles', 'other'])
             for (final group in (view[section] as Map<String, dynamic>).entries)
               '$section/${group.key}': group.value as List,
         };

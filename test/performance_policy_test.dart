@@ -17,7 +17,7 @@ import 'support/harness.dart';
 void main() {
   setUpAll(() async {
     await Harness.setUpAll();
-    await rootBundle.loadString('assets/body_paths.json');
+    await rootBundle.loadString('assets/muscle_map.json');
   });
 
   for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {

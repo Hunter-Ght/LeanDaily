@@ -6,7 +6,6 @@ LeanDaily 本身使用 [MIT 许可证](../LICENSE)。以下是随应用分发的
 | --- | --- | --- |
 | 动作示范图（58 个动作，每个 2 帧） | `assets/exercises/` | [free-exercise-db](https://github.com/yuhonas/free-exercise-db)，**Unlicense（公共领域）**。原有图片已缩小后打包，新增三组保留原图，离线使用。 |
 | 字标字体子集（仅"薄肌日课"4 个字） | `assets/fonts/SmileySans-Wordmark.ttf` | [得意黑 Smiley Sans](https://github.com/atelier-anchor/smiley-sans)，**SIL Open Font License 1.1**，允许商用与嵌入分发。说明见 `assets/fonts/NOTICE.txt`。 |
-| 人体肌肉示意图路径 | `assets/body_paths.json` | 项目自绘（SVG 路径），随项目 MIT 许可。 |
 | MuscleMap 人体肌群路径 | `assets/muscle_map.json` | [MuscleMap](https://github.com/melihcolpan/MuscleMap)，Melih Colpan，**MIT**。固定提交与逐组映射见 [映射报告](musclemap-mapping.md)，完整许可见 `assets/legal/MuscleMap-LICENSE.txt`。 |
 | 图标 | `assets/icons.json` | 项目自绘（SVG 路径），随项目 MIT 许可。 |
 | 食物库（约 300 种常见食物） | `assets/foods.json` | 项目整理的常见量级**估算值**，不是官方营养数据。 |

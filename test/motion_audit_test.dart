@@ -267,9 +267,9 @@ void main() {
   testWidgets(
     'stats expansions and chart replacement have intermediate frames',
     (tester) async {
-      rootBundle.evict('assets/body_paths.json');
+      rootBundle.evict('assets/muscle_map.json');
       await tester.runAsync(
-        () => rootBundle.loadString('assets/body_paths.json'),
+        () => rootBundle.loadString('assets/muscle_map.json'),
       );
       await Harness.pump(tester, tab: 2);
       await tester.runAsync(
