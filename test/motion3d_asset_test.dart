@@ -46,8 +46,8 @@ void main() {
           for (var i = 0; i < codec.frameCount; i++) {
             final frame = await codec.getNextFrame();
             try {
-              expect(frame.image.width, 256);
-              expect(frame.image.height, 256);
+              expect(frame.image.width, 448);
+              expect(frame.image.height, 448);
               total += frame.duration.inMilliseconds;
             } finally {
               frame.image.dispose();

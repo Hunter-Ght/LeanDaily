@@ -87,17 +87,13 @@ class _GuideDemoState extends State<GuideDemo> {
           aspectRatio: 3 / 2,
           child: ColoredBox(
             color: clip != null ? p.studio : p.fill2,
+            // 画面在卡片里居中（影棚底色与卡片同色，看不出边），阶段标签贴卡片角，和照片模式一致。
             child: clip != null
-                ? Center(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Motion3dDemo(
-                        clip: clip,
-                        paused: widget.paused,
-                        still: MediaQuery.disableAnimationsOf(context),
-                        showPhase: true,
-                      ),
-                    ),
+                ? Motion3dDemo(
+                    clip: clip,
+                    paused: widget.paused,
+                    still: MediaQuery.disableAnimationsOf(context),
+                    showPhase: true,
                   )
                 : MotionDemo(
                     spec: motion!,

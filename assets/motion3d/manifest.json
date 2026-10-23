@@ -3,7 +3,7 @@
  "exercises": {
   "dead-bug": {
    "file": "assets/motion3d/dead-bug.webp",
-   "frames": 141,
+   "frames": 146,
    "periodMs": 6800,
    "peakMs": 2100,
    "phases": [
@@ -39,7 +39,7 @@
   },
   "glute-bridge": {
    "file": "assets/motion3d/glute-bridge.webp",
-   "frames": 67,
+   "frames": 68,
    "periodMs": 4000,
    "peakMs": 1450,
    "phases": [
@@ -111,7 +111,7 @@
   },
   "squat": {
    "file": "assets/motion3d/squat.webp",
-   "frames": 86,
+   "frames": 87,
    "periodMs": 4000,
    "peakMs": 2850,
    "phases": [
@@ -134,7 +134,7 @@
    ]
   }
  },
- "size": 256,
+ "size": 448,
  "fps": 25,
  "background": "#ebebef"
 }
