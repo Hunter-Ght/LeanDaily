@@ -8,18 +8,29 @@ import 'package:flutter/widgets.dart';
 import '../../l10n/localized_text.dart';
 import '../../theme/theme.dart';
 
+/// 一段 3D 示范（见 assets/motion3d/manifest.json）。停顿处相同的帧在文件里被合并成一帧，
+/// 所以阶段和峰值都按毫秒记，播放时累加每帧时长得到当前时刻。
 class Motion3dClip {
   const Motion3dClip({
     required this.file,
     required this.frames,
-    required this.period,
-    required this.peakFrame,
+    required this.periodMs,
+    required this.peakMs,
     required this.phases,
   });
   final String file;
-  final int frames, peakFrame;
-  final double period;
+  final int frames, periodMs, peakMs;
   final List<(int, String)> phases;
+
+  /// [ms] 时刻所处的阶段名。
+  String phaseAt(int ms) {
+    var phase = '';
+    for (final (start, name) in phases) {
+      if (start > ms) break;
+      phase = name;
+    }
+    return phase;
+  }
 }
 
 class Motion3dLibrary {
@@ -39,8 +50,8 @@ class Motion3dLibrary {
         Motion3dClip(
           file: value['file'] as String,
           frames: value['frames'] as int,
-          period: (value['period'] as num).toDouble(),
-          peakFrame: value['peakFrame'] as int,
+          periodMs: value['periodMs'] as int,
+          peakMs: value['peakMs'] as int,
           phases: [
             for (final phase in value['phases'] as List)
               (phase[0] as int, phase[1] as String),
@@ -76,10 +87,15 @@ class Motion3dDemoState extends State<Motion3dDemo>
       _elapsed = Duration.zero,
       _last = Duration.zero;
   int _frame = 0, _generation = 0;
+
+  /// 当前帧在循环里的开始时刻（毫秒）。
+  int _time = 0;
   bool _enabled = true;
 
   @visibleForTesting
   int get debugFrame => _frame;
+  @visibleForTesting
+  int get debugTime => _time;
 
   @override
   void initState() {
@@ -114,6 +130,7 @@ class Motion3dDemoState extends State<Motion3dDemo>
     _next?.image.dispose();
     _next = null;
     _frame = 0;
+    _time = 0;
     _elapsed = Duration.zero;
     final clip = widget.clip;
     final still = widget.still;
@@ -126,18 +143,19 @@ class Motion3dDemoState extends State<Motion3dDemo>
       return;
     }
     _codec = codec;
-    // 静态模式逐帧前进，立即释放略过的图像，不缓存整段动画。
-    final target = still ? clip.peakFrame : 0;
-    for (var i = 0; i <= target; i++) {
+    // 静态模式逐帧前进到峰值时刻所在的那一帧，立即释放略过的图像，不缓存整段动画。
+    for (var i = 0; i < codec.frameCount; i++) {
       final frame = await codec.getNextFrame();
       if (!mounted || generation != _generation) {
         frame.image.dispose();
         return;
       }
+      if (i > 0) _time += _duration.inMilliseconds;
       _image?.dispose();
       _image = frame.image;
       _duration = frame.duration;
       _frame = i;
+      if (!still || _time + _duration.inMilliseconds > clip.peakMs) break;
     }
     setState(() {});
     if (!still) _prefetch(generation, codec);
@@ -172,8 +190,9 @@ class Motion3dDemoState extends State<Motion3dDemo>
     setState(() {
       _image?.dispose();
       _image = next.image;
+      _frame = (_frame + 1) % _codec!.frameCount;
+      _time = _frame == 0 ? 0 : _time + _duration.inMilliseconds;
       _duration = next.duration;
-      _frame = (_frame + 1) % widget.clip.frames;
     });
     _prefetch(_generation, _codec!);
   }
@@ -191,11 +210,7 @@ class Motion3dDemoState extends State<Motion3dDemo>
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
-    var phase = '';
-    for (final entry in widget.clip.phases) {
-      if (entry.$1 > _frame) break;
-      phase = entry.$2;
-    }
+    final phase = widget.clip.phaseAt(_time);
     return ColoredBox(
       color: p.studio,
       child: Stack(

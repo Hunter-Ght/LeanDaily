@@ -343,7 +343,7 @@ const LIB = {
   },
   // 死虫式：桌面式起始，对侧手脚慢慢伸远，回来换另一侧；下背始终贴地。
   'dead-bug': {
-    mode: 'supine', shoulder: [0.1, -0.55],
+    mode: 'supine', shoulder: [0.1, -0.55], still: 2.1,
     base: { hip: 0.11, neck: 4, hipFlexL: 90, kneeL: 90, hipFlexR: 90, kneeR: 90, armUpL: 90, armUpR: 90 },
     keys: [
       [0, {}, 0.3, '起始'], [0.4, {}, 1, '伸展'],
@@ -414,7 +414,8 @@ window.period = spec.keys[spec.keys.length - 1][0];
 window.meta = {
   period: window.period,
   phases: spec.keys.slice(0, -1).map(k => [k[0], k[3]]),
-  peak: spec.keys.slice(0, -1).reduce((a, k) => (k[2] > a[2] ? k : a))[0] + 0.05,
+  // still：减少动态效果时停的那一刻；不写就取发力最大那段的开头。
+  peak: spec.still ?? spec.keys.slice(0, -1).reduce((a, k) => (k[2] > a[2] ? k : a))[0] + 0.05,
 };
 window.renderAt = t => {
   const { v, load } = sample(t);

@@ -3,10 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/theme/theme.dart';
 import 'package:leandaily/theme/tokens.dart';
 import 'package:leandaily/ui/kit/exercise_demo.dart';
-import 'package:leandaily/ui/kit/guide_demo.dart';
-import 'package:leandaily/ui/kit/guide_image.dart';
 import 'package:leandaily/ui/kit/motion_demo.dart';
-import 'package:leandaily/domain/guide.dart';
+import 'package:leandaily/domain/motion_library.dart';
 
 import 'support/harness.dart';
 
@@ -24,29 +22,48 @@ Widget host(Widget child, {bool reduce = false, bool dark = false}) =>
 
 void main() {
   setUpAll(Harness.setUpAll);
-  const pushup = {'name': '标准俯卧撑', 'part': '胸'};
-
-  testWidgets('有矢量示范的动作播动画，点击暂停与继续', (t) async {
-    await t.pumpWidget(host(const ExerciseDemo(ex: pushup)));
-    expect(find.byType(MotionDemo), findsOneWidget);
-    expect(find.byKey(const ValueKey('demo-frame-0')), findsNothing);
-    expect(t.widget<MotionDemo>(find.byType(MotionDemo)).paused, isFalse);
-    await t.pump(const Duration(milliseconds: 500));
-    await t.tap(find.byType(ExerciseDemo));
+  // 三个原型动作都已有 3D 示范；矢量版留作后备，这里直接测组件本身。
+  testWidgets('矢量示范：播放、暂停与阶段标签', (t) async {
+    await t.pumpWidget(
+      host(
+        const AspectRatio(
+          aspectRatio: 1.5,
+          child: MotionDemo(spec: lateralRaiseMotion, showPhase: true),
+        ),
+      ),
+    );
+    await t.pump(const Duration(milliseconds: 600));
+    expect(find.text('发力'), findsOneWidget);
+    expect(t.binding.hasScheduledFrame, isTrue);
+    await t.pumpWidget(
+      host(
+        const AspectRatio(
+          aspectRatio: 1.5,
+          child: MotionDemo(
+            spec: lateralRaiseMotion,
+            showPhase: true,
+            paused: true,
+          ),
+        ),
+      ),
+    );
     await t.pump();
-    expect(t.widget<MotionDemo>(find.byType(MotionDemo)).paused, isTrue);
-    expect(find.text('▶'), findsOneWidget);
-    await t.tap(find.byType(ExerciseDemo));
-    await t.pump();
-    expect(t.widget<MotionDemo>(find.byType(MotionDemo)).paused, isFalse);
+    expect(find.text('发力 · 已暂停'), findsOneWidget);
+    expect(t.binding.hasScheduledFrame, isFalse);
     await t.pumpWidget(const SizedBox());
   });
 
-  testWidgets('减少动态效果：停在发力姿势，不显示播放键', (t) async {
-    await t.pumpWidget(host(const ExerciseDemo(ex: pushup), reduce: true));
-    final demo = t.widget<MotionDemo>(find.byType(MotionDemo));
-    expect(demo.still, isTrue);
-    expect(find.text('▶'), findsNothing);
+  testWidgets('矢量示范：减少动态效果时停在发力姿势、不调度动画', (t) async {
+    await t.pumpWidget(
+      host(
+        const AspectRatio(
+          aspectRatio: 1.5,
+          child: MotionDemo(spec: pushupMotion, still: true, showPhase: true),
+        ),
+      ),
+    );
+    await t.pump();
+    expect(find.text('发力'), findsOneWidget);
     expect(t.binding.hasScheduledFrame, isFalse);
   });
 
@@ -57,24 +74,4 @@ void main() {
     expect(find.byType(MotionDemo), findsNothing);
     expect(find.byKey(const ValueKey('demo-frame-0')), findsOneWidget);
   });
-
-  for (final dark in [false, true]) {
-    testWidgets('动作要点：默认动画、可切到真人照片再切回 dark=$dark', (t) async {
-      final g = guideFor({'name': '侧平举'})!;
-      await t.pumpWidget(
-        host(GuideDemo(guide: g, frame: 0, paused: false), dark: dark),
-      );
-      await t.pump(const Duration(milliseconds: 600));
-      expect(find.byType(MotionDemo), findsOneWidget);
-      expect(find.text('发力'), findsOneWidget);
-      await t.tap(find.text('真人照片'));
-      await t.pump();
-      expect(find.byType(MotionDemo), findsNothing);
-      expect(find.byType(GuideImage), findsOneWidget);
-      await t.tap(find.text('动画示范'));
-      await t.pump();
-      expect(find.byType(MotionDemo), findsOneWidget);
-      await t.pumpWidget(const SizedBox());
-    });
-  }
 }

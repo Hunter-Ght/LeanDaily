@@ -52,10 +52,13 @@ void main() {
     await decode(t);
     await decode(t, 1000);
     final clip = t.widget<Motion3dDemo>(find.byType(Motion3dDemo)).clip;
-    expect(state(t).debugFrame, clip.peakFrame);
+    // 停在峰值时刻所在的那一帧（停顿处的相同帧在文件里合并过，所以按时间比）。
+    final shown = state(t).debugTime;
+    expect(shown, lessThanOrEqualTo(clip.peakMs));
+    expect(clip.phaseAt(shown), clip.phaseAt(clip.peakMs));
     expect(find.text('▶'), findsNothing);
     await t.pump(const Duration(seconds: 1));
-    expect(state(t).debugFrame, clip.peakFrame);
+    expect(state(t).debugTime, shown);
     expect(t.binding.hasScheduledFrame, isFalse);
     await t.pumpWidget(const SizedBox());
     await decode(t);

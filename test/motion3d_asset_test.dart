@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -15,14 +16,23 @@ void main() {
       for (final clip in clips.values) {
         expect(File(clip.file).existsSync(), isTrue);
         expect(clip.frames, greaterThan(0));
-        expect(clip.period, greaterThan(0));
-        expect(clip.peakFrame, inInclusiveRange(0, clip.frames - 1));
+        expect(clip.periodMs, greaterThan(0));
+        expect(clip.peakMs, inInclusiveRange(0, clip.periodMs - 1));
         expect(clip.phases, isNotEmpty);
         expect(clip.phases.first.$1, 0);
+        // 阶段名写在清单里，提取工具扫不到：这里确认三种语言都有。
+        for (final (_, name) in clip.phases) {
+          for (final lang in ['en', 'zh_Hant']) {
+            final catalog = jsonDecode(
+              File('assets/l10n/$lang.json').readAsStringSync(),
+            ) as Map;
+            expect(catalog.containsKey(name), isTrue, reason: '$lang: $name');
+          }
+        }
         var previous = -1;
         for (final phase in clip.phases) {
           expect(phase.$1, greaterThan(previous));
-          expect(phase.$1, lessThan(clip.frames));
+          expect(phase.$1, lessThan(clip.periodMs));
           previous = phase.$1;
         }
         final bytes = await rootBundle.load(clip.file);
@@ -31,13 +41,19 @@ void main() {
         );
         try {
           expect(codec.frameCount, clip.frames);
-          final frame = await codec.getNextFrame();
-          try {
-            expect(frame.image.width, 256);
-            expect(frame.image.height, 256);
-          } finally {
-            frame.image.dispose();
+          // 各帧时长加起来就是一个循环：清单里的毫秒时刻才能和画面对上。
+          var total = 0;
+          for (var i = 0; i < codec.frameCount; i++) {
+            final frame = await codec.getNextFrame();
+            try {
+              expect(frame.image.width, 256);
+              expect(frame.image.height, 256);
+              total += frame.duration.inMilliseconds;
+            } finally {
+              frame.image.dispose();
+            }
           }
+          expect(total, closeTo(clip.periodMs, 60), reason: clip.file);
         } finally {
           codec.dispose();
         }

@@ -3,138 +3,138 @@
  "exercises": {
   "dead-bug": {
    "file": "assets/motion3d/dead-bug.webp",
-   "frames": 163,
-   "period": 6.8,
-   "peakFrame": 11,
+   "frames": 141,
+   "periodMs": 6800,
+   "peakMs": 2100,
    "phases": [
     [
      0,
      "起始"
     ],
     [
-     10,
+     400,
      "伸展"
     ],
     [
-     48,
+     2000,
      "停顿"
     ],
     [
-     58,
+     2400,
      "收回"
     ],
     [
-     86,
+     3600,
      "伸展"
     ],
     [
-     125,
+     5200,
      "停顿"
     ],
     [
-     134,
+     5600,
      "收回"
     ]
    ]
   },
   "glute-bridge": {
    "file": "assets/motion3d/glute-bridge.webp",
-   "frames": 96,
-   "period": 4,
-   "peakFrame": 35,
+   "frames": 67,
+   "periodMs": 4000,
+   "peakMs": 1450,
    "phases": [
     [
      0,
      "起始"
     ],
     [
-     10,
+     400,
      "发力"
     ],
     [
-     34,
+     1400,
      "顶峰"
     ],
     [
-     58,
+     2400,
      "下放"
     ]
    ]
   },
   "lateral-raise": {
    "file": "assets/motion3d/lateral-raise.webp",
-   "frames": 96,
-   "period": 4,
-   "peakFrame": 40,
+   "frames": 84,
+   "periodMs": 4000,
+   "peakMs": 1650,
    "phases": [
     [
      0,
      "起始"
     ],
     [
-     10,
+     400,
      "发力"
     ],
     [
-     38,
+     1600,
      "顶峰"
     ],
     [
-     48,
+     2000,
      "下放"
     ]
    ]
   },
   "pushup": {
    "file": "assets/motion3d/pushup.webp",
-   "frames": 86,
-   "period": 3.6,
-   "peakFrame": 59,
+   "frames": 80,
+   "periodMs": 3600,
+   "peakMs": 2450,
    "phases": [
     [
      0,
      "起始"
     ],
     [
-     7,
+     300,
      "下放"
     ],
     [
-     50,
+     2100,
      "停顿"
     ],
     [
-     58,
+     2400,
      "发力"
     ]
    ]
   },
   "squat": {
    "file": "assets/motion3d/squat.webp",
-   "frames": 96,
-   "period": 4,
-   "peakFrame": 68,
+   "frames": 86,
+   "periodMs": 4000,
+   "peakMs": 2850,
    "phases": [
     [
      0,
      "起始"
     ],
     [
-     12,
+     500,
      "下放"
     ],
     [
-     60,
+     2500,
      "停顿"
     ],
     [
-     67,
+     2800,
      "发力"
     ]
    ]
   }
  },
  "size": 256,
- "fps": 24,
+ "fps": 25,
  "background": "#ebebef"
 }
