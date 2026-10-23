@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/butterfly.webp",
+ "frames": 90,
+ "periodMs": 4000,
+ "peakMs": 1350,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   300,
+   "收紧"
+  ],
+  [
+   1300,
+   "顶峰"
+  ],
+  [
+   1800,
+   "下放"
+  ]
+ ]
+}
