@@ -22,6 +22,7 @@ LeanDaily 是一个 **Flutter + Android / iOS 原生层** 的本地优先应用�
 
 - **`domain/`**：全部是对 `Map<String, dynamic>`（JSON 形状）做纯函数计算，不依赖 Flutter、不碰磁盘。例如 `progress.dart`（进阶）、`body.dart`（热量/蛋白/体脂路线）、`plan_insight.dart`（一周条与人体图所需数据）、`weekly_review.dart`。
 - **`data/`**：`Repository` 是本地优先的记录仓库（串行写入，写前读最新）；`PlanStore`/`ProfileStore`/`BodyLogStore` 各管一份文档；`backup.dart` 负责导出导入；`update_check.dart` 检查更新；`vision.dart` 是可选的拍照识别。
+  饮食照片的估算口径、模型结果协议及真实模型验证清单见 [VISION.md](VISION.md)。
 - **`app/AppController`**：把各存储、当前日期/标签、计划库、资料与目标、体重记录、更新状态汇总成一个 `ChangeNotifier`，界面只监听它。
 - **`ui/`**：`kit/` 是通用控件（`Pressable`、`GlassSurface`、分组列表 `GroupCard/GroupRow`、方案卡 `PlanCard`、转场 `Reveal/PushSwitcher/FadeSwitcher`…），其余按页面分目录。界面不使用 Material 控件，颜色全部来自 `theme/tokens.dart`（`tool/lint_tokens.sh` 强制检查）。
 - **`core/native.dart`**：原生能力的接口；测试里用 `FakeNative` 完全替换，所以全部测试都不需要真机。

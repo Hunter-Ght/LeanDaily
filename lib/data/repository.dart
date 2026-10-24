@@ -328,6 +328,17 @@ class Repository extends ChangeNotifier {
     };
     return key;
   }, incrementRevision: true);
+
+  /// Mark an existing before-only meal as finished without rewriting its items.
+  Future<void> finishMeal(String date, String id) => mutate((s) {
+    records.validDate(date);
+    final meal = s['meals'][id];
+    if (meal == null || meal['date'] != date || meal['deleted'] == true) {
+      throw const records.DomainError('记录不存在');
+    }
+    if (records.needsAfterPhoto(meal as Map)) meal['after_skipped'] = true;
+  }, incrementRevision: true);
+
   Future<void> deleteMeal(String date, String id) => mutate((s) {
     records.validDate(date);
     if (s['meals'][id]?['date'] == date) {

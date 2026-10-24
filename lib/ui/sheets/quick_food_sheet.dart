@@ -139,8 +139,10 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
 
   void _openPhoto() {
     if (_saving) return;
-    context.app.setDate(_date);
-    openMealSheet(context, preset: {'meal': _meal, 'time': _time});
+    openMealSheet(
+      context,
+      preset: {'date': _date, 'meal': _meal, 'time': _time},
+    );
   }
 
   void _manual() {

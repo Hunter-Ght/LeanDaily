@@ -12,7 +12,7 @@ import 'package:leandaily/data/prefs.dart';
 import 'package:leandaily/domain/records.dart';
 
 void main() {
-  test('vision chat and Responses use original prompt/schema and clean output', () async {
+  test('vision chat and Responses preserve the JSON contract and clean output', () async {
     final n = FakeNative();
     n.secrets = const Secrets(modelKey: 'key');
     final p = await n.photoWrite(Uint8List.fromList([255, 216, 255]));
@@ -91,12 +91,14 @@ void main() {
       final b = await n.photoWrite(Uint8List.fromList([255, 216, 255, 2]));
       final c = await n.photoWrite(Uint8List.fromList([255, 216, 255, 3]));
       late Map sent;
+      String? resultBasis = 'compare';
       n.onHttp = (call) {
         sent = jsonDecode(call.body!) as Map;
         final text = jsonEncode({
           'items': [
             {'name': '米饭', 'portion': '吃了约150g（剩1/4）', 'kcal': 174},
           ],
+          'basis': ?resultBasis,
           'eaten_ratio': 0.75,
           'warning': '两组照片像是不同的餐',
           'summary': '好',
@@ -150,7 +152,23 @@ void main() {
       expect(only, contains('没有吃完后的照片'));
       expect(single['basis'], basisBeforeOnly);
       expect(single.containsKey('eaten_ratio'), false);
-      expect(single.containsKey('warning'), false);
+      expect(single['warning'], '两组照片像是不同的餐');
+      resultBasis = 'before_only';
+      final fallback = await v.analyze(
+        [a, b],
+        '',
+        '午餐',
+        null,
+        ['before', 'after'],
+      );
+      expect(fallback['basis'], basisBeforeOnly);
+      expect(fallback.containsKey('eaten_ratio'), false);
+      expect(fallback['warning'], isNotEmpty);
+      resultBasis = null;
+      await expectLater(
+        v.analyze([a, b], '', '午餐', null, ['before', 'after']),
+        throwsA(isA<DomainError>()),
+      );
 
       await expectLater(
         v.analyze([b], '', '午餐', null, ['after']),

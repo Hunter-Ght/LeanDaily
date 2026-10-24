@@ -218,6 +218,7 @@ class _TrainSheetState extends State<TrainSheet> {
       );
       app.startRest();
       app.toast.show('已记下');
+      app.showRecordSection('训练');
       app.haptics.saved();
       if (mounted) SheetController.of(context).close();
     } catch (e) {

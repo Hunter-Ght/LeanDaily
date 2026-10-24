@@ -394,6 +394,14 @@ class AppController extends ChangeNotifier {
   /// 0 今日，1 记录，2 进度，3 我的。
   int tab = 0;
 
+  /// 当前记录块；只在本次浏览期间保留，重新进入记录时回到饮食。
+  String recordSection = '饮食';
+  void showRecordSection(String section) {
+    if (recordSection == section) return;
+    recordSection = section;
+    notifyListeners();
+  }
+
   StreamSubscription<NotificationTap>? _notificationSubscription;
   NotificationTap? _pendingNotificationTap;
 
@@ -540,6 +548,7 @@ class AppController extends ChangeNotifier {
   void setTab(int index) {
     if (tab == index) return;
     tab = index;
+    if (index == 1) recordSection = '饮食';
     if (index == 0 && today.isNotEmpty && _date != today) _date = today;
     notifyListeners();
   }
@@ -555,15 +564,18 @@ class AppController extends ChangeNotifier {
   }
 
   /// 一键记一份蛋白粉：写成“加餐”，蛋白质按计划里设置的每份含量。
-  Future<void> addProteinPowder(String date) async {
+  Future<void> addProteinPowder(
+    String date, {
+    Map<String, dynamic>? entry,
+  }) async {
     final p = (plan['protein'] as Map?)?['powder'] as Map?;
-    if (p == null || date.isEmpty) return;
-    final serving = entryFor(proteinPowderFood(p), units: 1);
+    if (date.isEmpty) return;
+    final serving = entry ?? entryFor(proteinPowderFood(p), units: 1);
     final t = clock();
     final time =
         '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
     try {
-      await repo.saveMeal(
+      final id = await repo.saveMeal(
         date: date,
         meal: '加餐',
         time: time,
@@ -571,7 +583,20 @@ class AppController extends ChangeNotifier {
         items: [serving],
       );
       haptics.saved();
-      toast.show('+${_fmt(serving['protein'])} g 蛋白质（已记入饮食 · 加餐）');
+      toast.show(
+        '+${_fmt(serving['protein'])} g 蛋白质（已记入饮食 · 加餐）',
+        duration: const Duration(seconds: 6),
+        actionLabel: '撤销',
+        onAction: () async {
+          toast.dismiss();
+          try {
+            await repo.deleteMeal(date, id);
+            toast.show('已撤销');
+          } on Object catch (e) {
+            toast.show(message(e));
+          }
+        },
+      );
     } on Object catch (e) {
       toast.show('保存失败：${_msg(e)}');
     }

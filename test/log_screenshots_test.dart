@@ -44,6 +44,8 @@ void main() {
         native.docs['android-state'] = jsonEncode(state);
       },
     );
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     await h.shot(tester, 'log-long-light');
     final list = find.byKey(ValueKey('log-list-${h.controller.date}'));
     // 训练很长也没关系：切到饮食，第一餐直接就在眼前。
@@ -73,14 +75,26 @@ void main() {
       'edit-set',
       'log-inner',
       'log-columns',
+      'log-narrow-large',
+      'log-narrow-en',
     ]) {
       testWidgets('$mode ${dark ? 'dark' : 'light'}', (tester) async {
+        final narrow = mode.startsWith('log-narrow');
+        if (narrow) {
+          tester.platformDispatcher.textScaleFactorTestValue = 1.4;
+          addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        }
         final h = await Harness.pump(
           tester,
           tab: 1,
           dark: dark,
+          locale: mode == 'log-narrow-en'
+              ? const Locale('en')
+              : const Locale('zh', 'CN'),
           size: Size(
-            mode == 'log-inner'
+            narrow
+                ? 320
+                : mode == 'log-inner'
                 ? 852
                 : mode == 'log-columns'
                 ? 1250

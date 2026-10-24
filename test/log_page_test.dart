@@ -45,7 +45,7 @@ void main() {
     tester,
   ) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
-    expect(find.text('这天还没练').hitTestable(), findsOneWidget);
+    expect(find.text('这天还没记饮食').hitTestable(), findsOneWidget);
     await tester.tap(
       find.descendant(
         of: find.byKey(const ValueKey('day-section-switch')),
@@ -69,6 +69,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('本周 1/5 天'), findsOneWidget);
     expect(find.text('这天还没练').hitTestable(), findsNothing);
+    expect(find.bySemanticsLabel('修改 俯卧撑 第 1 组'), findsNothing);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('修改 俯卧撑 第 1 组'), findsOneWidget);
     expect(
       tester
@@ -101,11 +104,11 @@ void main() {
       of: find.byKey(const ValueKey('day-section-switch')),
       matching: find.text(text),
     );
-    // 空白一天默认先看训练；两块都在条上，饮食不用往下滑。
+    // 空白一天默认饮食；训练通过切换查看。
     expect(switchLabel('训练'), findsOneWidget);
     expect(switchLabel('饮食'), findsOneWidget);
-    expect(find.text('这天还没练').hitTestable(), findsOneWidget);
-    expect(find.text('这天还没记饮食'), findsNothing);
+    expect(find.text('这天还没练'), findsNothing);
+    expect(find.text('这天还没记饮食').hitTestable(), findsOneWidget);
     // 记了一餐 → 自动切到饮食，并在条上显示数量。
     await h.controller.repo.saveMeal(
       date: h.controller.today,
@@ -149,10 +152,10 @@ void main() {
       of: find.byKey(const ValueKey('day-section-switch')),
       matching: find.text(text),
     );
-    await tester.tap(label('训练'));
+    await tester.tap(label('饮食'));
     await tester.pumpAndSettle();
     expect(effects.where((e) => e.endsWith('selectionClick')), isEmpty);
-    await tester.tap(label('饮食'));
+    await tester.tap(label('训练'));
     await tester.pumpAndSettle();
     expect(effects.where((e) => e.endsWith('selectionClick')), hasLength(1));
   });

@@ -123,7 +123,7 @@ void main() {
       expect(record['portion'], '约1勺（30g）');
       expect(record['protein'], chip.protein);
       expect(jsonEncode(h.controller.plan), planBefore);
-      await t.pump(const Duration(seconds: 4));
+      await t.pump(const Duration(seconds: 7));
     },
   );
   for (final locale in AppMessages.locales) {

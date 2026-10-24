@@ -329,6 +329,7 @@ void main() {
               'fat': .5,
             },
           ],
+          'basis': 'compare',
           'eaten_ratio': .75,
           'summary': '吃得不多',
           'confidence': '高',
@@ -336,6 +337,8 @@ void main() {
       );
       await openMeal(tester);
       await tester.tap(find.text('拍照').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('已经吃完？补拍剩余'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('相册').last);
       await tester.pumpAndSettle();
@@ -443,6 +446,115 @@ void main() {
       debugDisableShadows = true;
     },
   );
+
+  testWidgets('前后照片无法对应时，保存为吃前估算并显示确认提示', (tester) async {
+    final h = await aiHarness(
+      tester,
+      reply: {
+        'items': [
+          {'name': '米饭', 'portion': '1碗', 'kcal': 200, 'protein': 4},
+        ],
+        'basis': 'before_only',
+        'eaten_ratio': .5,
+        'warning': '照片无法对应，请确认个人份量',
+      },
+    );
+    await openMeal(tester);
+    await tester.tap(find.text('拍照').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('已经吃完？补拍剩余'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('相册').last);
+    await tester.pumpAndSettle();
+    final analyze = find.text('AI按吃前吃后对比识别');
+    await tester.ensureVisible(analyze);
+    await analyzeNow(tester, 'AI按吃前吃后对比识别');
+    expect(find.textContaining('照片无法对应，请确认个人份量'), findsOneWidget);
+    expect(find.text('按吃前照片估算，请确认份量'), findsOneWidget);
+    expect(find.text('这一餐你吃了多少？'), findsOneWidget);
+    await save(tester);
+    final meal = (saved(h)['meals'] as Map).values.single as Map;
+    expect(meal['basis'], '仅吃前估算');
+    expect(meal['kcal'], 200);
+    expect(meal['photo_phases'], ['before', 'after']);
+    await tester.pump(const Duration(seconds: 3));
+    h.controller.vision.dispose();
+  });
+
+  testWidgets('逐项折算以原始识别份量为准，连续调整不重复折半', (tester) async {
+    final h = await aiHarness(
+      tester,
+      reply: {
+        'items': [
+          {'name': '鸡蛋', 'portion': '2个', 'kcal': 140, 'protein': 12},
+          {'name': '米饭', 'portion': '1碗', 'kcal': 200, 'protein': 4},
+        ],
+      },
+    );
+    await openMeal(tester);
+    await tester.tap(find.text('拍照').first);
+    await tester.pumpAndSettle();
+    await analyzeNow(tester, 'AI识别营养');
+    await tester.ensureVisible(find.text('½'));
+    await tester.tap(find.text('½'));
+    await tester.pumpAndSettle();
+    for (final label in ['¼', '¾', '全部']) {
+      final adjust = find.text('调整这项食用量').first;
+      await tester.ensureVisible(adjust);
+      await tester.tap(adjust);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(label).hitTestable().last);
+      await tester.pumpAndSettle();
+    }
+    await save(tester);
+    final meal = (saved(h)['meals'] as Map).values.single as Map;
+    expect(meal['kcal'], 240);
+    expect(meal['protein'], 14);
+    expect(meal['items'][0]['portion'], '2个');
+    expect(meal['items'][1]['portion'], '1碗（吃了约½）');
+    await tester.pump(const Duration(seconds: 3));
+    h.controller.vision.dispose();
+  });
+
+  testWidgets('无食物结果说明原因，可继续手动记录', (tester) async {
+    final h = await aiHarness(tester, reply: {'items': []});
+    await openMeal(tester);
+    await tester.tap(find.text('拍照').first);
+    await tester.pumpAndSettle();
+    await analyzeNow(tester, 'AI识别营养');
+    expect(find.text('识别失败：模型没有识别出食物'), findsOneWidget);
+    expect(find.byType(MealSheet), findsOneWidget);
+    expect(find.text('添加食物'), findsOneWidget);
+    h.controller.vision.dispose();
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
+  });
+
+  for (final locale in [
+    const Locale('en'),
+    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+    const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+  ]) {
+    testWidgets('拍照流程在窄屏大字体下可用 $locale', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 1.4;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final h = await Harness.pump(
+        tester,
+        empty: true,
+        locale: locale,
+        size: const Size(320, 640),
+      );
+      await openMeal(tester);
+      expect(tester.takeException(), isNull);
+      final offer = find.text(h.controller.messages.text('已经吃完？补拍剩余'));
+      await tester.ensureVisible(offer);
+      await tester.tap(offer);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pump();
+    });
+  }
 
   testWidgets('keyboard keeps food fields and save reachable', (tester) async {
     final h = await Harness.pump(tester, empty: true);

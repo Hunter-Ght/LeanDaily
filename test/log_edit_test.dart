@@ -72,6 +72,8 @@ void main() {
     tester,
   ) async {
     final h = await Harness.pump(tester, tab: 1);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     final sets = h.controller.day['sets'] as List;
     final id = sets.first['id'];
     final count = sets.length;
@@ -97,6 +99,8 @@ void main() {
   });
   testWidgets('删除后撤销恢复原 ID 和记录内容，不新增同步任务', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     final row = Map<String, dynamic>.from(
       (h.controller.day['sets'] as List).first as Map,
     );
@@ -123,6 +127,8 @@ void main() {
   });
   testWidgets('again passes the shared preset shape', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     final sets = h.controller.day['sets'] as List;
     await tester.tap(find.text('再记一组').hitTestable().first);
     await settle(tester);
@@ -138,6 +144,8 @@ void main() {
   });
   testWidgets('meal opens with editId and deletion persists', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     final meal = (h.controller.meals['meals'] as List).first as Map;
     final edit = find.bySemanticsLabel('编辑${meal['meal']}');
     // 竖屏一次只看一块：切到“饮食”就能直接看到，不用在长长的训练后面往下滑。
@@ -177,6 +185,8 @@ void main() {
   });
   testWidgets('save banner undo uses stored ids', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     final ids = await h.controller.repo.addSets(
       date: h.controller.today,
       part: '胸',

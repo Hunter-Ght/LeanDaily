@@ -49,11 +49,12 @@ class _MealSheetState extends State<MealSheet> {
 
   /// 与 [_photos] 一一对应：before = 吃之前，after = 吃完后。
   List<String> _phases = [];
-  bool _afterSkipped = false;
+  bool _afterSkipped = false, _showAfter = false;
   String _basis = '', _warning = '';
 
   /// 只有吃之前的照片时，识别出的是“整份”；按用户选的吃了几成再折算。
   List<Map<String, dynamic>> _plate = [];
+  final Map<int, Map<String, dynamic>> _itemBases = {};
   String _ratio = '全部', _scaledSig = '';
   static const _ratios = {'¼': .25, '½': .5, '¾': .75, '全部': 1.0};
   static const _perPhase = 2;
@@ -87,7 +88,7 @@ class _MealSheetState extends State<MealSheet> {
     if (_initialized) return;
     _initialized = true;
     _app = context.app;
-    _date = _app.date;
+    _date = '${widget.preset?['date'] ?? _app.date}';
     final p = widget.preset ?? {};
     _editId = (p['editId'] ?? p['record_id']) as String?;
     _draftKey = 'android-meal-draft:${_editId ?? _date}';
@@ -362,13 +363,13 @@ class _MealSheetState extends State<MealSheet> {
             _basis = '${a['basis'] ?? ''}';
             _warning = '${a['warning'] ?? ''}';
             _plate = _plain;
+            _itemBases.clear();
+            for (final item in _items) {
+              _itemBases[item['id'] as int] = Map.of(item);
+            }
             _ratio = '全部';
             _scaledSig = _analysisSig;
-            _summary = [
-              if ('${a['summary'] ?? ''}'.isNotEmpty) '${a['summary']}',
-              if ('${a['confidence'] ?? ''}'.isNotEmpty)
-                '可信度 ${a['confidence']}',
-            ].join(' · ');
+            _summary = '${a['summary'] ?? ''}';
             _analyzing = false;
             _job = '';
             _phase = '';
@@ -427,7 +428,37 @@ class _MealSheetState extends State<MealSheet> {
               k: _scale(it[k], r, whole: k == 'kcal'),
           }),
       ];
+      _itemBases.clear();
+      for (var i = 0; i < _items.length; i++) {
+        _itemBases[_items[i]['id'] as int] = Map.of(_plate[i]);
+      }
       _scaledSig = _analysisSig = _sig(_plain);
+    });
+  }
+
+  Future<void> _itemRatio(Map<String, dynamic> item) async {
+    final id = item['id'] as int;
+    final base = _itemBases.putIfAbsent(id, () => Map.of(item));
+    final choice = await showActionMenu(
+      context,
+      message: '${item['name']}',
+      actions: [
+        for (final label in _ratios.keys) MenuAction(id: label, label: label),
+      ],
+    );
+    if (!mounted || choice == null || !_items.contains(item)) return;
+    final ratio = _ratios[choice.id]!;
+    _change(() {
+      item.addAll({
+        'portion': ratio == 1
+            ? base['portion']
+            : '${base['portion']}（吃了约${choice.id}）',
+        for (final key in ['kcal', 'protein', 'carbs', 'fat'])
+          key: _scale(base[key], ratio, whole: key == 'kcal'),
+      });
+      _analysisSig = _sig(_plain);
+      // A whole-meal ratio no longer describes independently adjusted foods.
+      _scaledSig = '';
     });
   }
 
@@ -617,15 +648,39 @@ class _MealSheetState extends State<MealSheet> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      _phaseBlock(records.photoPhaseBefore, '开吃前', '先拍这一张'),
-                      const SizedBox(height: 12),
                       _phaseBlock(
-                        records.photoPhaseAfter,
-                        '吃完后',
-                        _count(records.photoPhaseBefore) == 0
-                            ? '吃完再来补拍'
-                            : '拍一张，算得更准；不拍也行',
-                        skip: true,
+                        records.photoPhaseBefore,
+                        '拍下这一餐',
+                        '开吃前拍照，也可从相册选择',
+                      ),
+                      const SizedBox(height: 12),
+                      FadeSwitcher(
+                        child:
+                            _editId != null ||
+                                _showAfter ||
+                                _count(records.photoPhaseAfter) > 0
+                            ? KeyedSubtree(
+                                key: const ValueKey('after-photos'),
+                                child: _phaseBlock(
+                                  records.photoPhaseAfter,
+                                  '吃完后',
+                                  '补拍剩余，估算实际吃下的份量',
+                                  skip: true,
+                                ),
+                              )
+                            : SheetButton(
+                                '已经吃完？补拍剩余',
+                                () => setState(() => _showAfter = true),
+                                key: const ValueKey('offer-after-photos'),
+                              ),
+                      ),
+                      _label('补充，可选'),
+                      SheetInput(
+                        value: _note,
+                        onChanged: (s) => _change(() => _note = s),
+                        label: '补充',
+                        placeholder: '例如米饭半碗、饮料无糖、两人分着吃',
+                        lines: 2,
                       ),
                       if (!_enabled)
                         Padding(
@@ -704,8 +759,8 @@ class _MealSheetState extends State<MealSheet> {
                             : const SizedBox.shrink(),
                       ),
                       Reveal(
-                        visible: _summary.isNotEmpty,
-                        child: _summary.isNotEmpty
+                        visible: _summary.isNotEmpty || _warning.isNotEmpty,
+                        child: _summary.isNotEmpty || _warning.isNotEmpty
                             ? Container(
                                 margin: const EdgeInsets.only(top: 12),
                                 padding: const EdgeInsets.symmetric(
@@ -719,7 +774,9 @@ class _MealSheetState extends State<MealSheet> {
                                 child: LText(
                                   [
                                     _summary,
-                                    if (_warning.isNotEmpty) '提示：$_warning',
+                                    if (_warning.isNotEmpty)
+                                      AppMessages.of(context)
+                                          .text('提示：$_warning'),
                                   ].join('\n'),
                                   localize: false,
                                   style: TextStyle(color: p.text, fontSize: 15),
@@ -733,6 +790,16 @@ class _MealSheetState extends State<MealSheet> {
                             ? _ratioRow()
                             : const SizedBox.shrink(),
                       ),
+                      if (_items.isNotEmpty && _basis.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: LText(
+                            _basis == records.basisCompare
+                                ? '按前后对比估算'
+                                : '按吃前照片估算，请确认份量',
+                            style: AppText.hint(p),
+                          ),
+                        ),
                       if (_items.isNotEmpty) _totals(),
                       MotionList(
                         children: [
@@ -745,24 +812,6 @@ class _MealSheetState extends State<MealSheet> {
                         '添加食物',
                         () => _change(() => _items.add(_item())),
                         icon: 'plus',
-                      ),
-                      _label('补充，可选'),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: p.card,
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: SheetInput(
-                          value: _note,
-                          onChanged: (s) => _change(() => _note = s),
-                          label: '补充',
-                          placeholder: '例如米饭只吃了一半',
-                          lines: 2,
-                        ),
                       ),
                     ],
                   ),
@@ -793,15 +842,21 @@ class _MealSheetState extends State<MealSheet> {
         children: [
           Row(
             children: [
-              LText(
-                title,
-                style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(width: 8),
               Expanded(
-                child: LText(
-                  skipped ? '已标记吃光了，不用补拍' : hint,
-                  style: AppText.hint(p),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    LText(
+                      title,
+                      style: AppText.body(p)
+                          .copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 3),
+                    LText(
+                      skipped ? '已标记吃光了，不用补拍' : hint,
+                      style: AppText.hint(p),
+                    ),
+                  ],
                 ),
               ),
               if (skip && _count(phase) == 0)
@@ -813,7 +868,7 @@ class _MealSheetState extends State<MealSheet> {
                     haptic: true,
                     onTap: () => _change(() => _afterSkipped = !_afterSkipped),
                     child: Container(
-                      constraints: const BoxConstraints(minHeight: 36),
+                      constraints: const BoxConstraints(minHeight: 44),
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -1056,7 +1111,10 @@ class _MealSheetState extends State<MealSheet> {
           Expanded(
             child: SheetInput(
               value: '${it[key]}',
-              onChanged: (s) => _change(() => it[key] = s),
+              onChanged: (s) => _change(() {
+                it[key] = s;
+                _itemBases.remove(it['id']);
+              }),
               label: label,
               placeholder: placeholder,
               numeric: numeric,
@@ -1108,6 +1166,8 @@ class _MealSheetState extends State<MealSheet> {
             ),
           ),
           field('portion', '份量', placeholder: '如 200g'),
+          if (_hasAnalysis && _basis == records.basisBeforeOnly)
+            SheetButton('调整这项食用量', () => _itemRatio(it)),
           Row(
             children: [
               Expanded(child: field('kcal', '热量', numeric: true)),

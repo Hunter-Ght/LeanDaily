@@ -289,6 +289,8 @@ void main() {
     'log row deletion and restoration animate without eager history layout',
     (tester) async {
       final h = await Harness.pump(tester, tab: 1);
+      h.controller.showRecordSection('训练');
+      await tester.pumpAndSettle();
       final rows = jsonRows(h.controller.day['sets']);
       final first = rows.first;
       await h.controller.repo.deleteSets(h.controller.date, ['${first['id']}']);

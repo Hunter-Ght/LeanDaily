@@ -16,8 +16,9 @@ import '../kit/photo_image.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import 'set_display.dart';
+import 'meal_actions.dart';
 
-/// 训练 | 饮食 切换条：固定在日历下方、列表上方，长长的训练也不用往下滑找饮食。
+/// 饮食 | 训练 切换条：固定在日历下方、列表上方，长长的训练也不用往下滑找饮食。
 /// 各带一个数量，一眼知道这天记了多少。
 class DaySectionSwitch extends StatelessWidget {
   const DaySectionSwitch({
@@ -92,7 +93,7 @@ class DaySectionSwitch extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
-          children: [cell('训练', sets, train), cell('饮食', meals, !train)],
+          children: [cell('饮食', meals, !train), cell('训练', sets, train)],
         ),
       ),
     );
@@ -108,7 +109,7 @@ class DayCards extends StatelessWidget {
     this.scrollController,
     this.bottomPadding = 78,
     this.lastAdd = const [],
-    this.shown = '训练',
+    this.shown = '饮食',
   });
 
   /// 竖屏下一次只看一块：'训练' 或 '饮食'（切换条在列表上方，见 [DaySectionSwitch]）。
@@ -254,11 +255,22 @@ class DayCards extends StatelessWidget {
             ),
           ),
       ] else ...[
+        (
+          key: const ValueKey('meal-actions'),
+          builder: (_) => padded(MealActions(date: iso)),
+        ),
         if (meals.isEmpty)
           (
             key: const ValueKey('empty-meal'),
             builder: (_) => padded(
-              empty(c, '这天还没记饮食', '记饮食', () => openQuickFood(c, date: iso)),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: LText(
+                  '这天还没记饮食',
+                  textAlign: TextAlign.center,
+                  style: AppText.hint(c.pal),
+                ),
+              ),
             ),
           ),
         for (final meal in meals)
@@ -266,18 +278,6 @@ class DayCards extends StatelessWidget {
             key: ValueKey('meal-${meal['record_id']}'),
             builder: (_) => padded(
               mealCard(c, meal, firstCard: identical(meal, meals.first)),
-            ),
-          ),
-        if (meals.isNotEmpty)
-          (
-            key: const ValueKey('add-meal'),
-            builder: (_) => padded(
-              action(
-                c,
-                '记饮食',
-                () => openQuickFood(c, date: iso),
-                centered: true,
-              ),
             ),
           ),
       ],
@@ -850,7 +850,53 @@ class DayCards extends StatelessWidget {
                         ],
                         if (f.jsNumber(m['photos']) > 0)
                           meta(c, '· ${m['photos']} 张'),
-                        if (records.needsAfterPhoto(m)) tag(c, '待补吃完后照片'),
+                        if (records.needsAfterPhoto(m)) ...[
+                          tap(
+                            c,
+                            '我吃光了',
+                            () async {
+                              final app = c.app;
+                              try {
+                                await app.repo.finishMeal(
+                                  iso,
+                                  '${m['record_id']}',
+                                );
+                                app.haptics.saved();
+                                app.toast.show('已标记吃光了');
+                              } on Object catch (e) {
+                                app.toast.show(AppController.message(e));
+                              }
+                            },
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: LText(
+                                '我吃光了',
+                                style: AppText.body(c.pal)
+                                    .copyWith(color: c.pal.tint),
+                              ),
+                            ),
+                          ),
+                          tap(
+                            c,
+                            '补拍剩余',
+                            () => openMealSheet(
+                              c,
+                              preset: {
+                                ...m,
+                                'date': iso,
+                                'editId': m['record_id'],
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: LText(
+                                '补拍剩余',
+                                style: AppText.body(c.pal)
+                                    .copyWith(color: c.pal.tint),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

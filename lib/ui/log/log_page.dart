@@ -28,8 +28,6 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   AppController? controller;
   Set<String> knownIds = {}, knownMealIds = {};
 
-  /// 竖屏当天内容显示哪一块：训练 / 饮食。空 = 还没选，按当天有什么自动定。
-  String _section = '';
   List<Map<String, dynamic>> lastAdd = [];
   @override
   void didChangeDependencies() {
@@ -49,9 +47,11 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   };
 
   void recordsChanged() {
-    // 刚记了饮食就切到饮食，刚记了训练就切回训练，保存后立刻看到结果。
+    // 饮食保存后显示饮食；全屏训练新增记录不改变用户正在查看的块。
     final meals = _mealIds(controller!);
-    if (meals.difference(knownMealIds).isNotEmpty) _section = '饮食';
+    if (meals.difference(knownMealIds).isNotEmpty) {
+      controller!.recordSection = '饮食';
+    }
     knownMealIds = meals;
     final rows = controller!.repo.state['sets'] as Map;
     final added = <Map<String, dynamic>>[
@@ -63,7 +63,6 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     knownIds = rows.keys.cast<String>().toSet();
     if (added.isNotEmpty) {
       lastAdd = added;
-      _section = '训练';
     } else if (lastAdd.any(
       (s) => (rows[s['id']] as Map?)?['deleted'] == true,
     )) {
@@ -73,11 +72,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   }
 
   String get iso => context.app.date;
-  String get section => _section.isNotEmpty
-      ? _section
-      : context.app.repo.hasTrain(iso) || !context.app.repo.hasMeal(iso)
-      ? '训练'
-      : '饮食';
+  String get section => context.app.recordSection;
   late final AnimationController expansion = AnimationController.unbounded(
     vsync: this,
   );
@@ -234,6 +229,13 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     onDragEnd: releaseCalendar,
   );
 
+  Widget sectionSwitch() => DaySectionSwitch(
+    train: section == '训练',
+    sets: (context.app.repo.day(iso)['sets'] as List?)?.length ?? 0,
+    meals: (context.app.repo.meals(iso)['meals'] as List).length,
+    onSection: context.app.showRecordSection,
+  );
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([context.app, context.app.rest]),
@@ -244,15 +246,11 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
             screen.width >= Metrics.twoBreakpoint &&
             screen.height >= Metrics.minTallForWide;
         final top = Metrics.navBarHeight + MediaQuery.paddingOf(context).top;
-        final columns =
-            screen.width >= Metrics.colsBreakpoint &&
-            screen.height >= Metrics.minTallForWide;
         final dayContent = KeyedSubtree(
           key: const ValueKey('day-pager'),
           child: DayCards(
             key: PageStorageKey(iso),
             iso: iso,
-            columns: columns,
             scrollController: scroll,
             shown: section,
             lastAdd: lastAdd.isNotEmpty && lastAdd.first['date'] == iso
@@ -279,7 +277,14 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
-                    Expanded(child: dayContent),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          sectionSwitch(),
+                          Expanded(child: dayContent),
+                        ],
+                      ),
+                    ),
                   ],
                 )
               : AnimatedBuilder(
@@ -316,18 +321,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        if (!columns)
-                          DaySectionSwitch(
-                            train: section != '饮食',
-                            sets:
-                                (context.app.repo.day(iso)['sets'] as List?)
-                                    ?.length ??
-                                0,
-                            meals:
-                                (context.app.repo.meals(iso)['meals'] as List)
-                                    .length,
-                            onSection: (v) => setState(() => _section = v),
-                          ),
+                        sectionSwitch(),
                         Expanded(child: child!),
                       ],
                     ),

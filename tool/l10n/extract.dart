@@ -8,6 +8,20 @@ import 'package:analyzer/dart/ast/visitor.dart';
 class Extract extends RecursiveAstVisitor<void> {
   final values = <String>{};
   @override
+  void visitVariableDeclaration(VariableDeclaration node) {
+    // Model instructions are not interface messages.
+    if (const {
+      '_prompt',
+      '_promptRules',
+      '_promptBeforeOnly',
+      '_promptCompare',
+    }.contains(node.name.lexeme)) {
+      return;
+    }
+    super.visitVariableDeclaration(node);
+  }
+
+  @override
   void visitSimpleStringLiteral(SimpleStringLiteral node) {
     if (RegExp(r'[\u4e00-\u9fff]').hasMatch(node.value)) {
       try {

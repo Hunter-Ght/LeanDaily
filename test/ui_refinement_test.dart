@@ -36,6 +36,8 @@ void main() {
         native.docs['android-state'] = jsonEncode(state);
       },
     );
+    h.controller.showRecordSection('训练');
+    await tester.pumpAndSettle();
     ScrollPosition position() => tester
         .state<ScrollableState>(
           find.descendant(

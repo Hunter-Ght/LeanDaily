@@ -536,6 +536,8 @@ void main() {
         n.docs['android-state'] = jsonEncode(state);
       },
     );
+    h.controller.showRecordSection('训练');
+    await settle(t);
     final original = jsonRows(h.controller.day['sets']).first;
     Future<void> edit() async {
       final row = jsonRows(h.controller.day['sets'])
@@ -677,6 +679,7 @@ void main() {
       await settle(t);
       h.controller.rest.clear();
       h.controller.setTab(1);
+      h.controller.showRecordSection('训练');
       await settle(t);
       expect(find.text('还能做 3+ 次'), findsOneWidget);
       expect(find.textContaining('有点痛'), findsOneWidget);
