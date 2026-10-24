@@ -1,7 +1,7 @@
 name: leandaily
 description: "薄肌日课 LeanDaily：按你的身材定制的薄肌训练与饮食记录 App。免费、开源、无广告，记录默认存本机，AI 识别需另行授权。"
 publish_to: 'none'
-version: 2.3.5+30
+version: 2.3.5+31
 
 environment:
   sdk: ^3.13.5

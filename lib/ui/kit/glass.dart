@@ -25,37 +25,84 @@ class GlassSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.pal;
     final shape = BorderRadius.circular(radius);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: shape,
-        boxShadow: shadow
-            ? [
-                BoxShadow(
-                  color: p.shadow,
-                  offset: const Offset(0, 8),
-                  blurRadius: 22,
-                ),
-              ]
-            : null,
-      ),
-      child: ClipRRect(
-        borderRadius: shape,
-        child: BackdropFilter(
-          enabled: RenderEffects.liveBlur,
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: CustomPaint(
-            foregroundPainter: _GlassEdge(radius, p),
-            child: ColoredBox(
-              color: RenderEffects.liveBlur
-                  ? p.glass
-                  : Color.alphaBlend(p.glass, p.bg),
-              child: child,
+    final live = RenderEffects.liveBlur;
+    final face = Color.alphaBlend(p.glass, p.bg);
+    return CustomPaint(
+      // 阴影只画在外面：面是半透明时，垫在下面会把玻璃弄脏。
+      painter: shadow ? _OutsideShadow(radius, p.shadow) : null,
+      child: DecoratedBox(
+        decoration: BoxDecoration(borderRadius: shape),
+        child: ClipRRect(
+          borderRadius: shape,
+          child: BackdropFilter(
+            enabled: live,
+            filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+            child: CustomPaint(
+              foregroundPainter: _GlassEdge(radius, p),
+              child: live
+                  ? ColoredBox(color: p.glass, child: child)
+                  : DecoratedBox(
+                      // 没有模糊时用不透明的面：上沿略亮一点，有一点“玻璃”的层次，只是一次渐变填充。
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color.alphaBlend(
+                              p.glassHi.withValues(
+                                alpha: p.bg.computeLuminance() < .5
+                                    ? 0.06
+                                    : 0.3,
+                              ),
+                              face,
+                            ),
+                            face,
+                          ],
+                        ),
+                      ),
+                      child: child,
+                    ),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+class _OutsideShadow extends CustomPainter {
+  _OutsideShadow(this.radius, this.color);
+  final double radius;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rr = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      Radius.circular(radius),
+    );
+    canvas.save();
+    canvas.clipPath(
+      Path.combine(
+        PathOperation.difference,
+        Path()..addRect(
+          Rect.fromLTWH(-80, -80, size.width + 160, size.height + 200),
+        ),
+        Path()..addRRect(rr),
+      ),
+    );
+    canvas.drawRRect(
+      rr.shift(const Offset(0, 8)),
+      Paint()
+        ..color = color
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 11),
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_OutsideShadow old) =>
+      old.radius != radius || old.color != color;
 }
 
 class _GlassEdge extends CustomPainter {

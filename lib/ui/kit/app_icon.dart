@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:path_drawing/path_drawing.dart';
 
 import '../../theme/tokens.dart';
+import 'nav_icon.dart';
 
 /// 线条图标。图形来自 Web 版 Icon.svelte（导出到 assets/icons.json）。
 /// 少数图标（more / rings / 实心 train、meal、chart）在 Web 版里是单独画的，这里同样处理。
@@ -60,12 +61,13 @@ class AppIcon extends StatelessWidget {
       for (final solid in [false, true]) {
         final recorder = ui.PictureRecorder();
         final canvas = Canvas(recorder)..scale(3);
-        _IconPainter(
+        paintNavIcon(
+          canvas,
+          25,
           name,
           AppPalette.light.text, // UIKit templates use only the alpha channel.
-          solid,
-          _paths[name] ?? const [],
-        ).paint(canvas, const Size.square(25));
+          solid: solid,
+        );
         final picture = recorder.endRecording();
         final image = await picture.toImage(75, 75);
         try {

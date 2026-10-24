@@ -13,6 +13,7 @@ import '../theme/tokens.dart';
 import '../ui/kit/app_icon.dart';
 import '../ui/kit/glass.dart';
 import '../ui/kit/ios_dock_glass.dart';
+import '../ui/kit/nav_icon.dart';
 import '../ui/kit/pressable.dart';
 import '../ui/kit/rest_bar.dart';
 import '../ui/kit/render_effects.dart';
@@ -122,10 +123,32 @@ class _Chrome extends StatelessWidget {
           right: 0,
           child: _NavButtons(tab: app.tab),
         ),
+        // Android 没有实时模糊：栏后面铺一条短渐变，滚动内容是渐隐进栏里，而不是被硬切。
+        if (!rail && !RenderEffects.liveBlur)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: dockBottom + 60 + 28,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      context.pal.bg.withValues(alpha: 0),
+                      context.pal.bg.withValues(alpha: 0.9),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         // 休息条
         Positioned(
-          left: rail ? railW + 12 : 12,
-          right: rail ? null : 12,
+          left: rail ? railW + 12 : Metrics.pagePad,
+          right: rail ? null : Metrics.pagePad,
           width: rail ? math.min(480.0, box.maxWidth - railW - 36) : null,
           bottom: rail ? 16 : dockBottom + 56 + 8 + 8,
           child: const RestBar(),
@@ -147,7 +170,8 @@ class _Chrome extends StatelessWidget {
             right: 0,
             child: Center(
               child: SizedBox(
-                width: math.min(360.0, box.maxWidth - 20),
+                // 栏的左右边和页面卡片边（pagePad）对齐。
+                width: math.min(420.0, box.maxWidth - Metrics.pagePad * 2),
                 child: Dock(vertical: false, tab: app.tab, onTab: app.setTab),
               ),
             ),
@@ -311,6 +335,8 @@ class Dock extends StatefulWidget {
 class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
   static const _labels = ['今日', '记录', '进度', '我的'];
   static const _icons = ['flame', 'train', 'rings', 'me'];
+  // 外框与选中块四周同样留 4，圆角同心（外 30 / 内 26；竖条 32 / 28）。
+  static const _inset = 4.0, _gap = 2.0;
   late final AnimationController _pos = AnimationController.unbounded(
     vsync: this,
     value: widget.tab.toDouble(),
@@ -348,52 +374,71 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final p = context.pal;
     final vertical = widget.vertical;
-    final itemH = vertical ? 60.0 : 48.0;
-    const gap = 2.0;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    // 位置、尺寸按物理像素取整：宽度不是整数的手机上，图标和文字不会落在半个像素上。
+    double snap(double v) => (v * dpr).round() / dpr;
     final content = Padding(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.all(_inset),
       child: LayoutBuilder(
         builder: (context, box) {
-          final itemW = vertical ? box.maxWidth : box.maxWidth / 4;
-          final step = vertical ? itemH + gap : itemW;
+          final itemH = vertical ? 60.0 : 52.0;
+          final itemW = vertical ? box.maxWidth : snap(box.maxWidth / 4);
+          final step = vertical ? itemH + _gap : itemW;
+          final pillW = vertical ? itemW : snap(itemW);
+          final total = step * 3 + (vertical ? itemH : pillW);
+          Widget item(int i) => Positioned(
+            left: vertical ? 0 : snap(i * step),
+            top: vertical ? snap(i * step) : 0,
+            width: itemW,
+            height: itemH,
+            child: Pressable(
+              scale: 0.94,
+              haptic: widget.tab != i,
+              onTap: () => widget.onTab(i),
+              child: AnimatedBuilder(
+                animation: _pos,
+                // 离选中块越近越“亮”：颜色、实心程度跟着弹簧走，不抢跑。
+                builder: (context, _) => _DockItem(
+                  icon: _icons[i],
+                  label: _labels[i],
+                  t: (1 - (_pos.value - i).abs()).clamp(0.0, 1.0),
+                  settled: widget.tab == i,
+                  updateDot: i == 3 && context.app.hasUnseenUpdate,
+                ),
+              ),
+            ),
+          );
           return SizedBox(
-            height: vertical ? itemH * 4 + gap * 3 : itemH + 4,
+            height: vertical ? itemH * 4 + _gap * 3 : itemH,
             child: Stack(
               children: [
                 AnimatedBuilder(
                   animation: _pos,
-                  builder: (context, _) => Positioned(
-                    left: vertical ? 0 : _pos.value * step,
-                    // Split the horizontal container's extra 4pt evenly.
-                    top: vertical ? _pos.value * step : 2,
-                    width: itemW,
-                    height: itemH,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: p.tintSoft,
-                        borderRadius: BorderRadius.circular(vertical ? 28 : 24),
+                  builder: (context, _) {
+                    // 移动得越快，选中块被拉得越长（只是尺寸变化，不占性能）；不超出外框内沿。
+                    final stretch =
+                        1 + 0.05 * _pos.velocity.abs().clamp(0.0, 3.0);
+                    final len = (vertical ? itemH : pillW) * stretch;
+                    final center =
+                        _pos.value * step + (vertical ? itemH : pillW) / 2;
+                    final start = (center - len / 2).clamp(0.0, total - len);
+                    return Positioned(
+                      left: vertical ? 0 : start,
+                      top: vertical ? start : 0,
+                      width: vertical ? itemW : len,
+                      height: vertical ? len : itemH,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: p.tintSoft,
+                          borderRadius: BorderRadius.circular(
+                            vertical ? 28 : 26,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                for (var i = 0; i < 4; i++)
-                  Positioned(
-                    left: vertical ? 0 : i * step,
-                    top: vertical ? i * step : 2,
-                    width: itemW,
-                    height: itemH,
-                    child: Pressable(
-                      scale: 0.94,
-                      haptic: widget.tab != i,
-                      onTap: () => widget.onTab(i),
-                      child: _DockItem(
-                        icon: _icons[i],
-                        label: _labels[i],
-                        selected: widget.tab == i,
-                        updateDot: i == 3 && context.app.hasUnseenUpdate,
-                      ),
-                    ),
-                  ),
+                for (var i = 0; i < 4; i++) item(i),
               ],
             ),
           );
@@ -409,7 +454,7 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
             tint: p.tint,
             dark: MediaQuery.platformBrightnessOf(context) == Brightness.dark,
             updateDot: context.app.hasUnseenUpdate,
-            child: content,
+            child: RepaintBoundary(child: content),
           );
   }
 }
@@ -418,21 +463,25 @@ class _DockItem extends StatelessWidget {
   const _DockItem({
     required this.icon,
     required this.label,
-    required this.selected,
+    required this.t,
+    required this.settled,
     this.updateDot = false,
   });
   final bool updateDot;
   final String icon;
   final String label;
-  final bool selected;
+
+  /// 0（未选中）~1（选中块正好在这里）。
+  final double t;
+  final bool settled;
 
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
-    final color = selected ? p.tint : p.secondary;
+    final color = Color.lerp(p.secondary, p.tint, t)!;
     return Semantics(
       button: true,
-      selected: selected,
+      selected: settled,
       label: AppMessages.of(context).text(label),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -440,23 +489,30 @@ class _DockItem extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              AppIcon(icon, color: color, size: 25, solid: selected),
+              NavIcon(icon, from: p.secondary, to: p.tint, t: t),
               if (updateDot)
                 const Positioned(right: -6, top: -3, child: UpdateDot()),
             ],
           ),
-          const SizedBox(height: 1),
-          Flexible(
-            child: LText(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 12,
-                letterSpacing: 0.1,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                color: color,
-              ),
+          const SizedBox(height: 2),
+          // 固定行高和字重：换成 OPPO / 鸿蒙 / 苹方，文字基线都在同一处，选中也不会变宽。
+          LText(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.clip,
+            strutStyle: const StrutStyle(
+              fontSize: 12,
+              height: 1.2,
+              forceStrutHeight: true,
+              leadingDistribution: TextLeadingDistribution.even,
+            ),
+            style: TextStyle(
+              fontSize: 12,
+              height: 1.2,
+              leadingDistribution: TextLeadingDistribution.even,
+              letterSpacing: 0.1,
+              fontWeight: FontWeight.w500,
+              color: color,
             ),
           ),
         ],
