@@ -13,14 +13,15 @@ export const SPECS = {
     spheres: [[0, 1.12, 0.12, 0.2, 1.3], [0, 1.0, 0.13, 0.17, 1.2], [0, 1.25, 0.11, 0.15, 1]],
     camera: { auto: true, yaw: 64, dist: 1.85, target: [0, 0.2, -0.12], fov: 28 },
   },
-  // 反向卷腹：双腿屈髋屈膝抬起，下腹把骨盆卷离地面，膝盖朝胸口靠；肩背和手臂贴地。
+  // 反向卷腹：仰卧，大腿竖直、小腿平行地面（膝约 90°）；下腹发力把骨盆卷离地面，
+  // 膝盖朝胸口靠，整条腿（大腿带着小腿）绕髋转过去，脚尖跟着抬高，肩背和手臂始终贴地。
   'reverse-crunch': {
     mode: 'supineX', shoulder: [0.1, -0.55], arms: 'flat', torso: 0.5,
-    base: { hip: 0.12, neck: 0, hipFlex: 92, knee: 95, spread: 0.03 },
+    base: { hip: 0.12, neck: 0, hipFlex: 90, knee: 92, spread: 0.03 },
     keys: [
       [0, {}, 0.25, '起始'], [0.4, {}, 0.8, '发力'],
-      [1.4, { hip: 0.27, hipFlex: 118, knee: 122 }, 1, '顶峰'],
-      [2.3, { hip: 0.27, hipFlex: 118, knee: 122 }, 0.6, '下放'],
+      [1.5, { hip: 0.24, hipFlex: 128, knee: 95 }, 1, '顶峰'],
+      [2.4, { hip: 0.24, hipFlex: 128, knee: 95 }, 0.6, '下放'],
       [3.8],
     ],
     glow: { pelvis: [1, 0], spine_01: [1, 0] },

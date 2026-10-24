@@ -342,9 +342,9 @@
   },
   "db-curl": {
    "file": "assets/motion3d/db-curl.webp",
-   "frames": 81,
+   "frames": 79,
    "periodMs": 3800,
-   "peakMs": 1350,
+   "peakMs": 1450,
    "phases": [
     [
      0,
@@ -355,11 +355,11 @@
      "发力"
     ],
     [
-     1300,
+     1400,
      "顶峰"
     ],
     [
-     1700,
+     1800,
      "下放"
     ]
    ]
@@ -1148,7 +1148,7 @@
    "file": "assets/motion3d/reverse-crunch.webp",
    "frames": 71,
    "periodMs": 3800,
-   "peakMs": 1450,
+   "peakMs": 1550,
    "phases": [
     [
      0,
@@ -1159,11 +1159,11 @@
      "发力"
     ],
     [
-     1400,
+     1500,
      "顶峰"
     ],
     [
-     2300,
+     2400,
      "下放"
     ]
    ]

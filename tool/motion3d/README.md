@@ -63,6 +63,15 @@ specs_*.js（动作数据）→ scene.html（three.js 场景）→ render.cjs（
 - `facedown`（俯卧在地或凳上）：`h` 骨盆高度、`hipZ`、`arch` 后伸抬胸、`flex` 前屈下垂、`legLift` 抬腿，手臂 IK 指向前方（`hx/hy/hz`）。
 - 现有模式放不下的，在 `scene.html` 里**自己家族的区域**写 `EXTRA_MODES.名字 = (spec, v) => {...}`，可以用的工具函数：`wpos wquat setWorldPos setWorldQuat rotWorld aim twoBone palm`、常量 `bindPos bindQuat L bones bind X V rad`。**不要改共用的 poseStand/poseProne 等**；确实必须改时改得最小，并在报告里说明。
 
+### 握拳与哑铃跟手（`fist`）
+
+手持哑铃的动作写 `fist: { mode, deg }`：姿势摆完后手指顺着前臂、四指握成拳，哑铃握把穿过拳心并跟着手转（不写 `fist` 则沿用 `bellAxis` 的固定方向、手保持平伸）。
+
+- `mode:'curl'`：掌心初始朝身体内侧（中立握，握把前后），参数 `roll`（度）绕前臂旋后，掌心往肩的方向翻（弯举）；
+- `mode:'frontal'`：握把始终前后，手臂在左右平面里摆（侧平举、飞鸟）；
+- `deg` 卷指角度（默认 75），`at` 握把离手腕的距离（默认 0.08），`palm` 向掌心偏移（默认 0.02）。
+- 手臂用 `arms:'front'`（`arm`/`el` 角度，肘位置固定）比 IK 更容易让上臂不动。
+
 ### 道具
 
 - 哑铃：`props:'dumbbells'`（一对，`bellAxis:'x'|'y'|'z'` 握把方向，默认 z）、`props:'goblet'`（一个竖着托在两手之间）、`oneBell:'l'|'r'`（只画一只）。

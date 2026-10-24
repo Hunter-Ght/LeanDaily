@@ -345,6 +345,44 @@ function poseSupine(spec, v) {
   }
 }
 
+// ---------------------------------------------------------------- 握拳（spec.fist）
+// 姿势摆好之后再接管手：手指顺着前臂方向，掌心朝 n；四指握成拳，哑铃握把穿过拳心、跟着手一起转。
+// spec.fist = { mode:'curl'|'frontal', deg: 卷指角度, at: 握把离手腕的距离, palm: 向掌心偏移 }
+//  · 'curl'：n 是“掌心朝身体内侧”绕前臂转 v.roll 度（正数 = 旋后，掌心往肩的方向翻），弯举这类；
+//  · 'frontal'：握把始终沿前后（z），手臂在左右平面里摆（侧平举、飞鸟），掌心朝摆动的内侧。
+const handInfo = {};
+function handFrame(s, f, n) {
+  const k = s === 'l' ? 1 : -1;
+  const basis = (a, b) => new THREE.Matrix4().makeBasis(a, b, V().crossVectors(a, b));
+  const fn = f.clone().normalize();
+  const nn = n.clone().sub(fn.clone().multiplyScalar(n.dot(fn))).normalize();
+  const R = new THREE.Matrix4().multiplyMatrices(basis(fn, nn), basis(V(k, 0, 0), V(0, -1, 0)).transpose());
+  setWorldQuat(bones['hand_' + s], new THREE.Quaternion().setFromRotationMatrix(R).multiply(bindQuat['hand_' + s].clone()));
+  return { f: fn, n: nn };
+}
+function applyFist(spec, v) {
+  const F = spec.fist;
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hb = bones['hand_' + s];
+    const f = wpos(hb).sub(wpos(bones['lowerarm_' + s])).normalize();
+    let n;
+    if (F.mode === 'frontal') n = V().crossVectors(f, V(0, 0, 1)).multiplyScalar(k);
+    else {
+      const inward = V(-k, 0, 0);
+      n = inward.sub(f.clone().multiplyScalar(inward.dot(f))).normalize().applyAxisAngle(f, rad(-k * (v.roll || 0)));
+    }
+    const fr = handFrame(s, f, n);
+    const rel = wquat(hb).multiply(bindQuat['hand_' + s].clone().invert());
+    const axis = V(0, 0, -k).applyQuaternion(rel);
+    const deg = F.deg ?? 75;
+    for (const name of ['index', 'middle', 'ring', 'pinky']) {
+      [0.9, 1, 0.8].forEach((w, i) => rotWorld(bones[`${name}_0${i + 1}_${s}`], axis, deg * w));
+    }
+    handInfo[s] = { ...fr, handle: V(0, 0, 1).applyQuaternion(rel), pos: wpos(hb).add(fr.f.clone().multiplyScalar(F.at ?? 0.08)).add(fr.n.clone().multiplyScalar(F.palm ?? 0.02)) };
+  }
+}
+
 // ---------------------------------------------------------------- 各家族的扩展姿势（并行开发：各写各的区域，互不碰）
 // 新增姿势模式写成 EXTRA_MODES.<名字> = (spec, v) => { ... }，spec.mode 取这个名字即可。
 const EXTRA_MODES = {};
@@ -925,6 +963,13 @@ function placeBells() {
     bells.l.scale.setScalar(1.55);
     return;
   }
+  if (spec.fist) {
+    for (const s of ['l', 'r']) {
+      bells[s].position.copy(handInfo[s].pos);
+      bells[s].quaternion.setFromUnitVectors(V(0, 1, 0), handInfo[s].handle);
+    }
+    return;
+  }
   for (const s of ['l', 'r']) {
     const hand = wpos(bones['hand_' + s]), mid = wpos(bones['middle_01_' + s]);
     const grip = hand.clone().add(mid.sub(hand).multiplyScalar(0.8)).add(V(0, -0.025, 0));
@@ -948,6 +993,7 @@ function applyPose(t) {
   rig.position.set(0, 0, 0);
   ({ prone: poseProne, supine: poseSupine, stand: poseStand, under: poseUnder, facedown: poseFacedown, ...EXTRA_MODES })[spec.mode](spec, v);
   root.updateMatrixWorld(true);
+  if (spec.fist) applyFist(spec, v);
   placeBells();
   updateProps();
   if (spec.tilt) {
