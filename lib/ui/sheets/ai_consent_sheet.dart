@@ -59,7 +59,26 @@ class AiConsentSheet extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         LText(
-          '接收服务：${aiProviderName(settings)}\n接收地址：${AiConsent.destination(settings)}\n将发送你选择的饮食照片、餐次和补充说明，用于估算营养；不会发送身体资料或训练记录。该服务可能按自己的隐私政策保存数据，也可能收费。只在你同意并点击识别后发送；更换接口地址或协议会重新询问。\n\n${AppMessages.of(context).text(aiProviderDisclosure(settings))}',
+          '接收服务：${aiProviderName(settings)}\n接收地址：${AiConsent.destination(settings)}',
+          style: TextStyle(
+            fontSize: 17,
+            height: 1.4,
+            fontWeight: FontWeight.w600,
+            color: context.pal.text,
+          ),
+        ),
+        const SizedBox(height: 12),
+        LText(
+          '发送内容：本次选择的吃前和吃后照片（如有）、餐次、补充说明（最多 300 字）和营养估算指令。API Key 用于认证；服务商还会收到 IP 地址。照片可能包含人物或位置等个人信息，请先裁剪或移除。',
+          style: TextStyle(fontSize: 15, height: 1.4, color: context.pal.text),
+        ),
+        const SizedBox(height: 12),
+        const LText('不会发送身体资料、测量数据或训练记录。'),
+        const SizedBox(height: 12),
+        const LText('每次上传前都会询问。取消不会发送；手动记餐无需 AI。授权相机或相册不代表同意发送给 AI。'),
+        const SizedBox(height: 16),
+        LText(
+          AppMessages.of(context).text(aiProviderDisclosure(settings)),
           style: TextStyle(fontSize: 15, height: 1.4, color: context.pal.text),
         ),
         const SizedBox(height: 16),

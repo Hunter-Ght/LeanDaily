@@ -3,6 +3,7 @@ import '../../config/ai_provider.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import '../kit/transitions.dart';
 
@@ -11,6 +12,8 @@ import '../../config/app_info.dart';
 import '../../core/native.dart';
 import '../../data/backup.dart' as backup;
 import '../../data/ai_consent.dart';
+import '../../data/ai_connection.dart';
+import '../../domain/records.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
@@ -42,9 +45,9 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
       final app = context.app;
       final keys = await app.settings.secrets();
       // 还没填有效接口地址时 granted 会抛错，等同于没授权过；不影响读取密钥。
-      final consented = await AiConsent(
-        app.native,
-      ).granted(app.settings.value).catchError((Object _) => false);
+      final consented = await AiConsent(app.native)
+          .granted(app.settings.value)
+          .catchError((Object _) => false);
       if (mounted) {
         setState(() {
           _modelKey = keys.modelKey;
@@ -74,7 +77,11 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
 
   Future<void> _save() => _run(() async {
     final app = context.app;
-    await app.settings.save(_cfg!, Secrets(modelKey: _modelKey));
+    final settings = normalizeAiSettings(_cfg!);
+    if ('${settings['baseUrl']}'.isNotEmpty && !aiProviderAllowed(settings)) {
+      throw const DomainError('iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置');
+    }
+    await app.settings.save(settings, Secrets(modelKey: _modelKey.trim()));
     _cfg = Map.of(app.settings.value);
     await app.resume();
     app.refreshRemindersNow();
@@ -87,8 +94,11 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
       title: '服务商',
       message: '选择后只会把示例填进下面的表单，保存前不会联网或授权。',
       actions: [
-        for (final p in aiPresets) MenuAction(id: p.id, label: p.name),
-        const MenuAction(id: 'manual', label: '其他兼容服务（手动填写）'),
+        for (final p in aiPresets)
+          if (defaultTargetPlatform != TargetPlatform.iOS || p.id == 'openai')
+            MenuAction(id: p.id, label: p.name),
+        if (defaultTargetPlatform != TargetPlatform.iOS)
+          const MenuAction(id: 'manual', label: '其他兼容服务（手动填写）'),
       ],
     );
     if (picked == null || !mounted) return;
@@ -100,7 +110,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
   Future<void> _useExample(Map<String, String> example, String provider) async {
     if (_busy || !_ready) return;
     final changedDestination =
-        AiConsent.destination(example) !=
+        (example['baseUrl'] ?? '').replaceFirst(RegExp(r'/+$'), '') !=
         ('${_cfg!['baseUrl'] ?? ''}'.replaceFirst(RegExp(r'/+$'), ''));
     if (changedDestination &&
         ('${_cfg!['baseUrl']}'.isNotEmpty || _modelKey.isNotEmpty)) {
@@ -119,6 +129,28 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
       if (changedDestination) _modelKey = '';
     });
   }
+
+  Future<void> _testConnection() => _run(() async {
+    final app = context.app;
+    final settings = normalizeAiSettings(_cfg!);
+    if (!aiProviderAllowed(settings)) {
+      throw const DomainError('iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置');
+    }
+    final destination = AiConsent.destination(settings);
+    final agreed = await showConfirm(
+      context,
+      title: '测试 AI 连接？',
+      message:
+          '接收方：${aiProviderName(settings)}\n地址：$destination\n仅发送固定测试文字和 API Key，不发送照片、身体资料或记录。服务商会收到 IP 地址，可能产生少量 API 费用。这不会授权发送饮食照片。',
+      confirm: '发送测试请求',
+    );
+    if (!agreed || !mounted) return;
+    await checkAiConnection(app.native, settings, _modelKey);
+    if (mounted) {
+      setState(() => _cfg = settings);
+      app.toast.show('连接成功；请保存设置。照片识别仍需单独授权。');
+    }
+  });
 
   Future<void> _restore() => _run(() async {
     final app = context.app;
@@ -280,6 +312,8 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             '包含记录、照片和设置，不含密钥。单个备份最多 100MB。卸载 APP 会删除手机记录，请定期导出。',
           ),
           const GroupHeader('拍照识别（AI）'),
+          if (defaultTargetPlatform == TargetPlatform.iOS)
+            const GroupFooter('iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置'),
           GroupCard(
             children: [
               GroupRow(
@@ -290,6 +324,10 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
               _field('接口地址', 'baseUrl', placeholder: openAiExample['baseUrl']),
               _field('模型名称', 'model', placeholder: openAiExample['model']),
               _field('API Key', 'modelKey', trailing: _pasteButton()),
+              GroupRow(
+                label: '测试 AI 连接',
+                onTap: _busy || !_ready ? null : _testConnection,
+              ),
               // 官方服务商的协议是固定的；只有自定义服务才需要手动选。
               if (!official && '${_cfg!['baseUrl'] ?? ''}'.trim().isNotEmpty)
                 GroupRow(

@@ -14,7 +14,9 @@ import '../kit/transitions.dart';
 import '../../app/app_controller.dart';
 import '../../core/native.dart';
 import '../../data/ai_consent.dart';
+import '../../config/ai_provider.dart';
 import 'ai_consent_sheet.dart';
+import 'android_settings_sheet.dart';
 import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
@@ -132,6 +134,7 @@ class _MealSheetState extends State<MealSheet> {
         _summary =
             '${opened['summary'] ?? (_photos.isNotEmpty ? '可以用已保存的照片重新识别' : (records.number(opened['photos']) > 0 ? '原记录已有 ${opened['photos']} 张照片' : ''))}';
         _enabled =
+            aiProviderAllowed(_app.settings.value) &&
             secrets.modelKey.isNotEmpty &&
             '${_app.settings.value['model']}'.isNotEmpty &&
             '${_app.settings.value['baseUrl']}'.isNotEmpty;
@@ -289,6 +292,20 @@ class _MealSheetState extends State<MealSheet> {
     }
   }
 
+  Future<void> _configureAi() async {
+    await showAppSheet<void>(context, (_) => const AndroidSettingsSheet());
+    if (!mounted) return;
+    final secrets = await _app.settings.secrets();
+    if (!mounted) return;
+    setState(() {
+      _enabled =
+          aiProviderAllowed(_app.settings.value) &&
+          secrets.modelKey.trim().isNotEmpty &&
+          '${_app.settings.value['model']}'.trim().isNotEmpty &&
+          '${_app.settings.value['baseUrl']}'.trim().isNotEmpty;
+    });
+  }
+
   Future<void> _analyze() async {
     if (_analyzing || _consenting) return;
     if (_pickingPhotos) {
@@ -307,7 +324,9 @@ class _MealSheetState extends State<MealSheet> {
     final consent = AiConsent(_app.native);
     final consentSettings = Map<String, dynamic>.from(_app.settings.value);
     try {
-      if (!await consent.granted(consentSettings)) {
+      {
+        // Permission is visible for every upload, including after an upgrade.
+        AiConsent.destination(consentSettings);
         if (!mounted) return;
         final accepted = await showAppSheet<bool>(
           context,
@@ -681,6 +700,10 @@ class _MealSheetState extends State<MealSheet> {
                         label: '补充',
                         placeholder: '例如米饭半碗、饮料无糖、两人分着吃',
                         lines: 2,
+                      ),
+                      SheetButton(
+                        '设置 AI 连接',
+                        _analyzing || _consenting ? null : _configureAi,
                       ),
                       if (!_enabled)
                         Padding(

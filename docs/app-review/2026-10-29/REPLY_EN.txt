@@ -1,0 +1,27 @@
+Hello App Review Team,
+
+Thank you for the detailed feedback on submission a068f9b5-31e8-46ca-8c42-9d88a7ce3f44, version 2.3.4 (25).
+
+We have addressed these issues in a new build, 2.3.7 (32). Please review the newly selected build rather than 2.3.4 (25).
+
+Guideline 2.1(a): AI configuration
+- Fixed an exception in the manual provider-selection flow and normalized pasted API addresses to prevent duplicate /responses or /chat/completions paths.
+- Added an explicit “Test AI connection” action with actionable authentication, access and quota errors. It uses only fixed test text; it does not send meal photos or health records.
+- The iOS version now supports only the official OpenAI API endpoint. Legacy custom configurations cannot send data and are not automatically redirected.
+- AI is an optional, user-configured feature. Manual food logging and the training journal require no API account. This does not exempt the AI feature from review: please use the dedicated API credentials supplied privately in App Review Information to test it.
+
+Test steps:
+1. Open AI photo logging > Set up AI connection (also available at Me > Backup & advanced). Select OpenAI, enter the private review API key and the model listed in App Review Information. The base URL is https://api.openai.com/v1 and the protocol is Responses.
+2. Tap Test AI connection, read the separate network/fee disclosure, and choose Send test request. Save the settings after a successful test.
+3. Open food logging > AI, select a food photo from the system photo picker, and tap Estimate nutrition with AI.
+4. Review the AI photo consent sheet. Cancel sends no photo. Agree & recognize starts recognition. Check the estimate and save it.
+
+Guidelines 5.1.1(i) and 5.1.2(i): AI privacy
+- Before EVERY photo upload, the app identifies OpenAI and https://api.openai.com/v1, and discloses selected before/after meal photos, meal name, note (up to 300 characters), nutrition instructions, API authentication and IP/network information.
+- It explains that body profiles and workout history are not sent, provides the provider data-controls link, and requires an explicit Agree & recognize action. Camera/photo access is not treated as AI consent. Prior consent was invalidated by the updated disclosure; Cancel sends nothing.
+- The in-app and public privacy policies describe collection, purpose, recipient, retention and data controls. iOS enforces the official endpoint and store=false. We disclose OpenAI's default no-training policy and abuse-monitoring retention, including exceptions; we do not claim Zero Data Retention.
+
+Privacy policy: https://hunter-ght.github.io/LeanDaily/privacy/
+OpenAI data controls: https://developers.openai.com/api/docs/guides/your-data
+
+Thank you for reviewing the updated build.

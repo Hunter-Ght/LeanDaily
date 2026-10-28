@@ -1,2 +1,2 @@
-const appVersion = '2.3.6';
-const appBuild = 31;
+const appVersion = '2.3.7';
+const appBuild = 32;

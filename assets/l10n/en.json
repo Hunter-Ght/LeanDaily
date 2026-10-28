@@ -2418,5 +2418,21 @@
   "拍照记饮食": "Photo meal log",
   "估算热量与蛋白质": "Estimate calories and protein",
   "未设置 AI，可先存照片": "AI not set up. Save photos for now.",
-  "搜索 / 手动": "Search / manual"
+  "搜索 / 手动": "Search / manual",
+  "请填写接口地址、模型名称和 API Key": "Enter the endpoint, model name and API key.",
+  "连接失败：请检查 API Key、服务地区和模型访问权限": "Connection failed: check your API key, supported region and model access.",
+  "连接失败：服务商额度不足或请求过于频繁，请检查 API 账单": "Connection failed: quota exceeded or rate limited. Check API billing.",
+  "连接失败：请检查接口地址、模型名称和协议": "Connection failed: check the endpoint, model name and protocol.",
+  "服务未返回有效模型结果，请检查接口协议": "The service returned no valid model output. Check the protocol.",
+  "测试 AI 连接？": "Test the AI connection?",
+  "发送测试请求": "Send test request",
+  "测试 AI 连接": "Test AI connection",
+  "连接成功；请保存设置。照片识别仍需单独授权。": "Connected. Save settings to apply. Photo recognition still requires separate consent.",
+  "接收方：{p0}\n地址：{p1}\n仅发送固定测试文字和 API Key，不发送照片、身体资料或记录。服务商会收到 IP 地址，可能产生少量 API 费用。这不会授权发送饮食照片。": "Recipient: {p0}\nEndpoint: {p1}\nOnly fixed test text and your API key are sent. No photos, body profile or records are sent. The provider receives your IP address and may charge a small API fee. This does not grant permission to send meal photos.",
+  "发送内容：本次选择的吃前和吃后照片（如有）、餐次、补充说明（最多 300 字）和营养估算指令。API Key 用于认证；服务商还会收到 IP 地址。照片可能包含人物或位置等个人信息，请先裁剪或移除。": "Data sent: the selected before-meal and after-meal photos (if any), meal name, note (up to 300 characters), and nutrition estimation instructions. Your API key authenticates the request. The provider also receives your IP address. Photos may reveal people or locations; crop or remove personal information before sending.",
+  "每次上传前都会询问。取消不会发送；手动记餐无需 AI。授权相机或相册不代表同意发送给 AI。": "You will be asked before every upload. Cancel sends nothing; manual meal logging needs no AI. Camera or photo-library permission is not consent to send data to AI.",
+  "iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置": "The iOS version supports only the official OpenAI endpoint. Configure it in settings.",
+  "接收服务：{p0}\n接收地址：{p1}": "Recipient: {p0}\nEndpoint: {p1}",
+  "不会发送身体资料、测量数据或训练记录。": "Your body profile, body measurements and workout records are not sent.",
+  "设置 AI 连接": "Set up AI connection"
 }

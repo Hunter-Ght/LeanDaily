@@ -216,6 +216,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('AI识别营养'));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('同意并识别'));
+      await tester.pumpAndSettle();
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
       expect(input('食物'), findsOneWidget);
@@ -254,6 +256,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('AI识别营养'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('同意并识别'));
+    await tester.pumpAndSettle();
     expect(find.text('取消识别'), findsOneWidget);
     await tester.tap(find.text('取消识别'));
     await tester.pumpAndSettle();
@@ -262,6 +266,8 @@ void main() {
     await tester.pumpAndSettle();
     h.native.onHttp = (_) => const HttpReply(500, '{}');
     await tester.tap(find.text('AI识别营养'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('同意并识别'));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();
@@ -306,6 +312,8 @@ void main() {
   );
   Future<void> analyzeNow(WidgetTester tester, String label) async {
     await tester.tap(find.text(label));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('同意并识别'));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pumpAndSettle();

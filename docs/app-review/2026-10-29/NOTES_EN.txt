@@ -1,0 +1,17 @@
+LeanDaily 2.3.7 (32) — replaces the rejected 2.3.4 (25) build.
+
+No LeanDaily login is needed. Training, exercise demonstrations and manual food logging work without a third-party account. Optional photo recognition uses the review-only OpenAI API key supplied PRIVATELY in these App Review Information notes. Do not use a ChatGPT account password; the app needs a funded API key with access to an image-input model.
+
+AI configuration: AI photo logging > Set up AI connection > OpenAI (also available at Me > Backup & advanced).
+Endpoint: https://api.openai.com/v1
+Protocol: Responses
+Model and reviewer API key: supply the live, verified dedicated credentials in this private notes field before resubmitting. They are intentionally not included in the repository or this reusable document. Do not submit this instruction as a substitute for credentials.
+
+Tap Test AI connection > Send test request, then Save. This sends only fixed test text plus authentication and network metadata. A successful text test is not a vision test: also complete recognition using an ordinary food-only photo, confirm consent and save the result before resubmitting.
+
+Food logging > AI > Photo library > choose food photo > Estimate nutrition with AI. Every upload presents a separate AI photo consent sheet identifying OpenAI, the exact endpoint and transmitted data. Cancel sends no photo; Agree & recognize starts recognition. iOS does not permit custom or Google Gemini endpoints. No health profile or training records are sent. No app-operated AI relay is used.
+
+Privacy URL: https://hunter-ght.github.io/LeanDaily/privacy/
+Provider data policy: https://developers.openai.com/api/docs/guides/your-data
+
+Actual test coverage and remaining real-device/live-service checks are recorded in VALIDATION.md. Do not describe simulator/mocked-provider tests as real-device or live-API tests.

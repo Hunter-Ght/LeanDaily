@@ -114,6 +114,9 @@ class Vision {
     if (!truthy(s['baseUrl']) || !truthy(s['model']) || key.isEmpty) {
       throw const DomainError('请先在设置中配置模型');
     }
+    if (!aiProviderAllowed(s)) {
+      throw const DomainError('iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置');
+    }
     if (isOfficialGemini(s)) {
       final rawProfile = (await native.all())[ProfileStore.profileKey];
       Object? profile;

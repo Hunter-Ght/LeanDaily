@@ -1,3 +1,10 @@
+import 'package:flutter/foundation.dart';
+
+/// iOS distribution supports only an identified provider with documented data
+/// controls. Legacy custom settings stay local and are never silently rerouted.
+bool aiProviderAllowed(Map settings) =>
+    defaultTargetPlatform != TargetPlatform.iOS || isOfficialOpenAi(settings);
+
 /// Optional example only: no credentials, network calls or automatic activation.
 const openAiExample = <String, String>{
   'baseUrl': 'https://api.openai.com/v1',

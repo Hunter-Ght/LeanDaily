@@ -125,6 +125,28 @@ void main() {
       expect(sent, 1);
     }
   });
+  testWidgets(
+    'manual provider selection clears the draft without validating an empty URL',
+    (t) async {
+      final h = await Harness.pump(t, empty: true, updateUrl: '');
+      showAppSheet<void>(
+        t.element(find.byType(Navigator).first),
+        (_) => const AndroidSettingsSheet(),
+      );
+      await settle(t);
+      final provider = find.text('服务商');
+      await t.ensureVisible(provider);
+      await t.tap(provider);
+      await settle(t);
+      await t.tap(find.text('其他兼容服务（手动填写）'));
+      await settle(t);
+      final fields = t.widgetList<FormInput>(find.byType(FormInput));
+      expect(fields.firstWhere((f) => f.label == '接口地址').value, '');
+      expect(fields.firstWhere((f) => f.label == '模型名称').value, '');
+      expect(h.native.secrets.modelKey, '');
+      expect(t.takeException(), isNull);
+    },
+  );
   testWidgets('API key uses normal editing and long-press paste', (t) async {
     String clipboard = 'test-pasted-key';
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -236,7 +258,7 @@ void main() {
   test('updated disclosure invalidates the old consent fingerprint', () async {
     final n = FakeNative();
     n.docs[AiConsent.storageKey] = sha256(
-      utf8.encode('2|${openAiExample['baseUrl']}|responses'),
+      utf8.encode('3|${openAiExample['baseUrl']}|responses'),
     );
     expect(await AiConsent(n).granted(openAiExample), isFalse);
     await AiConsent(n).grant(openAiExample);
