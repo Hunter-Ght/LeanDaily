@@ -5,6 +5,8 @@
 ## 已确认
 
 - Dart 分析：No issues found。
+- 修复代码提交 fa042b7 的远端 CI 已全部通过：check 和 ios 均 success。运行记录：https://github.com/Hunter-Ght/LeanDaily/actions/runs/40741698424 。
+- 公开隐私网站部署已 success，运行记录：https://github.com/Hunter-Ght/LeanDaily/actions/runs/40741711237 。
 - 全量 Flutter 测试：1282 项通过；新增最后一轮 UI/设置/动画相关测试：51 项通过。
 - 5 项 Python 发布脚本测试通过；设计 token lint、git diff --check 通过。
 - iPad 820×1180、1180×820 和 iPhone 393×852 的 iOS 界面测试通过。从 AI 页直接进入配置，测试拒绝/同意连接、保存、返回后识别按钮刷新、旧授权仍弹出确认、取消不发送、同意后返回营养结果。
@@ -19,10 +21,12 @@
 
 ## 不能据此宣称已通过
 
-- 没有实际 iPad Air M4 / iPadOS 27.0.1 或真实 iPad 验收。
+- 没有实际 iPad Air M4 / iPadOS 27.0.1 或真实 iPad 验收；本次 devicectl 只读检查可见连接真机数为 0。
 - 没有读取私密 API Key，未发起真实提供商的付费识别；审核专用账号、模型权限、地区、额度和图片能力仍需实测。
 - 首次 Xcode 原生测试等待模拟器初始化、一次重试宿主在连接前终止；最终在初始化完毕的独立 iPad 串行复验通过。通知调度因未授权跳过，仍需真机允许通知后检查锁屏投递。
 - IPA 导出、上传、Apple processing、TestFlight 安装与公开审核提交是独立状态；发行结果见 build/ios/ipa/verification.json 和 build/ios/AppStore-build-report.md，以实际日志为准。
+- 当前网页后台只加载到 App Store Connect 的页头/页脚，未能读取构建列表，未据此推断已处理完成；保留 Xcode 的上传成功证据。
+- 项目 .env 不存在，没有发现项目提供的专用真实 API 测试配置。
 - 没有自动发送审核回复、填入密钥或重新提交 App Review。
 
 ## 依据
