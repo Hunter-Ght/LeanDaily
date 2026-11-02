@@ -1,0 +1,21 @@
+LeanDaily 2.3.7 (33)
+
+No sign-in is required. Training, exercise demonstrations and manual meal logging work without any account.
+
+OPTIONAL AI PHOTO RECOGNITION – review credentials
+Provider: OpenAI (selected in the app; endpoint and model fill in automatically)
+API key: [[PASTE THE REVIEW-ONLY OPENAI API KEY HERE]]
+(Endpoint https://api.openai.com/v1 · Model gpt-6-luna · Protocol Responses — filled in automatically when OpenAI is chosen.)
+
+Steps:
+1. Log tab > Food > Photo meal log > Set up AI connection.
+2. AI provider > OpenAI, paste the API key above.
+3. Test AI connection > Send test request, then Save.
+4. Photo library > choose a food photo > Estimate nutrition with AI.
+5. Read the consent screen and tap "Agree & recognize". Cancel sends nothing.
+
+AI DATA SHARING
+Before every upload the app shows a consent screen naming OpenAI (https://api.openai.com/v1) and listing what is sent: selected meal photos, meal name, optional note (max 300 characters), nutrition instructions, the API key for authentication and the IP address. Body profile, measurements and workout history are never sent. Nothing is sent without "Agree & recognize". On iOS OpenAI is the only AI recipient; requests go directly from the device to OpenAI with store=false, and we run no server that receives this data.
+
+Privacy policy: https://hunter-ght.github.io/LeanDaily/privacy/
+OpenAI data usage: https://developers.openai.com/api/docs/guides/your-data

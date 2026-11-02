@@ -313,7 +313,9 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           ),
           const GroupHeader('拍照识别（AI）'),
           if (defaultTargetPlatform == TargetPlatform.iOS)
-            const GroupFooter('iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置'),
+            const GroupFooter(
+              'iOS 版目前仅支持 OpenAI 官方接口（https://api.openai.com/v1），选择服务商后填写你的 API Key 即可。',
+            ),
           GroupCard(
             children: [
               GroupRow(

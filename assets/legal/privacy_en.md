@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Effective: October 29, 2026
+Effective: November 2, 2026
 
 Publisher and operator: Skylance LLC.
 
@@ -18,7 +18,7 @@ Before every photo upload, a separate, scrollable in-app notice identifies OpenA
 
 A separate connection-test button asks permission before sending only the fixed text "Reply with OK." and the API key to the displayed provider. No photos, profile or journal records are used by this test. A successful text connection does not prove image capability or guarantee future quota.
 
-We require third-party AI processing to maintain protections consistent with this policy: HTTPS transport, purpose-limited nutrition processing, disclosed retention and training rules, and provider security and data-subject controls. On iOS we enforce the official OpenAI endpoint, minimize the payload and set store=false. OpenAI's published data controls govern its API processing: https://developers.openai.com/api/docs/guides/your-data . This is not a promise that provider retention is identical to local storage or that data is never retained. Do not enable optional AI if its disclosed processing does not meet your privacy needs. We cannot independently certify an arbitrary custom provider; such providers are not supported on iOS.
+We confirm that OpenAI, the only AI recipient supported on iOS, provides the same or equal protection for this data as this policy: it receives the data only over HTTPS; uses it only to return the requested nutrition estimate and for the abuse monitoring described below; does not use API data to train models by default; and applies security, access and deletion controls under its API data-usage terms: https://developers.openai.com/api/docs/guides/your-data . On iOS the app also enforces the official OpenAI endpoint, minimizes the payload and sets store=false. OpenAI's retention is described below and is not zero retention. If this processing does not meet your needs, use manual meal logging. Custom endpoints, whose protections we cannot verify, are not supported on iOS.
 
 Recognition is off until you configure your own HTTPS endpoint, model and API key. Before every photo request, the app shows the destination, the data being sent and asks for permission. Only after you agree and tap recognition does it send your selected meal photos, meal name, note (up to 300 characters) and a nutrition estimation prompt. Your profile, body measurements and workout history are not included. The API key authenticates the request to that provider.
 

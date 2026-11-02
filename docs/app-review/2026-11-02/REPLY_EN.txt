@@ -1,0 +1,47 @@
+Hello App Review Team,
+
+Thank you for the detailed feedback on submission a068f9b5-31e8-46ca-8c42-9d88a7ce3f44 (version 2.3.4, build 25). Both issues are resolved in a new build, 2.3.7 (33), which is now selected for this submission. Please review build 33 instead of build 25.
+
+
+1. Guideline 2.1(a) – AI recognition could not be set up
+
+What we changed:
+- "Set up AI connection" is now on the AI photo log screen itself, so reviewers and users no longer need to look for it under Me > Backup & advanced.
+- Choosing OpenAI as the provider fills in the endpoint and model automatically. Only an API key needs to be pasted.
+- Fixed an error in the manual-entry flow, and full endpoint URLs pasted by users are now normalized.
+- Added "Test AI connection", which tells the user exactly what is wrong (invalid key, no model access, or no quota).
+
+A working, funded OpenAI API key for review is included in the App Review Information notes. We tested it with build 33 on [[DEVICE, e.g. iPad Air 11-inch (M2)]] running [[iPadOS VERSION]] on [[DATE]], and photo recognition completed successfully.
+
+Steps to test (about one minute):
+1. Open the Log tab > Food > Photo meal log.
+2. Tap "Set up AI connection" > AI provider > OpenAI. Paste the API key from the App Review notes.
+3. Tap "Test AI connection" > "Send test request". After the success message, tap Save to return to the meal screen.
+4. Under "Photograph this meal", tap "Photo library" and choose any food photo.
+5. Tap "Estimate nutrition with AI". A consent screen appears; tap "Agree & recognize". The nutrition estimate appears in a few seconds and can be saved.
+
+
+2. Guidelines 5.1.1(i) and 5.1.2(i) – Sharing data with a third-party AI service
+
+AI recognition is optional and off by default. Manual meal logging and all training features work without it.
+
+Before EVERY photo upload, the app shows a consent screen that:
+- Names the recipient: OpenAI, at https://api.openai.com/v1.
+- Lists exactly what is sent: the selected meal photos, meal name, an optional note (up to 300 characters) and the nutrition estimation instructions, plus the API key for authentication and the device's IP address.
+- States what is NOT sent: body profile, body measurements and workout history.
+- Links to OpenAI's data-usage policy.
+- Sends nothing unless the user taps "Agree & recognize". Cancel sends nothing. Granting camera or photo-library access is not treated as consent.
+
+Consent given in earlier versions no longer applies; every user sees the new consent screen again.
+
+On iOS, OpenAI is the only AI recipient. Custom or other third-party endpoints cannot be used, and older custom settings are never redirected to another service. Requests are sent directly from the device to OpenAI with store=false; we do not operate any server that receives this data.
+
+Our privacy policy (also available inside the app) now states what data is collected, how it is collected, how it is used, that it is shared with OpenAI, and confirms that OpenAI provides the same or equal protection of this data, including OpenAI's retention and no-training-by-default terms:
+https://hunter-ght.github.io/LeanDaily/privacy/
+
+We have also added this information to the App Review Information notes.
+
+Thank you for your time. Please let us know if anything else is needed.
+
+Best regards,
+Skylance LLC

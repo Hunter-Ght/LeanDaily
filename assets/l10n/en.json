@@ -2434,5 +2434,6 @@
   "iOS 版仅支持 OpenAI 官方接口；请在设置中重新配置": "The iOS version supports only the official OpenAI endpoint. Configure it in settings.",
   "接收服务：{p0}\n接收地址：{p1}": "Recipient: {p0}\nEndpoint: {p1}",
   "不会发送身体资料、测量数据或训练记录。": "Your body profile, body measurements and workout records are not sent.",
-  "设置 AI 连接": "Set up AI connection"
+  "设置 AI 连接": "Set up AI connection",
+  "iOS 版目前仅支持 OpenAI 官方接口（https://api.openai.com/v1），选择服务商后填写你的 API Key 即可。": "The iOS version currently supports only the official OpenAI endpoint (https://api.openai.com/v1). Choose the provider, then enter your API key."
 }
