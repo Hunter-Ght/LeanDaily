@@ -105,4 +105,15 @@ void main() {
     expect(searchEquipment('pec deck').single.id, 'pec-deck');
     expect(searchEquipment('绳索下压').single.id, 'cable');
   });
+
+  test('plain muscle names and main/assist roles', () {
+    expect(MUSCLE_PLAIN.keys.toSet(), {for (final m in MUSCLES) m['id']});
+    final press = muscleRoles('坐姿推胸机');
+    expect(press.main, ['chest']);
+    expect(press.assist, containsAll(['chest_up', 'delt_front', 'triceps']));
+    expect(muscleRoles('绳索下压').main, ['triceps']);
+    // 权重都低于 0.75 的动作也至少有一块主练肌肉
+    expect(muscleRoles('髋内收机').main, hasLength(1));
+    expect(muscleRoles('跑步机').main, isEmpty);
+  });
 }

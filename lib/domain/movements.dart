@@ -30,6 +30,46 @@ const GROUPS = [
   {'id': 'calves', 'name': '小腿'},
 ];
 final MUSCLE = {for (final m in MUSCLES) m['id']!: m};
+
+/// 肌肉在身上的大白话位置，给不熟悉解剖名的用户看。
+const MUSCLE_PLAIN = {
+  'chest_up': '胸口上部',
+  'chest': '胸口中下部',
+  'delt_front': '肩膀前面',
+  'delt_side': '肩膀外侧',
+  'delt_rear': '肩膀后面',
+  'biceps': '大臂前面',
+  'triceps': '大臂后面',
+  'abs': '肚子正面',
+  'obliques': '腰两侧',
+  'lats': '背部两侧',
+  'mid_back': '两块肩胛骨之间',
+  'lower_back': '后腰',
+  'quads': '大腿前面',
+  'hamstrings': '大腿后面',
+  'glutes': '臀部',
+  'calves': '小腿后面',
+};
+
+/// 动作练哪里：主练（权重 ≥ 0.75，至少一块）与辅助（0.3 ≤ 权重 < 0.75），按权重从高到低。
+({List<String> main, List<String> assist}) muscleRoles(Object? name, [String? part]) {
+  final mv = musclesOf(name, part);
+  if (mv == null) return (main: const <String>[], assist: const <String>[]);
+  final entries = (mv['muscles'] as Map<String, num>).entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
+  final main = [
+    for (final e in entries)
+      if (e.value >= 0.75) e.key,
+  ];
+  if (main.isEmpty) main.add(entries.first.key);
+  return (
+    main: main,
+    assist: [
+      for (final e in entries)
+        if (!main.contains(e.key) && e.value >= 0.3) e.key,
+    ],
+  );
+}
 final GROUP = {for (final g in GROUPS) g['id']!: g};
 const _table = [
   [
