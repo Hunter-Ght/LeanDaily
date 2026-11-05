@@ -565,6 +565,37 @@ EXTRA_MODES.benchDip = (spec, v) => {
   }
 };
 
+// abWheel（跪姿健腹轮）：膝盖固定在地面（z=spec.kz），小腿平放向后；t 大腿相对竖直前倾角，s 躯干相对竖直前倾角
+// （t≈s 即身体成直线）；手握轮子在地面，手的位置按“肩 + 臂长”自动算（手高 ≥ 0.13，手臂始终伸直不被拉长）。
+EXTRA_MODES.abWheel = (spec, v) => {
+  const kz = spec.kz ?? 0, kneeY = 0.075;
+  const t = rad(v.t), s = v.s;
+  const hip = V(0, kneeY + L.thigh * Math.cos(t), kz + L.thigh * Math.sin(t));
+  setWorldPos(bones.pelvis, hip.clone().add(V(0, 0, -0.0)));
+  rotWorld(bones.pelvis, X, s * 0.7);
+  for (const n of ['spine_01', 'spine_02', 'spine_03']) rotWorld(bones[n], X, s * 0.1);
+  rotWorld(bones.neck_01, X, -s * 0.55 + (v.neck || 0));
+  for (const sd of ['l', 'r']) {
+    const k = sd === 'l' ? 1 : -1;
+    const th = wpos(bones['thigh_' + sd]);
+    const knee = V(k * 0.11, kneeY, kz);
+    aim(bones['thigh_' + sd], bones['calf_' + sd], knee);
+    aim(bones['calf_' + sd], bones['foot_' + sd], V(k * 0.11, 0.095, kz - L.shin * 0.96));
+    setWorldQuat(bones['foot_' + sd], new THREE.Quaternion().setFromAxisAngle(X, rad(180 - 12)).multiply(bindQuat['foot_' + sd].clone()));
+  }
+  root.updateMatrixWorld(true);
+  for (const sd of ['l', 'r']) {
+    const k = sd === 'l' ? 1 : -1;
+    const sh = wpos(bones['upperarm_' + sd]);
+    const hy = Math.max(0.13, sh.y - 0.465);
+    const dz = Math.sqrt(Math.max(0, 0.485 * 0.485 - (sh.y - hy) ** 2));
+    const pole = V(k * 0.6, 0.5, -0.3);
+    twoBone(bones['upperarm_' + sd], bones['lowerarm_' + sd], bones['hand_' + sd], V(k * 0.1, hy, sh.z + dz), pole, L.uarm, L.farm);
+    palm(sd, V(0.2 * k, -0.2, 1));
+    gripFingers(sd, X, 80);
+  }
+};
+
 // ==== 家族 floor 结束 ====
 
 // ==== 家族 free（站姿自由重量、弹力带）姿势扩展 开始 ====
@@ -842,6 +873,8 @@ function mesh(geo, mat, parent) {
 function followPoint(f) {
   const h = s => wpos(bones['hand_' + s]);
   if (f === 'hands') return h('l').add(h('r')).multiplyScalar(0.5);
+  // 'fists'：两拳心连线中点（握直杆/EZ 杆跟手用，需要 spec.fist）。
+  if (f === 'fists') return handInfo.l && handInfo.r ? handInfo.l.pos.clone().add(handInfo.r.pos).multiplyScalar(0.5) : h('l').add(h('r')).multiplyScalar(0.5);
   if (f === 'handL') return h('l');
   if (f === 'handR') return h('r');
   if (f === 'feet') return wpos(bones.foot_l).add(wpos(bones.foot_r)).multiplyScalar(0.5);
