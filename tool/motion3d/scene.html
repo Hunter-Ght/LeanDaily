@@ -611,6 +611,15 @@ EXTRA_MODES.benchOne = (spec, v) => {
   }
 };
 
+// bulgarian：保加利亚分腿蹲。先按 stand 摆好（左脚在前，stance.l），再让右腿（后腿）脚背搭在身后的凳上：
+// spec.rearFoot = [踝 y, 踝 z, 脚面转角]。
+EXTRA_MODES.bulgarian = (spec, v) => {
+  poseStand(spec, v);
+  const [ay, az, rot] = spec.rearFoot;
+  twoBone(bones.thigh_r, bones.calf_r, bones.foot_r, V(-0.11, ay, az), V(-0.1, -1, 0.2), L.thigh, L.shin);
+  setWorldQuat(bones.foot_r, new THREE.Quaternion().setFromAxisAngle(X, rad(rot)).multiply(bindQuat.foot_r.clone()));
+};
+
 // ==== 家族 free 结束 ====
 
 // ==== 家族 cable（拉索、龙门架）姿势扩展 开始 ====
@@ -851,6 +860,7 @@ function buildProps(spec) {
   for (const it of spec.set || []) {
     const parent = it.fixed ? scene : rig;
     const m = it.box ? mesh(new THREE.BoxGeometry(...it.box), PM[it.m || 'pad'], parent)
+      : it.sph ? mesh(new THREE.SphereGeometry(it.sph[0], 32, 20), PM[it.m || 'frame'], parent)
       : mesh(new THREE.CylinderGeometry(it.cyl[0], it.cyl[0], it.cyl[1], 28), PM[it.m || 'frame'], parent);
     m.position.set(...(it.at || [0, 0, 0]));
     if (it.rot) m.rotation.set(rad(it.rot[0]), rad(it.rot[1]), rad(it.rot[2]));
@@ -881,7 +891,7 @@ function buildProps(spec) {
 function updateProps() {
   for (const d of dyn) {
     if (d.cable) {
-      const pt = p => (Array.isArray(p) ? V(...p) : followPoint(p));
+      const pt = p => (Array.isArray(p) ? V(...p) : p.follow ? followPoint(p.follow).add(V(...p.offset)) : followPoint(p));
       const from = pt(d.from), to = pt(d.to), dir = to.clone().sub(from), len = dir.length();
       d.cable.position.copy(from).add(to).multiplyScalar(0.5);
       const rs = d.r ? d.r / 0.006 : 1;
