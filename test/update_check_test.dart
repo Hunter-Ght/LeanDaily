@@ -10,7 +10,7 @@ import 'package:leandaily/app/app_controller.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const url = 'https://example.test/latest';
-  String payload([String version = '2.4.0']) => jsonEncode({
+  String payload([String version = '9.0.0']) => jsonEncode({
     'version': version,
     'build': 25,
     'url': 'https://example.test/app.apk',
@@ -111,7 +111,7 @@ void main() {
     await b.checkUpdate();
     expect(n.httpLog, hasLength(2));
     expect(b.hasUnseenUpdate, isFalse);
-    n.onHttp = (_) => HttpReply(200, payload('2.5.0'));
+    n.onHttp = (_) => HttpReply(200, payload('9.1.0'));
     await b.checkUpdate(manual: true);
     expect(b.hasUnseenUpdate, isTrue);
     b.dispose();
