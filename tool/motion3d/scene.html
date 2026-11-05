@@ -610,6 +610,12 @@ EXTRA_MODES.hinge = (spec, v) => {
     const pole = V((spec.pole?.[0] ?? 0.5) * k, spec.pole?.[1] ?? -1, spec.pole?.[2] ?? -0.3);
     twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], t, pole, L.uarm, L.farm);
   }
+  if (spec.grip) fitHands(spec, v);
+};
+// gripStand：站姿 IK 手臂 + 握拳（杠铃推举、杠铃弯举）。spec.roll 绕前臂翻转（弯举反握 180）。
+EXTRA_MODES.gripStand = (spec, v) => {
+  poseStand(spec, v);
+  fitHands(spec, v);
 };
 // benchOne：一手一膝撑在长凳上的俯身动作（单臂划船、臂后伸）。左手（+x）干活，右手右膝在凳上。
 // spec.bench = { x, top }：凳面中线 x 与凳面高度。左脚踩地（spec.stance.l）。
@@ -640,6 +646,15 @@ EXTRA_MODES.benchOne = (spec, v) => {
     const pole = V(spec.pole?.[0] ?? 0.3, spec.pole?.[1] ?? 1, spec.pole?.[2] ?? -0.8);
     twoBone(bones.upperarm_l, bones.lowerarm_l, bones.hand_l, sh.clone().add(V(v.hx, v.hy, v.hz)), pole, L.uarm, L.farm);
   }
+};
+
+// bulgarian：保加利亚分腿蹲。先按 stand 摆好（左脚在前，stance.l），再让右腿（后腿）脚背搭在身后的凳上：
+// spec.rearFoot = [踝 y, 踝 z, 脚面转角]。
+EXTRA_MODES.bulgarian = (spec, v) => {
+  poseStand(spec, v);
+  const [ay, az, rot] = spec.rearFoot;
+  twoBone(bones.thigh_r, bones.calf_r, bones.foot_r, V(-0.11, ay, az), V(-0.1, -1, 0.2), L.thigh, L.shin);
+  setWorldQuat(bones.foot_r, new THREE.Quaternion().setFromAxisAngle(X, rad(rot)).multiply(bindQuat.foot_r.clone()));
 };
 
 // ==== 家族 free 结束 ====
@@ -875,6 +890,7 @@ function followPoint(f) {
   if (f === 'hands') return h('l').add(h('r')).multiplyScalar(0.5);
   // 'fists'：两拳心连线中点（握直杆/EZ 杆跟手用，需要 spec.fist）。
   if (f === 'fists') return handInfo.l && handInfo.r ? handInfo.l.pos.clone().add(handInfo.r.pos).multiplyScalar(0.5) : h('l').add(h('r')).multiplyScalar(0.5);
+  if (f === 'grip') return wpos(bones.middle_02_l).add(wpos(bones.middle_02_r)).multiplyScalar(0.5);
   if (f === 'handL') return h('l');
   if (f === 'handR') return h('r');
   if (f === 'feet') return wpos(bones.foot_l).add(wpos(bones.foot_r)).multiplyScalar(0.5);
@@ -884,6 +900,7 @@ function buildProps(spec) {
   for (const it of spec.set || []) {
     const parent = it.fixed ? scene : rig;
     const m = it.box ? mesh(new THREE.BoxGeometry(...it.box), PM[it.m || 'pad'], parent)
+      : it.sph ? mesh(new THREE.SphereGeometry(it.sph[0], 32, 20), PM[it.m || 'frame'], parent)
       : mesh(new THREE.CylinderGeometry(it.cyl[0], it.cyl[0], it.cyl[1], 28), PM[it.m || 'frame'], parent);
     m.position.set(...(it.at || [0, 0, 0]));
     if (it.rot) m.rotation.set(rad(it.rot[0]), rad(it.rot[1]), rad(it.rot[2]));
@@ -900,7 +917,7 @@ function buildProps(spec) {
       d.position.x = sgn * (len / 2 - 0.1 - i * (thick + 0.004));
     }
     rig.add(g);
-    dyn.push({ m: g, follow: 'hands', offset: V(...at) });
+    dyn.push({ m: g, follow: spec.barbell.follow || 'hands', offset: V(...at) });
   }
   // 拉索：从固定的滑轮点到手，一根细圆柱。
   for (const c of spec.cables || []) {
@@ -914,7 +931,7 @@ function buildProps(spec) {
 function updateProps() {
   for (const d of dyn) {
     if (d.cable) {
-      const pt = p => (Array.isArray(p) ? V(...p) : followPoint(p));
+      const pt = p => (Array.isArray(p) ? V(...p) : p.follow ? followPoint(p.follow).add(V(...p.offset)) : followPoint(p));
       const from = pt(d.from), to = pt(d.to), dir = to.clone().sub(from), len = dir.length();
       d.cable.position.copy(from).add(to).multiplyScalar(0.5);
       const rs = d.r ? d.r / 0.006 : 1;
