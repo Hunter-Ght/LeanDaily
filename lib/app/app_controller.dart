@@ -159,6 +159,7 @@ class AppController extends ChangeNotifier {
        goalsStore = GoalsStore(native),
        restPrefsStore = RestPrefsStore(native),
        customMusclesStore = CustomMusclesStore(native),
+       myGymStore = MyGymStore(native),
        dayStatesStore = DayStatesStore(native),
        restTimerStore = RestTimerStore(native),
        planStore = PlanStore(native, clock: clock),
@@ -306,6 +307,10 @@ class AppController extends ChangeNotifier {
   final GoalsStore goalsStore;
   final RestPrefsStore restPrefsStore;
   final CustomMusclesStore customMusclesStore;
+  final MyGymStore myGymStore;
+
+  /// 我的健身房里有的器械 id；空表示不限，推荐和替代动作只从这些器械里选。
+  Set<String> myGym = {};
   final DayStatesStore dayStatesStore;
   final RestTimerStore restTimerStore;
   final PlanStore planStore;
@@ -764,6 +769,13 @@ class AppController extends ChangeNotifier {
     customMuscles
       ..clear()
       ..addAll(await customMusclesStore.load());
+    myGym = await myGymStore.load();
+  }
+
+  Future<void> saveMyGym(Set<String> ids) async {
+    myGym = Set.of(ids);
+    await myGymStore.save(myGym);
+    notifyListeners();
   }
 
   /// 给自定义动作指定主练肌肉，之后的恢复计算按这块肌肉算。

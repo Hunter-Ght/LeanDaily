@@ -155,6 +155,20 @@ class CustomMusclesStore {
       native.put(key, jsonEncode(value));
 }
 
+/// 我的健身房：有哪些器械（equipment id）。空列表表示不限。
+class MyGymStore {
+  MyGymStore(this.native);
+  final Native native;
+  static const key = 'fw-my-gym-v1';
+  Future<Set<String>> load() async {
+    final v = _decode((await native.all())[key]);
+    return {if (v is List) ...v.whereType<String>()};
+  }
+
+  Future<void> save(Set<String> ids) =>
+      native.put(key, jsonEncode(ids.toList()..sort()));
+}
+
 class DayStatesStore {
   DayStatesStore(this.native);
   final Native native;
