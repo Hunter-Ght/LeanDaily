@@ -204,8 +204,11 @@ class EquipmentSheet extends StatelessWidget {
 
 /// 器械网格：按分类分区，手机 2 列，宽屏 3–4 列。
 class EquipmentGrid extends StatelessWidget {
-  const EquipmentGrid({super.key, required this.onOpen});
+  const EquipmentGrid({super.key, required this.onOpen, this.owned = const {}});
   final ValueChanged<Equipment> onOpen;
+
+  /// “我的健身房”的器械 id；非空时已有的排前面，没有的弱化但仍可点。
+  final Set<String> owned;
 
   @override
   Widget build(BuildContext context) {
@@ -228,8 +231,13 @@ class EquipmentGrid extends StatelessWidget {
                   spacing: gap,
                   runSpacing: gap,
                   children: [
-                    for (final e in equipmentList.where((e) => e.kind == kind))
-                      SizedBox(width: width, child: _card(context, e)),
+                    for (final e in _ordered(kind))
+                      SizedBox(
+                        width: width,
+                        child: owned.isEmpty || owned.contains(e.id)
+                            ? _card(context, e)
+                            : Opacity(opacity: 0.5, child: _card(context, e)),
+                      ),
                   ],
                 ),
               ],
@@ -237,6 +245,15 @@ class EquipmentGrid extends StatelessWidget {
         );
       },
     );
+  }
+
+  List<Equipment> _ordered(String kind) {
+    final list = equipmentList.where((e) => e.kind == kind).toList();
+    if (owned.isEmpty) return list;
+    return [
+      ...list.where((e) => owned.contains(e.id)),
+      ...list.where((e) => !owned.contains(e.id)),
+    ];
   }
 
   Widget _card(BuildContext context, Equipment e) {

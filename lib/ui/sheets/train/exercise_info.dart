@@ -50,13 +50,13 @@ ExerciseInfo exerciseInfo(
   return ExerciseInfo(
     muscles: names.join(messages.code == 'en' ? ', ' : '、'),
     ready: ready,
-    recovery: ready
-        ? '可以练'
-        : left < .75
-        ? '不到 1 天恢复'
-        : '约 ${fmt((left * 2).round() / 2)} 天恢复',
+    recovery: ready ? '可以练' : daysLeftText(left),
   );
 }
+
+/// 还要几天恢复：半天精度，不到 0.75 天写“不到 1”。
+String daysLeftText(num left) =>
+    left < .75 ? '不到 1 天恢复' : '约 ${fmt((left * 2).round() / 2)} 天恢复';
 
 /// “上次 08/12 · 40×10  45×8”；没记录返回空。
 String lastLineOf(Map? last) {

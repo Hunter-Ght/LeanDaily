@@ -29,6 +29,9 @@ void main() {
     testWidgets('train screenshots ${dark ? 'dark' : 'light'}', (tester) async {
       final h = await Harness.pump(tester, dark: dark);
       await openTrain(tester);
+      // 默认进“推荐”，这里截的是“按部位”页
+      await tester.tap(find.text('按部位'));
+      await tester.pumpAndSettle();
       final scheme = dark ? 'dark' : 'light';
       await h.shot(tester, 'sheet-train-$scheme');
       await tester.tap(find.text('弹力带胸推').first);
@@ -75,6 +78,8 @@ void main() {
     expect(find.text('第 1 组的重量或次数不对'), findsOneWidget);
     await tester.enterText(input('次数'), '8');
     await tester.tap(find.text('更换'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('按部位'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('卧推').first);
     await tester.pumpAndSettle();

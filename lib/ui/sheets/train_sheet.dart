@@ -23,10 +23,19 @@ import 'train/controls.dart';
 import 'train/effort_editor.dart';
 import 'train/exercise_info.dart';
 import 'equipment_sheet.dart' show EquipmentGrid;
-import '../../app/routes.dart' show openEquipment, openGuide;
+import '../../domain/free_training.dart';
+import '../../app/routes.dart'
+    show openAlternatives, openEquipment, openGuide, openMyGym;
+
+// 上次选动作的方式：推荐 / 按部位 / 按器械；首次默认推荐。
+String _lastMode = '推荐';
 
 class TrainSheet extends StatefulWidget {
   const TrainSheet({super.key, this.preset});
+
+  @visibleForTesting
+  static void resetPickerMode() => _lastMode = '推荐';
+
   final Map<String, dynamic>? preset;
   @override
   State<TrainSheet> createState() => _TrainSheetState();
@@ -39,7 +48,11 @@ class _TrainSheetState extends State<TrainSheet> {
   late bool _unilateral, _picking;
   bool _initialized = false, _saving = false;
   // 选动作的方式；恢复状态缓存（换动作或选了肌肉后重算）；展开全部肌肉
-  bool _byEquipment = false, _allMuscles = false;
+  late String _mode;
+  bool _allMuscles = false;
+  // 记组页“换一个”按钮：当前动作有没有替代动作（按动作缓存）
+  String? _altKey;
+  bool _altHas = false;
   Map<String, dynamic>? _status;
   int _seq = 0;
   late List<Map<String, dynamic>> _rows;
@@ -75,6 +88,7 @@ class _TrainSheetState extends State<TrainSheet> {
     _part = records.defaultEx.containsKey(p['part'] ?? _lastPart)
         ? (p['part'] ?? _lastPart) as String
         : '胸';
+    _mode = p['mode'] == 'recommend' ? '推荐' : _lastMode;
     _exercise = p['exercise'] as String? ?? '';
     _picking = _exercise.isEmpty;
     _unilateral = p['uni'] == true;
@@ -310,9 +324,12 @@ class _TrainSheetState extends State<TrainSheet> {
       Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
         child: SheetSegments(
-          labels: const ['按部位', '按器械'],
-          value: _byEquipment ? '按器械' : '按部位',
-          onChanged: (s) => setState(() => _byEquipment = s == '按器械'),
+          labels: const ['推荐', '按部位', '按器械'],
+          value: _mode,
+          onChanged: (s) => setState(() {
+            _mode = s;
+            _lastMode = s;
+          }),
         ),
       ),
       Padding(
@@ -352,7 +369,7 @@ class _TrainSheetState extends State<TrainSheet> {
           ),
         ),
       ),
-      if (q.isEmpty && !_byEquipment) ...[
+      if (q.isEmpty && _mode == '按部位') ...[
         const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -428,9 +445,12 @@ class _TrainSheetState extends State<TrainSheet> {
                 Column(children: [for (final h in hits) _hitRow(h)]),
                 padding: 0,
               ),
-            if (q.isEmpty && _byEquipment)
-              EquipmentGrid(onOpen: _openEquipment),
-            if (q.isEmpty && !_byEquipment) ...[
+            if (q.isEmpty && _mode == '推荐') ..._recommendation(),
+            if (q.isEmpty && _mode == '按器械') ...[
+              _gymLine(),
+              EquipmentGrid(onOpen: _openEquipment, owned: context.app.myGym),
+            ],
+            if (q.isEmpty && _mode == '按部位') ...[
               if (recent.isNotEmpty) ...[
                 _label('最近练过'),
                 _card(
@@ -469,6 +489,241 @@ class _TrainSheetState extends State<TrainSheet> {
     }
     final hit = hits.firstWhere((h) => h.name == q, orElse: () => hits.first);
     _pick(hit.name, part: hit.part);
+  }
+
+  // 器械被占：打开替代弹层，选中后按普通换动作流程处理。
+  Future<void> _swap(String exercise) async {
+    final name = await openAlternatives(context, exercise);
+    if (name == null || !mounted) return;
+    await _pick(name, part: partOfExercise(name));
+  }
+
+  Future<void> _editGym() async {
+    await openMyGym(context);
+    if (mounted) setState(() {});
+  }
+
+  // 按器械页顶部：我的健身房当前状态和编辑入口。
+  Widget _gymLine() {
+    final p = context.pal;
+    final n = context.app.myGym.length;
+    return Semantics(
+      button: true,
+      child: Pressable(
+        onTap: _editGym,
+        child: Container(
+          key: const ValueKey('gym-line'),
+          constraints: const BoxConstraints(minHeight: 44),
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          alignment: Alignment.centerLeft,
+          child: LText(
+            n == 0 ? '我的健身房：不限 · 编辑' : '我的健身房：已选 $n 台 · 编辑',
+            style: TextStyle(
+              color: p.tintPress,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 推荐页：按肌肉恢复推荐现在能练的动作，再列出还在恢复的肌群。
+  List<Widget> _recommendation() {
+    final p = context.pal;
+    final app = context.app;
+    final owned = app.myGym;
+    _status ??= recoveryStatus(app);
+    final done = ((app.repo.recentByExercise()['last'] as Map).keys)
+        .cast<String>()
+        .toSet();
+    final groups = recommendNow(_status!, owned: owned, done: done);
+    final recovering = recoveringGroups(_status!, owned: owned);
+    return [
+      LText('按肌肉恢复推荐；器械被占就点“换一个”', style: AppText.hint(p)),
+      Semantics(
+        button: true,
+        child: Pressable(
+          onTap: _editGym,
+          child: Container(
+            key: const ValueKey('gym-entry'),
+            constraints: const BoxConstraints(minHeight: 44),
+            alignment: Alignment.centerLeft,
+            child: LText(
+              owned.isEmpty ? '设置我的健身房' : '只看我的健身房（${owned.length} 台器械）',
+              style: TextStyle(
+                color: p.tintPress,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+      if (groups.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Column(
+            key: const ValueKey('reco-empty'),
+            children: [
+              LText(
+                '现在没有适合练的动作',
+                style: TextStyle(
+                  color: p.text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              LText(
+                '肌肉都还在恢复，或“我的健身房”里的器械太少。也可以切到「按部位」自己选。',
+                textAlign: TextAlign.center,
+                style: AppText.hint(p),
+              ),
+            ],
+          ),
+        ),
+      for (final g in groups) ...[
+        Padding(
+          key: ValueKey('reco-group-${g.group}'),
+          padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
+          child: LText(
+            '${g.name} · ${g.daysSince == null
+                ? '还没练过'
+                : g.daysSince! < 1
+                ? '今天练过'
+                : '${g.daysSince!.floor()} 天前练过'}',
+            style: TextStyle(
+              color: p.text,
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        _card(
+          Column(children: [for (final e in g.exercises) _recoRow(e)]),
+          padding: 0,
+        ),
+      ],
+      if (recovering.isNotEmpty) ...[
+        _label('还在恢复'),
+        // 只展示：这些肌群现在不适合练，不提供入口。
+        _card(
+          Column(
+            children: [
+              for (final r in recovering)
+                Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: p.sep, width: 0.5),
+                    ),
+                  ),
+                  child: LText(
+                    '${r.name} · ${daysLeftText(r.daysLeft)}',
+                    style: TextStyle(color: p.secondary, fontSize: 15),
+                  ),
+                ),
+            ],
+          ),
+          padding: 0,
+        ),
+      ],
+    ];
+  }
+
+  Widget _recoRow(FreeExercise e) {
+    final p = context.pal;
+    return Container(
+      key: ValueKey('reco-${e.name}'),
+      padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: p.sep, width: 0.5)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Semantics(
+              button: true,
+              label: AppMessages.of(context).text(e.name),
+              child: Pressable(
+                onTap: () => _pick(e.name, part: e.part),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      ExerciseThumb(
+                        ex: {'name': e.name, 'part': e.part},
+                        size: 44,
+                        radius: 12,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 2,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                LText(
+                                  e.name,
+                                  style: TextStyle(
+                                    color: p.text,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                if (e.done)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 1,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: p.fill,
+                                      borderRadius: BorderRadius.circular(999),
+                                    ),
+                                    child: LText(
+                                      '练过',
+                                      style: TextStyle(
+                                        color: p.secondary,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            LText(e.equipment ?? '徒手', style: AppText.hint(p)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          SheetButton(
+            '换一个',
+            () => _swap(e.name),
+            key: ValueKey('swap-${e.name}'),
+            icon: 'repeat',
+            pill: true,
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _openEquipment(Equipment e) async {
@@ -796,6 +1051,19 @@ class _TrainSheetState extends State<TrainSheet> {
     ];
   }
 
+  bool _hasAlternatives() {
+    if (_altKey != _exercise) {
+      _altKey = _exercise;
+      _altHas = alternativesFor(
+        _status ??= recoveryStatus(context.app),
+        _exercise,
+        owned: context.app.myGym,
+        limit: 1,
+      ).isNotEmpty;
+    }
+    return _altHas;
+  }
+
   // 动作头部：缩略图、名称、主练肌肉、恢复状态、示范入口。
   Widget _headerCard(ExerciseInfo info) {
     final p = context.pal;
@@ -856,15 +1124,30 @@ class _TrainSheetState extends State<TrainSheet> {
               ),
             ],
           ),
-          if (guideFor({'name': _exercise}) != null)
+          if (guideFor({'name': _exercise}) != null || _hasAlternatives())
             Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: SheetButton(
-                  '看示范',
-                  () => openGuide(context, _exercise),
-                  soft: true,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    if (guideFor({'name': _exercise}) != null)
+                      SheetButton(
+                        '看示范',
+                        () => openGuide(context, _exercise),
+                        soft: true,
+                      ),
+                    if (_hasAlternatives())
+                      SheetButton(
+                        '器械被占？换一个',
+                        () => _swap(_exercise),
+                        key: const ValueKey('busy-swap'),
+                        icon: 'repeat',
+                        soft: true,
+                      ),
+                  ],
                 ),
               ),
             ),

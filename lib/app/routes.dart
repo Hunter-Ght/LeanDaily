@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import '../ui/kit/menu.dart';
 import '../ui/me/about_pages.dart';
 import '../ui/kit/sheet.dart';
+import '../ui/sheets/alternatives_sheet.dart';
 import '../ui/sheets/android_settings_sheet.dart';
 import '../domain/equipment.dart' show Equipment;
 import '../ui/sheets/edit_set_sheet.dart';
@@ -10,6 +11,7 @@ import '../ui/sheets/equipment_sheet.dart';
 import '../ui/sheets/goals_sheet.dart';
 import '../ui/sheets/guide_sheet.dart';
 import '../ui/sheets/meal_sheet.dart';
+import '../ui/sheets/my_gym_sheet.dart';
 import '../ui/sheets/muscle_exercises_sheet.dart';
 import '../ui/sheets/plan_editor_sheet.dart';
 import '../ui/onboarding/onboarding_flow.dart';
@@ -79,6 +81,14 @@ Future<void> openGuide(BuildContext context, String exercise, {String? iso}) =>
 /// 器械详情；选了动作就返回动作名。
 Future<String?> openEquipment(BuildContext context, Equipment equipment) =>
     showAppSheet<String>(context, (_) => EquipmentSheet(equipment: equipment));
+
+/// 器械被占时换一个练同一块肌肉的动作；选了就返回动作名。
+Future<String?> openAlternatives(BuildContext context, String exercise) =>
+    showAppSheet<String>(context, (_) => AlternativesSheet(exercise: exercise));
+
+/// 我的健身房：勾选常去的健身房有哪些器械。
+Future<void> openMyGym(BuildContext context) =>
+    showAppSheet<void>(context, (_) => const MyGymSheet());
 Future<void> openDayPreview(BuildContext context, String iso) =>
     showAppSheet<void>(context, (_) => PreviewSheet(iso: iso));
 Future<void> openMuscleExercises(BuildContext context, String muscleId) =>

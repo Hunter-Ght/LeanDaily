@@ -589,6 +589,15 @@ class _TodayPageState extends State<TodayPage> {
             onWarm: () => patch({'warm': !jsTruthy(m.state['warm'])}),
           ),
         ),
+        // 次要入口：不按计划时看现在能练什么，训练日和休息日都显示。
+        Align(
+          key: const ValueKey('free-training'),
+          alignment: Alignment.center,
+          child: TodayButton(
+            '自由练：现在能练什么 ›',
+            onTap: () => openTrainSheet(context, preset: {'mode': 'recommend'}),
+          ),
+        ),
         TodayNutritionStrip(key: const ValueKey('nutrition'), model: m),
         TodayWeekCard(key: const ValueKey('week'), model: m),
       ];

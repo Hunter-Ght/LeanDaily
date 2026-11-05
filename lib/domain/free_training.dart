@@ -38,8 +38,11 @@ Map _m(Map status, String id) => (status['byMuscle'] as Map)[id] as Map;
 bool exerciseReady(Map status, String name) {
   final mus = _muscles(name);
   if (mus.isEmpty) return false;
+  final top = mus.values.reduce(math.max);
+  // 主要发力肌肉：权重 ≥ 0.5；全都低于 0.5 的动作（如髋内收机）取权重最高的那些，
+  // 否则空条件会让它在肌肉没恢复时也被当成能练。
   return mus.entries
-      .where((e) => e.value >= 0.5)
+      .where((e) => e.value >= math.min(0.5, top))
       .every((e) => _m(status, e.key)['recovered'] == true);
 }
 
@@ -64,8 +67,12 @@ List<String> freePool() {
   ];
 }
 
-String? _equipmentName(String name, Set<String> owned) {
-  final eq = equipmentFor(name);
+String? _equipmentName(
+  String name,
+  Set<String> owned, [
+  Set<String> busy = const {},
+]) {
+  final eq = equipmentFor(name).where((e) => !busy.contains(e.id)).toList();
   if (eq.isEmpty) return null;
   return (eq.where((e) => owned.contains(e.id)).firstOrNull ?? eq.first).name;
 }
@@ -74,20 +81,24 @@ FreeExercise _entry(
   Map status,
   String name,
   Set<String> owned,
-  Set<String> done,
-) {
+  Set<String> done, [
+  Set<String> busy = const {},
+]) {
   final mv = musclesOf(name, partOfExercise(name))!;
   return (
     name: name,
     part: partOfExercise(name),
     primary: mv['primary'] as String,
-    equipment: _equipmentName(name, owned),
+    equipment: _equipmentName(name, owned, busy),
     ready: exerciseReady(status, name),
     done: done.contains(name),
   );
 }
 
-/// 现在能练什么：已恢复的肌群，越久没练越靠前（没练过的最前），
+/// 小肌群：排序时降权。
+const _smallGroups = {'arms', 'abs', 'calves'};
+
+/// 现在能练什么：有可练动作的肌群，越久没练越靠前、大肌群优先，
 /// 每个肌群给最多 [perGroup] 个动作：练过的、有器械的优先。
 /// [done] 是用户记录过的动作名；[owned] 是“我的健身房”的器械 id，空表示不限。
 List<FreeGroup> recommendNow(
@@ -106,16 +117,22 @@ List<FreeGroup> recommendNow(
     ];
     // 只要有一个动作的主要发力肌肉都恢复了就推荐（下背累不影响高位下拉）。
     if (members.isEmpty) continue;
-    final since = members
-        .map((m) => m['daysSince'] as num?)
-        .fold<num?>(null, (a, b) => b == null ? a : a == null ? b : math.min(a, b));
     final candidates = [
       for (final name in pool)
-        if (exerciseAvailable(name, owned))
-          _entry(status, name, owned, done),
+        if (exerciseAvailable(name, owned)) _entry(status, name, owned, done),
     ].where((e) => e.ready && MUSCLE[e.primary]!['group'] == id).toList();
     if (candidates.isEmpty) continue;
-    int rank(FreeExercise e) => (e.done ? 0 : 2) + (e.equipment != null ? 0 : 1);
+    // 距上次训练：只看推荐动作的主练肌肉（推胸带到前束，不该让侧平举显示“今天练过”）。
+    final primaries = {for (final e in candidates) e.primary};
+    final since = members
+        .where((m) => primaries.contains(m['id']))
+        .map((m) => m['daysSince'] as num?)
+        .fold<num?>(
+          null,
+          (a, b) => b == null ? a : (a == null ? b : math.min(a, b)),
+        );
+    int rank(FreeExercise e) =>
+        (e.done ? 0 : 2) + (e.equipment != null ? 0 : 1);
     final indexed = candidates.indexed.toList()
       ..sort((a, b) {
         final r = rank(a.$2).compareTo(rank(b.$2));
@@ -128,11 +145,14 @@ List<FreeGroup> recommendNow(
       exercises: [for (final e in indexed.take(perGroup)) e.$2],
     ));
   }
-  // 没练过的最前，其余按距上次训练天数从久到近；同样时按 GROUPS 顺序。
+  // 越久没练越靠前；大肌群优先，免得从不练小腿的人每次都先看到小腿。
+  // 没练过按 14 天算，再久也封顶 14 天；同分按 GROUPS 顺序。
   final order = {for (final (i, g) in GROUPS.indexed) g['id']: i};
+  double score(FreeGroup g) =>
+      math.min(g.daysSince ?? 14, 14) *
+      (_smallGroups.contains(g.group) ? 0.5 : 1);
   out.sort((a, b) {
-    final da = a.daysSince ?? 1e9, db = b.daysSince ?? 1e9;
-    final c = db.compareTo(da);
+    final c = score(b).compareTo(score(a));
     return c != 0 ? c : order[a.group]!.compareTo(order[b.group]!);
   });
   return out;
@@ -153,7 +173,11 @@ List<RecoveringGroup> recoveringGroups(
           (m['daysLeft'] as num).toDouble(),
     ];
     if (left.isNotEmpty) {
-      out.add((group: g['id']!, name: g['name']!, daysLeft: left.reduce(math.max)));
+      out.add((
+        group: g['id']!,
+        name: g['name']!,
+        daysLeft: left.reduce(math.max),
+      ));
     }
   }
   out.sort((a, b) => a.daysLeft.compareTo(b.daysLeft));
@@ -194,7 +218,8 @@ List<FreeExercise> alternativesFor(
     // 同一台器械上的动作不算替代（器械正被占着）；徒手动作总能做。
     if (eq.isNotEmpty && eq.difference(busy).isEmpty) continue;
     scored.add((
-      _entry(status, other, owned, done),
+      // 显示的器械避开正被占的那台（提踵机被占时，提踵显示“哑铃”）。
+      _entry(status, other, owned, done, busy),
       _similarity(mus, mv['muscles'] as Map<String, num>),
     ));
   }
