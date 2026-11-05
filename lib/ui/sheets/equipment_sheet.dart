@@ -5,60 +5,116 @@ import '../../l10n/localized_text.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
-import '../../app/routes.dart';
+import '../../app/routes.dart' show openGuide;
 import '../../domain/equipment.dart';
 import '../../domain/guide.dart';
 import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../kit/badge.dart';
-import '../kit/exercise_thumb.dart';
+import '../kit/exercise_demo.dart';
 import '../kit/pressable.dart';
-import '../kit/sheet.dart';
 import 'train/controls.dart';
 import 'train/exercise_info.dart';
+import 'train/muscle_focus.dart';
 
-/// 器械详情：上器械前先调好什么、这台器械能练的动作，点“记录这个动作”带回动作名。
-class EquipmentSheet extends StatelessWidget {
-  const EquipmentSheet({super.key, required this.equipment});
+/// 器械详情页（记一组弹层里的一页）：自动播放示范、动作选择片、练哪里、恢复、上次记录、上器械前先调好。
+/// 当前选中的动作由上层持有，返回到这一页时不丢；“记录这个动作”按钮在上层的底部栏。
+class EquipmentDetail extends StatelessWidget {
+  const EquipmentDetail({
+    super.key,
+    required this.equipment,
+    required this.selected,
+    required this.onSelect,
+  });
   final Equipment equipment;
+  final String selected;
+  final ValueChanged<String> onSelect;
 
   @override
   Widget build(BuildContext context) {
     final p = context.pal, e = equipment;
     final app = context.app;
     final status = recoveryStatus(app);
-    final recent = app.repo.recentByExercise();
-    return AppSheet(
-      title: e.name,
-      cancelLabel: '关闭',
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+    final last = (app.repo.recentByExercise()['last'] as Map)[selected] as Map?;
+    final part = partOfExercise(selected);
+    final info = exerciseInfo(AppMessages.of(context), status, selected, part);
+    final line = lastLineOf(last);
+    final hasGuide = guideFor({'name': selected}) != null;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (e.demo != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: AspectRatio(
-                aspectRatio: 3 / 2,
-                child: ColoredBox(
-                  color: p.fill,
-                  child: Image.asset(
-                    frameAsset(e.demo!, 0),
-                    fit: BoxFit.cover,
-                    cacheWidth:
-                        (MediaQuery.sizeOf(context).width *
-                                MediaQuery.devicePixelRatioOf(context))
-                            .round(),
-                    errorBuilder: (_, _, _) => Center(
-                      child: ToneBadge.part(
-                        partOfExercise(e.exercises.first),
-                        size: 56,
-                      ),
+          LayoutBuilder(
+            builder: (context, box) {
+              final size = [
+                box.maxWidth,
+                420.0,
+                MediaQuery.sizeOf(context).height * .42,
+              ].reduce((a, b) => a < b ? a : b);
+              return Center(
+                child: hasGuide
+                    ? ExerciseDemo(
+                        key: const ValueKey('equipment-demo'),
+                        ex: {'name': selected, 'part': part},
+                        size: size,
+                      )
+                    : _NoDemo(part: part, size: size),
+              );
+            },
+          ),
+          if (e.exercises.length > 1) ...[
+            const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final name in e.exercises)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _chip(context, name, name == selected),
                     ),
-                  ),
-                ),
+                ],
               ),
             ),
+          ],
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 14, 4, 0),
+            child: LText(
+              selected,
+              key: const ValueKey('equipment-selected'),
+              style: TextStyle(
+                color: p.text,
+                fontSize: 22,
+                height: 1.2,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                if (info.ready != null) RecoveryTag(info),
+                if (hasGuide)
+                  SheetButton(
+                    '动作要点',
+                    () => openGuide(context, selected),
+                    soft: true,
+                  ),
+              ],
+            ),
+          ),
+          if (line.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
+              child: LText(line, maxLines: 2, style: AppText.hint(p)),
+            ),
+          _label(p, '练哪里'),
+          MuscleFocusCard(name: selected, part: part),
           if (e.setup.isNotEmpty) ...[
             _label(p, '上器械前先调好'),
             Container(
@@ -104,9 +160,6 @@ class EquipmentSheet extends StatelessWidget {
               ),
             ),
           ],
-          _label(p, '能练的动作'),
-          for (final name in e.exercises)
-            _row(context, name, status, (recent['last'] as Map)[name] as Map?),
         ],
       ),
     );
@@ -117,85 +170,59 @@ class EquipmentSheet extends StatelessWidget {
     child: LText(text, style: AppText.hint(p)),
   );
 
-  Widget _row(
-    BuildContext context,
-    String name,
-    Map<String, dynamic> status,
-    Map? last,
-  ) {
+  Widget _chip(BuildContext context, String name, bool on) {
     final p = context.pal;
-    final part = partOfExercise(name);
-    final info = exerciseInfo(AppMessages.of(context), status, name, part);
-    final line = lastLineOf(last);
+    return Semantics(
+      button: true,
+      selected: on,
+      label: AppMessages.of(context).text(name),
+      child: Pressable(
+        onTap: () => onSelect(name),
+        child: Container(
+          key: ValueKey('equipment-exercise-$name'),
+          constraints: const BoxConstraints(minHeight: 44),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: on ? p.tint : p.card,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: LText(
+            name,
+            style: TextStyle(
+              color: on ? p.onTint : p.text,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 还没有示范动画的动作：部位图标加说明，不留空白。
+class _NoDemo extends StatelessWidget {
+  const _NoDemo({required this.part, required this.size});
+  final String part;
+  final double size;
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
     return Container(
-      key: ValueKey('equipment-exercise-$name'),
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(12),
+      key: const ValueKey('equipment-no-demo'),
+      width: size,
+      height: size * 0.62,
       decoration: BoxDecoration(
-        color: p.card,
-        borderRadius: BorderRadius.circular(18),
+        color: p.fill,
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ExerciseThumb(ex: {'name': name, 'part': part}, size: 52),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LText(
-                      name,
-                      style: TextStyle(
-                        color: p.text,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (info.muscles.isNotEmpty)
-                      LText(info.muscles, style: AppText.hint(p)),
-                    if (info.ready != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: RecoveryTag(info),
-                        ),
-                      ),
-                    if (line.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: LText(
-                          line,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppText.hint(p),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ToneBadge.part(part, size: 56),
           const SizedBox(height: 10),
-          // 动作多的器械（龙门架有 7 个）不让每行都铺满大按钮。
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (guideFor({'name': name}) != null) ...[
-                SheetButton('看示范', () => openGuide(context, name), soft: true),
-                const SizedBox(width: 8),
-              ],
-              SheetButton(
-                '记录这个动作',
-                () => SheetController.of(context).close(name),
-                primary: true,
-              ),
-            ],
-          ),
+          LText('示范制作中', style: AppText.hint(p)),
         ],
       ),
     );
@@ -254,6 +281,21 @@ class EquipmentGrid extends StatelessWidget {
       ...list.where((e) => owned.contains(e.id)),
       ...list.where((e) => !owned.contains(e.id)),
     ];
+  }
+
+  // 练哪些大肌群：“练：胸 · 肩”；有氧器械没有肌群，写动作数。
+  Widget _trains(BuildContext context, Equipment e) {
+    final p = context.pal;
+    final messages = AppMessages.of(context);
+    final groups = equipmentTrains(e);
+    return LText(
+      groups.isEmpty
+          ? '${e.exercises.length} 个动作'
+          : '${messages.text('练：')}${groups.map(messages.text).join(' · ')}',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: AppText.hint(p),
+    );
   }
 
   Widget _card(BuildContext context, Equipment e) {
@@ -315,7 +357,7 @@ class EquipmentGrid extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    LText('${e.exercises.length} 个动作', style: AppText.hint(p)),
+                    _trains(context, e),
                   ],
                 ),
               ),

@@ -1,3 +1,5 @@
+import 'package:leandaily/l10n/app_messages.dart';
+
 import '../../l10n/localized_text.dart';
 
 import 'package:flutter/widgets.dart';
@@ -90,6 +92,14 @@ class AlternativesSheet extends StatelessWidget {
     );
   }
 
+  // “器械名 · 练大腿前面”
+  String _line(BuildContext context, FreeExercise e) {
+    final messages = AppMessages.of(context);
+    final plain = plainMusclesOf(messages, e.name, e.part);
+    final base = messages.text(e.equipment ?? '徒手');
+    return plain.isEmpty ? base : '$base · ${messages.text('练：')}$plain';
+  }
+
   Widget _row(BuildContext context, FreeExercise e, ExerciseInfo info) {
     final p = context.pal;
     return Container(
@@ -130,7 +140,10 @@ class AlternativesSheet extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          LText(e.equipment ?? '徒手', style: AppText.hint(p)),
+                          LText(
+                            _line(context, e),
+                            style: AppText.hint(p),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
                             child: RecoveryTag(info),

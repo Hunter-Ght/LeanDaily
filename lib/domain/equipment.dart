@@ -1,7 +1,7 @@
 // 健身房器械库：站在器械前能按“看到的东西”找到动作、恢复状态和标准做法。
 // 动作名一律用记录里的规范名（records.defaultEx / movements 里的名字），
 // 这样肌肉恢复、示范图和历史记录都能对上。
-import 'movements.dart' show MUSCLE, musclesOf;
+import 'movements.dart' show GROUP, MUSCLE, muscleRoles, musclesOf;
 import 'records.dart' show defaultEx;
 
 class Equipment {
@@ -395,4 +395,17 @@ List<Equipment> searchEquipment(
     for (final e in equipmentList)
       if (hit(e.name) || e.aliases.any(hit) || e.exercises.any(hit)) e,
   ];
+}
+
+/// 这台器械练哪些大肌群（取所有动作的主练肌肉所属肌群名，按出现顺序去重）；有氧器械为空。
+List<String> equipmentTrains(Equipment e, {int max = 3}) {
+  final names = <String>[];
+  for (final ex in e.exercises) {
+    if (musclesOf(ex) == null) continue;
+    for (final id in muscleRoles(ex).main) {
+      final name = GROUP[MUSCLE[id]!['group']]!['name']!;
+      if (!names.contains(name)) names.add(name);
+    }
+  }
+  return names.take(max).toList();
 }

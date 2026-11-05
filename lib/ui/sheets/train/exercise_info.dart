@@ -13,7 +13,19 @@ import '../../kit/badge.dart';
 
 /// 一个动作的主练肌肉和恢复状态，器械弹层与记组页头部共用。
 class ExerciseInfo {
-  const ExerciseInfo({this.muscles = '', this.ready, this.recovery = ''});
+  const ExerciseInfo({
+    this.muscles = '',
+    this.plain = '',
+    this.plainPro = '',
+    this.ready,
+    this.recovery = '',
+  });
+
+  /// 主练肌肉大白话位置（如“大腿前面”），最多两块，给空间紧的行用。
+  final String plain;
+
+  /// 同上，括号里带专业名（“大腿前面（股四头肌）”），给头部卡用。
+  final String plainPro;
 
   /// 主练肌肉中文名（权重 ≥ 0.5），按界面语言连好；有氧或认不出的动作为空。
   final String muscles;
@@ -47,10 +59,54 @@ ExerciseInfo exerciseInfo(
   final me = jsonMap(jsonMap(status['byMuscle'])[mv['primary']]);
   final ready = me['daysSince'] == null || me['recovered'] == true;
   final left = jsNumber(me['daysLeft']);
+  final roles = muscleRoles(name, part);
   return ExerciseInfo(
     muscles: names.join(messages.code == 'en' ? ', ' : '、'),
+    plain: muscleList(messages, roles.main, pro: false, max: 2),
+    plainPro: muscleList(messages, roles.main),
     ready: ready,
     recovery: ready ? '可以练' : daysLeftText(left),
+  );
+}
+
+const _plainEnough = {'chest_up', 'chest', 'calves', 'lower_back', 'mid_back'};
+
+/// 肌肉的大白话位置，可选括号带专业名：“大腿前面（股四头肌）”。
+String muscleLabel(AppMessages messages, String id, {bool pro = true}) {
+  final plain = messages.text(MUSCLE_PLAIN[id] ?? '${MUSCLE[id]?['name']}');
+  // 专业名和大白话差不多的（中下胸、小腿、下背、中背）不再重复加括号。
+  if (!pro || MUSCLE_PLAIN[id] == null || _plainEnough.contains(id)) {
+    return plain;
+  }
+  final name = messages.text('${MUSCLE[id]!['name']}');
+  return messages.code == 'en' ? '$plain ($name)' : '$plain（$name）';
+}
+
+/// 一组肌肉连成一行文字；[max] 限制块数。
+String muscleList(
+  AppMessages messages,
+  List<String> ids, {
+  bool pro = true,
+  int? max,
+}) => [
+  for (final id in (max == null ? ids : ids.take(max)))
+    muscleLabel(messages, id, pro: pro),
+].join(messages.code == 'en' ? ', ' : '、');
+
+/// 主练肌肉的大白话位置（不带专业名），认不出的动作返回空。空间紧的行用。
+String plainMusclesOf(
+  AppMessages messages,
+  String name,
+  String part, {
+  int max = 2,
+}) {
+  final mv = musclesOf(name, part);
+  if (mv == null || mv['matched'] == 'part') return '';
+  return muscleList(
+    messages,
+    muscleRoles(name, part).main,
+    pro: false,
+    max: max,
   );
 }
 

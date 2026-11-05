@@ -22,13 +22,16 @@ import '../kit/sheet.dart';
 import 'train/controls.dart';
 import 'train/effort_editor.dart';
 import 'train/exercise_info.dart';
-import 'equipment_sheet.dart' show EquipmentGrid;
+import 'equipment_sheet.dart' show EquipmentDetail, EquipmentGrid;
 import '../../domain/free_training.dart';
 import '../../app/routes.dart'
-    show openAlternatives, openEquipment, openGuide, openMyGym;
+    show openAlternatives, openGuide, openMyGym;
 
 // 上次选动作的方式：推荐 / 按部位 / 按器械；首次默认推荐。
 String _lastMode = '推荐';
+
+// 记一组弹层里的三级页：选动作 → 器械详情（可选）→ 记组。
+enum _Page { pick, equipment, log }
 
 class TrainSheet extends StatefulWidget {
   const TrainSheet({super.key, this.preset});
@@ -45,7 +48,14 @@ class _TrainSheetState extends State<TrainSheet> {
   static String _lastPart = '胸';
   late String _part, _exercise, _date;
   String _query = '', _note = '', _error = '';
-  late bool _unilateral, _picking;
+  late bool _unilateral;
+  // 当前页；记组页是从哪一页进来的（null = 外部直接带着动作打开，没有上一层）
+  late _Page _page;
+  _Page? _backTo;
+  int _dir = 1;
+  Equipment? _equipment;
+  String _equipSel = '';
+  double _pickerOffset = 0;
   bool _initialized = false, _saving = false;
   // 选动作的方式；恢复状态缓存（换动作或选了肌肉后重算）；展开全部肌肉
   late String _mode;
@@ -90,7 +100,7 @@ class _TrainSheetState extends State<TrainSheet> {
         : '胸';
     _mode = p['mode'] == 'recommend' ? '推荐' : _lastMode;
     _exercise = p['exercise'] as String? ?? '';
-    _picking = _exercise.isEmpty;
+    _page = _exercise.isEmpty ? _Page.pick : _Page.log;
     _unilateral = p['uni'] == true;
     _rows = (p['rows'] as List? ?? []).map((r) => _row(r as Map)).toList();
     if (_rows.isEmpty) _rows.add(_row());
@@ -135,10 +145,11 @@ class _TrainSheetState extends State<TrainSheet> {
     part ??= musclesOf(name, _part)?['matched'] == 'keyword'
         ? partOfExercise(name)
         : null;
-    setState(() {
+    final from = _page == _Page.log ? _backTo : _page;
+    _show(_Page.log, () {
+      _backTo = from;
       if (part != null) _part = part;
       _exercise = name;
-      _picking = false;
       if (_last(name) != null) {
         _unilateral = last.any((s) => '${s['notes']}'.contains('单边'));
       } else if (name.contains('哑铃')) {
@@ -146,7 +157,69 @@ class _TrainSheetState extends State<TrainSheet> {
       }
       if (!_filled) _rows = [_row()];
     });
-    _scroll.jumpTo(0);
+  }
+
+  // 换页：前进向左推、返回向右推；选动作页的滚动位置回来时恢复。
+  void _show(_Page next, [VoidCallback? change]) {
+    if (_page == _Page.pick && _scroll.hasClients) {
+      _pickerOffset = _scroll.offset;
+    }
+    final moved = next != _page;
+    setState(() {
+      change?.call();
+      if (moved) _dir = next.index > _page.index ? 1 : -1;
+      _page = next;
+    });
+    if (!_scroll.hasClients) return;
+    final target = moved && next == _Page.pick ? _pickerOffset : 0.0;
+    void apply() {
+      if (!mounted || !_scroll.hasClients) return;
+      final max = _scroll.position.maxScrollExtent;
+      _scroll.jumpTo(target.clamp(0.0, max));
+    }
+
+    apply();
+    if (target > 0) {
+      // 内容高度在转场动画里才长到位，位置再校一次。
+      WidgetsBinding.instance.addPostFrameCallback((_) => apply());
+      Future.delayed(const Duration(milliseconds: 320), apply);
+    }
+  }
+
+  bool get _hasBack =>
+      _page == _Page.equipment || (_page == _Page.log && _backTo != null);
+
+  // 左上角“返回”、系统返回手势都走这里：回上一层，不关弹层。
+  Future<void> _back() async {
+    if (_page == _Page.equipment) {
+      _show(_Page.pick);
+      return;
+    }
+    if (_filled &&
+        !await showConfirm(
+          context,
+          title: '返回会清掉已填的组',
+          confirm: '返回',
+          danger: true,
+        )) {
+      return;
+    }
+    if (!mounted) return;
+    _show(_backTo!, () {
+      _rows = [_row()];
+      _exercise = '';
+      _unilateral = false;
+      _status = null;
+      _error = '';
+    });
+  }
+
+  Future<bool> _closeOrBack() async {
+    if (_hasBack) {
+      await _back();
+      return false;
+    }
+    return _confirmClose();
   }
 
   Future<void> _applyLast() async {
@@ -181,10 +254,7 @@ class _TrainSheetState extends State<TrainSheet> {
     if (_saving) return;
     setState(() => _error = '');
     if (_exercise.isEmpty) {
-      setState(() {
-        _error = '先选择动作';
-        _picking = true;
-      });
+      _show(_Page.pick, () => _error = '先选择动作');
       return;
     }
     final sets = _rows
@@ -267,11 +337,33 @@ class _TrainSheetState extends State<TrainSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: AppSheet(
-        title: '记一组',
-        onSave: _save,
+        title: _page == _Page.equipment ? _equipment!.name : '记一组',
+        cancelLabel: _hasBack ? '返回' : '取消',
+        onSave: _page == _Page.log ? _save : null,
         saveEnabled: !_saving,
-        confirmClose: _confirmClose,
+        confirmClose: _closeOrBack,
         scrollController: _scroll,
+        footer: _page == _Page.equipment
+            ? Padding(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  8,
+                  16,
+                  12 + MediaQuery.paddingOf(context).bottom,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SheetButton(
+                        '记录这个动作',
+                        () => _pick(_equipSel, part: partOfExercise(_equipSel)),
+                        primary: true,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -285,11 +377,21 @@ class _TrainSheetState extends State<TrainSheet> {
                   : const SizedBox.shrink(),
             ),
             PushSwitcher(
-              direction: _picking ? -1 : 1,
+              direction: _dir,
               child: Column(
-                key: ValueKey(_picking),
+                key: ValueKey(_page),
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _picking ? _picker() : _logger(),
+                children: switch (_page) {
+                  _Page.pick => _picker(),
+                  _Page.equipment => [
+                    EquipmentDetail(
+                      equipment: _equipment!,
+                      selected: _equipSel,
+                      onSelect: (name) => setState(() => _equipSel = name),
+                    ),
+                  ],
+                  _Page.log => _logger(),
+                },
               ),
             ),
           ],
@@ -638,6 +740,14 @@ class _TrainSheetState extends State<TrainSheet> {
     ];
   }
 
+  // “器械名 · 练大腿前面”；认不出肌肉的只写器械。
+  String _equipmentLine(String? equipment, String name, String part) {
+    final messages = AppMessages.of(context);
+    final plain = plainMusclesOf(messages, name, part);
+    final base = messages.text(equipment ?? '徒手');
+    return plain.isEmpty ? base : '$base · ${messages.text('练：')}$plain';
+  }
+
   Widget _recoRow(FreeExercise e) {
     final p = context.pal;
     return Container(
@@ -703,7 +813,10 @@ class _TrainSheetState extends State<TrainSheet> {
                                   ),
                               ],
                             ),
-                            LText(e.equipment ?? '徒手', style: AppText.hint(p)),
+                            LText(
+                              _equipmentLine(e.equipment, e.name, e.part),
+                              style: AppText.hint(p),
+                            ),
                           ],
                         ),
                       ),
@@ -726,10 +839,10 @@ class _TrainSheetState extends State<TrainSheet> {
     );
   }
 
-  Future<void> _openEquipment(Equipment e) async {
-    final name = await openEquipment(context, e);
-    if (name == null || !mounted) return;
-    await _pick(name, part: partOfExercise(name));
+  void _openEquipment(Equipment e) {
+    _equipment = e;
+    _equipSel = e.exercises.first;
+    _show(_Page.equipment);
   }
 
   Widget _commonChip(String name) {
@@ -1092,10 +1205,13 @@ class _TrainSheetState extends State<TrainSheet> {
                         letterSpacing: -0.44,
                       ),
                     ),
-                    if (info.muscles.isNotEmpty)
+                    if (info.plainPro.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: LText(info.muscles, style: AppText.hint(p)),
+                        child: LText(
+                          AppMessages.of(context).text('练：') + info.plainPro,
+                          style: AppText.hint(p),
+                        ),
                       ),
                     if (info.ready != null)
                       Padding(
@@ -1118,7 +1234,7 @@ class _TrainSheetState extends State<TrainSheet> {
               const SizedBox(width: 8),
               SheetButton(
                 '更换',
-                () => setState(() => _picking = true),
+                () => _show(_Page.pick),
                 icon: 'repeat',
                 pill: true,
               ),

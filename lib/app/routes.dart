@@ -5,9 +5,7 @@ import '../ui/me/about_pages.dart';
 import '../ui/kit/sheet.dart';
 import '../ui/sheets/alternatives_sheet.dart';
 import '../ui/sheets/android_settings_sheet.dart';
-import '../domain/equipment.dart' show Equipment;
 import '../ui/sheets/edit_set_sheet.dart';
-import '../ui/sheets/equipment_sheet.dart';
 import '../ui/sheets/goals_sheet.dart';
 import '../ui/sheets/guide_sheet.dart';
 import '../ui/sheets/meal_sheet.dart';
@@ -77,10 +75,6 @@ Future<void> openGuide(BuildContext context, String exercise, {String? iso}) =>
       context,
       (_) => GuideSheet(exercise: exercise, iso: iso),
     );
-
-/// 器械详情；选了动作就返回动作名。
-Future<String?> openEquipment(BuildContext context, Equipment equipment) =>
-    showAppSheet<String>(context, (_) => EquipmentSheet(equipment: equipment));
 
 /// 器械被占时换一个练同一块肌肉的动作；选了就返回动作名。
 Future<String?> openAlternatives(BuildContext context, String exercise) =>

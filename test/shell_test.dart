@@ -36,10 +36,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('记一组训练'));
     await tester.pumpAndSettle();
-    expect(find.text('保存'), findsOneWidget);
+    // 选动作页没有保存，标题和左上“取消”在
+    expect(find.text('记一组'), findsOneWidget);
     await tester.fling(find.text('记一组'), const Offset(0, 500), 2000);
     await tester.pumpAndSettle();
-    expect(find.text('保存'), findsNothing);
+    expect(find.text('记一组'), findsNothing);
   });
 
   testWidgets('four dock tabs and wide rail', (tester) async {
