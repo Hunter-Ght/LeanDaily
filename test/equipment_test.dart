@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/equipment.dart';
 import 'package:leandaily/domain/guide.dart';
@@ -58,14 +60,13 @@ void main() {
 
   test('search uses translated names and custom exercises', () {
     expect(
-      searchExercises('row', translate: (s) => s == '坐姿划船' ? 'Seated row' : s)
-          .map((h) => h.name),
+      searchExercises(
+        'row',
+        translate: (s) => s == '坐姿划船' ? 'Seated row' : s,
+      ).map((h) => h.name),
       contains('坐姿划船'),
     );
-    expect(
-      searchExercises('我的动作', extra: ['我的动作']).single.name,
-      '我的动作',
-    );
+    expect(searchExercises('我的动作', extra: ['我的动作']).single.name, '我的动作');
   });
 
   test('part is inferred for exercises outside the default list', () {
@@ -83,7 +84,10 @@ void main() {
 
   test('equipmentFor resolves aliases', () {
     expect(equipmentFor('倒蹬').single.id, 'leg-press');
-    expect(equipmentFor('哑铃卧推').map((e) => e.id), containsAll(['dumbbell', 'bench']));
+    expect(
+      equipmentFor('哑铃卧推').map((e) => e.id),
+      containsAll(['dumbbell', 'bench']),
+    );
     expect(equipmentFor('不存在'), isEmpty);
   });
 
@@ -115,5 +119,19 @@ void main() {
     // 权重都低于 0.75 的动作也至少有一块主练肌肉
     expect(muscleRoles('髋内收机').main, hasLength(1));
     expect(muscleRoles('跑步机').main, isEmpty);
+  });
+
+  test('every equipment exercise has a demo with cover frames', () {
+    for (final e in equipmentList) {
+      if (e.kind == '有氧') continue;
+      expect(e.demo, isNotNull, reason: '${e.name} 没有封面');
+      for (final name in e.exercises) {
+        final g = guideFor({'name': name});
+        expect(g, isNotNull, reason: '$name 没有示范');
+        for (final f in g!['frames'] as List) {
+          expect(File(f as String).existsSync(), isTrue, reason: f);
+        }
+      }
+    }
   });
 }

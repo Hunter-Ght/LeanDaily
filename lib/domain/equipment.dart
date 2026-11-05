@@ -116,6 +116,7 @@ const equipmentList = <Equipment>[
     kind: '固定器械',
     exercises: ['哈克深蹲'],
     aliases: ['哈克', '哈克机', 'hack squat'],
+    demo: 'hack-squat',
     setup: ['肩膀顶住肩垫，背贴靠板', '脚放在踏板中部、与肩同宽', '蹲到大腿约水平再站起，膝盖跟脚尖方向一致'],
   ),
   Equipment(
@@ -124,6 +125,7 @@ const equipmentList = <Equipment>[
     kind: '固定器械',
     exercises: ['史密斯深蹲', '史密斯卧推'],
     aliases: ['史密斯', '史密斯架', 'smith machine', 'smith'],
+    demo: 'smith-squat',
     setup: ['杠铃沿固定轨道走，先找到挂钩位置，旋转手腕即可挂上', '开始前把安全挡块调到略低于最低位置', '深蹲时脚可稍微站在杠铃前方'],
   ),
   Equipment(
@@ -150,6 +152,7 @@ const equipmentList = <Equipment>[
     kind: '固定器械',
     exercises: ['髋外展机', '髋内收机'],
     aliases: ['夹腿机', '开腿机', '外展机', '内收机', '臀中肌', 'hip abduction', 'hip adduction'],
+    demo: 'hip-abduction',
     setup: ['外展：腿垫在膝盖外侧，向外打开', '内收：腿垫在膝盖内侧，向内夹紧', '先调起始角度，开合幅度以不疼为准'],
   ),
   Equipment(
@@ -194,6 +197,7 @@ const equipmentList = <Equipment>[
     kind: '固定器械',
     exercises: ['坐姿臂屈伸机'],
     aliases: ['器械臂屈伸', '三头机', '坐姿下压机', 'dip machine', 'triceps machine'],
+    demo: 'seated-dip',
     setup: ['调座椅，让握把在身体两侧', '上身挺直，手肘贴近身体', '往下压到手臂伸直，回放时不要耸肩'],
   ),
   Equipment(
@@ -251,6 +255,7 @@ const equipmentList = <Equipment>[
     kind: '自由重量',
     exercises: ['T杠划船'],
     aliases: ['T杠', '地雷架', 'landmine', 't-bar row'],
+    demo: 'tbar-row',
     setup: ['杠一端固定在地雷架里，另一端加片', '髋部折叠、背挺直，把杠拉向腹部', '重量从一片开始加'],
   ),
   Equipment(
@@ -268,6 +273,7 @@ const equipmentList = <Equipment>[
     kind: '自由重量',
     exercises: ['健腹轮'],
     aliases: ['腹肌轮', '滚轮', 'ab wheel'],
+    demo: 'ab-wheel',
     setup: ['先跪姿做，膝下垫毛巾', '推出去时收紧腹部，腰不要塌', '能控制住的距离再往回收'],
   ),
   Equipment(

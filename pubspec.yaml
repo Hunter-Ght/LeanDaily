@@ -91,3 +91,22 @@ flutter:
     - assets/exercises/squat/
     - assets/exercises/straight-arm/
     - assets/exercises/superman/
+    - assets/exercises/barbell-row/
+    - assets/exercises/overhead-press/
+    - assets/exercises/barbell-curl/
+    - assets/exercises/tbar-row/
+    - assets/exercises/kb-swing/
+    - assets/exercises/bulgarian-split-squat/
+    - assets/exercises/bench-press/
+    - assets/exercises/incline-bench/
+    - assets/exercises/hip-thrust/
+    - assets/exercises/ab-wheel/
+    - assets/exercises/cable-curl/
+    - assets/exercises/smith-squat/
+    - assets/exercises/smith-bench/
+    - assets/exercises/hack-squat/
+    - assets/exercises/hip-abduction/
+    - assets/exercises/hip-adduction/
+    - assets/exercises/seated-dip/
+    - assets/exercises/dip/
+    - assets/exercises/hanging-leg-raise/

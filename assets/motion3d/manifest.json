@@ -28,6 +28,30 @@
     ]
    ]
   },
+  "ab-wheel": {
+   "file": "assets/motion3d/ab-wheel.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 2400,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "伸展"
+    ],
+    [
+     2000,
+     "停顿"
+    ],
+    [
+     2400,
+     "收回"
+    ]
+   ]
+  },
   "assisted-pullup": {
    "file": "assets/motion3d/assisted-pullup.webp",
    "frames": 102,
@@ -148,6 +172,58 @@
     ]
    ]
   },
+  "barbell-curl": {
+   "file": "assets/motion3d/barbell-curl.webp",
+   "frames": 72,
+   "periodMs": 3900,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1700,
+     "下放"
+    ],
+    [
+     3200,
+     "起始"
+    ]
+   ]
+  },
+  "barbell-row": {
+   "file": "assets/motion3d/barbell-row.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1700,
+     "下放"
+    ]
+   ]
+  },
   "bench-dip": {
    "file": "assets/motion3d/bench-dip.webp",
    "frames": 86,
@@ -168,6 +244,30 @@
     ],
     [
      2300,
+     "发力"
+    ]
+   ]
+  },
+  "bench-press": {
+   "file": "assets/motion3d/bench-press.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 2550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2200,
+     "停顿"
+    ],
+    [
+     2500,
      "发力"
     ]
    ]
@@ -193,6 +293,30 @@
     [
      1700,
      "下放"
+    ]
+   ]
+  },
+  "bulgarian-split-squat": {
+   "file": "assets/motion3d/bulgarian-split-squat.webp",
+   "frames": 92,
+   "periodMs": 4000,
+   "peakMs": 2750,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2400,
+     "停顿"
+    ],
+    [
+     2700,
+     "发力"
     ]
    ]
   },
@@ -260,6 +384,30 @@
     ],
     [
      1300,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "cable-curl": {
+   "file": "assets/motion3d/cable-curl.webp",
+   "frames": 92,
+   "periodMs": 4000,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
      "顶峰"
     ],
     [
@@ -528,6 +676,30 @@
     ]
    ]
   },
+  "dip": {
+   "file": "assets/motion3d/dip.webp",
+   "frames": 93,
+   "periodMs": 4000,
+   "peakMs": 2550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "下放"
+    ],
+    [
+     2200,
+     "停顿"
+    ],
+    [
+     2500,
+     "发力"
+    ]
+   ]
+  },
   "face-pull": {
    "file": "assets/motion3d/face-pull.webp",
    "frames": 82,
@@ -672,6 +844,30 @@
     ]
    ]
   },
+  "hack-squat": {
+   "file": "assets/motion3d/hack-squat.webp",
+   "frames": 91,
+   "periodMs": 4000,
+   "peakMs": 2850,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2500,
+     "停顿"
+    ],
+    [
+     2800,
+     "发力"
+    ]
+   ]
+  },
   "hammer-curl": {
    "file": "assets/motion3d/hammer-curl.webp",
    "frames": 85,
@@ -693,6 +889,134 @@
     [
      1700,
      "下放"
+    ]
+   ]
+  },
+  "hanging-leg-raise": {
+   "file": "assets/motion3d/hanging-leg-raise.webp",
+   "frames": 98,
+   "periodMs": 4200,
+   "peakMs": 1450,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1400,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "hip-abduction": {
+   "file": "assets/motion3d/hip-abduction.webp",
+   "frames": 89,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1800,
+     "收回"
+    ]
+   ]
+  },
+  "hip-adduction": {
+   "file": "assets/motion3d/hip-adduction.webp",
+   "frames": 89,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "收紧"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ]
+   ]
+  },
+  "hip-thrust": {
+   "file": "assets/motion3d/hip-thrust.webp",
+   "frames": 77,
+   "periodMs": 4000,
+   "peakMs": 1500,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     900,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     2300,
+     "下放"
+    ],
+    [
+     3000,
+     "下放"
+    ]
+   ]
+  },
+  "incline-bench": {
+   "file": "assets/motion3d/incline-bench.webp",
+   "frames": 94,
+   "periodMs": 4000,
+   "peakMs": 2550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "下放"
+    ],
+    [
+     2200,
+     "停顿"
+    ],
+    [
+     2500,
+     "发力"
     ]
    ]
   },
@@ -765,6 +1089,38 @@
     [
      2000,
      "下放"
+    ]
+   ]
+  },
+  "kb-swing": {
+   "file": "assets/motion3d/kb-swing.webp",
+   "frames": 90,
+   "periodMs": 3600,
+   "peakMs": 650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     550,
+     "发力"
+    ],
+    [
+     700,
+     "顶峰"
+    ],
+    [
+     1800,
+     "下放"
+    ],
+    [
+     2350,
+     "发力"
+    ],
+    [
+     2500,
+     "顶峰"
     ]
    ]
   },
@@ -1004,6 +1360,38 @@
     ],
     [
      1900,
+     "下放"
+    ]
+   ]
+  },
+  "overhead-press": {
+   "file": "assets/motion3d/overhead-press.webp",
+   "frames": 89,
+   "periodMs": 4000,
+   "peakMs": 1550,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     800,
+     "发力"
+    ],
+    [
+     1500,
+     "顶峰"
+    ],
+    [
+     2100,
+     "下放"
+    ],
+    [
+     3000,
      "下放"
     ]
    ]
@@ -1256,6 +1644,34 @@
     ]
    ]
   },
+  "seated-dip": {
+   "file": "assets/motion3d/seated-dip.webp",
+   "frames": 45,
+   "periodMs": 4000,
+   "peakMs": 2250,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     400,
+     "下放"
+    ],
+    [
+     1900,
+     "停顿"
+    ],
+    [
+     2200,
+     "发力"
+    ],
+    [
+     3200,
+     "顶峰"
+    ]
+   ]
+  },
   "seated-row": {
    "file": "assets/motion3d/seated-row.webp",
    "frames": 89,
@@ -1317,6 +1733,54 @@
     [
      2600,
      "下放"
+    ]
+   ]
+  },
+  "smith-bench": {
+   "file": "assets/motion3d/smith-bench.webp",
+   "frames": 91,
+   "periodMs": 4000,
+   "peakMs": 2650,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2300,
+     "停顿"
+    ],
+    [
+     2600,
+     "发力"
+    ]
+   ]
+  },
+  "smith-squat": {
+   "file": "assets/motion3d/smith-squat.webp",
+   "frames": 91,
+   "periodMs": 4000,
+   "peakMs": 2850,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     500,
+     "下放"
+    ],
+    [
+     2500,
+     "停顿"
+    ],
+    [
+     2800,
+     "发力"
     ]
    ]
   },
@@ -1412,6 +1876,30 @@
     ],
     [
      3000,
+     "下放"
+    ]
+   ]
+  },
+  "tbar-row": {
+   "file": "assets/motion3d/tbar-row.webp",
+   "frames": 94,
+   "periodMs": 4000,
+   "peakMs": 1350,
+   "phases": [
+    [
+     0,
+     "起始"
+    ],
+    [
+     300,
+     "发力"
+    ],
+    [
+     1300,
+     "顶峰"
+    ],
+    [
+     1700,
      "下放"
     ]
    ]
