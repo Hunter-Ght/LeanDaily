@@ -759,6 +759,7 @@ function updateLinks(spec) {
     m.scale.set(1, dir.length(), 1);
     m.quaternion.setFromUnitVectors(V(0, 1, 0), dir.normalize());
   }
+  updateBodyBoxes(spec);
 }
 EXTRA_MODES.seat = (spec, v) => {
   if (spec.arc) {
@@ -784,6 +785,45 @@ EXTRA_MODES.seat = (spec, v) => {
   updateLinks(spec);
 };
 
+// 随身体走的方块（背垫、肩垫）：spec.bodyBoxes = [{ bone, box:[宽,高,深], off:[x,y,z], m }]，
+// off 是相对该骨头、按绑定姿势朝向的偏移，方块跟着骨头一起转。
+const bodyBoxMeshes = new Map();
+function updateBodyBoxes(spec) {
+  for (const b of spec.bodyBoxes || []) {
+    let m = bodyBoxMeshes.get(b);
+    if (!m) { m = mesh(new THREE.BoxGeometry(...b.box), PM[b.m || 'pad'], rig); bodyBoxMeshes.set(b, m); }
+    const bone = bones[b.bone];
+    const rel = wquat(bone).multiply(bindQuat[b.bone].clone().invert());
+    m.position.copy(wpos(bone)).add(V(...b.off).applyQuaternion(rel));
+    m.quaternion.copy(rel);
+  }
+}
+// 腿的自由摆法（髋外展/内收机、悬垂举腿）：坐着或悬垂，两腿由 v.hf（髋屈，0 垂下，90 水平向前）、
+// v.ha（髋外展角，水平大腿向外打开）、v.kb（膝屈角）决定；脚面 v.fp 额外跖屈，v.fy 脚尖外撇角。
+// 在 poseStand 之后接管：先摆好上身和手，再把腿重摆一遍。
+function legsX(spec, v) {
+  for (const s of ['l', 'r']) {
+    const k = s === 'l' ? 1 : -1;
+    const hip = wpos(bones['thigh_' + s]);
+    const hf = rad(v.hf ?? 90), ha = rad(v.ha ?? 0), b = hf - rad(v.kb ?? 90);
+    const d0 = V(0, -Math.cos(hf), Math.sin(hf));
+    const d = V(k * Math.sin(ha) * d0.z, d0.y, Math.cos(ha) * d0.z);
+    const knee = hip.clone().add(d.multiplyScalar(L.thigh));
+    const ankle = knee.clone().add(V(k * (v.sx || 0), -Math.cos(b), Math.sin(b)).normalize().multiplyScalar(L.shin));
+    aim(bones['thigh_' + s], bones['calf_' + s], knee);
+    aim(bones['calf_' + s], bones['foot_' + s], ankle);
+    const q = new THREE.Quaternion().setFromAxisAngle(V(0, 1, 0), rad(k * (v.fy || 0)))
+      .multiply(new THREE.Quaternion().setFromAxisAngle(X, rad(-b * 57.2958 + (v.fp || 0))))
+      .multiply(bindQuat['foot_' + s].clone());
+    setWorldQuat(bones['foot_' + s], q);
+  }
+}
+EXTRA_MODES.legX = (spec, v) => {
+  poseStand(spec, v);
+  legsX(spec, v);
+  if (spec.arms === 'ik') fitHands(spec, v);
+  updateLinks(spec);
+};
 // 反向划船：poseUnder + 握拳 + 连杆。
 EXTRA_MODES.underRow = (spec, v) => {
   poseUnder(spec, v);

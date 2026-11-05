@@ -1,0 +1,24 @@
+{
+ "file": "assets/motion3d/smith-bench.webp",
+ "frames": 91,
+ "periodMs": 4000,
+ "peakMs": 2650,
+ "phases": [
+  [
+   0,
+   "起始"
+  ],
+  [
+   500,
+   "下放"
+  ],
+  [
+   2300,
+   "停顿"
+  ],
+  [
+   2600,
+   "发力"
+  ]
+ ]
+}
