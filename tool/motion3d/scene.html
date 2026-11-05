@@ -579,6 +579,12 @@ EXTRA_MODES.hinge = (spec, v) => {
     const pole = V((spec.pole?.[0] ?? 0.5) * k, spec.pole?.[1] ?? -1, spec.pole?.[2] ?? -0.3);
     twoBone(bones['upperarm_' + s], bones['lowerarm_' + s], bones['hand_' + s], t, pole, L.uarm, L.farm);
   }
+  if (spec.grip) fitHands(spec, v);
+};
+// gripStand：站姿 IK 手臂 + 握拳（杠铃推举、杠铃弯举）。spec.roll 绕前臂翻转（弯举反握 180）。
+EXTRA_MODES.gripStand = (spec, v) => {
+  poseStand(spec, v);
+  fitHands(spec, v);
 };
 // benchOne：一手一膝撑在长凳上的俯身动作（单臂划船、臂后伸）。左手（+x）干活，右手右膝在凳上。
 // spec.bench = { x, top }：凳面中线 x 与凳面高度。左脚踩地（spec.stance.l）。
@@ -851,6 +857,7 @@ function mesh(geo, mat, parent) {
 function followPoint(f) {
   const h = s => wpos(bones['hand_' + s]);
   if (f === 'hands') return h('l').add(h('r')).multiplyScalar(0.5);
+  if (f === 'grip') return wpos(bones.middle_02_l).add(wpos(bones.middle_02_r)).multiplyScalar(0.5);
   if (f === 'handL') return h('l');
   if (f === 'handR') return h('r');
   if (f === 'feet') return wpos(bones.foot_l).add(wpos(bones.foot_r)).multiplyScalar(0.5);
@@ -877,7 +884,7 @@ function buildProps(spec) {
       d.position.x = sgn * (len / 2 - 0.1 - i * (thick + 0.004));
     }
     rig.add(g);
-    dyn.push({ m: g, follow: 'hands', offset: V(...at) });
+    dyn.push({ m: g, follow: spec.barbell.follow || 'hands', offset: V(...at) });
   }
   // 拉索：从固定的滑轮点到手，一根细圆柱。
   for (const c of spec.cables || []) {

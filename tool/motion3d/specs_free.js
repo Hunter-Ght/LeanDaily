@@ -173,7 +173,7 @@ export const SPECS = {
   // —— 杠铃划船：髋折叠、背平直，杠铃从膝下拉到肚脐附近，肘贴身向后上方，肩胛后收。
   'barbell-row': {
     still: 1.35,
-    mode: 'hinge', rel: true, barbell: { len: 1.6, plate: 0.2, at: [0, -0.02, 0] }, pole: [0.4, 1, -0.7],
+    mode: 'hinge', grip: true, rel: true, barbell: { len: 1.6, plate: 0.2, follow: 'grip', at: [0, 0, 0] }, pole: [0.4, 1, -0.7],
     base: { drop: 0.12, back: 0.3, tilt: 52, lean: 0, hx: 0.1, hy: -0.5, hz: 0.03, headUp: 10 },
     keys: [
       [0, {}, 0.25, '起始'], [0.3, {}, 0.8, '发力'],
@@ -187,7 +187,7 @@ export const SPECS = {
   // —— 杠铃站姿推举：杠从锁骨前推到头顶正上方，头稍后让开，核心收紧不后仰。
   'overhead-press': {
     still: 1.55,
-    mode: 'stand', arms: 'ik', barbell: { len: 1.5, plate: 0.2, at: [0, 0, 0] }, pole: [0.3, -1, 0.1],
+    mode: 'gripStand', arms: 'ik', barbell: { len: 1.5, plate: 0.2, follow: 'grip', at: [0, 0, 0] }, pole: [0.3, -1, 0.1],
     base: { drop: 0.01, hx: 0.22, hy: 1.43, hz: 0.12, headUp: 0 },
     keys: [
       [0, {}, 0.2, '起始'], [0.3, { headUp: 8 }, 0.8, '发力'],
@@ -198,21 +198,22 @@ export const SPECS = {
       [4.0],
     ],
     spheres: [[0.25, 1.45, -0.03, 0.13, 1], [-0.25, 1.45, -0.03, 0.13, 1], [0.34, 1.44, -0.1, 0.1, 0.9], [-0.34, 1.44, -0.1, 0.1, 0.9], [0.27, 1.5, -0.1, 0.1, 0.7], [-0.27, 1.5, -0.1, 0.1, 0.7]],
-    camera: { yaw: 40, dist: 2.9, target: [0, 1.05, 0], fov: 28 },
+    camera: { yaw: 40, dist: 2.8, target: [0, 1.15, 0], fov: 32 },
   },
   // —— 杠铃弯举：肘贴身体两侧不前后摆，直杆弯到肩前，顶端停一下慢放。
   'barbell-curl': {
     still: 1.35,
-    mode: 'stand', arms: 'ik', barbell: { len: 1.3, plate: 0.15, at: [0, 0, 0] }, pole: [0.3, -1, -0.8],
+    mode: 'gripStand', roll: 180, arms: 'ik', barbell: { len: 1.2, plate: 0.1, thick: 0.035, follow: 'grip', at: [0, 0, 0] }, pole: [0.3, -1, -0.8],
     base: { drop: 0.01, hx: 0.2, hy: 1.0, hz: 0.09 },
     keys: [
-      [0, {}, 0.2, '起始'], [0.3, {}, 0.9, '发力'],
+      [0, {}, 0, '起始'], [0.3, {}, 0.9, '发力'],
       [1.3, { hx: 0.2, hy: 1.37, hz: 0.15 }, 1, '顶峰'],
-      [1.7, { hx: 0.2, hy: 1.37, hz: 0.15 }, 0.6, '下放'],
+      [1.7, { hx: 0.2, hy: 1.37, hz: 0.15 }, 0.4, '下放'],
+      [3.2, {}, 0, '起始'],
       [3.9],
     ],
-    spheres: [[0.34, 1.455, 0.0, 0.13, 1.5], [-0.34, 1.455, 0.0, 0.13, 1.5], [0.46, 1.455, 0.0, 0.09, 1], [-0.46, 1.455, 0.0, 0.09, 1]],
-    camera: { yaw: 45, dist: 2.1, target: [0, 1.0, 0.0], fov: 28 },
+    spheres: [[0.36, 1.455, 0.0, 0.14, 1.15], [-0.36, 1.455, 0.0, 0.14, 1.15], [0.46, 1.455, 0.02, 0.08, 0.9], [-0.46, 1.455, 0.02, 0.08, 0.9]],
+    camera: { yaw: 48, dist: 2.1, target: [0, 1.0, 0.0], fov: 28 },
   },
   // —— T 杠划船（地雷架）：杠一端固定在身后地面，人跨在杠上髋折叠，双手握杠拉向腹部，末端加片。
   'tbar-row': {
@@ -238,7 +239,7 @@ export const SPECS = {
   // —— 壶铃摆荡：髋铰链，壶铃从两腿间向后摆，髋部前送把壶铃荡到胸口高度，手臂只是绳子。
   'kb-swing': {
     still: 0.65,
-    mode: 'hinge', stance: { l: [0.17, 0], r: [0.17, 0, 0] }, pole: [0.2, -1, -0.2],
+    mode: 'hinge', grip: true, stance: { l: [0.17, 0], r: [0.17, 0, 0] }, pole: [0.2, -1, -0.2],
     base: { drop: 0.16, back: 0.42, tilt: 70, lean: 0, hx: 0.07, hy: 0.62, hz: -0.08, headUp: 14 },
     set: [
       { sph: [0.1], follow: 'hands', offset: [0, -0.13, 0], m: 'frame' },

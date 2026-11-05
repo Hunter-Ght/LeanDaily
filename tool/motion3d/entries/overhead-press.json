@@ -1,6 +1,6 @@
 {
  "file": "assets/motion3d/overhead-press.webp",
- "frames": 90,
+ "frames": 89,
  "periodMs": 4000,
  "peakMs": 1550,
  "phases": [
