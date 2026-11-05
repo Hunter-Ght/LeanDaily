@@ -10,6 +10,7 @@ import 'state_doc.dart';
 
 const _prefKeys = [
   'fw-goals-v1',
+  'fw-custom-muscles-v1',
   'fw-rest-v1',
   'fw-plan-v1',
   'fw-plan-day-v1',

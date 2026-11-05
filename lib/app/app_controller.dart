@@ -32,6 +32,7 @@ import '../domain/progress.dart' as progress_lib;
 import '../domain/progress_options.dart';
 import '../domain/format.dart' show jsonMap;
 import '../domain/records.dart' show DomainError;
+import '../domain/movements.dart' show customMuscles;
 
 /// 轻提示（顶部小胶囊）。
 class ToastCenter extends ChangeNotifier {
@@ -157,6 +158,7 @@ class AppController extends ChangeNotifier {
        settings = Settings(native, deviceTz: deviceTz ?? 'UTC'),
        goalsStore = GoalsStore(native),
        restPrefsStore = RestPrefsStore(native),
+       customMusclesStore = CustomMusclesStore(native),
        dayStatesStore = DayStatesStore(native),
        restTimerStore = RestTimerStore(native),
        planStore = PlanStore(native, clock: clock),
@@ -303,6 +305,7 @@ class AppController extends ChangeNotifier {
   final Settings settings;
   final GoalsStore goalsStore;
   final RestPrefsStore restPrefsStore;
+  final CustomMusclesStore customMusclesStore;
   final DayStatesStore dayStatesStore;
   final RestTimerStore restTimerStore;
   final PlanStore planStore;
@@ -454,6 +457,7 @@ class AppController extends ChangeNotifier {
       Diagnostics.at('读取计划和进度');
       goals = await goalsStore.load();
       restPrefs = await restPrefsStore.load();
+      await _loadCustomMuscles();
       await _loadPlanLibrary();
       progress = await _loadProgress();
       dayStates = await dayStatesStore.load();
@@ -756,6 +760,21 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _loadCustomMuscles() async {
+    customMuscles
+      ..clear()
+      ..addAll(await customMusclesStore.load());
+  }
+
+  /// 给自定义动作指定主练肌肉，之后的恢复计算按这块肌肉算。
+  Future<void> setCustomMuscle(String exercise, String muscleId) async {
+    final name = exercise.trim();
+    if (name.isEmpty) return;
+    customMuscles[name] = muscleId;
+    await customMusclesStore.save(Map.of(customMuscles));
+    notifyListeners();
+  }
+
   Future<void> saveRestPrefs(Map<String, dynamic> next) async {
     restPrefs = await restPrefsStore.save(next);
     notifyListeners();
@@ -768,6 +787,7 @@ class AppController extends ChangeNotifier {
     _date = today;
     goals = await goalsStore.load();
     restPrefs = await restPrefsStore.load();
+    await _loadCustomMuscles();
     await _loadPlanLibrary();
     progress = await _loadProgress();
     dayStates = await dayStatesStore.load();

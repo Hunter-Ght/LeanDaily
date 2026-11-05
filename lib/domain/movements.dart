@@ -358,6 +358,38 @@ const _table = [
     {'mid_back': 0.6, 'abs': 0.4, 'obliques': 0.4, 'glutes': 0.3},
     'free',
   ],
+  // 健身房常见器械动作（器械库用），不在 Web 原表里。
+  [
+    ['史密斯深蹲', '哈克深蹲'],
+    {'quads': 1, 'glutes': 0.6, 'hamstrings': 0.3},
+    'machine',
+  ],
+  [
+    ['史密斯卧推'],
+    {'chest': 1, 'chest_up': 0.4, 'delt_front': 0.5, 'triceps': 0.6},
+    'machine',
+  ],
+  [
+    ['髋外展机'],
+    {'glutes': 1},
+    'machine',
+  ],
+  [
+    // 内收肌不在肌肉图里，只按少量计入相邻肌群。
+    ['髋内收机'],
+    {'quads': 0.3, 'glutes': 0.3},
+    'machine',
+  ],
+  [
+    ['坐姿臂屈伸机'],
+    {'triceps': 1, 'chest': 0.3, 'delt_front': 0.2},
+    'machine',
+  ],
+  [
+    ['绳索弯举'],
+    {'biceps': 1},
+    'machine',
+  ],
 ];
 const _part = {
   '胸': {'chest': 1, 'chest_up': 0.4, 'delt_front': 0.4, 'triceps': 0.4},
@@ -423,6 +455,10 @@ Map<String, dynamic> _result(
   };
 }
 
+/// 用户给自定义动作选的主练肌肉（动作名 → 肌肉 id）。由 AppController 载入，
+/// 让不在动作表里的名字也能按用户的选择计算恢复，而不是按部位猜。
+final customMuscles = <String, String>{};
+
 Map<String, dynamic>? musclesOf(Object? name, [String? part = '']) {
   final n = (name ?? '').toString().trim();
   if (const {'跑步机', '椭圆机', '划船机', '单车'}.contains(n) || part == '有氧') {
@@ -430,6 +466,10 @@ Map<String, dynamic>? musclesOf(Object? name, [String? part = '']) {
   }
   final hit = _byName[n];
   if (hit != null) return _result(hit.mus, hit.kind, 'exact');
+  final own = customMuscles[n];
+  if (own != null && MUSCLE.containsKey(own)) {
+    return _result({own: 1}, 'free', 'custom');
+  }
   for (final k in _keywords) {
     if (RegExp(k[0]).hasMatch(n)) {
       final e = _byName[k[1]]!;

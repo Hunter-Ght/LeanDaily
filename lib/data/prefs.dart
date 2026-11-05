@@ -137,6 +137,24 @@ class RestPrefsStore {
   }
 }
 
+/// 自定义动作的主练肌肉：{动作名: 肌肉 id}。
+class CustomMusclesStore {
+  CustomMusclesStore(this.native);
+  final Native native;
+  static const key = 'fw-custom-muscles-v1';
+  Future<Map<String, String>> load() async {
+    final v = _decode((await native.all())[key]);
+    return {
+      if (v is Map)
+        for (final e in v.entries)
+          if (e.key is String && e.value is String) e.key as String: e.value as String,
+    };
+  }
+
+  Future<void> save(Map<String, String> value) =>
+      native.put(key, jsonEncode(value));
+}
+
 class DayStatesStore {
   DayStatesStore(this.native);
   final Native native;

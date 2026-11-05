@@ -31,9 +31,20 @@ void main() {
     for (final c in g['cases']) {
       compare(musclesOf(c['name'], c['part']), c['result'], c['name']);
     }
-    expect(catalogNames(), [
+    final web = [
       for (final c in g['cases'])
         if (c['result']?['matched'] == 'exact') c['name'],
+    ];
+    // Web 原表保持逐项一致；末尾是器械库新增的健身房动作。
+    expect(catalogNames().take(web.length).toList(), web);
+    expect(catalogNames().skip(web.length).toList(), [
+      '史密斯深蹲',
+      '哈克深蹲',
+      '史密斯卧推',
+      '髋外展机',
+      '髋内收机',
+      '坐姿臂屈伸机',
+      '绳索弯举',
     ]);
   });
   test('every muscle status field matches web within 1e-6', () {

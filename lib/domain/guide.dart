@@ -497,6 +497,20 @@ const Map<String, String> NAME_MAP = {
   "反向蝴蝶机": "reverse-pec-deck",
   "坐姿提踵机": "seated-calf",
   "背部伸展": "back-extension",
+  // 记录里常用的同一动作叫法。
+  "哑铃卧推": "db-bench",
+  "哑铃上斜卧推": "db-incline-press",
+  "龙门架夹胸": "cable-crossover",
+  "坐姿划船": "seated-row",
+  "腿举": "leg-press",
+  "罗马尼亚硬拉": "rdl",
+  "腿屈伸": "leg-extension",
+  "提踵": "calf-raise",
+  "哑铃推举": "db-shoulder-press",
+  "反向飞鸟": "rear-delt-fly",
+  "面拉": "face-pull",
+  "器械推肩": "machine-shoulder-press",
+  "过头臂屈伸": "db-tricep-ext",
 };
 const List<Map<String, String>> LIB_OPTIONS = [
   {"key": "incline-pushup", "label": "高位俯卧撑"},
