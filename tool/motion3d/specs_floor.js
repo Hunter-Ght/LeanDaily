@@ -246,7 +246,7 @@ export const SPECS = {
     ],
     glow: {},
     spheres: [[0, 1.12, 0.12, 0.17, 1.3], [0, 1.0, 0.13, 0.15, 1.2], [0.14, 1.08, 0.08, 0.13, 0.9], [-0.14, 1.08, 0.08, 0.13, 0.9]],
-    camera: { auto: true, yaw: 62, dist: 2.3, target: [0, 0.4, 0.4], fov: 28 },
+    camera: { auto: { fill: 0.95 }, yaw: 85, dist: 2.3, target: [0, 0.4, 0.4], fov: 28 },
   },
   // 杠铃上斜卧推：凳背约 30° 上斜，杠铃落在锁骨下方的上胸，再推到肩正上方；重点在上胸。
   'incline-bench': {
@@ -273,8 +273,8 @@ export const SPECS = {
   // 杠铃臀推：上背（肩胛下沿）靠在凳边，杠铃压在髋部，脚踩地与肩同宽；髋从低位推到肩—髋—膝成一条线、小腿垂直，顶端夹臀。
   // 手握杠（hy/hz 跟着髋走：杠在髋上方约 0.1 m）。
   'hip-thrust': {
-    mode: 'supineX', shoulder: [0.56, -0.5], feet: [0.15, 0.07, 0.44], arms: 'ik', pole: [1, -1, 0.2],
-    grip: { axis: [1, 0, 0], deg: 70 }, barbell: { len: 1.5, plate: 0.16, at: [0, 0.0, 0] },
+    mode: 'supineX', still: 1.5, shoulder: [0.56, -0.5], feet: [0.15, 0.07, 0.44], arms: 'ik', pole: [1, -1, 0.2],
+    grip: { axis: [1, 0, 0], deg: 70 }, barbell: { len: 1.5, plate: 0.13, at: [0, 0.0, 0] },
     set: [
       { box: [0.9, 0.08, 0.34], at: [0, 0.39, -0.66], m: 'pad' },
       { box: [0.06, 0.35, 0.06], at: [0.38, 0.18, -0.66], m: 'frame' }, { box: [0.06, 0.35, 0.06], at: [-0.38, 0.18, -0.66], m: 'frame' },
@@ -291,6 +291,6 @@ export const SPECS = {
     ],
     glow: { pelvis: [0, 1], thigh_l: [0, 0.5], thigh_r: [0, 0.5] },
     spheres: [[0.1, 0.95, -0.1, 0.16, 1.4], [-0.1, 0.95, -0.1, 0.16, 1.4], [0.17, 0.96, -0.03, 0.13, 1.2], [-0.17, 0.96, -0.03, 0.13, 1.2]],
-    camera: { auto: true, yaw: 50, dist: 2.0, target: [0, 0.4, -0.05], fov: 28 },
+    camera: { auto: { fill: 0.92 }, yaw: 82, dist: 2.0, target: [0, 0.4, -0.05], fov: 28 },
   },
 };

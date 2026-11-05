@@ -1,8 +1,8 @@
 {
  "file": "assets/motion3d/hip-thrust.webp",
- "frames": 78,
+ "frames": 77,
  "periodMs": 4000,
- "peakMs": 950,
+ "peakMs": 1500,
  "phases": [
   [
    0,
