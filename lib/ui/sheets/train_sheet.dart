@@ -24,8 +24,7 @@ import 'train/effort_editor.dart';
 import 'train/exercise_info.dart';
 import 'equipment_sheet.dart' show EquipmentDetail, EquipmentGrid;
 import '../../domain/free_training.dart';
-import '../../app/routes.dart'
-    show openAlternatives, openGuide, openMyGym;
+import '../../app/routes.dart' show openAlternatives, openGuide, openMyGym;
 
 // 上次选动作的方式：推荐 / 按部位 / 按器械；首次默认推荐。
 String _lastMode = '推荐';
@@ -690,12 +689,13 @@ class _TrainSheetState extends State<TrainSheet> {
         Padding(
           key: ValueKey('reco-group-${g.group}'),
           padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
-          child: LText(
-            '${g.name} · ${g.daysSince == null
+          // 肌群名和状态分别翻译再拼，避免整句被套进“{p0} 天前练过”模板。
+          child: Text(
+            '${AppMessages.of(context).text(g.name)} · ${AppMessages.of(context).text(g.daysSince == null
                 ? '还没练过'
                 : g.daysSince! < 1
                 ? '今天练过'
-                : '${g.daysSince!.floor()} 天前练过'}',
+                : '${g.daysSince!.floor()} 天前练过')}',
             style: TextStyle(
               color: p.text,
               fontSize: 15,

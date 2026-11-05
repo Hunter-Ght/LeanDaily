@@ -135,7 +135,10 @@ Map<String, dynamic>? weeklyReview({
         : {
             'kind': 'kcal',
             'delta': delta,
-            'label': '每日${delta > 0 ? '多' : '少'} ${delta.abs()} 千卡',
+            // 整句分开写，翻译时不必拼接“多/少”单字。
+            'label': delta > 0
+                ? '每日多 ${delta.abs()} 千卡'
+                : '每日少 ${delta.abs()} 千卡',
           },
   };
 }
