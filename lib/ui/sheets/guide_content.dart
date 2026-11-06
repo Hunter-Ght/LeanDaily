@@ -236,7 +236,7 @@ class _SheetGuideBodyState extends State<SheetGuideBody> {
         Padding(
           padding: const EdgeInsets.only(top: 14),
           child: LText(
-            '示范图来自开源动作库 free-exercise-db（Unlicense）',
+            '示范由本项目 3D 渲染，人体模型 Quaternius（CC0）',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: p.tertiary),
           ),

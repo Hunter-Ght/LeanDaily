@@ -124,7 +124,7 @@ Issues and PRs are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Credits
 
-Exercise demo images: [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (Unlicense). Wordmark: a 4-character subset of [Smiley Sans](https://github.com/atelier-anchor/smiley-sans) (SIL OFL 1.1). Built with [Flutter](https://flutter.dev). Details in [docs/THIRD_PARTY.md](docs/THIRD_PARTY.md).
+Exercise demos and 3D animations are rendered by this project; the human model is [Quaternius Universal Base Characters](https://quaternius.itch.io/universal-base-characters) (CC0). Numerals: [Barlow](https://github.com/jpt/barlow) (SIL OFL 1.1). Wordmark: a 4-character subset of [Smiley Sans](https://github.com/atelier-anchor/smiley-sans) (SIL OFL 1.1). Built with [Flutter](https://flutter.dev). Details in [docs/THIRD_PARTY.md](docs/THIRD_PARTY.md).
 
 ## Disclaimer
 

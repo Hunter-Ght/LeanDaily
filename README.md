@@ -202,7 +202,8 @@ iOS 构建、签名与验收说明见 [docs/IOS.md](docs/IOS.md)。
 
 ## 致谢
 
-- 动作示范图来自开源动作库 [free-exercise-db](https://github.com/yuhonas/free-exercise-db)（Unlicense，公共领域）。
+- 动作示范图与 3D 动画由本项目离线渲染，人体模型来自 [Quaternius Universal Base Characters](https://quaternius.itch.io/universal-base-characters)（CC0）。
+- 数字字体 [Barlow](https://github.com/jpt/barlow)（SIL OFL 1.1）。
 - 字标使用开源字体 [得意黑 Smiley Sans](https://github.com/atelier-anchor/smiley-sans)（SIL OFL 1.1）的 4 字子集。
 - 界面使用 [Flutter](https://flutter.dev) 构建。
 

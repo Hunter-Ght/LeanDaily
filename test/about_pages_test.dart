@@ -99,7 +99,7 @@ void main() {
       await h.shot(tester, 'r-privacy-table-$mode');
       await tapVisible(tester, '‹ 返回');
       await tapVisible(tester, '开源与致谢');
-      expect(find.text('free-exercise-db'), findsOneWidget);
+      expect(find.text('Quaternius'), findsOneWidget);
       expect(find.text('得意黑'), findsOneWidget);
       await h.shot(tester, 'r-license-$mode');
       await tapVisible(tester, '查看开源许可证');

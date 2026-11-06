@@ -2794,5 +2794,8 @@
   "顶端耸肩或手肘完全锁死": "Shrugging or fully locking your elbows at the top",
   "髋部用力向前顶到站直，让壶铃自然荡到胸口高度，手臂只是绳子": "Drive your hips forward powerfully until you stand tall and let the kettlebell float up to chest height; your arms are just ropes",
   "每日多 {p0} 千卡": "{p0} kcal more per day",
-  "每日少 {p0} 千卡": "{p0} kcal less per day"
+  "每日少 {p0} 千卡": "{p0} kcal less per day",
+  "示范由本项目 3D 渲染，人体模型 Quaternius（CC0）": "Demos rendered in 3D by LeanDaily; human model by Quaternius (CC0)",
+  "3D 人体模型 · Universal Base Characters · CC0": "3D human model · Universal Base Characters · CC0",
+  "数字字体 · SIL OFL 1.1": "Numerals · SIL OFL 1.1"
 }

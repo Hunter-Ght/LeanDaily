@@ -2380,7 +2380,6 @@
   "看怎么练、加入计划": "See how to do it and add to plan",
   "确定今天日期": "Set today's date",
   "示范图": "Demo image",
-  "示范图来自开源动作库 free-exercise-db（Unlicense）": "Demo images come from the open-source exercise library free-exercise-db (Unlicense)",
   "移除照片": "Remove photo",
   "稍后再选，先用推荐的": "Choose later and use the recommended one for now",
   "稳固、不带轮子的椅子或凳子": "A sturdy chair or stool without wheels",
@@ -2763,5 +2762,8 @@
   "：还没到计划练的日子": ": not a scheduled training day yet",
   "肫嘴子张杂枝枣楂榛汁灼炸煮爪猪章竹籽粥紫胗脂芝蒸贼酯针": "肫嘴子张杂枝枣楂榛汁灼炸煮爪猪章竹籽粥紫胗脂芝蒸贼酯针",
   "每日多 {p0} 千卡": "{p0} kcal more per day",
-  "每日少 {p0} 千卡": "{p0} kcal less per day"
+  "每日少 {p0} 千卡": "{p0} kcal less per day",
+  "示范由本项目 3D 渲染，人体模型 Quaternius（CC0）": "Demos rendered in 3D by LeanDaily; human model by Quaternius (CC0)",
+  "3D 人体模型 · Universal Base Characters · CC0": "3D human model · Universal Base Characters · CC0",
+  "数字字体 · SIL OFL 1.1": "Numerals · SIL OFL 1.1"
 }

@@ -259,8 +259,8 @@ class CreditsPage extends StatelessWidget {
           const GroupCard(
             children: [
               GroupRow(
-                label: 'free-exercise-db',
-                sub: '动作示范图 · Unlicense（公共领域）',
+                label: 'Quaternius',
+                sub: '3D 人体模型 · Universal Base Characters · CC0',
               ),
               GroupRow(label: 'MuscleMap', sub: '人体肌肉图 · Melih Colpan · MIT'),
               GroupRow(label: '得意黑', sub: '字标字体 · SIL OFL 1.1'),
