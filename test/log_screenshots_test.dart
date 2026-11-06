@@ -6,6 +6,25 @@ import 'package:leandaily/app/routes.dart';
 
 import 'support/harness.dart';
 
+/// 人体图数据和动作缩略图是异步加载的，截图前先备好。
+Future<void> warmImages(WidgetTester tester) async {
+  final images = find.descendant(
+    of: find.byKey(const ValueKey('day-pager')),
+    matching: find.byType(Image),
+  );
+  final provs = [for (final w in tester.widgetList<Image>(images)) w.image];
+  final context = tester.element(find.byKey(const ValueKey('day-pager')));
+  await tester.runAsync(() async {
+    // 人体图数据已经在请求中，给真实 IO 一点时间。
+    await Future<void>.delayed(const Duration(milliseconds: 300));
+    for (final p in provs) {
+      await precacheImage(p, context).timeout(const Duration(seconds: 3));
+    }
+  });
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+}
+
 void main() {
   setUpAll(Harness.setUpAll);
   testWidgets('long day lazy list reaches last meal without overflow', (
@@ -44,22 +63,14 @@ void main() {
         native.docs['android-state'] = jsonEncode(state);
       },
     );
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     await h.shot(tester, 'log-long-light');
     final list = find.byKey(ValueKey('log-list-${h.controller.date}'));
-    // 训练很长也没关系：切到饮食，第一餐直接就在眼前。
+    // 训练很长也能滑到底，最后一餐在训练块之后（按时间排序）。
     await tester.scrollUntilVisible(
-      find.text('记另一个动作'),
+      find.bySemanticsLabel('编辑早餐'),
       600,
       scrollable: find.descendant(of: list, matching: find.byType(Scrollable)),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.descendant(
-        of: find.byKey(const ValueKey('day-section-switch')),
-        matching: find.text('饮食'),
-      ),
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('编辑早餐').hitTestable(), findsOneWidget);
@@ -74,7 +85,6 @@ void main() {
       'log-month',
       'edit-set',
       'log-inner',
-      'log-columns',
       'log-narrow-large',
       'log-narrow-en',
     ]) {
@@ -95,11 +105,13 @@ void main() {
             narrow
                 ? 320
                 : mode == 'log-inner'
-                ? 852
-                : mode == 'log-columns'
-                ? 1250
+                ? 820
                 : 393,
-            850,
+            narrow
+                ? 640
+                : mode == 'log-inner'
+                ? 1180
+                : 852,
           ),
         );
         if (mode == 'log-yesterday') {
@@ -120,6 +132,7 @@ void main() {
           await tester.pumpAndSettle();
           await tester.pumpAndSettle();
         }
+        await warmImages(tester);
         expect(tester.takeException(), isNull);
         await h.shot(tester, '$mode-${dark ? 'dark' : 'light'}');
         debugDisableShadows = true;

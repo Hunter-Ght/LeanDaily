@@ -14,6 +14,12 @@ String setWeightLabel(Map<String, dynamic> set) {
   return '${bodyweight ? '+' : ''}${fmt(w)} kg';
 }
 
+/// 时间线小片里的重量部分：'自重'、'+10'（自重动作加负重）或 '40'，不带单位。
+String setChipWeight(Map<String, dynamic> set) {
+  final label = setWeightLabel(set);
+  return label.endsWith(' kg') ? label.substring(0, label.length - 3) : label;
+}
+
 String setDisplay(Map<String, dynamic> set) =>
     '${setWeightLabel(set)} × ${fmt(set['reps'])} 次${setFlagLabel(set).isEmpty ? '' : ' · ${setFlagLabel(set)}'}';
 String setEffortLabel(Object? rpe) => rpe == null || '$rpe'.isEmpty

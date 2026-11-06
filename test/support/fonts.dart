@@ -8,6 +8,10 @@ Future<void> loadTestFonts() async {
   final wordmark = FontLoader('Wordmark')
     ..addFont(rootBundle.load('assets/fonts/SmileySans-Wordmark.ttf'));
   await wordmark.load();
+  final numeral = FontLoader('Numeral')
+    ..addFont(rootBundle.load('assets/fonts/BarlowSemiCondensed-SemiBold.ttf'))
+    ..addFont(rootBundle.load('assets/fonts/BarlowSemiCondensed-Bold.ttf'));
+  await numeral.load();
   // 截图素材（README）用 LEANDAILY_TEST_FONT 指定简体字形更完整的字体，例如 Hiragino Sans GB。
   final candidates = <String>[
     if (Platform.environment['LEANDAILY_TEST_FONT'] != null)

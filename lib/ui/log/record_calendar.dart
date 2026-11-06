@@ -27,8 +27,12 @@ class RecordCalendar extends StatefulWidget {
     required this.onToggle,
     this.onDragUpdate,
     this.onDragEnd,
+    this.header,
   });
   final String iso, today;
+
+  /// 顶部一行（标题等）与星期标签之间插入的内容。
+  final Widget? header;
   final Marks marks;
   final AnimationController progress;
   final bool persistent;
@@ -117,7 +121,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
               selected: day.iso == widget.iso,
               enabled: !day.future,
               label: AppMessages.of(context).text(
-                '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${day.meal ? '，有饮食' : ''}',
+                '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${day.meal ? '，蛋白达标' : ''}',
               ),
               child: Pressable(
                 scale: 1,
@@ -134,26 +138,29 @@ class _RecordCalendarState extends State<RecordCalendar> {
                   children: [
                     Container(
                       key: ValueKey('date-${day.iso}'),
-                      width: Metrics.calNum,
+                      width: Metrics.calNum + 4,
                       height: Metrics.calNum,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: day.iso == widget.iso ? context.pal.tint : null,
+                        borderRadius: BorderRadius.circular(14),
+                        color: day.iso == widget.iso
+                            ? context.pal.primary
+                            : null,
                         border: day.today && day.iso != widget.iso
-                            ? Border.all(color: context.pal.tint)
+                            ? Border.all(color: context.pal.primary, width: 1.5)
                             : null,
                       ),
                       child: LText(
                         '${day.num}',
-                        style: AppText.calNum(
+                        style: AppText.num(
                           context.pal,
+                          18,
+                          weight: day.today ? FontWeight.w800 : FontWeight.w600,
                           color: day.iso == widget.iso
-                              ? context.pal.onTint
+                              ? context.pal.onPrimary
                               : day.future || day.out
                               ? context.pal.tertiary
                               : context.pal.text,
-                          weight: day.today ? FontWeight.w700 : FontWeight.w600,
                         ),
                       ),
                     ),
@@ -163,10 +170,10 @@ class _RecordCalendarState extends State<RecordCalendar> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (day.train) _dot(context.pal.dotTrain),
+                          if (day.train) _dot(context.pal.tint),
                           if (day.train && day.meal)
                             const SizedBox(width: Metrics.segmentInset),
-                          if (day.meal) _dot(context.pal.dotMeal),
+                          if (day.meal) _dot(context.pal.protein),
                         ],
                       ),
                     ),
@@ -184,6 +191,22 @@ class _RecordCalendarState extends State<RecordCalendar> {
     height: Metrics.calDot,
     decoration: BoxDecoration(color: color, shape: BoxShape.circle),
   );
+
+  /// 小标题：展开月历时是月份；周历时是「月份 · 第几周」（含 1 号的那周算第 1 周）。
+  Widget _caption(bool month, String title) {
+    final style = AppText.calTitle(context.pal);
+    if (month) return LText(title, style: style);
+    final thursday = shiftDate(_base, _week * weekLabels.length + 3);
+    final n =
+        daysApart(mondayOf(monthStart(thursday)), mondayOf(thursday)) ~/ 7 + 1;
+    return Row(
+      children: [
+        LText(title, style: style),
+        Text(' · ', style: style),
+        Flexible(child: LText('第 $n 周', maxLines: 1, style: style)),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -211,44 +234,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
               height: Metrics.touchTarget,
               child: Row(
                 children: [
-                  Expanded(
-                    child: Semantics(
-                      button: !widget.persistent,
-                      excludeSemantics: true,
-                      onTap: widget.persistent ? null : widget.onToggle,
-                      label: AppMessages.of(context).text(
-                        widget.persistent
-                            ? title
-                            : month
-                            ? '收起月历'
-                            : '展开月历',
-                      ),
-                      child: Pressable(
-                        scale: 1,
-                        onTap: widget.persistent ? null : widget.onToggle,
-                        child: Row(
-                          children: [
-                            LText(
-                              title,
-                              style: AppText.calTitle(context.pal)
-                                  .copyWith(color: context.pal.text),
-                            ),
-                            if (!widget.persistent) ...[
-                              const SizedBox(width: Metrics.segmentIconGap),
-                              RotatedBox(
-                                quarterTurns: month ? 3 : 1,
-                                child: AppIcon(
-                                  'right',
-                                  size: Metrics.calendarChevronSize,
-                                  color: context.pal.secondary,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  Expanded(child: _caption(month, title)),
                   for (final direction in [-1, 1])
                     Semantics(
                       button: true,
@@ -282,6 +268,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
                 ],
               ),
             ),
+            if (widget.header != null) widget.header!,
             SizedBox(
               height: Metrics.calLabels,
               child: Row(

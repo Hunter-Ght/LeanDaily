@@ -5,16 +5,16 @@ import '../../l10n/localized_text.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
-import '../../domain/goals.dart';
-import '../../domain/format.dart' show fmt;
+import '../../domain/format.dart' show jsNumber;
 import '../../core/haptics.dart';
 import '../kit/pressable.dart';
 
 import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
-import '../../domain/calendar.dart';
 import 'record_calendar.dart';
-import 'day_cards.dart';
+import 'day_timeline.dart';
+import 'log_add_menu.dart';
+import '../kit/app_icon.dart';
 import '../motion.dart';
 
 class LogPage extends StatefulWidget {
@@ -26,7 +26,7 @@ class LogPage extends StatefulWidget {
 
 class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   AppController? controller;
-  Set<String> knownIds = {}, knownMealIds = {};
+  Set<String> knownIds = {};
 
   List<Map<String, dynamic>> lastAdd = [];
   @override
@@ -37,22 +37,10 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     controller?.repo.removeListener(recordsChanged);
     controller = next;
     knownIds = (next.repo.state['sets'] as Map).keys.cast<String>().toSet();
-    knownMealIds = _mealIds(next);
     next.repo.addListener(recordsChanged);
   }
 
-  Set<String> _mealIds(AppController app) => {
-    for (final e in (app.repo.state['meals'] as Map).entries)
-      if ((e.value as Map)['deleted'] != true) '${e.key}',
-  };
-
   void recordsChanged() {
-    // 饮食保存后显示饮食；全屏训练新增记录不改变用户正在查看的块。
-    final meals = _mealIds(controller!);
-    if (meals.difference(knownMealIds).isNotEmpty) {
-      controller!.recordSection = '饮食';
-    }
-    knownMealIds = meals;
     final rows = controller!.repo.state['sets'] as Map;
     final added = <Map<String, dynamic>>[
       for (final entry in rows.entries)
@@ -72,7 +60,6 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   }
 
   String get iso => context.app.date;
-  String get section => context.app.recordSection;
   late final AnimationController expansion = AnimationController.unbounded(
     vsync: this,
   );
@@ -80,10 +67,19 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
   bool persistent = false, _calendarOpen = false;
   ScrollController get scroll =>
       _scrolls.putIfAbsent(iso, () => ScrollController());
-  ({bool train, bool meal}) marks(String date) => (
-    train: context.app.repo.hasTrain(date),
-    meal: context.app.repo.hasMeal(date),
-  );
+
+  /// 周历小点：train=当天练了（橙点）；meal=当天蛋白达到目标（黄点）。
+  ({bool train, bool meal}) marks(String date) {
+    final app = context.app;
+    final protein = (app.repo.meals(date)['meals'] as List).fold<num>(
+      0,
+      (v, m) => v + jsNumber((m as Map)['protein']).toDouble(),
+    );
+    return (
+      train: app.repo.hasTrain(date),
+      meal: protein > 0 && protein >= app.proteinGoal,
+    );
+  }
 
   @override
   void dispose() {
@@ -137,83 +133,76 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     }
   }
 
-  Widget hero() {
-    final date = DateTime.parse(iso);
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 2, 20, 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LText(
-                  '${date.month}月${date.day}日',
-                  key: const ValueKey('record-date'),
-                  style: AppText.navDay(context.pal),
-                ),
-                const SizedBox(height: 2),
-                LText(
-                  '周${weekLabels[date.weekday - 1]}${iso == context.app.today ? ' · 今天' : ''}',
-                  style: AppText.navWeek(context.pal)
-                      .copyWith(height: AppText.body(context.pal).height),
-                ),
-              ],
-            ),
-          ),
-          if (iso != context.app.today)
-            Semantics(
-              button: true,
-              label: AppMessages.of(context).text('回到今天'),
-              child: Pressable(
-                onTap: () => pick(context.app.today, collapse: true),
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  constraints: BoxConstraints(minHeight: 44),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: context.pal.tintSoft,
-                    borderRadius: BorderRadius.circular(Metrics.calRow),
-                  ),
-                  child: LText(
-                    '回到今天',
-                    style: AppText.navWeek(context.pal)
-                        .copyWith(color: context.pal.tint),
-                  ),
-                ),
+  Widget pill(
+    String label,
+    String semantics,
+    VoidCallback onTap, {
+    bool on = false,
+    String? key,
+  }) {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      excludeSemantics: true,
+      selected: on,
+      label: AppMessages.of(context).text(semantics),
+      child: Pressable(
+        onTap: onTap,
+        child: SizedBox(
+          height: Metrics.touchTarget,
+          child: Center(
+            child: Container(
+              key: key == null ? null : ValueKey(key),
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              constraints: const BoxConstraints(minHeight: 34),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: on ? p.primary : p.fill2,
+                borderRadius: BorderRadius.circular(17),
+              ),
+              child: LText(
+                label,
+                style: AppText.navWeek(p)
+                    .copyWith(color: on ? p.onPrimary : p.text),
               ),
             ),
-        ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget goal() {
-    final count = weekDays(
-      iso,
-      context.app.today,
-      marks,
-    ).where((d) => d.train).length;
-    final meals = (context.app.repo.meals(iso)['meals'] as List)
-        .cast<Map<String, dynamic>>();
-    final target = weekTargetFromHistory(
-      context.app.goals['weekDays'] ?? 0,
-      (context.app.plan['schedule'] as Map? ?? {}).length,
-      context.app.repo.allDays(),
-    );
-    final kcal = meals.fold<num>(0, (v, m) => v + ((m['kcal'] as num?) ?? 0));
-    final protein = meals.fold<num>(
-      0,
-      (v, m) => v + ((m['protein'] as num?) ?? 0),
-    );
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 6, Metrics.pagePad, 0),
-      child: LText(
-        '本周 $count/${fmt(target)} 天${meals.isNotEmpty ? ' · ${kcal.round()} 千卡 · 蛋白 ${fmt(protein)} g' : ''}',
-        style: AppText.weekGoal(context.pal)
-            .copyWith(height: AppText.body(context.pal).height),
-      ),
+  /// 页面主标题：当前选中的日期；右侧「回到今天」和（手机上的）月历按钮。
+  Widget hero() {
+    final date = DateTime.parse(iso);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: LText(
+              '${date.month}月${date.day}日',
+              key: const ValueKey('record-date'),
+              maxLines: 1,
+              style: AppText.display(context.pal, size: 34),
+            ),
+          ),
+        ),
+        if (iso != context.app.today) ...[
+          pill('回到今天', '回到今天', () => pick(context.app.today, collapse: true)),
+        ],
+        if (!persistent) ...[
+          const SizedBox(width: 8),
+          pill(
+            '月历',
+            _calendarOpen ? '收起月历' : '展开月历',
+            toggle,
+            on: _calendarOpen,
+          ),
+        ],
+      ],
     );
   }
 
@@ -227,14 +216,43 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     onToggle: toggle,
     onDragUpdate: dragCalendar,
     onDragEnd: releaseCalendar,
+    header: hero(),
   );
 
-  Widget sectionSwitch() => DaySectionSwitch(
-    train: section == '训练',
-    sets: (context.app.repo.day(iso)['sets'] as List?)?.length ?? 0,
-    meals: (context.app.repo.meals(iso)['meals'] as List).length,
-    onSection: context.app.showRecordSection,
-  );
+  /// 右下角墨色加号：所有新增入口都在这里。
+  Widget addButton(double bottom) {
+    final p = context.pal;
+    return Positioned(
+      right: widget.wide ? 24 : 18,
+      bottom: bottom,
+      child: Semantics(
+        button: true,
+        excludeSemantics: true,
+        label: AppMessages.of(context).text('添加记录'),
+        child: Pressable(
+          onTap: () => openLogAddMenu(context, iso),
+          child: Container(
+            key: const ValueKey('log-add'),
+            width: 58,
+            height: 58,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: p.primary,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: p.shadow,
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: AppIcon('plus', size: 26, color: p.onPrimary),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -248,21 +266,21 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
         final top = Metrics.navBarHeight + MediaQuery.paddingOf(context).top;
         final dayContent = KeyedSubtree(
           key: const ValueKey('day-pager'),
-          child: DayCards(
+          child: DayTimeline(
             key: PageStorageKey(iso),
             iso: iso,
             scrollController: scroll,
-            shown: section,
             lastAdd: lastAdd.isNotEmpty && lastAdd.first['date'] == iso
                 ? lastAdd
                 : const [],
             bottomPadding:
                 Metrics.dockHeight +
                 (context.app.rest.active ? 72 : 0) +
-                MediaQuery.paddingOf(context).bottom,
+                MediaQuery.paddingOf(context).bottom +
+                56,
           ),
         );
-        return Padding(
+        final body = Padding(
           padding: EdgeInsets.only(top: top),
           child: persistent
               ? Row(
@@ -273,18 +291,11 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [hero(), calendar(), goal()],
+                          children: [calendar()],
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          sectionSwitch(),
-                          Expanded(child: dayContent),
-                        ],
-                      ),
-                    ),
+                    Expanded(child: dayContent),
                   ],
                 )
               : AnimatedBuilder(
@@ -301,7 +312,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Leave room for the section switch and a usable list
+                        // Leave room for a usable timeline
                         // above the dock, even with large fonts or a short screen.
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -310,23 +321,36 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
                                         top -
                                         Metrics.dockHeight -
                                         MediaQuery.paddingOf(context).bottom -
-                                        Metrics.touchTarget * 3)
+                                        Metrics.touchTarget * 2)
                                     .clamp(0.0, double.infinity),
                           ),
                           child: SingleChildScrollView(
                             key: const ValueKey('record-header-scroll'),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [hero(), calendar(), goal()],
+                              children: [calendar()],
                             ),
                           ),
                         ),
-                        sectionSwitch(),
                         Expanded(child: child!),
                       ],
                     ),
                   ),
                 ),
+        );
+        final bottom = MediaQuery.paddingOf(context).bottom;
+        return Stack(
+          children: [
+            Positioned.fill(child: body),
+            addButton(
+              widget.wide
+                  ? 24 + bottom
+                  : Metrics.dockHeight +
+                        bottom +
+                        14 +
+                        (context.app.rest.active ? 72 : 0),
+            ),
+          ],
         );
       },
     ),

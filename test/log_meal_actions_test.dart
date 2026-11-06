@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/core/native.dart';
 import 'package:leandaily/domain/foods.dart';
-import 'package:leandaily/ui/log/day_cards.dart';
 import 'package:leandaily/ui/sheets/food/portion_panel.dart';
 import 'package:leandaily/ui/sheets/meal_sheet.dart';
 
@@ -13,27 +13,18 @@ import 'support/harness.dart';
 void main() {
   setUpAll(Harness.setUpAll);
 
-  testWidgets('进入记录默认饮食，查训练时翻日期保留选择，再次进入回到饮食', (tester) async {
-    final h = await Harness.pump(tester, tab: 1);
-    expect(tester.widget<DayCards>(find.byType(DayCards)).shown, '饮食');
-    h.controller.showRecordSection('训练');
-    h.controller.setDate('2026-10-15');
+  Future<void> pick(WidgetTester tester, String label) async {
+    await tester.tap(find.byKey(const ValueKey('log-add')));
     await tester.pumpAndSettle();
-    expect(tester.widget<DayCards>(find.byType(DayCards)).shown, '训练');
-    h.controller.setTab(2);
+    await tester.tap(find.text(label));
     await tester.pumpAndSettle();
-    h.controller.setTab(1);
-    await tester.pumpAndSettle();
-    expect(tester.widget<DayCards>(find.byType(DayCards)).shown, '饮食');
-    expect(find.text('拍照记饮食').hitTestable(), findsOneWidget);
-  });
+  }
 
   testWidgets('蛋白粉在所选历史日期记一份，撤销只删除本次记录', (tester) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
     h.controller.setDate('2026-10-15');
     await tester.pumpAndSettle();
-    await tester.tap(find.text('加蛋白粉'));
-    await tester.pumpAndSettle();
+    await pick(tester, '加蛋白粉');
     final meals = h.controller.repo.meals('2026-10-15')['meals'] as List;
     expect(meals, hasLength(1));
     final meal = meals.single as Map;
@@ -54,8 +45,7 @@ void main() {
 
   testWidgets('蛋白粉调整份量后按所选份数保存', (tester) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
-    await tester.tap(find.bySemanticsLabel('调整份量'));
-    await tester.pumpAndSettle();
+    await pick(tester, '加蛋白粉并调整份量');
     expect(find.byType(FoodPortionPanel), findsOneWidget);
     await tester.tap(find.text('0.5勺'));
     await tester.pumpAndSettle();
@@ -80,8 +70,7 @@ void main() {
       'items': [],
     });
     await tester.pumpAndSettle();
-    await tester.tap(find.text('拍照记饮食'));
-    await tester.pumpAndSettle();
+    await pick(tester, '拍照记饮食');
     expect(find.byType(MealSheet), findsOneWidget);
     expect(find.text('昨天的晚餐'), findsOneWidget);
     await tester.tap(find.text('保存'));
@@ -125,9 +114,13 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('配置AI后再次进入记录更新入口说明', (tester) async {
+  testWidgets('配置AI后加号菜单不再提示未设置', (tester) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
+    await tester.tap(find.byKey(const ValueKey('log-add')));
+    await tester.pumpAndSettle();
     expect(find.text('未设置 AI，可先存照片'), findsOneWidget);
+    await tester.tap(find.text('取消'));
+    await tester.pumpAndSettle();
     h.controller.setTab(3);
     await tester.pumpAndSettle();
     await h.controller.settings.save({
@@ -137,6 +130,9 @@ void main() {
     }, const Secrets(modelKey: 'test'));
     h.controller.setTab(1);
     await tester.pumpAndSettle();
-    expect(find.text('估算热量与蛋白质'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('log-add')));
+    await tester.pumpAndSettle();
+    expect(find.text('未设置 AI，可先存照片'), findsNothing);
+    expect(find.text('拍照记饮食'), findsOneWidget);
   });
 }
