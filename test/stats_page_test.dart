@@ -31,6 +31,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('本周总览'), findsOneWidget);
       expect(find.text('个人最佳'), findsOneWidget);
+      expect(find.byType(MuscleCard), findsNothing);
+      await tester.tap(find.text('肌肉状态详情'));
+      await tester.pumpAndSettle();
       expect(find.byType(MuscleCard), findsOneWidget);
       await h.shot(tester, 'stats-${dark ? 'dark' : 'light'}');
       expect(tester.takeException(), isNull);
