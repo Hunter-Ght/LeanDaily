@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../../domain/movements.dart';
 import '../../../theme/theme.dart';
-import '../../kit/plan_widgets.dart' show MiniBody;
+import '../../kit/body_figure.dart';
 import 'exercise_info.dart';
 
 /// “练哪里”卡片：前后两个小人，主练肌肉用强调色、辅助肌肉用淡色，旁边写大白话位置和专业名。
@@ -44,20 +44,20 @@ class MuscleFocusCard extends StatelessWidget {
     );
     return Container(
       key: const ValueKey('muscle-focus'),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: p.card,
-        borderRadius: BorderRadius.circular(18),
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          MiniBody(
-            height: 120,
-            levels: {
-              for (final id in roles.main) id: 3,
-              for (final id in roles.assist) id: 1,
-            },
+          SizedBox(
+            width: 112,
+            child: BodyFigure(
+              height: 132,
+              semanticLabel: messages.text('练哪里'),
+              tones: {
+                for (final id in roles.assist) id: MuscleTone.assist,
+                for (final id in roles.main) id: MuscleTone.effort,
+              },
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -67,7 +67,7 @@ class MuscleFocusCard extends StatelessWidget {
                 line('主练：', main, p.tint),
                 if (assist.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  line('辅助：', assist, p.tint.withValues(alpha: 0.35)),
+                  line('辅助：', assist, Color.lerp(p.fill2, p.tint, .45)!),
                 ],
               ],
             ),

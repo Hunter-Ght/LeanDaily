@@ -8,7 +8,7 @@ import '../../app/app_controller.dart';
 import '../../app/routes.dart';
 import '../../domain/format.dart';
 import '../../theme/theme.dart';
-import '../kit/form.dart';
+import '../sheets/train/controls.dart';
 import '../kit/pressable.dart';
 
 String routeName(Object? stage) =>
@@ -41,11 +41,7 @@ class ProfileCard extends StatelessWidget {
         children: [
           LText(
             profile == null ? '你的起点' : routeName(t?['stage']),
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: p.text,
-            ),
+            style: AppText.display(p, size: 24),
           ),
           const SizedBox(height: 10),
           LText(
@@ -56,10 +52,10 @@ class ProfileCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (profile == null)
-            FormButton(
+            SheetButton(
               '开始评估',
-              filled: true,
-              onTap: () => openOnboarding(context, upgrade: true),
+              () => openOnboarding(context, upgrade: true),
+              ink: true,
             )
           else
             Row(
@@ -76,14 +72,7 @@ class ProfileCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        LText(
-                          item.$2,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: p.text,
-                          ),
-                        ),
+                        LText(item.$2, style: AppText.num(p, 26)),
                         const SizedBox(height: 4),
                         LText(item.$1, style: AppText.hint(p)),
                       ],
