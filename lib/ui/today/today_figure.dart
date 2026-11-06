@@ -11,9 +11,6 @@ import '../../theme/theme.dart';
 import '../kit/body_figure.dart';
 import 'today_model.dart';
 
-/// 发力部位是否轻微“呼吸”。无限循环的动画会让 pumpAndSettle 超时，测试入口把它关掉。
-bool todayFigureBreathe = true;
-
 /// 首页人体图的数据：今天练的肌肉（发力/辅助）与仍在恢复的肌肉。
 class TodayFigureData {
   const TodayFigureData({
@@ -94,7 +91,7 @@ class TodayFigure extends StatelessWidget {
             BodyFigure(
               tones: data.tones,
               height: h,
-              breathe: data.hasEffort && todayFigureBreathe,
+              breathe: data.hasEffort,
               semanticLabel: AppMessages.of(context).text('今天练的肌肉和恢复情况'),
             ),
             const SizedBox(height: 10),

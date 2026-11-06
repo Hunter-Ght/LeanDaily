@@ -42,6 +42,9 @@ class BodyFigure extends StatefulWidget {
   final bool breathe;
   final String? semanticLabel;
 
+  /// 呼吸动画总开关。测试里关掉：无限循环的动画会让 pumpAndSettle 等不到稳定。
+  static bool animateBreath = true;
+
   static Future<Map<String, dynamic>>? _data;
   static Map<String, dynamic>? _loaded;
   static Future<Map<String, dynamic>> load() => _data ??= rootBundle
@@ -74,6 +77,7 @@ class _BodyFigureState extends State<BodyFigure>
   void _sync() {
     final on =
         widget.breathe &&
+        BodyFigure.animateBreath &&
         !MediaQuery.disableAnimationsOf(context) &&
         TickerMode.valuesOf(context).enabled;
     if (on && !_pulse.isAnimating) {

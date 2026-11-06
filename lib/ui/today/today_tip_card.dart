@@ -158,8 +158,9 @@ class TodayNudgeRow extends StatelessWidget {
                     horizontal: 14,
                     vertical: 7,
                   ),
+                  // 提醒类操作（称体重、开通知）不是训练动作，用中性次要样式，不用发力橙。
                   decoration: BoxDecoration(
-                    color: p.tintSoft,
+                    color: p.fill2,
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: LText(
@@ -167,7 +168,7 @@ class TodayNudgeRow extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: p.tintPress,
+                      color: p.text,
                     ),
                   ),
                 ),
