@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 
-import '../ui/kit/menu.dart';
 import '../ui/me/about_pages.dart';
 import '../ui/kit/sheet.dart';
 import '../ui/sheets/alternatives_sheet.dart';
@@ -24,33 +23,6 @@ export '../ui/sheets/body_log_sheet.dart' show openBodyLog;
 export '../ui/training/training_mode.dart' show openTrainingMode;
 
 /// 所有“打开某个页面 / 弹层”的入口都在这里，页面之间只通过它跳转。
-
-/// 记录页右上角“＋”：饮食入口在前，补记训练在后。
-Future<void> openAddMenu(BuildContext context) async {
-  final app = context.app;
-  final grams = ((app.plan['protein'] as Map?)?['powder'] as Map?)?['grams'];
-  final picked = await showActionMenu(
-    context,
-    actions: [
-      const MenuAction(id: 'quick', label: '记饮食', icon: 'meal'),
-      const MenuAction(id: 'meal', label: 'AI拍照识别营养', icon: 'camera'),
-      if (grams != null)
-        MenuAction(id: 'powder', label: '加一勺蛋白粉（$grams g）', icon: 'protein'),
-      const MenuAction(id: 'train', label: '记一组训练', icon: 'train'),
-    ],
-  );
-  if (!context.mounted) return;
-  switch (picked?.id) {
-    case 'train':
-      openTrainSheet(context);
-    case 'quick':
-      openQuickFood(context);
-    case 'meal':
-      openMealSheet(context);
-    case 'powder':
-      app.addProteinPowder(app.date);
-  }
-}
 
 Future<void> openTrainSheet(
   BuildContext context, {

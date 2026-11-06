@@ -362,10 +362,10 @@ class FormButton extends StatelessWidget {
               color: plain
                   ? p.bg.withValues(alpha: 0)
                   : filled
-                  ? p.tint
+                  ? p.primary
                   : ink || pill
                   ? p.fill
-                  : p.tintSoft,
+                  : p.fill2,
               borderRadius: BorderRadius.circular(pill ? 999 : 10),
             ),
             child: icon != null
@@ -378,10 +378,8 @@ class FormButton extends StatelessWidget {
                       color: danger
                           ? p.err
                           : filled
-                          ? p.onTint
-                          : ink || pill
-                          ? p.text
-                          : p.tint,
+                          ? p.onPrimary
+                          : p.text,
                     ),
                   ),
           ),
@@ -523,8 +521,8 @@ class FormCheck extends StatelessWidget {
                 height: 13,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  color: value ? p.tint : p.card,
-                  border: Border.all(color: value ? p.tint : p.secondary),
+                  color: value ? p.primary : p.card,
+                  border: Border.all(color: value ? p.primary : p.secondary),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: value

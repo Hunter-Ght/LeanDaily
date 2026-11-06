@@ -2822,5 +2822,9 @@
   "已练 {p0}/{p1} 组": "{p0}/{p1} sets done",
   "恢复中 · {p0}不到 1 天": "Recovering · {p0} in under 1 day",
   "恢复中 · {p0}约 {p1} 天": "Recovering · {p0} in about {p1} days",
-  "，蛋白达标": ", protein goal met"
+  "，蛋白达标": ", protein goal met",
+  "选动作，记重量和次数": "Pick an exercise, log weight and reps",
+  "拍下这一餐，AI 估算营养": "Snap this meal and let AI estimate nutrition",
+  "常吃的、常见一餐，或自己填": "Your usual foods, common meals, or enter your own",
+  "按平时的一勺记": "Logs your usual scoop"
 }

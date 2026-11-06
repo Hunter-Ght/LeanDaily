@@ -19,7 +19,7 @@ class GroupScope extends InheritedWidget {
 }
 
 /// iOS 分组列表：同一组的行放进一张圆角卡，行间用缩进细线分隔。
-/// 取代“每行一个独立胶囊”的旧写法；数值用次要色，只有可操作的文字才用 tint。
+/// 取代“每行一个独立胶囊”的旧写法；数值用次要色，动作行加粗，不用发力橙。
 class GroupHeader extends StatelessWidget {
   const GroupHeader(this.text, {super.key});
   final String text;
@@ -27,16 +27,16 @@ class GroupHeader extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.fromLTRB(
       GroupScope.flush(context) ? 4 : 20,
-      22,
+      24,
       GroupScope.flush(context) ? 0 : 16,
-      6,
+      8,
     ),
     child: LText(
       text,
       style: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w500,
-        color: context.pal.secondary,
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: context.pal.text,
       ),
     ),
   );
@@ -125,18 +125,14 @@ class GroupRow extends StatelessWidget {
   final VoidCallback? onTap;
   final bool chevron;
   final Widget? trailing;
-  final bool accent; // 标题用 tint（如“添加计划”这类动作行）
+  final bool accent; // 动作行（如“添加计划”）：标题加粗
   final bool danger;
   final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
-    final color = danger
-        ? p.err
-        : accent
-        ? p.tint
-        : p.text;
+    final color = danger ? p.err : p.text;
     final main = Row(
       children: [
         if (icon != null) ...[
@@ -144,11 +140,15 @@ class GroupRow extends StatelessWidget {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: iconColor ?? p.tint,
-              borderRadius: BorderRadius.circular(8),
+              color: iconColor ?? p.fill2,
+              borderRadius: BorderRadius.circular(9),
             ),
             alignment: Alignment.center,
-            child: AppIcon(icon!, size: 17, color: p.onTint),
+            child: AppIcon(
+              icon!,
+              size: 17,
+              color: iconColor == null ? p.text : p.onTint,
+            ),
           ),
           const SizedBox(width: 12),
         ],
@@ -159,7 +159,12 @@ class GroupRow extends StatelessWidget {
             children: [
               LText(
                 label,
-                style: TextStyle(fontSize: 17, height: 1.25, color: color),
+                style: TextStyle(
+                  fontSize: 17,
+                  height: 1.25,
+                  fontWeight: accent ? FontWeight.w600 : FontWeight.w400,
+                  color: color,
+                ),
               ),
               if (sub != null)
                 Padding(

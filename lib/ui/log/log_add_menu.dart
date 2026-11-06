@@ -23,13 +23,44 @@ Future<void> openLogAddMenu(BuildContext context, String date) async {
   if (!context.mounted) return;
   final picked = await showActionMenu(
     context,
+    title: '记一笔',
     message: configured ? null : '未设置 AI，可先存照片',
     actions: const [
-      MenuAction(id: 'train', label: '记一组', icon: 'train'),
-      MenuAction(id: 'meal', label: '拍照记饮食', icon: 'camera'),
-      MenuAction(id: 'powder', label: '加蛋白粉', icon: 'protein'),
-      MenuAction(id: 'adjust', label: '加蛋白粉并调整份量', icon: 'protein'),
-      MenuAction(id: 'quick', label: '搜索 / 手动记饮食', icon: 'search'),
+      MenuAction(
+        id: 'train',
+        label: '记一组',
+        detail: '选动作，记重量和次数',
+        icon: 'train',
+        group: '训练',
+        effort: true,
+      ),
+      MenuAction(
+        id: 'meal',
+        label: '拍照记饮食',
+        detail: '拍下这一餐，AI 估算营养',
+        icon: 'camera',
+        group: '饮食',
+      ),
+      MenuAction(
+        id: 'quick',
+        label: '搜索 / 手动记饮食',
+        detail: '常吃的、常见一餐，或自己填',
+        icon: 'search',
+        group: '饮食',
+      ),
+      MenuAction(
+        id: 'powder',
+        label: '加蛋白粉',
+        detail: '按平时的一勺记',
+        icon: 'protein',
+        group: '饮食',
+      ),
+      MenuAction(
+        id: 'adjust',
+        label: '加蛋白粉并调整份量',
+        icon: 'protein',
+        group: '饮食',
+      ),
     ],
   );
   if (!context.mounted) return;

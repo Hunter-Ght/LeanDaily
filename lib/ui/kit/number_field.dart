@@ -180,7 +180,7 @@ class NumberField extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(color: p.card, shape: BoxShape.circle),
           child: ExcludeSemantics(
-            child: LText(text, style: TextStyle(color: p.tint, fontSize: 28)),
+            child: LText(text, style: TextStyle(color: p.text, fontSize: 28)),
           ),
         ),
       ),

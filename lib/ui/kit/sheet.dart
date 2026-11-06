@@ -47,22 +47,36 @@ class _SheetScope extends InheritedWidget {
 
 /// 弹出一个全高弹层页。内容请返回 [AppSheet]。
 Future<T?> showAppSheet<T>(BuildContext context, WidgetBuilder builder) =>
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).push(_SheetRoute<T>(builder: builder, tall: true));
+    _push(context, builder, tall: true);
 
 /// 贴底、按内容高度的面板（动作菜单 / 确认框）。
 Future<T?> showSheetPanel<T>(BuildContext context, WidgetBuilder builder) =>
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).push(_SheetRoute<T>(builder: builder, tall: false));
+    _push(context, builder, tall: false);
+
+/// 弹层挂在根导航上，默认跟随系统亮暗；从固定配色的页面（训练中固定深色）打开时，沿用打开处的配色，
+/// 不会在深色训练页上弹出一张浅色面板。
+Future<T?> _push<T>(
+  BuildContext context,
+  WidgetBuilder builder, {
+  required bool tall,
+}) {
+  final nav = Navigator.of(context, rootNavigator: true);
+  final caller = context.pal;
+  final fixed = caller != nav.context.pal;
+  return nav.push(
+    _SheetRoute<T>(
+      builder: builder,
+      tall: tall,
+      palette: fixed ? caller : null,
+    ),
+  );
+}
 
 class _SheetRoute<T> extends PopupRoute<T> {
-  _SheetRoute({required this.builder, required this.tall});
+  _SheetRoute({required this.builder, required this.tall, this.palette});
   final WidgetBuilder builder;
   final bool tall;
+  final AppPalette? palette;
 
   @override
   Color? get barrierColor => null;
@@ -80,7 +94,18 @@ class _SheetRoute<T> extends PopupRoute<T> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) => _SheetHost<T>(tall: tall, builder: builder);
+  ) {
+    final host = _SheetHost<T>(tall: tall, builder: builder);
+    final fixed = palette;
+    if (fixed == null) return host;
+    return PaletteScope(
+      palette: fixed,
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: fixed.text),
+        child: host,
+      ),
+    );
+  }
 }
 
 class _SheetHost<T> extends StatefulWidget {
@@ -383,7 +408,19 @@ class _SheetPhysics extends ScrollPhysics {
       host.dragBy(-take);
       return offset + take;
     }
-    return offset;
+    return super.applyPhysicsToUserOffset(position, offset);
+  }
+
+  /// 顶边由整张弹层的下移接手，内容本身不越过顶边：否则惯性滑回顶部时会先冲出一大片空白，
+  /// 停一下才弹回来。底部仍交给平台默认（iOS 回弹）。
+  @override
+  double applyBoundaryConditions(ScrollMetrics position, double value) {
+    final min = position.minScrollExtent;
+    if (value < position.pixels && position.pixels <= min) {
+      return value - position.pixels;
+    }
+    if (value < min && min < position.pixels) return value - min;
+    return super.applyBoundaryConditions(position, value);
   }
 
   @override
@@ -396,10 +433,14 @@ class _SheetPhysics extends ScrollPhysics {
       host.release(-velocity);
       return null;
     }
-    return const ClampingScrollPhysics().createBallisticSimulation(
-      position,
-      velocity,
-    );
+    if (position.pixels <= position.minScrollExtent && velocity < 0) {
+      return null;
+    }
+    return super.createBallisticSimulation(position, velocity) ??
+        const ClampingScrollPhysics().createBallisticSimulation(
+          position,
+          velocity,
+        );
   }
 }
 
@@ -473,6 +514,7 @@ class _AppSheetState extends State<AppSheet> {
     super.dispose();
   }
 
+  /// 顶栏按钮：取消是正文色文字；保存是墨色胶囊（非训练的主操作，见改版规范），不再用发力橙。
   Widget _textButton(
     AppPalette p,
     String label,
@@ -486,17 +528,32 @@ class _AppSheetState extends State<AppSheet> {
       onTap: enabled ? onTap : null,
       scale: 0.96,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: Opacity(
-          opacity: enabled ? 1 : 0.4,
-          child: FadeSwitcher(
-            child: LText(
-              label,
-              key: ValueKey(label),
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
-                color: p.tint,
+        padding: EdgeInsets.symmetric(horizontal: bold ? 4 : 12, vertical: 8),
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 160),
+          opacity: enabled ? 1 : 0.35,
+          child: Container(
+            height: bold ? 34 : null,
+            padding: bold
+                ? const EdgeInsets.symmetric(horizontal: 16)
+                : EdgeInsets.zero,
+            alignment: Alignment.center,
+            decoration: bold
+                ? BoxDecoration(
+                    color: p.primary,
+                    borderRadius: BorderRadius.circular(17),
+                  )
+                : null,
+            child: FadeSwitcher(
+              child: LText(
+                label,
+                key: ValueKey(label),
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: bold ? 15 : 17,
+                  fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
+                  color: bold ? p.onPrimary : p.text,
+                ),
               ),
             ),
           ),
@@ -546,7 +603,11 @@ class _AppSheetState extends State<AppSheet> {
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: AppText.h2(p),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: p.text,
+                      ),
                     ),
                   ),
                 ),
