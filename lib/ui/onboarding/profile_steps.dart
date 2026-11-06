@@ -200,25 +200,33 @@ class _ConditionsStepState extends State<ConditionsStep> {
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: widget.profile['venue'] == option.$1
-                                ? p.tintSoft
+                                ? p.primary
                                 : p.card,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: widget.profile['venue'] == option.$1
-                                  ? p.tint
+                                  ? p.primary
                                   : p.sep,
                             ),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              AppIcon(option.$4, size: 20, color: p.text),
+                              AppIcon(
+                                option.$4,
+                                size: 20,
+                                color: widget.profile['venue'] == option.$1
+                                    ? p.onPrimary
+                                    : p.text,
+                              ),
                               const SizedBox(height: 4),
                               LText(
                                 option.$3,
                                 textAlign: TextAlign.center,
                                 style: AppText.hint(p).copyWith(
-                                  color: p.text,
+                                  color: widget.profile['venue'] == option.$1
+                                      ? p.onPrimary
+                                      : p.text,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -253,7 +261,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
                 widget.profile['venue'] == 'both' ? '✓ 两边都会去' : '两边都会去 ›',
                 style: AppText.hint(p).copyWith(
                   color: widget.profile['venue'] == 'both'
-                      ? p.tint
+                      ? p.text
                       : p.secondary,
                 ),
               ),

@@ -230,7 +230,7 @@ class PlanCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: p.card,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: selected ? p.tint : p.card, width: 2),
+        border: Border.all(color: selected ? p.primary : p.card, width: 2),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -248,12 +248,16 @@ class PlanCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: p.tintSoft,
+                      color: p.fill2,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: LText(
                       reason,
-                      style: TextStyle(fontSize: 12, color: p.secondary),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: p.text,
+                      ),
                     ),
                   ),
               ],

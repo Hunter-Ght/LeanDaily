@@ -19,7 +19,7 @@ class OnboardingCard extends StatelessWidget {
       color: context.pal.card,
       borderRadius: BorderRadius.circular(22),
       border: Border.all(
-        color: selected ? context.pal.tint : context.pal.card,
+        color: selected ? context.pal.primary : context.pal.card,
         width: 2,
       ),
     ),
@@ -74,11 +74,11 @@ class OnboardingButton extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: primary
-                ? (onTap == null ? p.fill : p.tint)
+                ? (onTap == null ? p.fill : p.primary)
                 : textOnly
                 ? p.bg.withValues(alpha: 0)
                 : selected
-                ? p.tintSoft
+                ? p.primary
                 : secondary
                 ? p.fill2
                 : p.card,
@@ -86,7 +86,6 @@ class OnboardingButton extends StatelessWidget {
             borderRadius: circular
                 ? null
                 : BorderRadius.circular(primary ? 22 : 14),
-            border: selected ? Border.all(color: p.tint) : null,
           ),
           child: Center(
             widthFactor: 1,
@@ -96,10 +95,8 @@ class OnboardingButton extends StatelessWidget {
               textAlign: TextAlign.center,
               style: (textOnly || compact ? AppText.body(p) : AppText.h2(p))
                   .copyWith(
-                    color: primary && onTap != null
-                        ? p.onTint
-                        : selected
-                        ? p.tint
+                    color: primary && onTap != null || selected
+                        ? p.onPrimary
                         : p.text,
                   ),
             ),

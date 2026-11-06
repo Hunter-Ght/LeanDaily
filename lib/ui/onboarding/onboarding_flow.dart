@@ -363,8 +363,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: LText(
                                   '请填写有效范围内的数值',
-                                  style: AppText.hint(p)
-                                      .copyWith(color: p.tint),
+                                  style: AppText.hint(p).copyWith(color: p.err),
                                 ),
                               ),
                             OnboardingButton(

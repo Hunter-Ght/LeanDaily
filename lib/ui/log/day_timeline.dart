@@ -790,7 +790,7 @@ class _MealCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: p.tintSoft,
+        color: p.fill2,
         borderRadius: BorderRadius.circular(8),
       ),
       child: LText(
@@ -917,7 +917,7 @@ class _MealCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: p.tint,
+                                color: p.text,
                               ),
                             ),
                           ),
@@ -954,7 +954,8 @@ class _MealCard extends StatelessWidget {
                           widthFactor: 1,
                           child: LText(
                             '我吃光了',
-                            style: AppText.body(p).copyWith(color: p.tint),
+                            style: AppText.body(p)
+                                .copyWith(fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
@@ -972,7 +973,8 @@ class _MealCard extends StatelessWidget {
                           widthFactor: 1,
                           child: LText(
                             '补拍剩余',
-                            style: AppText.body(p).copyWith(color: p.tint),
+                            style: AppText.body(p)
+                                .copyWith(fontWeight: FontWeight.w600),
                           ),
                         ),
                       ),
