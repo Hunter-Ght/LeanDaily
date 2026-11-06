@@ -9,6 +9,7 @@ import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../me/profile_card.dart';
 import 'stat_widgets.dart';
+import 'progress_sections.dart' show InkButton;
 
 class BodyRouteCard extends StatelessWidget {
   const BodyRouteCard({super.key});
@@ -51,7 +52,7 @@ class BodyRouteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          FormButton('记体重', ink: true, onTap: () => openBodyLog(context)),
+          InkButton('记体重', onTap: () => openBodyLog(context)),
         ] else ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,

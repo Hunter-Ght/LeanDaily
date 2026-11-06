@@ -106,5 +106,9 @@
  " 组": {
   "en": " sets in the last 4 weeks",
   "zh_Hant": " 組"
+ },
+ "，恢复后试试": {
+  "en": ". Try these once recovered: ",
+  "zh_Hant": "，恢復後試試"
  }
 }

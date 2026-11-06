@@ -6,8 +6,9 @@ import 'package:leandaily/l10n/app_messages.dart';
 
 import '../../domain/calendar.dart' as calendar;
 import '../../domain/format.dart';
+import '../../domain/equipment.dart' show partOfExercise;
 import '../../domain/free_training.dart';
-import '../../domain/movements.dart' show GROUP, MUSCLES, musclesOf;
+import '../../domain/movements.dart' show GROUP, MUSCLE, MUSCLES, musclesOf;
 import '../../domain/muscles.dart' show workSets;
 import '../../l10n/localized_text.dart';
 import '../../theme/theme.dart';
@@ -238,6 +239,23 @@ class SuggestionStrip extends StatelessWidget {
         if (g.group == group)
           ...g.exercises.where((e) => e.ready).map((e) => e.name),
     ].take(2).toList();
+    var recovering = false;
+    if (names.isEmpty) {
+      // 该肌群现在没有已恢复的动作：挑最常用的动作，提示恢复后再练。
+      names.addAll(
+        [
+          for (final name in freePool())
+            if (exerciseAvailable(name, owned) &&
+                MUSCLE[musclesOf(
+                      name,
+                      partOfExercise(name),
+                    )!['primary']]?['group'] ==
+                    group)
+              name,
+        ].take(2),
+      );
+      recovering = names.isNotEmpty;
+    }
     final style = TextStyle(fontSize: 16, height: 1.45, color: p.text);
     final muscleId = MUSCLES.firstWhere((m) => m['group'] == group)['id']!;
     return _shell(
@@ -261,7 +279,7 @@ class SuggestionStrip extends StatelessWidget {
             ] else
               const TextSpan(text: '这 4 周还没练到'),
             if (names.isNotEmpty) ...[
-              const TextSpan(text: '，下次试试'),
+              TextSpan(text: recovering ? '，恢复后试试' : '，下次试试'),
               TextSpan(text: names.join('或')),
             ],
             const TextSpan(text: '。'),
@@ -617,6 +635,40 @@ class _CollapsibleBlockState extends State<CollapsibleBlock> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// 墨色主按钮（非训练主操作）：背景 primary，文字 onPrimary。
+class InkButton extends StatelessWidget {
+  const InkButton(this.label, {super.key, required this.onTap});
+  final String label;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      label: AppMessages.of(context).text(label),
+      child: Pressable(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: p.primary,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: LText(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: p.onPrimary,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
