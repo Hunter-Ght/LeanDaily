@@ -1,0 +1,15 @@
+{
+  "休息中 · 共 {p0} 秒": {"en": "Resting · {p0} s total", "zh_Hant": "休息中 · 共 {p0} 秒"},
+  "+30 秒": {"en": "+30 s", "zh_Hant": "+30 秒"},
+  "跳过休息": {"en": "Skip rest", "zh_Hant": "跳過休息"},
+  "下一组：第 {p0} 组": {"en": "Next set: set {p0}", "zh_Hant": "下一組：第 {p0} 組"},
+  "接下来：{p0}": {"en": "Up next: {p0}", "zh_Hant": "接下來：{p0}"},
+  "{p0} kg × {p1} 次": {"en": "{p0} kg × {p1} reps", "zh_Hant": "{p0} kg × {p1} 次"},
+  "{p0} kg × {p1} 秒": {"en": "{p0} kg × {p1} s", "zh_Hant": "{p0} kg × {p1} 秒"},
+  "最后一组": {"en": "Last set", "zh_Hant": "最後一組"},
+  "{p0} 组": {"en": "{p0} sets", "zh_Hant": "{p0} 組"},
+  "上一组 {p0} kg × {p1} 次": {"en": "Last set {p0} kg × {p1} reps", "zh_Hant": "上一組 {p0} kg × {p1} 次"},
+  "上一组 {p0} 次": {"en": "Last set {p0} reps", "zh_Hant": "上一組 {p0} 次"},
+  "上一组 {p0} 秒": {"en": "Last set {p0} s", "zh_Hant": "上一組 {p0} 秒"},
+  "吃力程度 {p0}": {"en": "Effort {p0}", "zh_Hant": "吃力程度 {p0}"}
+}

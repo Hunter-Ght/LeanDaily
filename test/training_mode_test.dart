@@ -57,6 +57,11 @@ Future<void> settle(WidgetTester t) async {
 }
 
 Future<void> tap(WidgetTester t, String label) async {
+  // 组间休息占满主区域，做下一组前先跳过休息。
+  if (label.startsWith('完成第') && find.text('跳过休息').evaluate().isNotEmpty) {
+    await t.tap(find.text('跳过休息'));
+    await settle(t);
+  }
   final element = t.element(find.text(label));
   final scrollable = Scrollable.maybeOf(element);
   if (scrollable != null &&
@@ -296,6 +301,7 @@ void main() {
     expect(find.bySemanticsLabel('第 1 组 完成，有感受记录'), findsOneWidget);
     await t.tap(find.bySemanticsLabel('关闭'));
     await settle(t);
+    h.controller.rest.clear();
     await enter(t, id: 'test-load');
     expect(t.widget<EditableText>(input).controller.text, '11');
     await t.tap(find.bySemanticsLabel('关闭'));
@@ -329,9 +335,10 @@ void main() {
     );
     await tap(t, '完成第 1 组');
     final until = h.controller.rest.untilMs;
-    await tap(t, '+15 秒');
-    expect(h.controller.rest.untilMs, until + 15000);
-    await tap(t, '跳过');
+    expect(find.text('休息中 · 共 90 秒'), findsOneWidget);
+    await tap(t, '+30 秒');
+    expect(h.controller.rest.untilMs, until + 30000);
+    await tap(t, '跳过休息');
     expect(h.controller.rest.active, false);
     await t.tap(find.bySemanticsLabel('列表'));
     await settle(t);
@@ -470,7 +477,7 @@ void main() {
     );
     await t.enterText(repsInput, '17');
     await t.pump();
-    await t.flingFrom(const Offset(330, 400), const Offset(-180, 0), 700);
+    await t.flingFrom(const Offset(386, 400), const Offset(-180, 0), 700);
     await settle(t);
     expect(find.textContaining('第 1/2 项'), findsOneWidget);
     expect(t.widget<EditableText>(repsInput).controller.text, '17');
@@ -481,9 +488,9 @@ void main() {
       await settle(t);
     }
 
-    await dragAt(const Offset(330, 380), const Offset(-60, 0));
+    await dragAt(const Offset(386, 380), const Offset(-60, 0));
     expect(find.textContaining('第 1/2 项'), findsOneWidget);
-    final reverse = await t.startGesture(const Offset(330, 400));
+    final reverse = await t.startGesture(const Offset(386, 400));
     await reverse.moveBy(const Offset(-145, 0));
     await t.pump(const Duration(milliseconds: 200));
     await reverse.moveBy(const Offset(100, 0));
@@ -495,7 +502,7 @@ void main() {
     for (final at in [
       const Offset(240, 150),
       const Offset(365, 560),
-      const Offset(335, 410),
+      const Offset(386, 410),
       const Offset(300, 340),
     ]) {
       await dragAt(at, const Offset(-150, 0));
@@ -505,12 +512,12 @@ void main() {
       expect(find.textContaining('第 1/2 项'), findsOneWidget);
       expect(t.widget<EditableText>(repsInput).controller.text, '10');
     }
-    await t.flingFrom(const Offset(330, 400), const Offset(-55, 0), 700);
+    await t.flingFrom(const Offset(386, 400), const Offset(-55, 0), 700);
     await settle(t);
     expect(find.textContaining('第 2/2 项'), findsOneWidget);
-    await dragAt(const Offset(330, 400), const Offset(-150, 0));
+    await dragAt(const Offset(386, 400), const Offset(-150, 0));
     expect(find.text('练完了'), findsOneWidget);
-    await dragAt(const Offset(330, 400), const Offset(-150, 0));
+    await dragAt(const Offset(386, 400), const Offset(-150, 0));
     expect(find.text('练完了'), findsOneWidget);
     await dragAt(const Offset(150, 400), const Offset(150, 0));
     await dragAt(const Offset(150, 400), const Offset(150, 0));
@@ -590,7 +597,7 @@ void main() {
     final resumed = frame();
     await t.pump(const Duration(milliseconds: 1100));
     expect(frame(), 1 - resumed);
-    await t.flingFrom(const Offset(330, 400), const Offset(-180, 0), 700);
+    await t.flingFrom(const Offset(386, 400), const Offset(-180, 0), 700);
     await settle(t);
     expect(find.byType(ExerciseDemo), findsOneWidget);
     expect(find.textContaining('第 2/2 项'), findsOneWidget);
@@ -673,7 +680,7 @@ void main() {
       await settle(t);
       expect(find.text('第 2 组 · 补充感受 ›'), findsOneWidget);
       expect(find.text('第 1 组 · 还能做 3+ 次 · 有点痛 ✎'), findsNothing);
-      await t.flingFrom(const Offset(330, 400), const Offset(-180, 0), 700);
+      await t.flingFrom(const Offset(386, 400), const Offset(-180, 0), 700);
       await settle(t);
       expect(find.text('第 2 组 · 补充感受 ›'), findsNothing);
       await t.tap(find.bySemanticsLabel('关闭'));
@@ -700,6 +707,8 @@ void main() {
       await images(t);
       await enter(t, id: 'test-load');
       await tap(t, '完成第 1 组');
+      // 休息视图占满主区域；跳过后感受面板仍在，步进器重新出现。
+      await tap(t, '跳过休息');
       final panel = t.getRect(find.byKey(const ValueKey('training-feedback')));
       final primary = t.getRect(
         find.byWidgetPredicate(
