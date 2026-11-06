@@ -15,6 +15,7 @@ import '../../domain/format.dart';
 import '../../domain/movements.dart' show musclesOf;
 import '../../domain/progress.dart' as progress;
 import '../../theme/theme.dart';
+import '../../theme/tokens.dart' show AppPalette;
 import '../kit/exercise_thumb.dart';
 import '../kit/exercise_demo.dart';
 import '../sheets/edit_set_sheet.dart' show SetFeedbackChip;
@@ -22,12 +23,12 @@ import '../log/set_display.dart';
 import '../kit/transitions.dart';
 import '../kit/app_icon.dart';
 import '../kit/grouped.dart';
-import '../kit/glass.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
 import '../today/today_model.dart';
 import '../today/workout_title.dart';
 import 'training_logic.dart';
+import 'training_rest.dart';
 
 Future<void> openTrainingMode(
   BuildContext context, {
@@ -84,14 +85,25 @@ class _TrainingSpring extends Curve {
   double transformInternal(double t) => _spring.x(t * .48) / _spring.x(.48);
 }
 
-class TrainingMode extends StatefulWidget {
+/// 训练中固定深色，不随系统亮暗切换。
+class TrainingMode extends StatelessWidget {
   const TrainingMode({super.key, this.exerciseId});
   final String? exerciseId;
   @override
-  State<TrainingMode> createState() => _TrainingModeState();
+  Widget build(BuildContext context) => PaletteScope(
+    palette: AppPalette.dark,
+    child: _TrainingBody(exerciseId: exerciseId),
+  );
 }
 
-class _TrainingModeState extends State<TrainingMode>
+class _TrainingBody extends StatefulWidget {
+  const _TrainingBody({required this.exerciseId});
+  final String? exerciseId;
+  @override
+  State<_TrainingBody> createState() => _TrainingModeState();
+}
+
+class _TrainingModeState extends State<_TrainingBody>
     with TickerProviderStateMixin {
   AppController? _app;
   late final PageController _pages;
@@ -457,7 +469,7 @@ class _TrainingModeState extends State<TrainingMode>
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
       onTap: tap,
       child: Container(
-        constraints: BoxConstraints(minHeight: primary ? 58 : 44, minWidth: 44),
+        constraints: BoxConstraints(minHeight: primary ? 64 : 44, minWidth: 44),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         alignment: Alignment.center,
         decoration: BoxDecoration(
@@ -466,14 +478,23 @@ class _TrainingModeState extends State<TrainingMode>
               : selected
               ? context.pal.tintSoft
               : null,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(primary ? 22 : 18),
+          boxShadow: primary
+              ? [
+                  BoxShadow(
+                    color: context.pal.tint.withValues(alpha: .32),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
         child: LText(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: primary ? 17 : 13,
-            fontWeight: FontWeight.w600,
+            fontSize: primary ? 20 : 14,
+            fontWeight: primary ? FontWeight.w700 : FontWeight.w600,
             color: primary
                 ? context.pal.onTint
                 : secondary
@@ -579,14 +600,10 @@ class _TrainingModeState extends State<TrainingMode>
     child: Pressable(
       scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
       onTap: tap,
-      child: GlassSurface(
-        radius: 22,
-        shadow: false,
-        child: SizedBox.square(
-          dimension: 44,
-          child: Center(
-            child: AppIcon(icon, size: 20, color: context.pal.text),
-          ),
+      child: SizedBox.square(
+        dimension: 44,
+        child: Center(
+          child: AppIcon(icon, size: 22, color: context.pal.secondary),
         ),
       ),
     ),
@@ -769,6 +786,134 @@ class _TrainingModeState extends State<TrainingMode>
     );
   }
 
+  /// 分段组进度条：每段一组，完成的为发力橙；已完成的段可点开编辑。
+  Widget segments(Map<String, dynamic> e, List<Map<String, dynamic>> sets) {
+    final p = context.pal;
+    final count = math.max(jsNumber(e['target']).toInt(), sets.length);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          for (var i = 0; i < count; i++) ...[
+            if (i > 0) const SizedBox(width: 6),
+            Expanded(
+              child: Semantics(
+                button: i < sets.length,
+                label: AppMessages.of(context).text(
+                  '第 ${i + 1} 组${i < sets.length ? ' 完成${setFeedbackLabel(sets[i]).isNotEmpty ? '，有感受记录' : '，编辑'}' : ''}',
+                ),
+                child: Pressable(
+                  scale: 1,
+                  onTap: i < sets.length
+                      ? () => openEditSet(context, sets[i])
+                      : null,
+                  child: SizedBox(
+                    height: 44,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.center,
+                      children: [
+                        AnimatedContainer(
+                          duration: Duration(
+                            milliseconds:
+                                MediaQuery.disableAnimationsOf(context)
+                                ? 0
+                                : 220,
+                          ),
+                          height: 6,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(3),
+                            color: i < sets.length
+                                ? p.tint
+                                : i == sets.length
+                                ? p.tintSoft
+                                : p.fill2,
+                          ),
+                        ),
+                        if (i < sets.length &&
+                            setFeedbackLabel(sets[i]).isNotEmpty)
+                          Positioned(
+                            right: 2,
+                            top: 10,
+                            child: Container(
+                              key: ValueKey('feedback-dot-${sets[i]['id']}'),
+                              width: 7,
+                              height: 7,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: sets[i]['flag'] == 'pain'
+                                    ? p.err
+                                    : p.secondary,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget restView(
+    TodayModel m,
+    Map<String, dynamic> e,
+    List<Map<String, dynamic>> sets,
+    Map<String, dynamic> target,
+  ) {
+    final loaded = trainingHasLoad(e, sets);
+    final sec = e['unit'] == 'sec';
+    final r = _reps ?? trainingReps(e, target, sets),
+        w = _weight ?? trainingWeight(e, target, sets);
+    final total = jsNumber(e['target']).toInt();
+    final hasNextSet = sets.length < total;
+    final index = m.items.indexWhere((i) => i['ex']['id'] == e['id']);
+    final later = m.items
+        .where(
+          (i) =>
+              m.items.indexOf(i) > index &&
+              !jsTruthy(i['complete']) &&
+              !_skipped.contains('${i['ex']['id']}'),
+        )
+        .firstOrNull;
+    final nextEx = later == null ? null : jsonMap(later['ex']);
+    return TrainingRestView(
+      app: _app!,
+      exercise: e,
+      nextSet: hasNextSet ? sets.length + 1 : null,
+      nextSetDetail: TextSpan(
+        children: [
+          TextSpan(
+            text: trainingSetDetail(
+              loaded: loaded,
+              weight: w,
+              reps: r,
+              seconds: sec,
+            ),
+          ),
+          if (sets.length + 1 == total) ...[
+            const TextSpan(text: ' · '),
+            const TextSpan(text: '最后一组'),
+          ],
+        ],
+      ),
+      nextExercise: nextEx,
+      nextExerciseDetail: nextEx == null
+          ? const TextSpan()
+          : TextSpan(
+              children: [
+                TextSpan(text: '${nextEx['part'] ?? ''}'),
+                const TextSpan(text: ' · '),
+                TextSpan(text: '${nextEx['target']} 组'),
+              ],
+            ),
+    );
+  }
+
   Widget exerciseView(
     TodayModel m,
     Map<String, dynamic> e,
@@ -780,118 +925,88 @@ class _TrainingModeState extends State<TrainingMode>
     final r = _reps ?? trainingReps(e, target, sets),
         w = _weight ?? trainingWeight(e, target, sets);
     final loaded = trainingHasLoad(e, sets);
+    final sec = e['unit'] == 'sec';
     final reason = sets.length >= jsNumber(e['target'])
         ? (m.after['${e['id']}']?['reason'])
         : target['reason'];
+    final last = sets.lastOrNull;
+    final lastRpe = last?['rpe'];
+    final numbers = <Widget>[
+      if (loaded)
+        Expanded(
+          child: TrainingNumber(
+            key: ValueKey('$_id-${e['name']}-weight'),
+            label: '重量',
+            value: w,
+            step: jsTruthy(e['machine'])
+                ? jsNumber(jsonMap(_app!.progress['steps'])[e['name']] ?? 2.5)
+                : .5,
+            minimum: 0,
+            onChanged: (v) => _weight = v,
+          ),
+        ),
+      if (loaded) const SizedBox(width: 12),
+      Expanded(
+        child: TrainingNumber(
+          key: ValueKey('$_id-${e['name']}-reps'),
+          label: sec ? '秒' : '次数',
+          value: r,
+          step: sec ? 5 : 1,
+          minimum: 1,
+          onChanged: (v) => _reps = v,
+        ),
+      ),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
         TweenAnimationBuilder<double>(
           tween: Tween(
             end: _feedbackExpanded
                 ? 120
-                : (availableHeight * .30).clamp(120, 200).toDouble(),
+                : (availableHeight * .34).clamp(120, 300).toDouble(),
           ),
           duration: Duration(
             milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 260,
           ),
           curve: const _TrainingSpring(),
           builder: (_, height, _) => Center(
-            child: ExerciseDemo(ex: e, size: height),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: ExerciseDemo(ex: e, size: height),
+            ),
           ),
         ),
-        button(
-          '动作要点 ›',
-          () => openGuide(context, '${e['name']}', iso: m.iso),
-          secondary: true,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: text('${e['name']}', size: 34, bold: true),
-        ),
-        text(
-          '目标 ${e['target']} 组 × ${target['reps'] ?? e['min']} ${e['unit'] == 'sec' ? '秒' : '次'}${loaded ? ' · ${fmt(w)} kg' : ' · 自重'}',
-          secondary: true,
-        ),
-        if (jsTruthy(reason)) ...[
-          const SizedBox(height: 4),
-          text('$reason', size: 13, secondary: true),
-        ],
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
+        Row(
           children: [
-            for (
-              var i = 0;
-              i < math.max(jsNumber(e['target']).toInt(), sets.length);
-              i++
-            )
-              Semantics(
-                button: i < sets.length,
-                label: AppMessages.of(context).text(
-                  '第 ${i + 1} 组${i < sets.length ? ' 完成${setFeedbackLabel(sets[i]).isNotEmpty ? '，有感受记录' : '，编辑'}' : ''}',
-                ),
-                child: Pressable(
-                  scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
-                  onTap: i < sets.length
-                      ? () => openEditSet(context, sets[i])
-                      : null,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      AnimatedContainer(
-                        duration: Duration(
-                          milliseconds: MediaQuery.disableAnimationsOf(context)
-                              ? 0
-                              : 220,
-                        ),
-                        width: 44,
-                        height: 44,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: i < sets.length ? p.ok : null,
-                          border: Border.all(
-                            color: i == sets.length ? p.tint : p.sep,
-                            width: 2,
-                          ),
-                        ),
-                        child: i < sets.length
-                            ? AppIcon('check', size: 20, color: p.onTint)
-                            : LText(
-                                '${i + 1}',
-                                style: TextStyle(
-                                  color: p.secondary,
-                                  fontSize: 17,
-                                ),
-                              ),
-                      ),
-                      if (i < sets.length &&
-                          setFeedbackLabel(sets[i]).isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            key: ValueKey('feedback-dot-${sets[i]['id']}'),
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: sets[i]['flag'] == 'pain'
-                                  ? p.err
-                                  : p.tertiary,
-                            ),
-                          ),
-                        ),
-                    ],
+            button(
+              '动作要点 ›',
+              () => openGuide(context, '${e['name']}', iso: m.iso),
+              secondary: true,
+            ),
+            if (jsTruthy(e['side']))
+              Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.fill2,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: LText(
+                    '单边',
+                    style: TextStyle(color: p.secondary, fontSize: 12),
                   ),
                 ),
               ),
+            const Spacer(),
+            button('更多 ›', () => more(e, sets), secondary: true),
           ],
         ),
-        const SizedBox(height: 16),
         AnimatedBuilder(
           animation: _pulse,
           builder: (_, child) => Transform.scale(
@@ -901,45 +1016,55 @@ class _TrainingModeState extends State<TrainingMode>
           child: Padding(
             key: _numbersKeys.putIfAbsent('${e['id']}', () => GlobalKey()),
             // Leave a margin for the thumbnail spring's final subpixel motion.
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Column(
-              children: [
-                TrainingNumber(
-                  key: ValueKey('$_id-${e['name']}-reps'),
-                  label: e['unit'] == 'sec' ? '秒' : '次数',
-                  value: r,
-                  step: e['unit'] == 'sec' ? 5 : 1,
-                  minimum: 1,
-                  onChanged: (v) => _reps = v,
-                ),
-                if (loaded) ...[
-                  const SizedBox(height: 10),
-                  TrainingNumber(
-                    key: ValueKey('$_id-${e['name']}-weight'),
-                    label: '重量',
-                    value: w,
-                    step: jsTruthy(e['machine'])
-                        ? jsNumber(
-                            jsonMap(_app!.progress['steps'])[e['name']] ?? 2.5,
-                          )
-                        : .5,
-                    minimum: 0,
-                    onChanged: (v) => _weight = v,
-                  ),
-                ],
-              ],
+            padding: const EdgeInsets.only(top: 4, bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: numbers,
             ),
           ),
         ),
-        TrainingRest(app: _app!),
-        button('更多 ›', () => more(e, sets), secondary: true),
+        Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: last == null
+              ? LText(
+                  '目标 ${e['target']} 组 × ${target['reps'] ?? e['min']} ${sec ? '秒' : '次'}${loaded ? ' · ${fmt(w)} kg' : ' · 自重'}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: p.secondary, fontSize: 14),
+                )
+              : LText.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            '上一组 ${trainingSetDetail(loaded: loaded && jsNumber(last['w']) > 0, weight: jsNumber(last['w']), reps: jsNumber(last['reps']), seconds: sec)}',
+                      ),
+                      if (lastRpe != null) ...[
+                        const TextSpan(text: ' · '),
+                        TextSpan(text: '吃力程度 ${fmt(jsNumber(lastRpe))}'),
+                      ],
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: p.secondary, fontSize: 14),
+                ),
+        ),
+        if (jsTruthy(reason)) ...[
+          const SizedBox(height: 4),
+          LText(
+            '$reason',
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: p.tertiary, fontSize: 13, height: 1.3),
+          ),
+        ],
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: _app!,
+    listenable: Listenable.merge([_app!, _app!.rest]),
     builder: (context, _) {
       final m = model;
       final item = m.items.where((i) => i['ex']['id'] == _id).firstOrNull;
@@ -979,24 +1104,46 @@ class _TrainingModeState extends State<TrainingMode>
                             ),
                             if (!_summary)
                               Expanded(
-                                child: LText(
-                                  '${workoutTitle('${m.workout['name'] ?? '训练'}')} · ${_warm
-                                      ? '热身'
-                                      : _summary
-                                      ? '小结'
-                                      : '第 ${index + 1}/${m.items.length} 项'}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context.pal.secondary,
-                                  ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (!_warm)
+                                      LText(
+                                        '${e['name'] ?? ''}',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          height: 1.2,
+                                          fontWeight: FontWeight.w700,
+                                          color: context.pal.text,
+                                        ),
+                                      ),
+                                    LText(
+                                      '${workoutTitle('${m.workout['name'] ?? '训练'}')} · ${_warm
+                                          ? '热身'
+                                          : _summary
+                                          ? '小结'
+                                          : '第 ${index + 1}/${m.items.length} 项'}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: context.pal.secondary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
+                            if (!_summary) _ElapsedClock(watch: _elapsed),
                             if (!_summary) headerButton('列表', 'layers', list),
                           ],
                         ),
                       ),
                     ),
+                    if (!_warm && !_summary && item != null) segments(e, sets),
                     Expanded(
                       child: NotificationListener<ScrollNotification>(
                         onNotification: (notification) {
@@ -1049,14 +1196,16 @@ class _TrainingModeState extends State<TrainingMode>
                                         if (ex != null)
                                           ExerciseThumb(ex: ex, size: 160),
                                         const SizedBox(height: 16),
-                                        text(
+                                        LText(
                                           ex == null
                                               ? (page == 0 && hasWarm
                                                     ? '热身'
                                                     : '训练小结')
                                               : '${ex['name']}',
-                                          size: 34,
-                                          bold: true,
+                                          style: AppText.display(
+                                            context.pal,
+                                            size: 30,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1090,27 +1239,62 @@ class _TrainingModeState extends State<TrainingMode>
                                                 }
                                               });
                                         }
-                                        return SingleChildScrollView(
-                                          padding: const EdgeInsets.only(
-                                            top: 8,
-                                            bottom: 12,
+                                        final resting =
+                                            !_warm &&
+                                            !_summary &&
+                                            _app!.rest.active;
+                                        return AnimatedSwitcher(
+                                          layoutBuilder: (current, previous) =>
+                                              Stack(
+                                                alignment: Alignment.topCenter,
+                                                children: [
+                                                  ...previous,
+                                                  ?current,
+                                                ],
+                                              ),
+                                          duration: Duration(
+                                            milliseconds:
+                                                MediaQuery.disableAnimationsOf(
+                                                  context,
+                                                )
+                                                ? 0
+                                                : 220,
                                           ),
-                                          child: _warm
-                                              ? warmView(m)
-                                              : _summary
-                                              ? summaryView(m)
-                                              : Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 16,
-                                                      ),
-                                                  child: exerciseView(
+                                          child: resting
+                                              ? KeyedSubtree(
+                                                  key: const ValueKey('rest'),
+                                                  child: restView(
                                                     m,
                                                     e,
                                                     sets,
                                                     target,
-                                                    constraints.maxHeight,
                                                   ),
+                                                )
+                                              : SingleChildScrollView(
+                                                  key: const ValueKey('work'),
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        top: 4,
+                                                        bottom: 12,
+                                                      ),
+                                                  child: _warm
+                                                      ? warmView(m)
+                                                      : _summary
+                                                      ? summaryView(m)
+                                                      : Padding(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 16,
+                                                              ),
+                                                          child: exerciseView(
+                                                            m,
+                                                            e,
+                                                            sets,
+                                                            target,
+                                                            constraints
+                                                                .maxHeight,
+                                                          ),
+                                                        ),
                                                 ),
                                         );
                                       },
@@ -1165,25 +1349,41 @@ class _TrainingModeState extends State<TrainingMode>
                                             ),
                                             secondary: true,
                                           ),
-                                        button(
-                                          _warm
-                                              ? '热身完成'
-                                              : _summary
-                                              ? '完成'
-                                              : '完成第 ${sets.length + 1} 组',
-                                          _saving
-                                              ? null
-                                              : () async {
-                                                  if (_warm) {
-                                                    await finishWarmup(m);
-                                                  } else if (_summary) {
-                                                    Navigator.of(context).pop();
-                                                  } else {
-                                                    await save(e, sets, target);
-                                                  }
-                                                },
-                                          primary: true,
-                                        ),
+                                        if (!_warm &&
+                                            !_summary &&
+                                            _app!.rest.active)
+                                          button(
+                                            '更多 ›',
+                                            () => more(e, sets),
+                                            secondary: true,
+                                          ),
+                                        if (_warm ||
+                                            _summary ||
+                                            !_app!.rest.active)
+                                          button(
+                                            _warm
+                                                ? '热身完成'
+                                                : _summary
+                                                ? '完成'
+                                                : '完成第 ${sets.length + 1} 组',
+                                            _saving
+                                                ? null
+                                                : () async {
+                                                    if (_warm) {
+                                                      await finishWarmup(m);
+                                                    } else if (_summary) {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    } else {
+                                                      await save(
+                                                        e,
+                                                        sets,
+                                                        target,
+                                                      );
+                                                    }
+                                                  },
+                                            primary: true,
+                                          ),
                                       ],
                                     ),
                                   ),
@@ -1203,6 +1403,50 @@ class _TrainingModeState extends State<TrainingMode>
       );
     },
   );
+}
+
+class _ElapsedClock extends StatefulWidget {
+  const _ElapsedClock({required this.watch});
+  final Stopwatch watch;
+  @override
+  State<_ElapsedClock> createState() => _ElapsedClockState();
+}
+
+class _ElapsedClockState extends State<_ElapsedClock> {
+  Timer? _timer;
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sec = widget.watch.elapsed.inSeconds;
+    final h = sec ~/ 3600, m = (sec % 3600) ~/ 60, s = sec % 60;
+    final label = h > 0
+        ? '$h:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}'
+        : '$m:${s.toString().padLeft(2, '0')}';
+    return ExcludeSemantics(
+      child: Text(
+        label,
+        style: AppText.num(
+          context.pal,
+          15,
+          weight: FontWeight.w600,
+          color: context.pal.secondary,
+        ),
+      ),
+    );
+  }
 }
 
 class TrainingNumber extends StatefulWidget {
@@ -1280,13 +1524,20 @@ class _TrainingNumberState extends State<TrainingNumber> {
               );
             },
             child: Container(
-              width: 52,
               height: 52,
-              decoration: BoxDecoration(color: p.fill2, shape: BoxShape.circle),
+              constraints: const BoxConstraints(minWidth: 44),
+              decoration: BoxDecoration(
+                color: p.fill2,
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Center(
-                child: LText(
+                child: Text(
                   minus ? '−' : '+',
-                  style: TextStyle(color: p.text, fontSize: 28),
+                  style: TextStyle(
+                    color: p.text,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -1295,60 +1546,66 @@ class _TrainingNumberState extends State<TrainingNumber> {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: p.card,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          bump(true),
-          Expanded(
-            child: Column(
-              children: [
-                Semantics(
-                  label: AppMessages.of(context).text(widget.label),
-                  textField: true,
-                  child: EditableText(
-                    controller: _text,
-                    focusNode: _focus,
-                    style: DefaultTextStyle.of(context).style.copyWith(
-                      color: p.text,
-                      fontSize: 44,
-                      fontWeight: FontWeight.w700,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
-                    cursorColor: p.tint,
-                    backgroundCursorColor: p.fill,
-                    textAlign: TextAlign.center,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    onChanged: (s) {
-                      final n = num.tryParse(s);
-                      if (n != null && n.isFinite) {
-                        widget.onChanged(n);
-                      } else if (s.isEmpty) {
-                        widget.onChanged(0);
-                      }
-                    },
-                  ),
-                ),
-                LText(
-                  widget.label == '重量' ? 'kg' : widget.label,
-                  style: TextStyle(color: p.secondary, fontSize: 13),
-                ),
-              ],
-            ),
+    return LayoutBuilder(
+      builder: (context, box) {
+        final big = box.maxWidth >= 170;
+        return Container(
+          padding: const EdgeInsets.fromLTRB(10, 16, 10, 10),
+          decoration: BoxDecoration(
+            color: p.card,
+            borderRadius: BorderRadius.circular(26),
           ),
-          bump(false),
-        ],
-      ),
+          child: Column(
+            children: [
+              Semantics(
+                label: AppMessages.of(context).text(widget.label),
+                textField: true,
+                child: EditableText(
+                  controller: _text,
+                  focusNode: _focus,
+                  style: AppText.num(p, big ? 60 : 46),
+                  cursorColor: p.tint,
+                  backgroundCursorColor: p.fill,
+                  textAlign: TextAlign.center,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  onChanged: (s) {
+                    final n = num.tryParse(s);
+                    if (n != null && n.isFinite) {
+                      widget.onChanged(n);
+                    } else if (s.isEmpty) {
+                      widget.onChanged(0);
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 4),
+              LText(
+                widget.label == '重量'
+                    ? 'kg'
+                    : widget.label == '次数'
+                    ? '次'
+                    : widget.label,
+                style: TextStyle(color: p.secondary, fontSize: 14),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(child: bump(true)),
+                  const SizedBox(width: 8),
+                  Expanded(child: bump(false)),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
+/// 紧凑休息条（训练模式本身已改用 TrainingRestView，此组件保留给弹层等场景和既有测试）。
 class TrainingRest extends StatefulWidget {
   const TrainingRest({super.key, required this.app});
   final AppController app;
