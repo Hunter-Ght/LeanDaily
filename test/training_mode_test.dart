@@ -536,7 +536,6 @@ void main() {
         n.docs['android-state'] = jsonEncode(state);
       },
     );
-    h.controller.showRecordSection('训练');
     await settle(t);
     final original = jsonRows(h.controller.day['sets']).first;
     Future<void> edit() async {
@@ -567,7 +566,9 @@ void main() {
     expect(saved['rpe'], 9);
     expect(saved['flag'], 'form');
     expect(saved['ts'], original['ts']);
-    expect(find.text('还能做 1 次'), findsOneWidget);
+    await t.tap(find.bySemanticsLabel(RegExp('^修改 ')).first);
+    await settle(t);
+    expect(find.textContaining('还能做 1 次'), findsOneWidget);
     expect(find.textContaining('动作变形'), findsOneWidget);
     await t.pump(const Duration(seconds: 4));
   });
@@ -679,9 +680,11 @@ void main() {
       await settle(t);
       h.controller.rest.clear();
       h.controller.setTab(1);
-      h.controller.showRecordSection('训练');
       await settle(t);
-      expect(find.text('还能做 3+ 次'), findsOneWidget);
+      // 时间线上的组是紧凑小片；点开这组的菜单能看到完整感受。
+      await t.tap(find.bySemanticsLabel('修改 哑铃地板卧推 第 1 组'));
+      await settle(t);
+      expect(find.textContaining('还能做 3+ 次'), findsOneWidget);
       expect(find.textContaining('有点痛'), findsOneWidget);
       await t.pump(const Duration(seconds: 4));
     });

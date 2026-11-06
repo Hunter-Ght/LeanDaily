@@ -111,7 +111,9 @@ void main() {
   }
 
   for (final dark in [false, true]) {
-    testWidgets('advanced validation reveal and screenshot $dark', (tester) async {
+    testWidgets('advanced validation reveal and screenshot $dark', (
+      tester,
+    ) async {
       final h = await Harness.pump(tester, dark: dark);
       openAndroidSettings(tester.element(find.byType(PageHost)));
       await tester.pumpAndSettle();
@@ -224,11 +226,16 @@ void main() {
         await tester.pump(const Duration(milliseconds: 80));
         final intermediateY = tester.getTopLeft(find.byType(PlanPreview)).dy;
         await tester.pumpAndSettle();
-        expect(tester.getTopLeft(find.byType(PlanPreview)).dy,
-          lessThan(intermediateY), reason: '预览弹层在 80ms 后仍应继续进入');
+        expect(
+          tester.getTopLeft(find.byType(PlanPreview)).dy,
+          lessThan(intermediateY),
+          reason: '预览弹层在 80ms 后仍应继续进入',
+        );
       } else {
-        await tapMotion(tester, find.bySemanticsLabel(
-          kind == 'conditions' ? '更多设置 ›' : '调整目标体脂'));
+        await tapMotion(
+          tester,
+          find.bySemanticsLabel(kind == 'conditions' ? '更多设置 ›' : '调整目标体脂'),
+        );
       }
     });
   }
@@ -290,18 +297,20 @@ void main() {
     'log row deletion and restoration animate without eager history layout',
     (tester) async {
       final h = await Harness.pump(tester, tab: 1);
-      h.controller.showRecordSection('训练');
       await tester.pumpAndSettle();
       final rows = jsonRows(h.controller.day['sets']);
       final first = rows.first;
-      await h.controller.repo.deleteSets(h.controller.date, ['${first['id']}']);
+      // 删掉这个动作的全部组，整行动作淡出收起。
+      final ids = [
+        for (final r in rows)
+          if (r['ex'] == first['ex']) '${r['id']}',
+      ];
+      await h.controller.repo.deleteSets(h.controller.date, ids);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 80));
       expect(hasIntermediate(tester), isTrue);
       await tester.pumpAndSettle();
-      await h.controller.repo.restoreSets(h.controller.date, [
-        '${first['id']}',
-      ]);
+      await h.controller.repo.restoreSets(h.controller.date, ids);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 80));
       expect(hasIntermediate(tester), isTrue);

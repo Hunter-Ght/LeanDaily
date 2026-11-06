@@ -72,17 +72,19 @@ void main() {
     tester,
   ) async {
     final h = await Harness.pump(tester, tab: 1);
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     final sets = h.controller.day['sets'] as List;
     final id = sets.first['id'];
     final count = sets.length;
-    await tester.tap(find.bySemanticsLabel('这组的更多操作').first);
+    final chip = find.bySemanticsLabel(RegExp('^修改 ')).first;
+    await tester.tap(chip);
     await settle(tester);
     await tester.tap(find.text('取消'));
     await settle(tester);
     expect((h.controller.day['sets'] as List).length, count);
-    await tester.tap(find.bySemanticsLabel('这组的更多操作').first);
+    await tester.tap(chip);
+    await settle(tester);
+    await tester.tap(find.text('删除这组'));
     await settle(tester);
     await tester.tap(find.text('删除', skipOffstage: false));
     await settle(tester);
@@ -99,12 +101,13 @@ void main() {
   });
   testWidgets('删除后撤销恢复原 ID 和记录内容，不新增同步任务', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     final row = Map<String, dynamic>.from(
       (h.controller.day['sets'] as List).first as Map,
     );
-    await tester.tap(find.bySemanticsLabel('这组的更多操作').first);
+    await tester.tap(find.bySemanticsLabel(RegExp('^修改 ')).first);
+    await settle(tester);
+    await tester.tap(find.text('删除这组'));
     await settle(tester);
     await tester.tap(find.text('删除'));
     await settle(tester);
@@ -127,10 +130,9 @@ void main() {
   });
   testWidgets('again passes the shared preset shape', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     final sets = h.controller.day['sets'] as List;
-    await tester.tap(find.text('再记一组').hitTestable().first);
+    await tester.tap(find.bySemanticsLabel('再记一组').hitTestable().first);
     await settle(tester);
     final preset = tester.widget<TrainSheet>(find.byType(TrainSheet)).preset!;
     expect(preset.keys.toSet(), {'part', 'exercise', 'uni', 'rows'});
@@ -144,18 +146,9 @@ void main() {
   });
   testWidgets('meal opens with editId and deletion persists', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     final meal = (h.controller.meals['meals'] as List).first as Map;
     final edit = find.bySemanticsLabel('编辑${meal['meal']}');
-    // 竖屏一次只看一块：切到“饮食”就能直接看到，不用在长长的训练后面往下滑。
-    await tester.tap(
-      find.descendant(
-        of: find.byKey(const ValueKey('day-section-switch')),
-        matching: find.text('饮食'),
-      ),
-    );
-    await tester.pumpAndSettle();
     expect(edit.hitTestable(), findsOneWidget);
     await settle(tester);
     await tester.tap(edit);
@@ -185,7 +178,6 @@ void main() {
   });
   testWidgets('save banner undo uses stored ids', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    h.controller.showRecordSection('训练');
     await tester.pumpAndSettle();
     final ids = await h.controller.repo.addSets(
       date: h.controller.today,

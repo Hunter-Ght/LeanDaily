@@ -37,7 +37,7 @@ void main() {
             greaterThanOrEqualTo(Metrics.dockHeight + Metrics.touchTarget),
           );
           expect(
-            find.byKey(const ValueKey('day-section-switch')).hitTestable(),
+            find.byKey(const ValueKey('log-add')).hitTestable(),
             findsOneWidget,
           );
           final header = find.byKey(const ValueKey('record-header-scroll'));
@@ -65,10 +65,10 @@ void main() {
 
   testWidgets('月历原位展开，返回键先收起，日期和列表同步', (tester) async {
     final h = await Harness.pump(tester, tab: 1);
-    final row = find.byKey(const ValueKey('day-section-switch'));
+    final row = find.byKey(const ValueKey('day-pager'));
     final start = tester.getTopLeft(row).dy;
     final day = find.byKey(const ValueKey('date-2026-10-16'));
-    expect(tester.getSize(day), const Size(36, 36));
+    expect(tester.getSize(day), const Size(40, 36));
     final dayY = tester.getCenter(day).dy;
     await tester.tap(find.bySemanticsLabel('展开月历'));
     await tester.pump();
