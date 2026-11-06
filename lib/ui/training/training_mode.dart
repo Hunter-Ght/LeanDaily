@@ -961,20 +961,35 @@ class _TrainingModeState extends State<_TrainingBody>
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: 4),
+        // 示范图是这一页的主角：占满内容宽度，高度吸收读数卡以外的剩余空间（160–360）。
         TweenAnimationBuilder<double>(
           tween: Tween(
-            end: _feedbackExpanded
-                ? 120
-                : (availableHeight * .34).clamp(120, 300).toDouble(),
+            end: (availableHeight - (jsTruthy(reason) ? 330 : 296))
+                .clamp(160, 360)
+                .toDouble(),
           ),
           duration: Duration(
             milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 260,
           ),
           curve: const _TrainingSpring(),
-          builder: (_, height, _) => Center(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: ExerciseDemo(ex: e, size: height),
+          builder: (_, height, _) => ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: SizedBox(
+              height: height,
+              child: ColoredBox(
+                color: p.studio,
+                child: LayoutBuilder(
+                  builder: (_, box) {
+                    // 示范图本身是方形：取宽高较大者铺满，多出的上下部分裁掉。
+                    final side = math.max(height, box.maxWidth);
+                    return OverflowBox(
+                      maxWidth: side,
+                      maxHeight: side,
+                      child: ExerciseDemo(ex: e, size: side),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ),
@@ -1281,18 +1296,33 @@ class _TrainingModeState extends State<_TrainingBody>
                                                       ? warmView(m)
                                                       : _summary
                                                       ? summaryView(m)
-                                                      : Padding(
-                                                          padding:
-                                                              const EdgeInsets.symmetric(
-                                                                horizontal: 16,
+                                                      : ConstrainedBox(
+                                                          constraints: BoxConstraints(
+                                                            minHeight: math.max(
+                                                              0,
+                                                              constraints
+                                                                      .maxHeight -
+                                                                  16,
+                                                            ),
+                                                          ),
+                                                          child: Align(
+                                                            alignment: Alignment
+                                                                .center,
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        16,
+                                                                  ),
+                                                              child: exerciseView(
+                                                                m,
+                                                                e,
+                                                                sets,
+                                                                target,
+                                                                constraints
+                                                                    .maxHeight,
                                                               ),
-                                                          child: exerciseView(
-                                                            m,
-                                                            e,
-                                                            sets,
-                                                            target,
-                                                            constraints
-                                                                .maxHeight,
+                                                            ),
                                                           ),
                                                         ),
                                                 ),
