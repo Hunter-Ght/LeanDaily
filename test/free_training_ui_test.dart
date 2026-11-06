@@ -154,6 +154,9 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    // 入口刚进入视口时可能被底部导航盖住，再往上推一点。
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -160));
+    await tester.pump();
     await tester.tap(find.text('自由练：现在能练什么 ›'));
     await settle(tester);
     expect(find.byType(TrainSheet), findsOneWidget);

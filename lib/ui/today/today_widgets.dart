@@ -109,7 +109,7 @@ class TodayButton extends StatelessWidget {
       child: Pressable(
         onTap: onTap,
         child: Container(
-          constraints: BoxConstraints(minHeight: height ?? (large ? 52 : 44)),
+          constraints: BoxConstraints(minHeight: height ?? (large ? 56 : 44)),
           padding: EdgeInsets.symmetric(
             horizontal: filled || selected || soft || neutral || choice
                 ? 14
@@ -119,13 +119,13 @@ class TodayButton extends StatelessWidget {
             color: filled || selected
                 ? p.tint
                 : soft
-                ? p.tintSoft
+                ? p.fill2
                 : neutral
                 ? p.fill
                 : choice
                 ? p.fill2
                 : null,
-            borderRadius: BorderRadius.circular(large ? 16 : 999),
+            borderRadius: BorderRadius.circular(large ? 18 : 999),
           ),
           child: Center(
             widthFactor: 1,
@@ -137,7 +137,7 @@ class TodayButton extends StatelessWidget {
                 fontSize:
                     fontSize ??
                     (large
-                        ? 18
+                        ? 19
                         : choice
                         ? 14
                         : 15),
@@ -146,7 +146,9 @@ class TodayButton extends StatelessWidget {
                     ? p.onTint
                     : neutral || choice
                     ? p.text
-                    : p.tintPress,
+                    : soft
+                    ? p.text
+                    : p.secondary,
               ),
             ),
           ),

@@ -25,7 +25,7 @@ void main() {
       await tester.pumpAndSettle();
       final row = find.byType(TodayNudgeRow);
       expect(row, findsOneWidget);
-      // 与训练主卡左右对齐：主按钮在卡内左右各留 16，所以提醒行宽 = 按钮宽 + 32。
+      // 与训练主按钮左右对齐：首页不再把主按钮包进卡片，两者同宽。
       final button = tester.getRect(find.text('开始训练').first);
       expect(button.width, greaterThan(0));
       final heroButton = tester.getRect(
@@ -37,7 +37,7 @@ void main() {
             .first,
       );
       final rowRect = tester.getRect(row);
-      expect(rowRect.width, closeTo(heroButton.width + 32, 1));
+      expect(rowRect.width, closeTo(heroButton.width, 1));
       final targets = find.descendant(
         of: row,
         matching: find.byType(Pressable),

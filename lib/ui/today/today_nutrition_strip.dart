@@ -157,15 +157,17 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
           children: [
             LText(
               label,
-              style: TextStyle(fontSize: 12, height: 1.1, color: p.secondary),
+              style: TextStyle(fontSize: 13, height: 1.3, color: p.secondary),
             ),
-            LText(
-              '${fmt(value)} / ${fmt(goal)} $unit',
-              style: TextStyle(
-                fontSize: 15,
-                height: 1.2,
-                fontWeight: FontWeight.w600,
-                color: p.text,
+            LText.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: fmt(value), style: AppText.num(p, 22)),
+                  TextSpan(
+                    text: ' / ${fmt(goal)} $unit',
+                    style: TextStyle(fontSize: 13, color: p.secondary),
+                  ),
+                ],
               ),
             ),
             Reveal(
@@ -175,11 +177,11 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                 style: TextStyle(fontSize: 12, color: p.secondary),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             AnimatedBuilder(
               animation: _pulse,
               builder: (context, _) => TodayBar(
-                height: 4,
+                height: 6,
                 value: goal > 0 ? (value / goal).clamp(0, 1).toDouble() : 0,
                 color:
                     _pulsing.contains(label == '蛋白' ? 'protein' : 'kcal') &&
@@ -199,7 +201,7 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
     return Reveal(
       visible: app.profile != null || recent.isNotEmpty,
       child: TodayCard(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.fromLTRB(16, 10, 8, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -310,7 +312,10 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                             alignment: Alignment.centerLeft,
                             child: LText(
                               '${pending.first['meal']}还差一张吃完后的照片 ›',
-                              style: TextStyle(fontSize: 13, color: p.tint),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: p.secondary,
+                              ),
                             ),
                           ),
                         ),

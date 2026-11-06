@@ -10,10 +10,12 @@ import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
+import 'today_figure.dart';
 import 'today_model.dart';
 import 'workout_title.dart';
 import 'today_widgets.dart';
 
+/// 首页主视觉：大标题 + 三个大数字 + 人体图 + 唯一的橙色主按钮。
 class TodayHero extends StatelessWidget {
   const TodayHero({
     super.key,
@@ -25,125 +27,137 @@ class TodayHero extends StatelessWidget {
   final VoidCallback onStart, onAdjust;
   @override
   Widget build(BuildContext context) {
-    final m = model;
-    Widget text(
-      String s, {
-      double size = 14,
-      bool bold = false,
-      Color? color,
-      double height = 1.45,
-    }) => LText(
-      s,
-      style: TextStyle(
-        fontSize: size,
-        fontWeight: bold ? FontWeight.w600 : FontWeight.w400,
-        height: height,
-        color: color ?? context.pal.secondary,
-      ),
+    final m = model, p = context.pal;
+    final minutes = plan.estimateMinutes(
+      m.app.plan,
+      m.items.map((i) => jsonMap(i['ex'])).toList(),
+      jsNumber(jsonMap(m.workout['warmup'])['minutes']),
     );
-
-    final p = context.pal;
-    return TodayCard(
+    Widget stat(Object value, String unit) => Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text('$value', style: AppText.num(p, 26)),
+        const SizedBox(width: 3),
+        LText(unit, style: TextStyle(fontSize: 14, color: p.secondary)),
+      ],
+    );
+    final total = jsNumber(m.prog['totalSets']);
+    final done = jsNumber(m.prog['doneSets']);
+    final figure = TodayFigureData.of(m, training: true);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          text(
-            '今日训练${m.workout['tag'] == null ? '' : ' · ${m.workout['tag']}'}'
-                .replaceAll('刺激', '练'),
-            size: 13,
-          ),
-          const SizedBox(height: 4),
+          LText('今天练', style: AppText.display(p, size: 34)),
           LText(
             workoutTitle('${m.workout['name']}'),
-            style: TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -.5,
-              color: p.text,
-            ),
+            style: AppText.display(p, size: 34, color: p.tint),
           ),
           const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          Wrap(
+            spacing: 18,
+            runSpacing: 6,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2, bottom: 10),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween(
-                          end: jsNumber(m.prog['doneSets']).toDouble(),
-                        ),
-                        duration: Duration(
-                          milliseconds: MediaQuery.disableAnimationsOf(context)
-                              ? 0
-                              : 300,
-                        ),
-                        builder: (context, done, _) => LText.rich(
-                          TextSpan(
-                            text: fmt((done * 10).round() / 10),
-                            children: [
-                              TextSpan(
-                                text: ' / ${m.prog['totalSets']} 组',
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0,
-                                  color: p.secondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          style: TextStyle(
-                            fontSize: 34,
-                            height: 1.05,
-                            letterSpacing: -1.6,
-                            fontWeight: FontWeight.w700,
-                            color: p.text,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    AppIcon('clock', size: 16, color: p.secondary),
-                    const SizedBox(width: 4),
-                    text(
-                      '约 ${plan.estimateMinutes(m.app.plan, m.items.map((i) => jsonMap(i['ex'])).toList(), jsNumber(jsonMap(m.workout['warmup'])['minutes']))} 分钟',
-                    ),
-                  ],
-                ),
-              ),
+              stat(m.items.length, '个动作'),
+              stat(minutes, '分钟'),
+              stat(fmt(total), '组'),
             ],
           ),
-          TodayBar(
-            value: jsNumber(m.prog['totalSets']) > 0
-                ? (jsNumber(m.prog['doneSets']) / jsNumber(m.prog['totalSets']))
-                      .toDouble()
-                : 0,
-          ),
+          const SizedBox(height: 8),
+          TodayFigure(data: figure),
+          const SizedBox(height: 16),
           FadeSwitcher(
             child: Column(
               key: ValueKey(m.complete ? 'complete' : 'active'),
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: m.complete
                   ? [
-                      const SizedBox(height: 10),
-                      text(
-                        '今天练完了。好好吃饭、补够蛋白质。${m.next != null ? '下次 ${weekday('${m.next!['iso']}')}：${workoutTitle('${m.next!['workout']['name']}')}。' : ''}',
-                        bold: true,
-                        color: p.ok,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 28,
+                            height: 28,
+                            margin: const EdgeInsets.only(top: 1),
+                            decoration: BoxDecoration(
+                              color: p.recoverSoft,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: AppIcon(
+                                'check',
+                                size: 16,
+                                color: p.recover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: LText(
+                              '今天练完了。好好吃饭、补够蛋白质。${m.next != null ? '下次 ${weekday('${m.next!['iso']}')}：${workoutTitle('${m.next!['workout']['name']}')}。' : ''}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.45,
+                                fontWeight: FontWeight.w600,
+                                color: p.text,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ]
                   : [
-                      const SizedBox(height: 14),
+                      Visibility(
+                        visible: m.started,
+                        maintainState: true,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: Row(
+                            children: [
+                              TweenAnimationBuilder<double>(
+                                tween: Tween(end: done.toDouble()),
+                                duration: Duration(
+                                  milliseconds:
+                                      MediaQuery.disableAnimationsOf(context)
+                                      ? 0
+                                      : 300,
+                                ),
+                                builder: (context, v, _) => LText.rich(
+                                  TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: fmt((v * 10).round() / 10),
+                                        style: AppText.num(p, 22),
+                                      ),
+                                      TextSpan(
+                                        text: ' / ${fmt(total)} 组',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          letterSpacing: 0,
+                                          color: p.secondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: TodayBar(
+                                  height: 6,
+                                  value: total > 0
+                                      ? (done / total).toDouble()
+                                      : 0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       TodayButton(
                         m.started ? '继续训练' : '开始训练',
                         filled: true,
@@ -151,17 +165,17 @@ class TodayHero extends StatelessWidget {
                         onTap: onStart,
                       ),
                       if (m.firstOpen.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        text(
-                          '下一项 · ${m.all.where((e) => e['id'] == m.firstOpen).firstOrNull?['name'] ?? ''}',
-                          size: 13,
+                        const SizedBox(height: 8),
+                        Center(
+                          child: LText(
+                            '下一项 · ${m.all.where((e) => e['id'] == m.firstOpen).firstOrNull?['name'] ?? ''}',
+                            style: TextStyle(fontSize: 13, color: p.secondary),
+                          ),
                         ),
                       ],
                     ],
             ),
           ),
-          const SizedBox(height: 2),
-          Container(height: .5, color: p.sep),
           Semantics(
             button: true,
             label: AppMessages.of(context).text(adjustmentSummary(m)),
@@ -169,11 +183,14 @@ class TodayHero extends StatelessWidget {
               onTap: onAdjust,
               child: Container(
                 constraints: const BoxConstraints(minHeight: 44),
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  children: [
-                    Expanded(child: text(adjustmentSummary(m), size: 13)),
-                  ],
+                alignment: Alignment.center,
+                child: LText(
+                  adjustmentSummary(m),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: p.secondary,
+                  ),
                 ),
               ),
             ),

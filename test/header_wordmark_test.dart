@@ -1,6 +1,5 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leandaily/ui/kit/wordmark.dart';
 import 'package:leandaily/ui/today/today_hero.dart';
 import 'package:leandaily/ui/today/today_model.dart';
 import 'package:leandaily/ui/today/workout_title.dart';
@@ -28,7 +27,7 @@ void main() {
         find.descendant(of: find.byType(TodayHero), matching: title),
         findsOneWidget,
       );
-      expect(t.widget<Text>(title).style!.fontSize, 26);
+      expect(t.widget<Text>(title).style!.fontSize, 34);
       expect(
         find.byWidgetPredicate(
           (w) =>
@@ -38,12 +37,12 @@ void main() {
         ),
         findsNothing,
       );
-      final wordmark = find.byType(Wordmark);
-      expect(wordmark, findsOneWidget);
-      expect(t.getSemantics(wordmark).label, '薄肌日课');
-      expect(t.getSemantics(wordmark).flagsCollection.isHeader, isTrue);
-      expect(t.getSemantics(wordmark).flagsCollection.isButton, isFalse);
-      expect(t.getTopLeft(wordmark).dy, lessThan(t.getTopLeft(title).dy));
+      // 首页顶部改为日期 + 连续周数，页面主标题是「今天练 / 部位」。
+      expect(find.text('今天练'), findsWidgets);
+      expect(
+        t.getTopLeft(find.text('今天练').first).dy,
+        lessThan(t.getTopLeft(title).dy),
+      );
       expect(
         t.getSize(find.bySemanticsLabel('计划与提醒设置')).height,
         greaterThanOrEqualTo(44),
