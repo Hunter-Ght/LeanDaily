@@ -35,6 +35,10 @@ class AppPalette {
     required this.onTint,
     required this.kcal,
     required this.protein,
+    required this.recover,
+    required this.recoverSoft,
+    required this.primary,
+    required this.onPrimary,
   });
   final Color bg;
   final Color card;
@@ -68,11 +72,17 @@ class AppPalette {
   final Color onTint; // tint 底上的字
   final Color kcal; // 热量（青色）
   final Color protein; // 蛋白（橙色）。四件事：训练=tint，蛋白=protein，热量=kcal，坚持=ok
+  // 2026-11 设计规范：tint（发力橙）只用于训练动作和发力肌肉；恢复与“可以练”用 recover；
+  // 非训练的主按钮用 primary（墨色），其上的字用 onPrimary。
+  final Color recover;
+  final Color recoverSoft;
+  final Color primary;
+  final Color onPrimary;
 
   static const light = AppPalette(
-    bg: Color(0xFFF2F2F7),
+    bg: Color(0xFFF4F3EF),
     card: Color(0xFFFFFFFF),
-    text: Color(0xFF000000),
+    text: Color(0xFF16161A),
     secondary: Color(0x993C3C43),
     tertiary: Color(0x4C3C3C43),
     sep: Color(0x2E3C3C43),
@@ -102,12 +112,16 @@ class AppPalette {
     onTint: Color(0xFFFFFFFF),
     kcal: Color(0xFF32ADE6),
     protein: Color(0xFFFFB800),
+    recover: Color(0xFF14B39A),
+    recoverSoft: Color(0x2914B39A),
+    primary: Color(0xFF16161A),
+    onPrimary: Color(0xFFFFFFFF),
   );
 
   static const dark = AppPalette(
-    bg: Color(0xFF000000),
-    card: Color(0xFF1C1C1E),
-    text: Color(0xFFFFFFFF),
+    bg: Color(0xFF0B0B0D),
+    card: Color(0xFF17171A),
+    text: Color(0xFFF5F5F7),
     secondary: Color(0x99EBEBF5),
     tertiary: Color(0x4CEBEBF5),
     sep: Color(0xA6545458),
@@ -137,6 +151,10 @@ class AppPalette {
     onTint: Color(0xFFFFFFFF),
     kcal: Color(0xFF64D2FF),
     protein: Color(0xFFFFC400),
+    recover: Color(0xFF2CC7AC),
+    recoverSoft: Color(0x332CC7AC),
+    primary: Color(0xFFF5F5F7),
+    onPrimary: Color(0xFF0B0B0D),
   );
 }
 

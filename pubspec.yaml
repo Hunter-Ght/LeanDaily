@@ -25,9 +25,17 @@ flutter:
     - family: Wordmark
       fonts:
         - asset: assets/fonts/SmileySans-Wordmark.ttf
+    # 数字读数：Barlow Semi Condensed（SIL OFL 1.1），紧凑、等宽数字，训练中一臂远也看得清。
+    - family: Numeral
+      fonts:
+        - asset: assets/fonts/BarlowSemiCondensed-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/BarlowSemiCondensed-Bold.ttf
+          weight: 700
   assets:
     - assets/motion3d/
     - assets/legal/
+    - assets/fonts/Barlow-OFL.txt
     - assets/l10n/
     - assets/state.json
     - assets/foods.json

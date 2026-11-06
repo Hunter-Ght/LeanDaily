@@ -13,6 +13,9 @@ Future<void> main() async {
     yield LicenseEntryWithLineBreaks([
       'MuscleMap',
     ], await rootBundle.loadString('assets/legal/MuscleMap-LICENSE.txt'));
+    yield LicenseEntryWithLineBreaks([
+      'Barlow',
+    ], await rootBundle.loadString('assets/fonts/Barlow-OFL.txt'));
   });
   await runLeanDaily(ChannelNative());
 }

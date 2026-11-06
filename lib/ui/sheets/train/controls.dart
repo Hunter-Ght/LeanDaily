@@ -20,11 +20,15 @@ class SheetButton extends StatelessWidget {
     this.soft = false,
     this.pill = false,
     this.iconOnly = false,
+    this.ink = false,
   });
   final String label;
   final VoidCallback? onTap;
   final String? icon;
   final bool primary, soft, pill, iconOnly;
+
+  /// 非训练的主操作（墨色）。训练动作的主按钮仍用 [primary]（发力橙）。
+  final bool ink;
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
@@ -35,13 +39,15 @@ class SheetButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           constraints: BoxConstraints(
-            minHeight: primary ? 50 : 44,
+            minHeight: primary || ink ? 50 : 44,
             minWidth: 44,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: primary
                 ? p.tint
+                : ink
+                ? p.primary
                 : soft
                 ? p.fill2
                 : pill
@@ -49,7 +55,7 @@ class SheetButton extends StatelessWidget {
                 : iconOnly
                 ? null
                 : p.card,
-            borderRadius: BorderRadius.circular(primary || pill ? 999 : 14),
+            borderRadius: BorderRadius.circular(primary || ink || pill ? 999 : 14),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -61,6 +67,8 @@ class SheetButton extends StatelessWidget {
                   size: iconOnly ? 18 : 16,
                   color: primary
                       ? p.onTint
+                      : ink
+                      ? p.onPrimary
                       : iconOnly
                       ? p.secondary
                       : p.text,
@@ -74,6 +82,8 @@ class SheetButton extends StatelessWidget {
                     style: TextStyle(
                       color: primary
                           ? p.onTint
+                          : ink
+                          ? p.onPrimary
                           : iconOnly
                           ? p.secondary
                           : p.text,

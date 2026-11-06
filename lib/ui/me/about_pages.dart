@@ -264,6 +264,7 @@ class CreditsPage extends StatelessWidget {
               ),
               GroupRow(label: 'MuscleMap', sub: '人体肌肉图 · Melih Colpan · MIT'),
               GroupRow(label: '得意黑', sub: '字标字体 · SIL OFL 1.1'),
+              GroupRow(label: 'Barlow', sub: '数字字体 · SIL OFL 1.1'),
               GroupRow(label: 'Flutter', sub: '界面框架 · BSD 3-Clause'),
               GroupRow(label: '薄肌日课', sub: '本项目 · MIT'),
             ],
