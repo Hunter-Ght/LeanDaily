@@ -72,6 +72,9 @@ void main() {
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('肌肉状态详情'));
+    await tester.tap(find.text('肌肉状态详情'));
+    await tester.pumpAndSettle();
     MuscleCard muscle() => tester.widget<MuscleCard>(find.byType(MuscleCard));
     final before = muscle().days;
     final token = h.controller.repo.snapshotToken;
@@ -101,6 +104,9 @@ void main() {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('肌肉状态详情'));
+    await tester.tap(find.text('肌肉状态详情'));
     await tester.pumpAndSettle();
     final tweens = find.descendant(
       of: find.byType(MuscleCard),

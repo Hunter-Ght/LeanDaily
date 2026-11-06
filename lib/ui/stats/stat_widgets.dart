@@ -22,7 +22,7 @@ class StatBlock extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LText(title, style: AppText.h2(context.pal)),
+        LText(title, style: AppText.title(context.pal)),
         ...children,
       ],
     ),

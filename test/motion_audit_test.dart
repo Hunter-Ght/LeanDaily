@@ -276,6 +276,7 @@ void main() {
         () => Future<void>.delayed(const Duration(milliseconds: 100)),
       );
       await tester.pumpAndSettle();
+      await tapMotion(tester, find.text('肌肉状态详情'));
       await tapMotion(tester, find.text('展开全部肌肉'));
       await tapMotion(tester, find.textContaining('查看全部 ').first);
       await tapMotion(tester, find.text('估算依据'));
