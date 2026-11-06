@@ -80,8 +80,10 @@ class TodayFigure extends StatelessWidget {
       decoration: BoxDecoration(color: c, shape: BoxShape.circle),
     );
     TextStyle small() => TextStyle(fontSize: 13, color: p.secondary);
-    String left(num d) =>
-        d < .75 ? '不到 1 天' : '约 ${fmt((d * 2).round() / 2)} 天';
+    // 整句写出来，翻译时不必拼接“约 N 天”片段。
+    String recovering(String name, num d) => d < .75
+        ? '恢复中 · $name不到 1 天'
+        : '恢复中 · $name约 ${fmt((d * 2).round() / 2)} 天';
     final tired = data.tiredGroups.take(1).toList();
     return LayoutBuilder(
       builder: (context, box) {
@@ -118,7 +120,7 @@ class TodayFigure extends StatelessWidget {
                       const SizedBox(width: 6),
                       Flexible(
                         child: LText(
-                          '恢复中 · ${tired.map((e) => '${e.key}${left(e.value)}').join('、')}',
+                          recovering(tired.first.key, tired.first.value),
                           style: small(),
                         ),
                       ),
