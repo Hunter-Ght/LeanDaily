@@ -280,7 +280,11 @@ class SuggestionStrip extends StatelessWidget {
               const TextSpan(text: '这 4 周还没练到'),
             if (names.isNotEmpty) ...[
               TextSpan(text: recovering ? '，恢复后试试' : '，下次试试'),
-              TextSpan(text: names.join('或')),
+              // 动作名和“或”分开成段，各自按当前语言翻译。
+              for (final (i, n) in names.indexed) ...[
+                if (i > 0) const TextSpan(text: '或'),
+                TextSpan(text: n),
+              ],
             ],
             const TextSpan(text: '。'),
           ],
