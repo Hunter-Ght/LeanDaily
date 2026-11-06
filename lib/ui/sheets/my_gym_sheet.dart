@@ -142,7 +142,7 @@ class _MyGymSheetState extends State<MyGymSheet> {
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: on ? p.tint : p.fill,
+                  color: on ? p.recover : p.fill,
                   shape: BoxShape.circle,
                 ),
                 child: on

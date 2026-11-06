@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/foods.dart';
 import 'package:leandaily/domain/format.dart' show fmt;
 import 'package:leandaily/l10n/app_messages.dart';
-import 'package:leandaily/ui/kit/grouped.dart';
+import 'package:leandaily/ui/me/me_row.dart';
 import 'package:leandaily/ui/kit/app_icon.dart';
 import 'package:leandaily/ui/sheets/food/food_controls.dart';
 import 'package:leandaily/ui/today/today_nutrition_strip.dart';
@@ -33,7 +33,7 @@ void main() {
   });
   testWidgets('language row has a dedicated globe icon', (t) async {
     await Harness.pump(t, tab: 3);
-    final row = find.byWidgetPredicate((w) => w is GroupRow && w.label == '语言');
+    final row = find.byWidgetPredicate((w) => w is MeRow && w.label == '语言');
     expect(
       find.descendant(
         of: row,

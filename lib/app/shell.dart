@@ -381,11 +381,9 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
       padding: const EdgeInsets.all(_inset),
       child: LayoutBuilder(
         builder: (context, box) {
-          final itemH = vertical ? 60.0 : 52.0;
+          final itemH = vertical ? 64.0 : 56.0;
           final itemW = vertical ? box.maxWidth : snap(box.maxWidth / 4);
           final step = vertical ? itemH + _gap : itemW;
-          final pillW = vertical ? itemW : snap(itemW);
-          final total = step * 3 + (vertical ? itemH : pillW);
           Widget item(int i) => Positioned(
             left: vertical ? 0 : snap(i * step),
             top: vertical ? snap(i * step) : 0,
@@ -410,37 +408,7 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
           );
           return SizedBox(
             height: vertical ? itemH * 4 + _gap * 3 : itemH,
-            child: Stack(
-              children: [
-                AnimatedBuilder(
-                  animation: _pos,
-                  builder: (context, _) {
-                    // 移动得越快，选中块被拉得越长（只是尺寸变化，不占性能）；不超出外框内沿。
-                    final stretch =
-                        1 + 0.05 * _pos.velocity.abs().clamp(0.0, 3.0);
-                    final len = (vertical ? itemH : pillW) * stretch;
-                    final center =
-                        _pos.value * step + (vertical ? itemH : pillW) / 2;
-                    final start = (center - len / 2).clamp(0.0, total - len);
-                    return Positioned(
-                      left: vertical ? 0 : start,
-                      top: vertical ? start : 0,
-                      width: vertical ? itemW : len,
-                      height: vertical ? len : itemH,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: p.tintSoft,
-                          borderRadius: BorderRadius.circular(
-                            vertical ? 28 : 26,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                for (var i = 0; i < 4; i++) item(i),
-              ],
-            ),
+            child: Stack(children: [for (var i = 0; i < 4; i++) item(i)]),
           );
         },
       ),
@@ -451,7 +419,7 @@ class _DockState extends State<Dock> with SingleTickerProviderStateMixin {
             tab: widget.tab,
             labels: _labels.map(AppMessages.of(context).text).toList(),
             onTab: widget.onTab,
-            tint: p.tint,
+            tint: p.text,
             dark: MediaQuery.platformBrightnessOf(context) == Brightness.dark,
             updateDot: context.app.hasUnseenUpdate,
             child: RepaintBoundary(child: content),
@@ -478,7 +446,7 @@ class _DockItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
-    final color = Color.lerp(p.secondary, p.tint, t)!;
+    final color = Color.lerp(p.tertiary, p.text, t)!;
     return Semantics(
       button: true,
       selected: settled,
@@ -489,7 +457,7 @@ class _DockItem extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              NavIcon(icon, from: p.secondary, to: p.tint, t: t),
+              NavIcon(icon, from: p.tertiary, to: p.text, t: t),
               if (updateDot)
                 const Positioned(right: -6, top: -3, child: UpdateDot()),
             ],
@@ -513,6 +481,15 @@ class _DockItem extends StatelessWidget {
               letterSpacing: 0.1,
               fontWeight: FontWeight.w500,
               color: color,
+            ),
+          ),
+          // 选中：下方 4px 发力橙小圆点，随选中程度淡入。
+          const SizedBox(height: 1),
+          Opacity(
+            opacity: t,
+            child: DecoratedBox(
+              decoration: BoxDecoration(color: p.tint, shape: BoxShape.circle),
+              child: const SizedBox(width: 4, height: 4),
             ),
           ),
         ],

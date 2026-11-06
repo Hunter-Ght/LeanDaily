@@ -83,22 +83,18 @@ class EquipmentDetail extends StatelessWidget {
             child: LText(
               selected,
               key: const ValueKey('equipment-selected'),
-              style: TextStyle(
-                color: p.text,
-                fontSize: 22,
-                height: 1.2,
-                fontWeight: FontWeight.w700,
-              ),
+              style: AppText.display(p, size: 28),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
+            padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
             child: Wrap(
               spacing: 8,
               runSpacing: 6,
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                if (info.ready != null) RecoveryTag(info),
+                if (info.ready != null) RecoveryTag(info, large: true),
+                if (line.isNotEmpty) _LastTag(line),
                 if (hasGuide)
                   SheetButton(
                     '动作要点',
@@ -108,56 +104,43 @@ class EquipmentDetail extends StatelessWidget {
               ],
             ),
           ),
-          if (line.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 6, 4, 0),
-              child: LText(line, maxLines: 2, style: AppText.hint(p)),
-            ),
-          _label(p, '练哪里'),
+          _label(p, '练哪里', top: 24),
           MuscleFocusCard(name: selected, part: part),
           if (e.setup.isNotEmpty) ...[
             _label(p, '上器械前先调好'),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: p.card,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var i = 0; i < e.setup.length; i++)
-                    Padding(
-                      padding: EdgeInsets.only(top: i == 0 ? 0 : 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: 22,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < e.setup.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(top: i == 0 ? 4 : 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 30,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 2),
                             child: Text(
-                              '${i + 1}.',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: p.tint,
-                              ),
+                              '${i + 1}',
+                              style: AppText.num(p, 20, color: p.tint),
                             ),
                           ),
-                          Expanded(
-                            child: LText(
-                              e.setup[i],
-                              style: TextStyle(
-                                fontSize: 15,
-                                height: 1.4,
-                                color: p.text,
-                              ),
+                        ),
+                        Expanded(
+                          child: LText(
+                            e.setup[i],
+                            style: TextStyle(
+                              fontSize: 16,
+                              height: 1.45,
+                              color: p.text,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ],
         ],
@@ -165,9 +148,9 @@ class EquipmentDetail extends StatelessWidget {
     );
   }
 
-  Widget _label(AppPalette p, String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(4, 18, 4, 8),
-    child: LText(text, style: AppText.hint(p)),
+  Widget _label(AppPalette p, String text, {double top = 24}) => Padding(
+    padding: EdgeInsets.fromLTRB(4, top, 4, 8),
+    child: LText(text, style: AppText.title(p)),
   );
 
   Widget _chip(BuildContext context, String name, bool on) {
@@ -184,17 +167,44 @@ class EquipmentDetail extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: on ? p.tint : p.card,
+            color: on ? p.primary : p.card,
             borderRadius: BorderRadius.circular(999),
           ),
           child: LText(
             name,
             style: TextStyle(
-              color: on ? p.onTint : p.text,
+              color: on ? p.onPrimary : p.text,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 上次记录小标签：灰底胶囊。
+class _LastTag extends StatelessWidget {
+  const _LastTag(this.line);
+  final String line;
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: p.fill,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: LText(
+        line,
+        maxLines: 2,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: p.text,
+          fontFeatures: const [FontFeature.tabularFigures()],
         ),
       ),
     );

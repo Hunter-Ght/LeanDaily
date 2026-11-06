@@ -129,29 +129,50 @@ String lastLineOf(Map? last) {
   return '上次 ${'${last['date']}'.substring(5).replaceAll('-', '/')} · $desc$side';
 }
 
-/// 恢复小标签：可以练用成功色，还要等用警示色。
+/// 恢复小标签：可以练 = 恢复青（带圆点）；还要等 = 现有暖色提示（不用发力橙，避免和“发力”混淆）。
 class RecoveryTag extends StatelessWidget {
-  const RecoveryTag(this.info, {super.key});
+  const RecoveryTag(this.info, {super.key, this.large = false});
   final ExerciseInfo info;
+
+  /// 器械详情里用的大号标签。
+  final bool large;
   @override
   Widget build(BuildContext context) {
     if (info.ready == null) return const SizedBox.shrink();
     final p = context.pal;
     final warn = ToneBadge.tone(p, 'shoulder', p.bg.computeLuminance() < 0.1);
     final ok = info.ready!;
+    final fg = ok ? p.recover : warn.fg;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: EdgeInsets.symmetric(
+        horizontal: large ? 12 : 8,
+        vertical: large ? 6 : 2,
+      ),
       decoration: BoxDecoration(
-        color: ok ? p.ok.withValues(alpha: 0.14) : warn.bg,
+        color: ok ? p.recoverSoft : warn.bg,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: LText(
-        info.recovery,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: ok ? p.ok : warn.fg,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (ok) ...[
+            DecoratedBox(
+              decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
+              child: const SizedBox(width: 6, height: 6),
+            ),
+            SizedBox(width: large ? 7 : 5),
+          ],
+          Flexible(
+            child: LText(
+              info.recovery,
+              style: TextStyle(
+                fontSize: large ? 14 : 12,
+                fontWeight: FontWeight.w700,
+                color: fg,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

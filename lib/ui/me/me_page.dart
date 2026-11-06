@@ -13,6 +13,7 @@ import '../../app/routes.dart';
 import '../../theme/theme.dart';
 import '../kit/grouped.dart';
 import '../kit/wordmark.dart';
+import 'me_row.dart';
 import 'profile_card.dart';
 
 class MePage extends StatelessWidget {
@@ -39,23 +40,21 @@ class MePage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-                child: LText('我的', style: AppText.navDay(p)),
+                child: LText('我的', style: AppText.display(p, size: 34)),
               ),
               const ProfileCard(),
               const GroupHeader('训练'),
               GroupCard(
                 children: [
-                  GroupRow(
+                  MeRow(
                     label: '当前计划',
                     value: '${plan?['name'] ?? app.plan['name'] ?? '我的计划'}',
                     icon: 'calendar',
-                    iconColor: p.tint,
                     onTap: () => openPlanEditor(context),
                   ),
-                  GroupRow(
+                  MeRow(
                     label: '浏览训练模板',
                     icon: 'train',
-                    iconColor: p.ok,
                     onTap: () => openTemplateBrowser(context),
                   ),
                 ],
@@ -63,19 +62,17 @@ class MePage extends StatelessWidget {
               const GroupHeader('身体'),
               GroupCard(
                 children: [
-                  GroupRow(
+                  MeRow(
                     label: '记体重和腰围',
                     value: latest == null
                         ? null
                         : '${(latest['weightKg'] as num).toStringAsFixed(1)} kg',
                     icon: 'chart',
-                    iconColor: p.kcal,
                     onTap: () => openBodyLog(context),
                   ),
-                  GroupRow(
+                  MeRow(
                     label: '我的资料与目标',
                     icon: 'me',
-                    iconColor: p.protein,
                     onTap: () => openProfile(context),
                   ),
                 ],
@@ -83,16 +80,14 @@ class MePage extends StatelessWidget {
               const GroupHeader('设置'),
               GroupCard(
                 children: [
-                  GroupRow(
+                  MeRow(
                     label: '每日目标与休息',
                     icon: 'note',
-                    iconColor: p.detrain,
                     onTap: () => openGoals(context),
                   ),
-                  GroupRow(
+                  MeRow(
                     label: '语言',
                     icon: 'language',
-                    iconColor: p.tint,
                     value: switch (app.languagePreference) {
                       'en' => 'English',
                       'zh_Hans' => '简体中文',
@@ -119,10 +114,9 @@ class MePage extends StatelessWidget {
                       }
                     },
                   ),
-                  GroupRow(
+                  MeRow(
                     label: '提醒',
                     icon: 'calendar',
-                    iconColor: p.protein,
                     onTap: () => openPlanEditor(context),
                   ),
                 ],
@@ -130,11 +124,10 @@ class MePage extends StatelessWidget {
               const GroupHeader('数据'),
               GroupCard(
                 children: [
-                  GroupRow(
+                  MeRow(
                     label: '备份与高级',
                     sub: '备份恢复 · 拍照识别',
                     icon: 'note',
-                    iconColor: p.kcal,
                     onTap: () => openAndroidSettings(context),
                   ),
                 ],
