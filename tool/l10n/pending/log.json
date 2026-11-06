@@ -1,42 +1,38 @@
 {
-  "月历": {
-    "en": "Calendar",
-    "zh_Hant": "月曆"
-  },
-  "第 {p0} 周": {
-    "en": "Week {p0}",
-    "zh_Hant": "第 {p0} 週"
-  },
-  "个动作": {
-    "en": "exercises",
-    "zh_Hant": "個動作"
-  },
-  "组 · 训练": {
-    "en": "sets · training",
-    "zh_Hant": "組 · 訓練"
-  },
-  "g 蛋白": {
-    "en": "g protein",
-    "zh_Hant": "g 蛋白"
-  },
-  "修改这组": {
-    "en": "Edit this set",
-    "zh_Hant": "修改這組"
-  },
-  "这天还没有记录": {
-    "en": "Nothing logged for this day",
-    "zh_Hant": "這天還沒有記錄"
-  },
-  "加蛋白粉并调整份量": {
-    "en": "Add protein powder and adjust portion",
-    "zh_Hant": "加蛋白粉並調整份量"
-  },
-  "搜索 / 手动记饮食": {
-    "en": "Search / enter a meal manually",
-    "zh_Hant": "搜尋 / 手動記飲食"
-  },
-  "添加记录": {
-    "en": "Add record",
-    "zh_Hant": "新增記錄"
-  }
+ "月历": {
+  "en": "Calendar",
+  "zh_Hant": "月曆"
+ },
+ "第 {p0} 周": {
+  "en": "Week {p0}",
+  "zh_Hant": "第 {p0} 週"
+ },
+ "个动作": {
+  "en": "exercises",
+  "zh_Hant": "個動作"
+ },
+ "组 · 训练": {
+  "en": "sets · training",
+  "zh_Hant": "組 · 訓練"
+ },
+ "g 蛋白": {
+  "en": "g protein",
+  "zh_Hant": "g 蛋白"
+ },
+ "修改这组": {
+  "en": "Edit this set",
+  "zh_Hant": "修改這組"
+ },
+ "这天还没有记录": {
+  "en": "Nothing logged for this day",
+  "zh_Hant": "這天還沒有記錄"
+ },
+ "加蛋白粉并调整份量": {
+  "en": "Add protein powder and adjust portion",
+  "zh_Hant": "加蛋白粉並調整份量"
+ },
+ "搜索 / 手动记饮食": {
+  "en": "Search / enter a meal manually",
+  "zh_Hant": "搜尋 / 手動記飲食"
+ }
 }

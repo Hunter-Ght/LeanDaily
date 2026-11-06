@@ -101,7 +101,7 @@ class _BodyFigureState extends State<BodyFigure>
   }
 
   Map<String, Color> _colors(AppPalette p, double breath) {
-    final neutral = p.fill2;
+    final neutral = p.fill;
     final effort = Color.lerp(p.tint.withValues(alpha: .78), p.tint, breath)!;
     return {
       for (final m in MUSCLES)

@@ -22,11 +22,12 @@ void main() {
       final h = await Harness.pump(tester, dark: dark, tab: 1);
       await tester.tap(find.bySemanticsLabel('记一笔'));
       await tester.pumpAndSettle();
-      expect(find.text('记一组训练'), findsOneWidget);
+      // 记录页右下角的加号菜单（旧的顶栏加号已去掉）
+      expect(find.text('拍照记饮食'), findsOneWidget);
       await h.shot(tester, 'menu-add-$scheme');
       await tester.tap(find.text('取消'));
       await tester.pumpAndSettle();
-      expect(find.text('记一组训练'), findsNothing);
+      expect(find.text('拍照记饮食'), findsNothing);
     });
   }
 
@@ -34,7 +35,7 @@ void main() {
     await Harness.pump(tester, tab: 1);
     await tester.tap(find.bySemanticsLabel('记一笔'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('记一组训练'));
+    await tester.tap(find.text('记一组').last);
     await tester.pumpAndSettle();
     // 选动作页没有保存，标题和左上“取消”在
     expect(find.text('记一组'), findsOneWidget);

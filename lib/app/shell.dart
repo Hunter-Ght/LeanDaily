@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart';
 
 import '../theme/theme.dart';
 import '../theme/tokens.dart';
-import '../ui/kit/app_icon.dart';
 import '../ui/kit/glass.dart';
 import '../ui/kit/ios_dock_glass.dart';
 import '../ui/kit/nav_icon.dart';
@@ -27,7 +26,6 @@ import '../ui/today/today_page.dart';
 import '../ui/onboarding/onboarding_flow.dart';
 import 'app_controller.dart';
 import 'boot_screen.dart';
-import 'routes.dart';
 
 /// 四个标签页 + 底部玻璃标签栏（宽屏时是左侧竖条）+ 右上角按钮 + 休息条。
 class AppShell extends StatelessWidget {
@@ -115,13 +113,6 @@ class _Chrome extends StatelessWidget {
         Positioned.fill(
           left: railW,
           child: PageHost(rail: rail, two: two),
-        ),
-        // 右上角按钮
-        Positioned(
-          top: 0,
-          left: railW,
-          right: 0,
-          child: _NavButtons(tab: app.tab),
         ),
         // Android 没有实时模糊：栏后面铺一条短渐变，滚动内容是渐隐进栏里，而不是被硬切。
         if (!rail && !RenderEffects.liveBlur)
@@ -248,72 +239,6 @@ class _PageHostState extends State<PageHost>
       ),
     );
   }
-}
-
-class _NavButtons extends StatelessWidget {
-  const _NavButtons({required this.tab});
-  final int tab;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.pal;
-    final top = MediaQuery.paddingOf(context).top;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16, top, 10, 0),
-      child: SizedBox(
-        height: Metrics.navBarHeight,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            if (tab == 1)
-              _GlassIconButton(
-                icon: 'plus',
-                color: p.tint,
-                label: '记一笔',
-                onTap: () => openAddMenu(context),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassIconButton extends StatelessWidget {
-  const _GlassIconButton({
-    required this.icon,
-    required this.color,
-    required this.label,
-    required this.onTap,
-  });
-  final String icon;
-  final Color color;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    label: AppMessages.of(context).text(label),
-    child: Pressable(
-      onTap: onTap,
-      child: SizedBox(
-        width: 44,
-        height: 44,
-        child: Center(
-          child: GlassSurface(
-            radius: 18,
-            shadow: false,
-            blur: 20,
-            child: SizedBox.square(
-              dimension: 36,
-              child: Center(child: AppIcon(icon, color: color, size: 18)),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 /// 底部玻璃标签栏（或宽屏的左侧竖条）。选中块用弹簧滑动。

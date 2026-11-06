@@ -228,7 +228,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
       child: Semantics(
         button: true,
         excludeSemantics: true,
-        label: AppMessages.of(context).text('添加记录'),
+        label: AppMessages.of(context).text('记一笔'),
         child: Pressable(
           onTap: () => openLogAddMenu(context, iso),
           child: Container(
