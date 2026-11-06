@@ -86,7 +86,7 @@ void main() {
         });
       },
     );
-    expect(find.text('0 / 100 g'), findsOneWidget);
+    expect(find.text('0 / 100 g', findRichText: true), findsOneWidget);
     Future<String> add(num protein, num kcal) => h.controller.repo.saveMeal(
       date: h.controller.today,
       meal: '午餐',

@@ -10,7 +10,6 @@ import '../../domain/format.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
-import '../kit/wordmark.dart';
 import 'workout_title.dart';
 import '../stats/weekly_review_card.dart';
 import '../kit/menu.dart';
@@ -29,6 +28,7 @@ import 'today_week_card.dart';
 import 'today_tip_card.dart';
 import 'today_actions.dart';
 import 'today_nutrition_strip.dart';
+import 'week_adherence.dart';
 
 class TodayPage extends StatefulWidget {
   const TodayPage({super.key, required this.wide, required this.two});
@@ -374,6 +374,7 @@ class _TodayPageState extends State<TodayPage> {
               if (m.train)
                 TodayButton(
                   '今天休息',
+                  soft: true,
 
                   onTap: () {
                     patch({'override': 'rest', 'ready': 'bad'});
@@ -413,6 +414,7 @@ class _TodayPageState extends State<TodayPage> {
             actions: [
               TodayButton(
                 '今天补练',
+                soft: true,
 
                 onTap: () => patch({'override': m.missed!['id']}),
               ),
@@ -433,6 +435,7 @@ class _TodayPageState extends State<TodayPage> {
               if (s['accept'] != null)
                 TodayButton(
                   todayTipWording('${s['acceptLabel']}'),
+                  soft: true,
                   onTap: () => accept(s),
                 ),
               TodayButton(
@@ -485,6 +488,7 @@ class _TodayPageState extends State<TodayPage> {
             actions: [
               TodayButton(
                 '允许通知',
+                soft: true,
 
                 onTap: () async {
                   try {
@@ -601,6 +605,12 @@ class _TodayPageState extends State<TodayPage> {
         TodayNutritionStrip(key: const ValueKey('nutrition'), model: m),
         TodayWeekCard(key: const ValueKey('week'), model: m),
       ];
+      final streak = weekAdherence(
+        today: m.iso,
+        history: m.history,
+        savedDays: jsNumber(app.goals['weekDays']),
+        planDays: jsonMap(app.plan['schedule']).length,
+      ).streak;
       final header = Padding(
         key: const ValueKey('header'),
         padding: const EdgeInsets.fromLTRB(4, 0, 4, 14),
@@ -611,21 +621,45 @@ class _TodayPageState extends State<TodayPage> {
               height: 44,
               child: Row(
                 children: [
-                  const Expanded(child: Wordmark()),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: LText(
+                        '${dateLabel(m.iso)} · 第 ${plan.weekNumber(app.plan, m.iso)} 周',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: p.secondary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (streak > 0) ...[
+                    AppIcon('flame', size: 16, color: p.tint),
+                    const SizedBox(width: 4),
+                    Text('$streak', style: AppText.num(p, 16)),
+                    const SizedBox(width: 3),
+                    LText(
+                      '周',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: p.text,
+                      ),
+                    ),
+                  ],
                   Semantics(
                     button: true,
                     label: AppMessages.of(context).text('计划与提醒设置'),
                     child: Pressable(
                       onTap: () => openPlanEditor(context),
-                      child: Container(
+                      child: SizedBox(
                         width: 44,
                         height: 44,
-                        decoration: BoxDecoration(
-                          color: p.card,
-                          shape: BoxShape.circle,
-                        ),
                         child: Center(
-                          child: AppIcon('note', size: 22, color: p.tint),
+                          child: AppIcon('note', size: 22, color: p.secondary),
                         ),
                       ),
                     ),
@@ -633,28 +667,15 @@ class _TodayPageState extends State<TodayPage> {
                 ],
               ),
             ),
-            const SizedBox(height: 6),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                LText(
-                  '${dateLabel(m.iso)} · 第 ${plan.weekNumber(app.plan, m.iso)} 周',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: p.secondary,
-                  ),
+            // 只要这一练有健身房版本就给切换，不看引导页选了什么。
+            if (m.train && m.workout['hasGym'] == true)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: VenueChip(
+                  gym: m.workout['venue'] == 'gym',
+                  onTap: () => chooseVenue(m),
                 ),
-                // 只要这一练有健身房版本就给切换，不看引导页选了什么。
-                if (m.train && m.workout['hasGym'] == true) ...[
-                  const SizedBox(width: 8),
-                  VenueChip(
-                    gym: m.workout['venue'] == 'gym',
-                    onTap: () => chooseVenue(m),
-                  ),
-                ],
-              ],
-            ),
+              ),
           ],
         ),
       );
@@ -706,11 +727,16 @@ class _TodayPageState extends State<TodayPage> {
           ),
         );
       }
-      return ListView.builder(
-        controller: _scroll,
-        padding: EdgeInsets.fromLTRB(16, top, 16, 120),
-        itemCount: blocks.length + 1,
-        itemBuilder: (_, i) => i == 0 ? header : blocks[i - 1],
+      return LayoutBuilder(
+        builder: (context, box) {
+          final side = box.maxWidth > 680 ? (box.maxWidth - 640) / 2 : 0.0;
+          return ListView.builder(
+            controller: _scroll,
+            padding: EdgeInsets.fromLTRB(16 + side, top, 16 + side, 120),
+            itemCount: blocks.length + 1,
+            itemBuilder: (_, i) => i == 0 ? header : blocks[i - 1],
+          );
+        },
       );
     },
   );
