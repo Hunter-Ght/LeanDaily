@@ -35,3 +35,17 @@
 - 测试：`export PATH="$HOME/.local/share/flutter/bin:$PATH"; TZ=Asia/Shanghai flutter test`；静态检查 `dart analyze lib test`（不要用 flutter analyze）；`bash tool/lint_tokens.sh`。
 - 旧测试因界面改版失败时，优先更新测试步骤与断言（保持被测的行为），并在汇报里列出。
 - 截图自查：参照 `test/support/harness.dart` 的 `shot()`，设置 `LEANDAILY_TEST_FONT="/System/Library/Fonts/Hiragino Sans GB.ttc"` 与 `LEANDAILY_SHOT_DIR=<你的目录>`，图片需先 `precacheImage`，用 Read 看图；浅色、深色、393×852 与 820×1180 都要看。
+
+## 四、弹层、菜单与表单（第二轮，2026-11-06）
+
+共用组件已经改好（`lib/ui/kit/sheet.dart`、`menu.dart`、`grouped.dart`、`form.dart`），各弹层内容按下面统一：
+
+1. **顶栏**（`AppSheet` 自带）：左「取消」正文色、中间标题、右「保存」墨色胶囊。不要自己再画一套顶栏。
+2. **橙色只给训练**：弹层里只有“记录/保存这一组”“开始训练”这类训练动作的主按钮，以及发力数据，才用 `tint`。饮食、设置、身体数据的主按钮用墨色（`SheetButton(ink: true)` 或 `FormButton(filled: true)`）。文字链接（如「设置我的健身房」「调整」）用正文色加粗，可带 `AppIcon('right')` 小箭头，**不要**用橙色字。
+3. **选中态**：分段用 `AppSegments`；可多选的小胶囊选中时用墨色底（`p.primary` / `p.onPrimary`），未选中用 `p.fill2` 底 + 正文色；**不要**用 `tintSoft` 橙底当选中。
+4. **层级**：区块标题用 `GroupHeader`（已是 15 号粗体正文色），或大区块用 `AppText.title`；说明文字 13–14 号次要色，长说明默认收起。去掉「a · b · c」式的灰色元信息长串，只留一项最有用的信息。
+5. **数字**：重量、次数、热量、蛋白、份量这类读数用 `AppText.num`，单位用小号正文字；营养数字可以用 `p.protein` / `p.kcal`，只做小面积点缀。
+6. **卡片**：内容卡 `p.card`、圆角 18–22，卡内留白 16；列表行最小高 52；图标块用 `p.fill2` 底 + 正文色图标（训练动作可用 `tintSoft` 底 + `tint` 图标）。
+7. **滚动**：弹层内的主滚动区由 `AppSheet` 提供（已修好“滑回顶部先空一大片再弹回”）。不要在弹层里另外加 `BouncingScrollPhysics`；嵌套的竖向滚动区用 `SheetController.of(context).physics` 或 `ClampingScrollPhysics`。底部固定按钮放 `AppSheet.footer`。
+8. **菜单/确认**：用 `showActionMenu`（`MenuAction` 支持 `detail` 说明、`group` 分组、`effort` 训练项）与 `showConfirm`，不要自己画菜单。
+9. **训练中打开的弹层**会自动沿用深色（不用处理）。
