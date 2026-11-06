@@ -1306,8 +1306,11 @@ class _TrainingModeState extends State<_TrainingBody>
                                                             ),
                                                           ),
                                                           child: Align(
-                                                            alignment: Alignment
-                                                                .center,
+                                                            alignment:
+                                                                const Alignment(
+                                                                  0,
+                                                                  -.45,
+                                                                ),
                                                             child: Padding(
                                                               padding:
                                                                   const EdgeInsets.symmetric(
