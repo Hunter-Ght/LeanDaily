@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -89,6 +90,12 @@ class _BodyFigureState extends State<BodyFigure>
     super.dispose();
   }
 
+  /// 热力色阶：几乎没练（< 0.08）保持中性，往上按 1.4 次方变浓，让“练得少”和“练得多”拉开差距。
+  static double _heat(double? v) {
+    final t = (v ?? 0).clamp(0, 1).toDouble();
+    return t < .08 ? 0 : math.pow(t, 1.4).toDouble();
+  }
+
   Map<String, Color> _colors(AppPalette p, double breath) {
     final neutral = p.fill2;
     final effort = Color.lerp(p.tint.withValues(alpha: .78), p.tint, breath)!;
@@ -98,11 +105,7 @@ class _BodyFigureState extends State<BodyFigure>
           MuscleTone.effort => effort,
           MuscleTone.assist => Color.lerp(neutral, p.tint, .45)!,
           MuscleTone.recover => Color.lerp(neutral, p.recover, .75)!,
-          _ => Color.lerp(
-            neutral,
-            p.tint,
-            (widget.heat[m['id']] ?? 0).clamp(0, 1).toDouble(),
-          )!,
+          _ => Color.lerp(neutral, p.tint, _heat(widget.heat[m['id']]))!,
         },
     };
   }
