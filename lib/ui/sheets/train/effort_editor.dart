@@ -32,7 +32,14 @@ class _EffortEditorState extends State<EffortEditor> {
           children: [
             LText('吃力程度 1–10', style: AppText.hint(p)),
             const SizedBox(width: 8),
-            LText(_value.isEmpty ? '关' : _value, style: AppText.num(p, 22)),
+            LText(
+              _value.isEmpty ? '–' : _value,
+              style: AppText.num(
+                p,
+                22,
+                color: _value.isEmpty ? p.tertiary : p.text,
+              ),
+            ),
             const Spacer(),
             LText(
               effortWord(_value),
@@ -63,8 +70,8 @@ class _EffortEditorState extends State<EffortEditor> {
                   color:
                       (_value.isEmpty && label == '不记') ||
                           effortWord(_value) == label
-                      ? p.tint
-                      : p.secondary,
+                      ? p.text
+                      : p.tertiary,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),

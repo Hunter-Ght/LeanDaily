@@ -466,7 +466,7 @@ class _StatsPageState extends State<StatsPage> {
       title: '时间范围',
       actions: [
         for (final r in StatsRange.values)
-          MenuAction(id: r.name, label: rangeEyebrow(r)),
+          MenuAction(id: r.name, label: rangeEyebrow(r), selected: r == _range),
       ],
     );
     if (picked == null || !mounted) return;

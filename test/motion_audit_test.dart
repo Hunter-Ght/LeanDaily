@@ -327,7 +327,7 @@ void main() {
         preset: {'part': '胸', 'exercise': '卧推'},
       );
       await tester.pumpAndSettle();
-      await tapMotion(tester, find.text('保存'));
+      await tapMotion(tester, find.text('记录这一组'));
       expect(find.text('至少填一组'), findsOneWidget);
       await tester.tap(find.text('取消'));
       await tester.pumpAndSettle();

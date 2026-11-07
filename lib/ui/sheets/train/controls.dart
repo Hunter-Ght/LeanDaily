@@ -55,7 +55,9 @@ class SheetButton extends StatelessWidget {
                 : iconOnly
                 ? null
                 : p.card,
-            borderRadius: BorderRadius.circular(primary || ink || pill ? 999 : 14),
+            borderRadius: BorderRadius.circular(
+              primary || ink || pill ? 999 : 14,
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

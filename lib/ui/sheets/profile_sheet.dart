@@ -214,11 +214,12 @@ class _ProfileSheetState extends State<ProfileSheet> {
     if (p == null) {
       return AppSheet(
         title: '我的资料与目标',
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              padding: const EdgeInsets.fromLTRB(4, 16, 4, 20),
               child: LText(
                 '还没有个人资料，先评估你的训练与饮食目标。',
                 style: TextStyle(
@@ -231,6 +232,7 @@ class _ProfileSheetState extends State<ProfileSheet> {
             FormButton(
               '开始评估',
               filled: true,
+              pill: true,
               onTap: () async {
                 await Navigator.of(context, rootNavigator: true).push<void>(
                   PageRouteBuilder<void>(

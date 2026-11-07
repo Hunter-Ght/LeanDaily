@@ -17,6 +17,7 @@ class MenuAction {
     this.detail,
     this.group,
     this.effort = false,
+    this.selected = false,
     this.danger = false,
     this.enabled = true,
   });
@@ -32,6 +33,9 @@ class MenuAction {
 
   /// 训练类动作：图标块用发力橙，其余一律中性。
   final bool effort;
+
+  /// 选择类菜单里的当前项：右侧打勾。
+  final bool selected;
   final bool danger;
 
   /// 为 false 时置灰且点不动（原因请写进菜单的 message）。
@@ -303,6 +307,7 @@ class _Row extends StatelessWidget {
     final color = a.danger ? p.err : p.text;
     return Semantics(
       button: true,
+      selected: a.selected,
       enabled: onTap != null,
       child: Pressable(
         onTap: onTap,
@@ -368,6 +373,7 @@ class _Row extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (a.selected) AppIcon('check', size: 20, color: p.text),
               ],
             ),
           ),

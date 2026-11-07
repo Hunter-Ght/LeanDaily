@@ -528,7 +528,7 @@ class _AppSheetState extends State<AppSheet> {
       onTap: enabled ? onTap : null,
       scale: 0.96,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: bold ? 4 : 12, vertical: 8),
+        padding: EdgeInsets.fromLTRB(bold ? 0 : 12, 8, 12, 8),
         child: AnimatedOpacity(
           duration: const Duration(milliseconds: 160),
           opacity: enabled ? 1 : 0.35,

@@ -347,8 +347,7 @@ class _TrainSheetState extends State<TrainSheet> {
       child: AppSheet(
         title: _page == _Page.equipment ? _equipment!.name : '记一组',
         cancelLabel: _hasBack ? '返回' : '取消',
-        onSave: _page == _Page.log ? _save : null,
-        saveEnabled: !_saving,
+        // 记组页的保存在底部橙色「记录这一组」（拇指区、训练动作的唯一主按钮），顶栏不再重复一个。
         confirmClose: _closeOrBack,
         scrollController: _scroll,
         footer: _page == _Page.pick

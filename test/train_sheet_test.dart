@@ -44,7 +44,7 @@ void main() {
       FocusManager.instance.primaryFocus?.unfocus();
       await tester.pumpAndSettle();
       await h.shot(tester, 'sheet-train-filled-$scheme');
-      await tester.tap(find.text('保存'));
+      await tester.tap(find.text('记录这一组'));
       await tester.pumpAndSettle();
       await tester.pumpAndSettle();
       expect(find.byType(TrainSheet), findsNothing);
@@ -69,11 +69,11 @@ void main() {
   ) async {
     await Harness.pump(tester);
     await openTrain(tester, preset: {'part': '胸', 'exercise': '测试动作'});
-    await tester.tap(find.text('保存'));
+    await tester.tap(find.text('记录这一组'));
     await tester.pumpAndSettle();
     expect(find.text('至少填一组'), findsOneWidget);
     await tester.enterText(input('次数'), '1.5');
-    await tester.tap(find.text('保存'));
+    await tester.tap(find.text('记录这一组'));
     await tester.pumpAndSettle();
     expect(find.text('第 1 组的重量或次数不对'), findsOneWidget);
     await tester.enterText(input('次数'), '8');
@@ -148,11 +148,11 @@ void main() {
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
     h.native.failNextPut = const NativeError('保存失败');
-    await tester.tap(find.text('保存'));
+    await tester.tap(find.text('记录这一组'));
     await tester.pumpAndSettle();
     expect(find.byType(TrainSheet), findsOneWidget);
     expect(h.controller.repo.day(h.controller.date)['sets'], hasLength(count));
-    await tester.tap(find.text('保存'));
+    await tester.tap(find.text('记录这一组'));
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     final state = jsonDecode(h.native.docs['android-state']!) as Map;
@@ -180,7 +180,7 @@ void main() {
     await tester.enterText(input('当天备注'), '键盘下填写');
     await tester.pumpAndSettle();
     expect(tester.getBottomRight(input('当天备注')).dy, lessThanOrEqualTo(550));
-    expect(find.text('保存').hitTestable(), findsOneWidget);
+    expect(find.text('记录这一组').hitTestable(), findsOneWidget);
     expect(tester.takeException(), isNull);
     debugDisableShadows = true;
   });

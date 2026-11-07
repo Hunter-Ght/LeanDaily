@@ -144,7 +144,7 @@ void main() {
     // 记组页：从器械详情进来，左上返回，右上保存
     expect(find.text('更换'), findsOneWidget);
     expect(find.text('返回'), findsOneWidget);
-    expect(find.text('保存'), findsOneWidget);
+    expect(find.text('记录这一组'), findsOneWidget);
     await tester.tap(find.text('返回'));
     await settle(tester);
     expect(find.byType(EquipmentDetail), findsOneWidget);

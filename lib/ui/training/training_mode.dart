@@ -608,6 +608,7 @@ class _TrainingModeState extends State<_TrainingBody>
       ),
     ),
   );
+
   /// 大读数：Numeral 大数字 + 小号单位 + 标签。
   Widget bigStat(
     String value,
@@ -636,7 +637,11 @@ class _TrainingModeState extends State<_TrainingBody>
           ),
         ),
         const SizedBox(height: 6),
-        LText(label, style: TextStyle(fontSize: 13, color: p.secondary)),
+        // 单位已经说清楚（“4 个动作”）时不再重复一行说明，只留同样的高度让同排对齐。
+        if (label.isEmpty)
+          const SizedBox(height: 17)
+        else
+          LText(label, style: TextStyle(fontSize: 13, color: p.secondary)),
       ],
     );
   }
@@ -669,9 +674,7 @@ class _TrainingModeState extends State<_TrainingBody>
                   color: p.tint,
                 ),
               ),
-              Expanded(
-                child: bigStat('${items.length}', '个动作', '动作', size: 64),
-              ),
+              Expanded(child: bigStat('${items.length}', '个动作', '', size: 64)),
             ],
           ),
         ),
@@ -818,7 +821,7 @@ class _TrainingModeState extends State<_TrainingBody>
                     child: bigStat(
                       '${rows.length}',
                       '组',
-                      '组数',
+                      '',
                       size: 60,
                       color: p.tint,
                     ),
@@ -848,12 +851,7 @@ class _TrainingModeState extends State<_TrainingBody>
                     ),
                   ),
                   Expanded(
-                    child: bigStat(
-                      '${byExercise.length}',
-                      '个动作',
-                      '动作',
-                      size: 44,
-                    ),
+                    child: bigStat('${byExercise.length}', '个动作', '', size: 44),
                   ),
                 ],
               ),
@@ -863,10 +861,7 @@ class _TrainingModeState extends State<_TrainingBody>
         if (allBody && bodyReps > 0 && bodySeconds > 0)
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            child: LText(
-              '另有自重 ${fmt(bodySeconds)} 秒',
-              style: AppText.hint(p),
-            ),
+            child: LText('另有自重 ${fmt(bodySeconds)} 秒', style: AppText.hint(p)),
           ),
         if (tones.isNotEmpty) ...[
           const SizedBox(height: 20),
@@ -1472,11 +1467,11 @@ class _TrainingModeState extends State<_TrainingBody>
                                                 )
                                               : SingleChildScrollView(
                                                   key: const ValueKey('work'),
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top: 4,
-                                                        bottom: 12,
-                                                      ),
+                                                  padding: EdgeInsets.only(
+                                                    top: 4,
+                                                    // 小结较长，留出底部主按钮的高度，最后一行能完整滚出来。
+                                                    bottom: _summary ? 96 : 12,
+                                                  ),
                                                   child: _warm
                                                       ? warmView(m)
                                                       : _summary

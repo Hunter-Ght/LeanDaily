@@ -165,20 +165,24 @@ class _ReviewCardState extends State<ReviewCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: [
-                            Text('${g['week']}', style: AppText.num(p, 18)),
-                            LText(
-                              ' 组',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: p.secondary,
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text('${g['week']}', style: AppText.num(p, 18)),
+                              LText(
+                                ' 组',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: p.secondary,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         LText(
                           '上周 ${g['last']}',
