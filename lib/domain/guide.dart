@@ -786,6 +786,71 @@ const List<Map<String, String>> LIB_OPTIONS = [
 
 String frameAsset(String key, int i) => 'assets/exercises/$key/$i.jpg';
 
+/// 有真人实拍示范照片的动作（free-exercise-db，Unlicense）。封面与无动画时的两帧用 3D 静帧
+/// （[frameAsset]），动作要点里切到“真人照片”时才用这里的实拍图。新增的 3D 动作没有实拍图。
+const PHOTO_KEYS = <String>{
+  'ab-machine',
+  'assisted-pullup',
+  'back-extension',
+  'band-fly',
+  'band-press',
+  'band-pull-apart',
+  'bench-dip',
+  'bent-row',
+  'butterfly',
+  'cable-crossover',
+  'cable-crunch',
+  'calf-raise',
+  'crunch',
+  'db-bench',
+  'db-curl',
+  'db-incline-press',
+  'db-row',
+  'db-shoulder-press',
+  'db-tricep-ext',
+  'dead-bug',
+  'deadlift',
+  'face-pull',
+  'feet-up-pushup',
+  'floor-press',
+  'front-raise',
+  'glute-bridge',
+  'goblet-squat',
+  'hammer-curl',
+  'incline-pushup',
+  'incline-pushup-low',
+  'inverted-row',
+  'kickback',
+  'lat-pulldown',
+  'lateral-raise',
+  'leg-curl',
+  'leg-extension',
+  'leg-press',
+  'machine-chest-press',
+  'machine-curl',
+  'machine-incline-press',
+  'machine-shoulder-press',
+  'plank',
+  'pullup',
+  'pushdown',
+  'pushup',
+  'rdl',
+  'rear-delt-fly',
+  'reverse-crunch',
+  'reverse-pec-deck',
+  'russian-twist',
+  'seated-calf',
+  'seated-row',
+  'side-plank',
+  'single-leg-bridge',
+  'split-squat',
+  'squat',
+  'straight-arm',
+  'superman',
+};
+
+String photoAsset(String key, int i) => 'assets/photos/$key/$i.jpg';
+
 Map<String, dynamic>? guideFor(Map<String, dynamic>? ex) {
   final img = ex?['img'];
   final key = img is String && img.isNotEmpty && LIB.containsKey(img)
@@ -797,6 +862,8 @@ Map<String, dynamic>? guideFor(Map<String, dynamic>? ex) {
           'key': key,
           ...Map<String, dynamic>.from(guide),
           'frames': [frameAsset(key!, 0), frameAsset(key, 1)],
+          if (PHOTO_KEYS.contains(key))
+            'photos': [photoAsset(key, 0), photoAsset(key, 1)],
         }
       : null;
 }

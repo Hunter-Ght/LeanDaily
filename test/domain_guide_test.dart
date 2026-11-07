@@ -24,6 +24,11 @@ void main() {
         expected['frames'] = [
           for (final path in expected['frames']) 'assets$path',
         ];
+        // 有实拍图的动作另带真人照片（Web 版没有这一项）。
+        final key = expected['key'] as String;
+        if (PHOTO_KEYS.contains(key)) {
+          expected['photos'] = [photoAsset(key, 0), photoAsset(key, 1)];
+        }
       }
       expect(
         guideFor(

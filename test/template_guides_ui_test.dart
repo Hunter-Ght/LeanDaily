@@ -31,7 +31,8 @@ void main() {
         final name = ValueNotifier('反向划船');
         addTearDown(name.dispose);
         for (final n in ['反向划船', '硬拉', '引体向上']) {
-          final frames = (guideFor({'name': n})!['frames'] as List)
+          final guide = guideFor({'name': n})!;
+          final frames = ((guide['photos'] ?? guide['frames']) as List)
               .cast<String>();
           await t.runAsync(() async {
             for (final path in frames) {
@@ -70,7 +71,9 @@ void main() {
           await t.pumpAndSettle();
           expect(
             t.widget<GuideImage>(demo).frames,
-            guideFor({'name': n})!['frames'],
+            // 没有动画时显示真人照片。
+            guideFor({'name': n})!['photos'] ??
+                guideFor({'name': n})!['frames'],
           );
           if (n != '反向划船') expect(t.widget<GuideImage>(demo).frame, 0);
           final initialFrame = t.widget<GuideImage>(demo).frame;

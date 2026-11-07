@@ -44,7 +44,9 @@ void main() {
           (t) async {
             final h = await Harness.pump(t, dark: dark);
             final context = t.element(find.byType(TodayPage));
-            final frames = (guideFor({'name': '哑铃地板卧推'})!['frames'] as List)
+            // 没有动画时优先显示真人照片。
+            final guide = guideFor({'name': '哑铃地板卧推'})!;
+            final frames = ((guide['photos'] ?? guide['frames']) as List)
                 .cast<String>();
             final bundle = _DelayedFrames(frames);
             const rootKey = ValueKey('cold-guide-under-test');

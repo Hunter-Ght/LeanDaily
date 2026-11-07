@@ -259,6 +259,10 @@ class CreditsPage extends StatelessWidget {
           const GroupCard(
             children: [
               GroupRow(
+                label: 'free-exercise-db',
+                sub: '真人动作照片 · Unlicense（公共领域）',
+              ),
+              GroupRow(
                 label: 'Quaternius',
                 sub: '3D 人体模型 · Universal Base Characters · CC0',
               ),

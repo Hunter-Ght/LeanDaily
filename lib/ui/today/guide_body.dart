@@ -226,7 +226,7 @@ class _GuideBodyState extends State<GuideBody> {
         Padding(
           padding: const EdgeInsets.only(top: 14),
           child: LText(
-            '示范由本项目 3D 渲染，人体模型 Quaternius（CC0）',
+            '3D 示范由本项目渲染（人体模型 Quaternius，CC0）；真人照片来自 free-exercise-db（Unlicense）',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: p.tertiary),
           ),

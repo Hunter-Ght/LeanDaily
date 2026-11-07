@@ -9,7 +9,7 @@ import 'motion_demo.dart';
 import 'motion3d_demo.dart';
 import 'pressable.dart';
 
-/// 动作要点里的示范：有动画的动作默认播动画，右上角可切到真人照片；
+/// 动作要点里的示范：有动画的动作默认播动画，有实拍图的右上角可切到真人照片；
 /// 其余动作照旧两张照片交替。[frame] 只用于照片。
 class GuideDemo extends StatefulWidget {
   const GuideDemo({
@@ -51,6 +51,9 @@ class _GuideDemoState extends State<GuideDemo> {
     final clip = clips?[widget.guide['key']];
     final animated = clip != null || motion != null;
     final frames = (widget.guide['frames'] as List).cast<String>();
+    // 真人照片单独存放；没有实拍图的动作（新增的 3D 动作）不显示切换。
+    final photos = (widget.guide['photos'] as List?)?.cast<String>();
+    final canPhoto = animated && photos != null;
     Widget pill(String text) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
       decoration: BoxDecoration(
@@ -66,10 +69,10 @@ class _GuideDemoState extends State<GuideDemo> {
         ),
       ),
     );
-    if (!animated || _photo) {
+    if (!animated || (_photo && canPhoto)) {
       return Stack(
         children: [
-          GuideImage(frames: frames, frame: widget.frame),
+          GuideImage(frames: photos ?? frames, frame: widget.frame),
           Positioned(
             left: 10,
             bottom: 10,
@@ -103,7 +106,7 @@ class _GuideDemoState extends State<GuideDemo> {
                   ),
           ),
         ),
-        _switch(context, '真人照片', pill),
+        if (canPhoto) _switch(context, '真人照片', pill),
       ],
     );
   }

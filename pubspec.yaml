@@ -1,7 +1,7 @@
 name: leandaily
 description: "薄肌日课 LeanDaily：按你的身材定制的薄肌训练与饮食记录 App。免费、开源、无广告，记录默认存本机，AI 识别需另行授权。"
 publish_to: 'none'
-version: 2.4.0+38
+version: 2.4.0+39
 
 environment:
   sdk: ^3.13.5
@@ -118,3 +118,61 @@ flutter:
     - assets/exercises/seated-dip/
     - assets/exercises/dip/
     - assets/exercises/hanging-leg-raise/
+    - assets/photos/ab-machine/
+    - assets/photos/assisted-pullup/
+    - assets/photos/back-extension/
+    - assets/photos/band-fly/
+    - assets/photos/band-press/
+    - assets/photos/band-pull-apart/
+    - assets/photos/bench-dip/
+    - assets/photos/bent-row/
+    - assets/photos/butterfly/
+    - assets/photos/cable-crossover/
+    - assets/photos/cable-crunch/
+    - assets/photos/calf-raise/
+    - assets/photos/crunch/
+    - assets/photos/db-bench/
+    - assets/photos/db-curl/
+    - assets/photos/db-incline-press/
+    - assets/photos/db-row/
+    - assets/photos/db-shoulder-press/
+    - assets/photos/db-tricep-ext/
+    - assets/photos/dead-bug/
+    - assets/photos/deadlift/
+    - assets/photos/face-pull/
+    - assets/photos/feet-up-pushup/
+    - assets/photos/floor-press/
+    - assets/photos/front-raise/
+    - assets/photos/glute-bridge/
+    - assets/photos/goblet-squat/
+    - assets/photos/hammer-curl/
+    - assets/photos/incline-pushup/
+    - assets/photos/incline-pushup-low/
+    - assets/photos/inverted-row/
+    - assets/photos/kickback/
+    - assets/photos/lat-pulldown/
+    - assets/photos/lateral-raise/
+    - assets/photos/leg-curl/
+    - assets/photos/leg-extension/
+    - assets/photos/leg-press/
+    - assets/photos/machine-chest-press/
+    - assets/photos/machine-curl/
+    - assets/photos/machine-incline-press/
+    - assets/photos/machine-shoulder-press/
+    - assets/photos/plank/
+    - assets/photos/pullup/
+    - assets/photos/pushdown/
+    - assets/photos/pushup/
+    - assets/photos/rdl/
+    - assets/photos/rear-delt-fly/
+    - assets/photos/reverse-crunch/
+    - assets/photos/reverse-pec-deck/
+    - assets/photos/russian-twist/
+    - assets/photos/seated-calf/
+    - assets/photos/seated-row/
+    - assets/photos/side-plank/
+    - assets/photos/single-leg-bridge/
+    - assets/photos/split-squat/
+    - assets/photos/squat/
+    - assets/photos/straight-arm/
+    - assets/photos/superman/

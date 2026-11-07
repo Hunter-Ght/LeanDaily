@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/guide.dart';
@@ -78,11 +80,53 @@ void main() {
     await t.pump();
     expect(find.byType(GuideImage), findsOneWidget);
     expect(find.byType(Motion3dDemo), findsNothing);
+    // 切过去的必须是实拍图，而不是 3D 封面静帧。
+    expect(
+      t.widget<GuideImage>(find.byType(GuideImage)).frames,
+      everyElement(startsWith('assets/photos/')),
+    );
     await t.tap(find.text('动画示范'));
     await t.pump();
     await decode(t);
     expect(find.byType(Motion3dDemo), findsOneWidget);
     await t.pumpWidget(const SizedBox());
     await decode(t);
+  });
+
+  testWidgets('没有实拍图的 3D 动作不显示“真人照片”', (t) async {
+    final key = LIB.keys.firstWhere((k) => !PHOTO_KEYS.contains(k));
+    await t.pumpWidget(
+      host(
+        GuideDemo(
+          guide: guideFor({'img': key})!,
+          frame: 0,
+          paused: true,
+        ),
+      ),
+    );
+    await decode(t);
+    await decode(t);
+    expect(find.text('真人照片'), findsNothing);
+    await t.pumpWidget(const SizedBox());
+    await decode(t);
+  });
+
+  test('每个有实拍图的动作都打包了两张真人照片，且不同于 3D 封面', () {
+    expect(PHOTO_KEYS, hasLength(58));
+    for (final k in PHOTO_KEYS) {
+      for (final i in [0, 1]) {
+        final photo = File(photoAsset(k, i));
+        expect(photo.existsSync(), isTrue, reason: photo.path);
+        expect(
+          photo.readAsBytesSync(),
+          isNot(File(frameAsset(k, i)).readAsBytesSync()),
+          reason: '$k/$i 不能是 3D 静帧',
+        );
+      }
+    }
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    for (final k in PHOTO_KEYS) {
+      expect(pubspec, contains('assets/photos/$k/'));
+    }
   });
 }

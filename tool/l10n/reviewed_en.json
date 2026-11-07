@@ -2843,5 +2843,7 @@
   "浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。": "The light band is the weekly reference range (direct sets; each set of an exercise counts as one).",
   "新纪录": "New PB",
   "今天练到": "Worked today",
-  "记录这一组": "Log this set"
+  "记录这一组": "Log this set",
+  "3D 示范由本项目渲染（人体模型 Quaternius，CC0）；真人照片来自 free-exercise-db（Unlicense）": "3D demos rendered by this project (human model: Quaternius, CC0); real-person photos from free-exercise-db (Unlicense)",
+  "真人动作照片 · Unlicense（公共领域）": "Real-person exercise photos · Unlicense (public domain)"
 }
