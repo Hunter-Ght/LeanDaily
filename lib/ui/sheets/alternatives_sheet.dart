@@ -92,16 +92,20 @@ class AlternativesSheet extends StatelessWidget {
     );
   }
 
-  // “器械名 · 练大腿前面”
+  // 只留一项信息：名字里已含器械名就写练的位置，否则写器械。
   String _line(BuildContext context, FreeExercise e) {
     final messages = AppMessages.of(context);
     final plain = plainMusclesOf(messages, e.name, e.part);
     final base = messages.text(e.equipment ?? '徒手');
-    return plain.isEmpty ? base : '$base · ${messages.text('练：')}$plain';
+    if (e.equipment == null || e.name.contains(e.equipment!)) {
+      return plain.isEmpty ? base : plain;
+    }
+    return base;
   }
 
   Widget _row(BuildContext context, FreeExercise e, ExerciseInfo info) {
     final p = context.pal;
+    final guide = guideFor({'name': e.name}) != null;
     return Container(
       key: ValueKey('alt-${e.name}'),
       margin: const EdgeInsets.only(bottom: 10),
@@ -109,63 +113,59 @@ class AlternativesSheet extends StatelessWidget {
         color: p.card,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Row(
         children: [
-          Semantics(
-            button: true,
-            label: e.name,
-            child: Pressable(
-              onTap: () => SheetController.of(context).close(e.name),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 44),
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ExerciseThumb(
-                      ex: {'name': e.name, 'part': e.part},
-                      size: 52,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LText(
-                            e.name,
-                            style: TextStyle(
-                              color: p.text,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          LText(
-                            _line(context, e),
-                            style: AppText.hint(p),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: RecoveryTag(info),
-                          ),
-                        ],
+          Expanded(
+            child: Semantics(
+              button: true,
+              label: e.name,
+              child: Pressable(
+                onTap: () => SheetController.of(context).close(e.name),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ExerciseThumb(
+                        ex: {'name': e.name, 'part': e.part},
+                        size: 56,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LText(
+                              e.name,
+                              style: TextStyle(
+                                color: p.text,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            LText(_line(context, e), style: AppText.hint(p)),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: RecoveryTag(info),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          if (guideFor({'name': e.name}) != null)
+          if (guide)
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 10),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: SheetButton(
-                  '看示范',
-                  () => openGuide(context, e.name),
-                  soft: true,
-                ),
+              padding: const EdgeInsets.only(right: 12),
+              child: SheetButton(
+                '看示范',
+                () => openGuide(context, e.name),
+                soft: true,
               ),
             ),
         ],

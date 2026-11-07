@@ -67,8 +67,15 @@ class _MyGymSheetState extends State<MyGymSheet> {
           for (final kind in equipmentKinds)
             if (equipmentList.any((e) => e.kind == kind)) ...[
               Padding(
-                padding: const EdgeInsets.fromLTRB(4, 18, 4, 8),
-                child: LText(kind, style: AppText.hint(p)),
+                padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
+                child: LText(
+                  kind,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: p.text,
+                  ),
+                ),
               ),
               Container(
                 decoration: BoxDecoration(

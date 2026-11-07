@@ -16,12 +16,13 @@ import '../kit/app_icon.dart';
 import '../kit/badge.dart';
 import '../kit/exercise_thumb.dart';
 import '../kit/menu.dart';
-import '../kit/number_field.dart';
+import '../kit/number_field.dart' show SheetInput;
 import '../kit/pressable.dart';
 import '../kit/sheet.dart';
 import 'train/controls.dart';
 import 'train/effort_editor.dart';
 import 'train/exercise_info.dart';
+import 'train/stepper_field.dart';
 import 'equipment_sheet.dart' show EquipmentDetail, EquipmentGrid;
 import '../../domain/free_training.dart';
 import '../../app/routes.dart' show openAlternatives, openGuide, openMyGym;
@@ -319,10 +320,18 @@ class _TrainSheetState extends State<TrainSheet> {
   }
 
   Widget _label(String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
-    child: LText(text, style: AppText.hint(context.pal)),
+    padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
+    child: LText(
+      text,
+      style: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: context.pal.text,
+      ),
+    ),
   );
   Widget _card(Widget child, {double padding = 16}) => Container(
+    clipBehavior: Clip.antiAlias,
     padding: EdgeInsets.all(padding),
     decoration: BoxDecoration(
       color: context.pal.card,
@@ -342,8 +351,9 @@ class _TrainSheetState extends State<TrainSheet> {
         saveEnabled: !_saving,
         confirmClose: _closeOrBack,
         scrollController: _scroll,
-        footer: _page == _Page.equipment
-            ? Padding(
+        footer: _page == _Page.pick
+            ? null
+            : Padding(
                 padding: EdgeInsets.fromLTRB(
                   16,
                   8,
@@ -353,16 +363,24 @@ class _TrainSheetState extends State<TrainSheet> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: SheetButton(
-                        '记录这个动作',
-                        () => _pick(_equipSel, part: partOfExercise(_equipSel)),
-                        primary: true,
-                      ),
+                      child: _page == _Page.equipment
+                          ? SheetButton(
+                              '记录这个动作',
+                              () => _pick(
+                                _equipSel,
+                                part: partOfExercise(_equipSel),
+                              ),
+                              primary: true,
+                            )
+                          : SheetButton(
+                              '记录这一组',
+                              _saving ? null : _save,
+                              primary: true,
+                            ),
                     ),
                   ],
                 ),
-              )
-            : null,
+              ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -474,7 +492,7 @@ class _TrainSheetState extends State<TrainSheet> {
         const SizedBox(height: 10),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
           child: Row(
             children: [
               for (final part in records.defaultEx.keys)
@@ -490,40 +508,39 @@ class _TrainSheetState extends State<TrainSheet> {
                         _lastPart = part;
                       }),
                       child: Container(
-                        width: 80,
-                        height: 88,
+                        width: 76,
+                        height: 84,
                         decoration: BoxDecoration(
-                          color: _part == part ? p.tint : p.card,
+                          color: _part == part ? p.primary : p.card,
                           borderRadius: BorderRadius.circular(18),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (_part == part)
-                              Container(
-                                width: 32,
-                                height: 32,
-                                decoration: BoxDecoration(
-                                  color: p.onTint.withValues(alpha: 0.22),
-                                  shape: BoxShape.circle,
+                            Container(
+                              width: 34,
+                              height: 34,
+                              decoration: BoxDecoration(
+                                color: _part == part
+                                    ? p.onPrimary.withValues(alpha: 0.16)
+                                    : p.fill2,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: AppIcon(
+                                  partIcon(part),
+                                  size: 17,
+                                  color: _part == part ? p.onPrimary : p.text,
                                 ),
-                                child: Center(
-                                  child: AppIcon(
-                                    partIcon(part),
-                                    size: 16,
-                                    color: p.onTint,
-                                  ),
-                                ),
-                              )
-                            else
-                              ToneBadge.part(part, size: 36, iconSize: 16),
+                              ),
+                            ),
                             const SizedBox(height: 8),
                             LText(
                               part,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: _part == part ? p.onTint : p.text,
+                                color: _part == part ? p.onPrimary : p.text,
                               ),
                             ),
                           ],
@@ -604,28 +621,51 @@ class _TrainSheetState extends State<TrainSheet> {
     if (mounted) setState(() {});
   }
 
-  // 按器械页顶部：我的健身房当前状态和编辑入口。
-  Widget _gymLine() {
+  // 我的健身房入口：一行清晰的可点行，正文色加粗 + 小箭头。
+  Widget _gymEntry(String text, Key key) {
     final p = context.pal;
-    final n = context.app.myGym.length;
     return Semantics(
       button: true,
       child: Pressable(
         onTap: _editGym,
         child: Container(
-          key: const ValueKey('gym-line'),
-          constraints: const BoxConstraints(minHeight: 44),
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          alignment: Alignment.centerLeft,
-          child: LText(
-            n == 0 ? '我的健身房：不限 · 编辑' : '我的健身房：已选 $n 台 · 编辑',
-            style: TextStyle(
-              color: p.tintPress,
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+          key: key,
+          constraints: const BoxConstraints(minHeight: 52),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: p.card,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              AppIcon('weight', size: 18, color: p.text),
+              const SizedBox(width: 10),
+              Expanded(
+                child: LText(
+                  text,
+                  style: TextStyle(
+                    color: p.text,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              AppIcon('right', size: 14, color: p.tertiary),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  // 按器械页顶部：我的健身房当前状态和编辑入口。
+  Widget _gymLine() {
+    final n = context.app.myGym.length;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: _gymEntry(
+        n == 0 ? '我的健身房：不限 · 编辑' : '我的健身房：已选 $n 台 · 编辑',
+        const ValueKey('gym-line'),
       ),
     );
   }
@@ -642,25 +682,9 @@ class _TrainSheetState extends State<TrainSheet> {
     final groups = recommendNow(_status!, owned: owned, done: done);
     final recovering = recoveringGroups(_status!, owned: owned);
     return [
-      LText('按肌肉恢复推荐；器械被占就点“换一个”', style: AppText.hint(p)),
-      Semantics(
-        button: true,
-        child: Pressable(
-          onTap: _editGym,
-          child: Container(
-            key: const ValueKey('gym-entry'),
-            constraints: const BoxConstraints(minHeight: 44),
-            alignment: Alignment.centerLeft,
-            child: LText(
-              owned.isEmpty ? '设置我的健身房' : '只看我的健身房（${owned.length} 台器械）',
-              style: TextStyle(
-                color: p.tintPress,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
+      _gymEntry(
+        owned.isEmpty ? '设置我的健身房' : '只看我的健身房（${owned.length} 台器械）',
+        const ValueKey('gym-entry'),
       ),
       if (groups.isEmpty)
         Padding(
@@ -688,19 +712,30 @@ class _TrainSheetState extends State<TrainSheet> {
       for (final g in groups) ...[
         Padding(
           key: ValueKey('reco-group-${g.group}'),
-          padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
-          // 肌群名和状态分别翻译再拼，避免整句被套进“{p0} 天前练过”模板。
-          child: Text(
-            '${AppMessages.of(context).text(g.name)} · ${AppMessages.of(context).text(g.daysSince == null
-                ? '还没练过'
-                : g.daysSince! < 1
-                ? '今天练过'
-                : '${g.daysSince!.floor()} 天前练过')}',
-            style: TextStyle(
-              color: p.text,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-            ),
+          padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
+          // 肌群名和状态分别翻译，状态用恢复青小标签。
+          child: Row(
+            children: [
+              Text(
+                AppMessages.of(context).text(g.name),
+                style: TextStyle(
+                  color: p.text,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(width: 8),
+              RecoveryTag(
+                ExerciseInfo(
+                  ready: true,
+                  recovery: g.daysSince == null
+                      ? '还没练过'
+                      : g.daysSince! < 1
+                      ? '今天练过'
+                      : '${g.daysSince!.floor()} 天前练过',
+                ),
+              ),
+            ],
           ),
         ),
         _card(
@@ -716,7 +751,7 @@ class _TrainSheetState extends State<TrainSheet> {
             children: [
               for (final r in recovering)
                 Container(
-                  constraints: const BoxConstraints(minHeight: 44),
+                  constraints: const BoxConstraints(minHeight: 48),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
@@ -740,19 +775,22 @@ class _TrainSheetState extends State<TrainSheet> {
     ];
   }
 
-  // “器械名 · 练大腿前面”；认不出肌肉的只写器械。
-  String _equipmentLine(String? equipment, String name, String part) {
+  // 推荐行只留一项信息：名字里已含器械名就写练的位置，否则写器械。
+  String _rowInfo(String? equipment, String name, String part) {
     final messages = AppMessages.of(context);
     final plain = plainMusclesOf(messages, name, part);
     final base = messages.text(equipment ?? '徒手');
-    return plain.isEmpty ? base : '$base · ${messages.text('练：')}$plain';
+    if (equipment == null || name.contains(equipment)) {
+      return plain.isEmpty ? base : plain;
+    }
+    return base;
   }
 
   Widget _recoRow(FreeExercise e) {
     final p = context.pal;
     return Container(
       key: ValueKey('reco-${e.name}'),
-      padding: const EdgeInsets.fromLTRB(16, 6, 8, 6),
+      padding: const EdgeInsets.fromLTRB(16, 6, 4, 6),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: p.sep, width: 0.5)),
       ),
@@ -814,7 +852,7 @@ class _TrainSheetState extends State<TrainSheet> {
                               ],
                             ),
                             LText(
-                              _equipmentLine(e.equipment, e.name, e.part),
+                              _rowInfo(e.equipment, e.name, e.part),
                               style: AppText.hint(p),
                             ),
                           ],
@@ -832,7 +870,7 @@ class _TrainSheetState extends State<TrainSheet> {
             () => _swap(e.name),
             key: ValueKey('swap-${e.name}'),
             icon: 'repeat',
-            pill: true,
+            iconOnly: true,
           ),
         ],
       ),
@@ -959,24 +997,15 @@ class _TrainSheetState extends State<TrainSheet> {
           ),
           child: Row(
             children: [
-              Builder(
-                builder: (context) {
-                  final tone = ToneBadge.tone(
-                    p,
-                    partIcon(_part),
-                    p.bg.computeLuminance() < 0.1,
-                  );
-                  return Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: tone.bg,
-                      shape: BoxShape.circle,
-                    ),
-                    alignment: Alignment.center,
-                    child: AppIcon('spark', size: 18, color: tone.fg),
-                  );
-                },
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: p.fill2,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: AppIcon(partIcon(_part), size: 17, color: p.text),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1300,13 +1329,13 @@ class _TrainSheetState extends State<TrainSheet> {
           constraints: const BoxConstraints(minHeight: 44),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: on ? p.tint : p.fill,
+            color: on ? p.primary : p.fill2,
             borderRadius: BorderRadius.circular(999),
           ),
           child: LText(
             label,
             style: TextStyle(
-              color: on ? p.onTint : p.text,
+              color: on ? p.onPrimary : p.text,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),
@@ -1358,7 +1387,16 @@ class _TrainSheetState extends State<TrainSheet> {
         children: [
           Row(
             children: [
-              Expanded(child: LText('第 ${i + 1} 组', style: AppText.h2(p))),
+              Expanded(
+                child: LText(
+                  '第 ${i + 1} 组',
+                  style: TextStyle(
+                    color: p.text,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
               SheetButton(
                 '删除这组',
                 () => setState(() {
@@ -1373,7 +1411,7 @@ class _TrainSheetState extends State<TrainSheet> {
               ),
             ],
           ),
-          NumberField(
+          StepperField(
             value: row['weight'] as String,
             onChanged: (s) => change('weight', s),
             label: '重量',
@@ -1382,7 +1420,7 @@ class _TrainSheetState extends State<TrainSheet> {
             step: 2.5,
           ),
           const SizedBox(height: 10),
-          NumberField(
+          StepperField(
             value: row['reps'] as String,
             onChanged: (s) => change('reps', s),
             label: '次数',

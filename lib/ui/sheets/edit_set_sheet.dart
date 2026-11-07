@@ -14,8 +14,13 @@ import '../../data/state_doc.dart' show mark;
 import '../../domain/format.dart' show fmt, jsNumber, jsTruthy;
 import '../../domain/catalog.dart';
 import '../../theme/theme.dart';
+import '../../theme/tokens.dart' show AppPalette;
 import '../kit/pressable.dart';
 import '../kit/sheet.dart';
+import 'train/controls.dart' show SheetSegments;
+
+TextStyle _sectionStyle(AppPalette p) =>
+    TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: p.text);
 
 class EditSetSheet extends StatefulWidget {
   const EditSetSheet({super.key, required this.set});
@@ -136,7 +141,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
           decoration: BoxDecoration(color: p.card, shape: BoxShape.circle),
           child: LText(
             delta < 0 ? '−' : '+',
-            style: TextStyle(color: p.tint, fontSize: 28),
+            style: TextStyle(color: p.text, fontSize: 28),
           ),
         ),
       ),
@@ -144,8 +149,8 @@ class _EditSetSheetState extends State<EditSetSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LText(fieldLabel, style: TextStyle(fontSize: 13, color: p.secondary)),
-        const SizedBox(height: 6),
+        LText(fieldLabel, style: _sectionStyle(p)),
+        const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(8),
           constraints: const BoxConstraints(minHeight: 76),
@@ -166,11 +171,10 @@ class _EditSetSheetState extends State<EditSetSheet> {
                       child: EditableText(
                         controller: isWeight ? weight : reps,
                         focusNode: isWeight ? weightFocus : repsFocus,
-                        style: DefaultTextStyle.of(context).style.copyWith(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.96,
-                          color: p.text,
+                        style: AppText.num(p, 38).copyWith(
+                          fontFamilyFallback: DefaultTextStyle.of(context)
+                              .style
+                              .fontFamilyFallback,
                         ),
                         cursorColor: p.tint,
                         backgroundCursorColor: p.fill,
@@ -230,18 +234,14 @@ class _EditSetSheetState extends State<EditSetSheet> {
           ),
           LText(
             '${widget.set['ex']} · 第 ${widget.set['no']} 组',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: p.secondary,
-            ),
+            style: AppText.title(p),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           step(true),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           step(false),
-          const SizedBox(height: 14),
-          LText('还能做几次', style: TextStyle(fontSize: 13, color: p.secondary)),
+          const SizedBox(height: 20),
+          LText('还能做几次', style: _sectionStyle(p)),
           Row(
             children: [
               for (final n in [0, 1, 2, 3]) ...[
@@ -259,7 +259,8 @@ class _EditSetSheetState extends State<EditSetSheet> {
               ],
             ],
           ),
-          LText('有不舒服吗', style: TextStyle(fontSize: 13, color: p.secondary)),
+          const SizedBox(height: 6),
+          LText('有不舒服吗', style: _sectionStyle(p)),
           Row(
             children: [
               for (final item in [('form', '动作变形'), ('pain', '有点痛')]) ...[
@@ -276,44 +277,10 @@ class _EditSetSheetState extends State<EditSetSheet> {
             ],
           ),
           const SizedBox(height: 14),
-          Container(
-            height: 46,
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: p.seg,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                for (final name in ['热身', '正式', '递减'])
-                  Expanded(
-                    child: Semantics(
-                      button: true,
-                      selected: type == name,
-                      label: AppMessages.of(context).text(name),
-                      child: Pressable(
-                        onTap: () => setState(() => type = name),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: type == name ? p.segOn : null,
-                            borderRadius: BorderRadius.circular(9),
-                          ),
-                          child: LText(
-                            name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: p.text,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+          SheetSegments(
+            labels: const ['热身', '正式', '递减'],
+            value: type,
+            onChanged: (name) => setState(() => type = name),
           ),
         ],
       ),
@@ -350,14 +317,15 @@ class SetFeedbackChip extends StatelessWidget {
             height: 36,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: selected ? context.pal.tintSoft : context.pal.fill2,
+              color: selected ? context.pal.primary : context.pal.fill2,
               borderRadius: BorderRadius.circular(22),
             ),
             child: LText(
               label,
               style: TextStyle(
                 fontSize: 15,
-                color: selected ? context.pal.tint : context.pal.text,
+                fontWeight: FontWeight.w600,
+                color: selected ? context.pal.onPrimary : context.pal.text,
               ),
             ),
           ),
