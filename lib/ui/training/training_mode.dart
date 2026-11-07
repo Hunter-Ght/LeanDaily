@@ -12,7 +12,7 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../app/routes.dart' show openGuide, openEditSet;
 import '../../domain/format.dart';
-import '../../domain/movements.dart' show musclesOf;
+import '../../domain/movements.dart' show muscleRoles, musclesOf;
 import '../../domain/progress.dart' as progress;
 import '../../theme/theme.dart';
 import '../../theme/tokens.dart' show AppPalette;
@@ -22,7 +22,7 @@ import '../sheets/edit_set_sheet.dart' show SetFeedbackChip;
 import '../log/set_display.dart';
 import '../kit/transitions.dart';
 import '../kit/app_icon.dart';
-import '../kit/grouped.dart';
+import '../kit/body_figure.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
 import '../today/today_model.dart';
@@ -608,53 +608,117 @@ class _TrainingModeState extends State<_TrainingBody>
       ),
     ),
   );
+  /// 大读数：Numeral 大数字 + 小号单位 + 标签。
+  Widget bigStat(
+    String value,
+    String unit,
+    String label, {
+    double size = 56,
+    Color? color,
+  }) {
+    final p = context.pal;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(value, style: AppText.num(p, size, color: color)),
+              const SizedBox(width: 4),
+              LText(unit, style: TextStyle(fontSize: 15, color: p.secondary)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 6),
+        LText(label, style: TextStyle(fontSize: 13, color: p.secondary)),
+      ],
+    );
+  }
+
   Widget warmView(TodayModel m) {
+    final p = context.pal;
     final warm = jsonMap(m.workout['warmup']);
     final items = warm['items'] as List? ?? [];
+    final note = '${warm['note'] ?? ''}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 35),
+        const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: text('热身 ${warm['minutes']} 分钟', size: 34, bold: true),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: LText('热身', style: AppText.display(p, size: 34)),
+        ),
+        const SizedBox(height: 22),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: bigStat(
+                  '${warm['minutes'] ?? ''}',
+                  '分钟',
+                  '用时',
+                  size: 64,
+                  color: p.tint,
+                ),
+              ),
+              Expanded(
+                child: bigStat('${items.length}', '个动作', '动作', size: 64),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 24),
-        GroupCard(
-          children: [
-            for (var i = 0; i < items.length; i++)
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: context.pal.fill2,
-                        shape: BoxShape.circle,
-                      ),
-                      child: text('${i + 1}', size: 13, secondary: true),
+        for (var i = 0; i < items.length; i++)
+          Container(
+            constraints: const BoxConstraints(minHeight: 64),
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: p.card,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 36,
+                  child: Text(
+                    '${i + 1}',
+                    style: AppText.num(p, 24, color: p.secondary),
+                  ),
+                ),
+                Expanded(
+                  child: LText(
+                    '${items[i]}',
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1.25,
+                      fontWeight: FontWeight.w700,
+                      color: p.text,
                     ),
                   ),
-                  Expanded(
-                    child: GroupRow(label: '${items[i]}', chevron: false),
-                  ),
-                ],
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: text('${warm['note'] ?? ''}', size: 13, secondary: true),
-        ),
+                ),
+              ],
+            ),
+          ),
+        if (note.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            child: LText(note, style: AppText.hint(p)),
+          ),
       ],
     );
   }
 
   Widget summaryView(TodayModel m) {
+    final p = context.pal;
     final names = m.all.map((e) => e['name']).toSet();
     final rows = jsonRows(m.day['sets'])
         .where((s) => names.contains(s['ex']) && s['type'] != '热身')
@@ -684,103 +748,224 @@ class _TrainingModeState extends State<_TrainingBody>
           final ex = m.all.where((e) => e['name'] == row['ex']).firstOrNull;
           return ex != null && !trainingHasLoad(ex, [row]);
         });
-    Widget tile(String value, String unit, String label) => Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 4),
-        decoration: BoxDecoration(
-          color: context.pal.card,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Column(
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: text(value, size: 34, bold: true),
-            ),
-            text(unit, size: 12, secondary: true),
-            const SizedBox(height: 6),
-            text(label, size: 13, secondary: true),
-          ],
-        ),
+    // 按动作归组（保持首次出现的顺序），并汇总今天练到的肌肉。
+    final byExercise = <String, List<Map<String, dynamic>>>{};
+    final tones = <String, MuscleTone>{};
+    for (final row in rows) {
+      byExercise.putIfAbsent('${row['ex']}', () => []).add(row);
+    }
+    for (final row in rows) {
+      final roles = muscleRoles(row['ex'], '${row['part']}');
+      for (final id in roles.main) {
+        tones[id] = MuscleTone.effort;
+      }
+    }
+    for (final row in rows) {
+      for (final id in muscleRoles(row['ex'], '${row['part']}').assist) {
+        tones.putIfAbsent(id, () => MuscleTone.assist);
+      }
+    }
+    Widget chip(String s) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: p.fill2,
+        borderRadius: BorderRadius.circular(10),
       ),
+      child: Text(s, style: AppText.num(p, 15)),
     );
+    String setLabel(Map<String, dynamic> s) {
+      final ex = m.all.where((e) => e['name'] == s['ex']).firstOrNull;
+      final reps = fmt(jsNumber(s['reps']));
+      final w = jsNumber(s['w']);
+      final unit = ex != null && ex['unit'] == 'sec' ? 's' : '';
+      return ex != null && trainingHasLoad(ex, [s]) && w > 0
+          ? '${fmt(w)}×$reps$unit'
+          : '$reps$unit';
+    }
+
+    final reduce = MediaQuery.disableAnimationsOf(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 32),
-        Center(
-          child: TweenAnimationBuilder<double>(
-            tween: Tween(
-              begin: MediaQuery.disableAnimationsOf(context) ? 1 : .7,
-              end: 1,
-            ),
-            duration: Duration(
-              milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 260,
-            ),
-            curve: Curves.elasticOut,
-            builder: (_, value, child) =>
-                Transform.scale(scale: value, child: child),
-            child: SizedBox(
-              height: 116,
-              child: Center(
-                child: AppIcon('check', size: 88, color: context.pal.ok),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Expanded(
+                child: LText('练完了', style: AppText.display(p, size: 34)),
               ),
-            ),
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: reduce ? 1 : .6, end: 1),
+                duration: Duration(milliseconds: reduce ? 0 : 260),
+                curve: Curves.elasticOut,
+                builder: (_, value, child) =>
+                    Transform.scale(scale: value, child: child),
+                child: AppIcon('check', size: 40, color: p.recover),
+              ),
+            ],
           ),
         ),
-        Center(child: text('练完了', size: 34, bold: true)),
-        const SizedBox(height: 30),
+        const SizedBox(height: 24),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
             children: [
-              tile('${rows.length}', '组', '组数'),
-              const SizedBox(width: 8),
-              tile(
-                allBody
-                    ? fmt(bodyReps > 0 ? bodyReps : bodySeconds)
-                    : fmt(volume),
-                allBody ? (bodyReps > 0 ? '次' : '秒') : 'kg',
-                allBody ? '自重' : '训练量',
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: bigStat(
+                      '${rows.length}',
+                      '组',
+                      '组数',
+                      size: 60,
+                      color: p.tint,
+                    ),
+                  ),
+                  Expanded(
+                    child: bigStat(
+                      allBody
+                          ? fmt(bodyReps > 0 ? bodyReps : bodySeconds)
+                          : fmt(volume),
+                      allBody ? (bodyReps > 0 ? '次' : '秒') : 'kg',
+                      allBody ? '自重' : '训练量',
+                      size: 60,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              tile('${math.max(1, _elapsed.elapsed.inMinutes)}', '分钟', '用时'),
+              const SizedBox(height: 22),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: bigStat(
+                      '${math.max(1, _elapsed.elapsed.inMinutes)}',
+                      '分钟',
+                      '用时',
+                      size: 44,
+                    ),
+                  ),
+                  Expanded(
+                    child: bigStat(
+                      '${byExercise.length}',
+                      '个动作',
+                      '动作',
+                      size: 44,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
         if (allBody && bodyReps > 0 && bodySeconds > 0)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: text(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            child: LText(
               '另有自重 ${fmt(bodySeconds)} 秒',
-              size: 13,
-              secondary: true,
+              style: AppText.hint(p),
             ),
           ),
-        const SizedBox(height: 20),
+        if (tones.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: LText('今天练到', style: AppText.title(p)),
+          ),
+          const SizedBox(height: 8),
+          BodyFigure(tones: tones, height: 220),
+        ],
         if (_pbLabel != null)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: context.pal.fill2,
-                borderRadius: BorderRadius.circular(22),
+                color: p.card,
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: text('新纪录 · $_pbLabel', size: 13),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: p.tintSoft,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: LText(
+                      '新纪录',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: p.tint,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: LText(
+                      _pbLabel!,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: p.text,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        if (m.next != null)
-          GroupCard(
-            children: [
-              GroupRow(
-                label: '下次',
-                value:
-                    '${weekday('${m.next!['iso']}')} · ${workoutTitle('${m.next!['workout']['name']}')}',
-                chevron: false,
+        if (byExercise.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          for (final entry in byExercise.entries)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LText(
+                    entry.key,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: p.text,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [for (final s in entry.value) chip(setLabel(s))],
+                  ),
+                ],
               ),
-            ],
+            ),
+        ],
+        if (m.next != null)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+            child: Row(
+              children: [
+                LText('下次', style: AppText.hint(p)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: LText(
+                    '${weekday('${m.next!['iso']}')} · ${workoutTitle('${m.next!['workout']['name']}')}',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: p.text,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
       ],
     );
@@ -1360,28 +1545,6 @@ class _TrainingModeState extends State<_TrainingBody>
                                                 feedbackBar(),
                                             ],
                                           ),
-                                        if (_warm)
-                                          button(
-                                            '跳过热身',
-                                            () => goPage(
-                                              warmOffset +
-                                                  model.items
-                                                      .indexWhere(
-                                                        (i) =>
-                                                            i['ex']['id'] ==
-                                                            _id,
-                                                      )
-                                                      .clamp(
-                                                        0,
-                                                        math.max(
-                                                          0,
-                                                          model.items.length -
-                                                              1,
-                                                        ),
-                                                      ),
-                                            ),
-                                            secondary: true,
-                                          ),
                                         if (!_warm &&
                                             !_summary &&
                                             _app!.rest.active)
@@ -1416,6 +1579,28 @@ class _TrainingModeState extends State<_TrainingBody>
                                                     }
                                                   },
                                             primary: true,
+                                          ),
+                                        if (_warm)
+                                          button(
+                                            '跳过热身',
+                                            () => goPage(
+                                              warmOffset +
+                                                  model.items
+                                                      .indexWhere(
+                                                        (i) =>
+                                                            i['ex']['id'] ==
+                                                            _id,
+                                                      )
+                                                      .clamp(
+                                                        0,
+                                                        math.max(
+                                                          0,
+                                                          model.items.length -
+                                                              1,
+                                                        ),
+                                                      ),
+                                            ),
+                                            secondary: true,
                                           ),
                                       ],
                                     ),
