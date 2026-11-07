@@ -1,0 +1,62 @@
+{
+  "时间范围": {
+    "en": "Time range",
+    "zh_Hant": "時間範圍"
+  },
+  "4 周": {
+    "en": "4 weeks",
+    "zh_Hant": "4 週"
+  },
+  "12 周": {
+    "en": "12 weeks",
+    "zh_Hant": "12 週"
+  },
+  "近 12 周": {
+    "en": "Last 12 weeks",
+    "zh_Hant": "近 12 週"
+  },
+  "全部记录": {
+    "en": "All time",
+    "zh_Hant": "全部記錄"
+  },
+  "近 12 周肌肉热力图": {
+    "en": "Muscle heat map, last 12 weeks",
+    "zh_Hant": "近 12 週肌肉熱力圖"
+  },
+  "全部记录肌肉热力图": {
+    "en": "Muscle heat map, all time",
+    "zh_Hant": "全部記錄肌肉熱力圖"
+  },
+  "这 12 周只练了 ": {
+    "en": ": only ",
+    "zh_Hant": "這 12 週只練了 "
+  },
+  "这 12 周还没练到": {
+    "en": ": none in the last 12 weeks",
+    "zh_Hant": "這 12 週還沒練到"
+  },
+  "这段时间只练了 ": {
+    "en": ": only ",
+    "zh_Hant": "這段時間只練了 "
+  },
+  "这段时间还没练到": {
+    "en": ": none so far",
+    "zh_Hant": "這段時間還沒練到"
+  },
+  "最佳成绩 · 较 12 周前": {
+    "en": "Best · vs 12 weeks ago",
+    "zh_Hant": "最佳成績 · 較 12 週前"
+  },
+  "最佳成绩 · 较最初": {
+    "en": "Best · vs. your first log",
+    "zh_Hant": "最佳成績 · 較最初"
+  },
+  "说明": {
+    "en": "About",
+    "zh_Hant": "說明"
+  },
+  "浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。": {
+    "en": "The light band is the weekly reference range (direct sets; each set of an exercise counts as one).",
+    "zh_Hant": "淺色區間是每週的參考範圍（直接訓練組數，一個動作的一組算一組）。"
+  }
+}

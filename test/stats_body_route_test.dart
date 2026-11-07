@@ -81,7 +81,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
     expect(find.text('次数'), findsOneWidget);
-    expect(find.text('自重 × 9 次'), findsOneWidget);
+    expect(find.text('自重 × '), findsWidgets);
+    expect(find.text('9'), findsWidgets);
     expect(find.text('0 kg'), findsNothing);
     expect(find.bySemanticsLabel('俯卧撑 的次数'), findsOneWidget);
     expect(tester.takeException(), isNull);

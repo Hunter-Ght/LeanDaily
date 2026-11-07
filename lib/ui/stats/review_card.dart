@@ -9,6 +9,7 @@ import '../../domain/progress.dart';
 import '../../theme/theme.dart';
 import 'stat_widgets.dart';
 import '../kit/form.dart';
+import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 
 class ReviewCard extends StatefulWidget {
@@ -18,7 +19,7 @@ class ReviewCard extends StatefulWidget {
 }
 
 class _ReviewCardState extends State<ReviewCard> {
-  bool expanded = false;
+  bool expanded = false, hintOpen = false;
   @override
   Widget build(BuildContext context) {
     final app = context.app, p = context.pal;
@@ -53,26 +54,12 @@ class _ReviewCardState extends State<ReviewCard> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            LText.rich(
-              TextSpan(
-                text: '${a['done']}',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: p.text,
-                  letterSpacing: -.84,
-                ),
-                children: [
-                  TextSpan(
-                    text: ' / ${a['planned']} 次',
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+            Text('${a['done']}', style: AppText.num(p, 40)),
+            Text(
+              ' / ${a['planned']} ',
+              style: AppText.num(p, 20, color: p.secondary),
             ),
+            LText('次', style: TextStyle(fontSize: 15, color: p.secondary)),
             const SizedBox(width: 12),
             Expanded(
               child: LText(
@@ -178,13 +165,20 @@ class _ReviewCardState extends State<ReviewCard> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        LText(
-                          '${g['week']} 组',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: p.text,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text('${g['week']}', style: AppText.num(p, 18)),
+                            LText(
+                              ' 组',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: p.secondary,
+                              ),
+                            ),
+                          ],
                         ),
                         LText(
                           '上周 ${g['last']}',
@@ -208,7 +202,31 @@ class _ReviewCardState extends State<ReviewCard> {
             plain: true,
             onTap: () => setState(() => expanded = !expanded),
           ),
-        LText('浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。$note', style: AppText.hint(p)),
+        const SizedBox(height: 4),
+        LText(
+          note,
+          style: TextStyle(fontSize: 15, height: 1.45, color: p.text),
+        ),
+        Pressable(
+          onTap: () => setState(() => hintOpen = !hintOpen),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: LText(
+              hintOpen ? '收起说明' : '说明',
+              style: AppText.hint(p)
+                  .copyWith(color: p.text, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        Reveal(
+          visible: hintOpen,
+          child: hintOpen
+              ? LText(
+                  '浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。',
+                  style: AppText.hint(p),
+                )
+              : const SizedBox.shrink(),
+        ),
       ],
     );
   }

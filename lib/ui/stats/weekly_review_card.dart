@@ -92,13 +92,14 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
             ],
           ),
           const SizedBox(height: 4),
-          LText(
-            value,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: p.text,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(value, style: AppText.num(p, 24)),
+              const SizedBox(width: 3),
+              LText('天', style: TextStyle(fontSize: 13, color: p.secondary)),
+            ],
           ),
         ],
       ),
@@ -114,7 +115,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
           alignment: Alignment.center,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: apply && !widget.compact ? p.tint : p.fill2,
+            color: apply && !widget.compact ? p.primary : p.fill2,
             borderRadius: BorderRadius.circular(14),
           ),
           child: LText(
@@ -124,9 +125,9 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
               fontSize: 15,
               fontWeight: FontWeight.w600,
               color: apply && !widget.compact
-                  ? p.onTint
+                  ? p.onPrimary
                   : apply
-                  ? p.tint
+                  ? p.text
                   : p.secondary,
             ),
           ),
@@ -143,14 +144,7 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LText(
-            '上周回顾',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: p.text,
-            ),
-          ),
+          LText('上周回顾', style: AppText.title(p)),
           const SizedBox(height: 4),
           LText(
             '${r['label']}',
@@ -159,9 +153,9 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
           const SizedBox(height: 14),
           Row(
             children: [
-              metric('训练', '${r['trainDays']}/${r['trainTarget']} 天', p.tint),
-              metric('蛋白达标', '${r['proteinDays']} 天', p.protein),
-              metric('热量在范围', '${r['kcalDays']} 天', p.kcal),
+              metric('训练', '${r['trainDays']}/${r['trainTarget']}', p.tint),
+              metric('蛋白达标', '${r['proteinDays']}', p.protein),
+              metric('热量在范围', '${r['kcalDays']}', p.kcal),
             ],
           ),
           if (r['weightAvg'] != null) ...[

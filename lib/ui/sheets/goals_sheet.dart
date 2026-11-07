@@ -6,6 +6,7 @@ import '../../app/app_controller.dart';
 import 'profile_sheet.dart';
 import '../../domain/format.dart';
 import '../../domain/goals.dart';
+import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
 import '../kit/menu.dart';
@@ -149,12 +150,16 @@ class _GoalsSheetState extends State<GoalsSheet> {
               else
                 GroupRow(
                   label: e.value,
-                  trailing: FormInput(
-                    label: e.value,
-                    value: _values![e.key]!,
-                    width: 94,
-                    numeric: true,
-                    onChanged: (v) => setState(() => _values![e.key] = v),
+                  trailing: DefaultTextStyle(
+                    style: AppText.num(context.pal, 22),
+                    child: FormInput(
+                      label: e.value,
+                      value: _values![e.key]!,
+                      width: 94,
+                      numeric: true,
+                      fontSize: 22,
+                      onChanged: (v) => setState(() => _values![e.key] = v),
+                    ),
                   ),
                 ),
           ],
