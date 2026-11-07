@@ -454,7 +454,7 @@ void main() {
     await settle(t);
     expect(find.text('练完了'), findsOneWidget);
     expect(find.text('自重'), findsOneWidget);
-    expect(find.text('10'), findsOneWidget);
+    expect(find.text('10'), findsNWidgets(2)); // 总次数大读数 + 该动作的组片
     expect(find.text('kg'), findsNothing);
     expect(find.text('刚才这组还能做几次'), findsNothing);
     expect(find.bySemanticsLabel('列表'), findsNothing);
@@ -522,7 +522,7 @@ void main() {
     await dragAt(const Offset(150, 400), const Offset(150, 0));
     await dragAt(const Offset(150, 400), const Offset(150, 0));
     await dragAt(const Offset(150, 400), const Offset(150, 0));
-    expect(find.textContaining('热身 ', findRichText: true), findsOneWidget);
+    expect(find.text('热身'), findsOneWidget);
     await dragAt(const Offset(150, 400), const Offset(150, 0));
     expect(find.text('热身完成'), findsOneWidget);
     await t.tap(find.bySemanticsLabel('关闭'));
