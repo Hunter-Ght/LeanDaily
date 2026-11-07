@@ -248,7 +248,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: p.tint,
+                color: p.text,
               ),
             ),
           ),
