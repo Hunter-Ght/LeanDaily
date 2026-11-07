@@ -349,7 +349,10 @@ class _MuscleCardState extends State<MuscleCard> {
                         child: Center(
                           child: LText(
                             _showAll ? '收起列表' : '查看全部 ${rows.length} 块肌肉',
-                            style: AppText.hint(p).copyWith(color: p.tint),
+                            style: AppText.hint(p).copyWith(
+                              color: p.text,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -392,7 +395,8 @@ class _MuscleCardState extends State<MuscleCard> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: LText(
                   _showDetail ? '收起说明' : '估算依据',
-                  style: AppText.hint(p).copyWith(color: p.tint),
+                  style: AppText.hint(p)
+                      .copyWith(color: p.text, fontWeight: FontWeight.w600),
                 ),
               ),
             ),

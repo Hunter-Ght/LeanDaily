@@ -18,6 +18,8 @@ import '../../domain/muscles.dart' show muscleStatus;
 import '../../domain/stats.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
+import '../kit/menu.dart';
+import '../../domain/stats_range.dart';
 import '../kit/pressable.dart';
 import 'body_route_card.dart';
 import 'weekly_review_card.dart';
@@ -36,6 +38,8 @@ class StatsPage extends StatefulWidget {
 class _StatsPageState extends State<StatsPage> {
   String picked = '';
   bool allBests = false;
+  StatsRange _range = StatsRange.weeks4;
+  StatsRange? _summaryRange;
   Map<String, dynamic>? bodyPaths;
   Timer? _minute;
   bool _visible = true;
@@ -54,10 +58,11 @@ class _StatsPageState extends State<StatsPage> {
       _meals = app.repo.allMeals();
       _muscleDays = _days.map((k, v) => MapEntry(k, jsonMap(v)));
     }
-    if (changed || _statsDate != app.today) {
+    if (changed || _statsDate != app.today || _summaryRange != _range) {
+      _summaryRange = _range;
       _statsDate = app.today;
       _stats = buildStats(app.today, null, null, days: _days, meals: _meals);
-      _summary = ProgressSummary.build(_muscleDays, app.today);
+      _summary = ProgressSummary.build(_muscleDays, app.today, _range);
       _status = muscleStatus(_muscleDays, app.clock().millisecondsSinceEpoch);
     }
   }
@@ -158,7 +163,7 @@ class _StatsPageState extends State<StatsPage> {
                                     horizontal: 14,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: e == current ? p.tintSoft : p.fill,
+                                    color: e == current ? p.primary : p.fill2,
                                     borderRadius: BorderRadius.circular(99),
                                   ),
                                   child: LText(
@@ -166,7 +171,9 @@ class _StatsPageState extends State<StatsPage> {
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
-                                      color: e == current ? p.tint : p.text,
+                                      color: e == current
+                                          ? p.onPrimary
+                                          : p.text,
                                     ),
                                   ),
                                 ),
@@ -181,15 +188,19 @@ class _StatsPageState extends State<StatsPage> {
                   FadeSwitcher(
                     child: KeyedSubtree(
                       key: ValueKey('${current['ex']}:${last?['iso']}'),
-                      child: LText(
-                        bodyweight
-                            ? '${fmt(last!['reps'])} 次'
-                            : '${fmt(last!['e1'])} kg',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          color: p.text,
-                        ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Text(
+                            bodyweight ? fmt(last!['reps']) : fmt(last!['e1']),
+                            style: AppText.num(p, 40),
+                          ),
+                          LText(
+                            bodyweight ? ' 次' : ' kg',
+                            style: TextStyle(fontSize: 15, color: p.secondary),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -267,16 +278,54 @@ class _StatsPageState extends State<StatsPage> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      LText(
-                        jsNumber(b['heavy']) == 0
-                            ? '自重 × ${fmt(b['heavyReps'])} 次'
-                            : '${fmt(b['heavy'])} kg × ${fmt(b['heavyReps'])}',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          color: p.text,
-                        ),
-                      ),
+                      jsNumber(b['heavy']) == 0
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                LText(
+                                  '自重 × ',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: p.secondary,
+                                  ),
+                                ),
+                                Text(
+                                  fmt(b['heavyReps']),
+                                  style: AppText.num(p, 22),
+                                ),
+                                LText(
+                                  ' 次',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: p.secondary,
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  fmt(b['heavy']),
+                                  style: AppText.num(p, 22),
+                                ),
+                                Text(
+                                  ' kg × ',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: p.secondary,
+                                  ),
+                                ),
+                                Text(
+                                  fmt(b['heavyReps']),
+                                  style: AppText.num(p, 22),
+                                ),
+                              ],
+                            ),
                     ],
                   ),
                 ),
@@ -306,6 +355,7 @@ class _StatsPageState extends State<StatsPage> {
               ? const SizedBox.shrink()
               : HeatHero(
                   heat: summary.heat,
+                  range: _range,
                   bodyPaths: bodyPaths!,
                   onOpen: (id) => openMuscleExercises(context, id),
                   height: widget.wide ? 360 : 300,
@@ -313,6 +363,8 @@ class _StatsPageState extends State<StatsPage> {
         );
         final suggestion = SuggestionStrip(
           status: _status,
+          groupSets: summary.groupSets,
+          range: _range,
           owned: app.myGym,
           onOpen: (id) => openMuscleExercises(context, id),
         );
@@ -326,6 +378,7 @@ class _StatsPageState extends State<StatsPage> {
           exercises: exercises,
           bests: bests,
           today: app.today,
+          range: _range,
         );
         List<Widget> spaced(List<Widget> items) => [
           for (final (i, w) in items.indexed) ...[
@@ -361,7 +414,11 @@ class _StatsPageState extends State<StatsPage> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ProgressHeader(trainDays: summary.trainDays28),
+                      ProgressHeader(
+                        trainDays: summary.trainDays,
+                        range: _range,
+                        onPickRange: _pickRange,
+                      ),
                       if (twoCols)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,6 +460,20 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
+  Future<void> _pickRange() async {
+    final picked = await showActionMenu(
+      context,
+      title: '时间范围',
+      actions: [
+        for (final r in StatsRange.values)
+          MenuAction(id: r.name, label: rangeEyebrow(r)),
+      ],
+    );
+    if (picked == null || !mounted) return;
+    final next = StatsRange.values.firstWhere((r) => r.name == picked.id);
+    if (next != _range) setState(() => _range = next);
+  }
+
   Widget _weekOverview(Map<String, dynamic> week, num target) {
     final app = context.app, p = context.pal;
     final days = jsonRows(week['days']), meals = app.repo.allMeals();
@@ -439,14 +510,7 @@ class _StatsPageState extends State<StatsPage> {
                   children: [
                     Container(width: 16, height: 3, color: item.$3),
                     const SizedBox(height: 8),
-                    LText(
-                      item.$2,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: p.text,
-                      ),
-                    ),
+                    Text(item.$2, style: AppText.num(p, 28)),
                     LText(item.$1, style: AppText.hint(p)),
                   ],
                 ),

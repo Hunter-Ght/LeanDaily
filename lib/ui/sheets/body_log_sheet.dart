@@ -80,13 +80,20 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
       onLongPressCancel: () => _repeat?.cancel(),
       child: Pressable(
         onTap: () => _step(direction),
-        child: SizedBox(
+        child: Container(
           width: 52,
           height: 52,
-          child: Center(
-            child: LText(
-              direction < 0 ? '−' : '+',
-              style: TextStyle(fontSize: 30, color: context.pal.tint),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: context.pal.fill2,
+            shape: BoxShape.circle,
+          ),
+          child: LText(
+            direction < 0 ? '−' : '+',
+            style: TextStyle(
+              fontSize: 28,
+              height: 1.1,
+              color: context.pal.text,
             ),
           ),
         ),
@@ -156,17 +163,36 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
               children: [
                 _stepButton(-1),
                 Expanded(
-                  child: SheetInput(
-                    value: _weight!,
-                    onChanged: (v) => _weight = v,
-                    label: '体重 kg',
-                    numeric: true,
-                    size: 44,
-                    weight: FontWeight.w700,
-                    align: TextAlign.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Flexible(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 170),
+                          child: DefaultTextStyle(
+                            style: AppText.num(p, 60),
+                            child: SheetInput(
+                              value: _weight!,
+                              onChanged: (v) => _weight = v,
+                              label: '体重 kg',
+                              numeric: true,
+                              size: 60,
+                              weight: FontWeight.w700,
+                              align: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      LText(
+                        'kg',
+                        style: TextStyle(fontSize: 17, color: p.secondary),
+                      ),
+                    ],
                   ),
                 ),
-                LText('kg', style: AppText.hint(p)),
                 _stepButton(1),
               ],
             ),
@@ -215,14 +241,15 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                             width: 64,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: _day == i ? p.tintSoft : p.fill2,
+                              color: _day == i ? p.primary : p.fill2,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: LText(
                               label,
                               style: TextStyle(
                                 fontSize: 15,
-                                color: _day == i ? p.tint : p.text,
+                                fontWeight: FontWeight.w600,
+                                color: _day == i ? p.onPrimary : p.text,
                               ),
                             ),
                           ),
@@ -260,7 +287,22 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
               for (final e in entries.reversed.take(7))
                 GroupRow(
                   label: '${e['date']}',
-                  value: '${(e['weightKg'] as num).toStringAsFixed(1)} kg',
+                  chevron: false,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        (e['weightKg'] as num).toStringAsFixed(1),
+                        style: AppText.num(p, 22),
+                      ),
+                      Text(
+                        ' kg',
+                        style: TextStyle(fontSize: 13, color: p.secondary),
+                      ),
+                    ],
+                  ),
                   sub: _delta(entries, e),
                 ),
             ],
