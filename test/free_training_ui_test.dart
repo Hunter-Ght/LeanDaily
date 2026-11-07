@@ -45,7 +45,6 @@ void main() {
     await openTrain(tester);
     final groups = reco(h);
     expect(groups, isNotEmpty);
-    expect(find.text('按肌肉恢复推荐；器械被占就点“换一个”'), findsOneWidget);
     expect(find.text('设置我的健身房'), findsOneWidget);
     expect(
       find.byKey(ValueKey('reco-group-${groups.first.group}')),

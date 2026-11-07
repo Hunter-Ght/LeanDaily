@@ -186,15 +186,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                   ? [
                       Padding(
                         padding: const EdgeInsets.fromLTRB(4, 4, 4, 14),
-                        child: LText(
-                          sub,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: -.17,
-                            color: p.text,
-                          ),
-                        ),
+                        child: LText(sub, style: AppText.title(p)),
                       ),
                       Container(
                         padding: const EdgeInsets.all(3),
@@ -264,7 +256,14 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      LText('加到哪一天', style: AppText.hint(p)),
+                      LText(
+                        '加到哪一天',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: p.text,
+                        ),
+                      ),
                       for (final s in slots)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
@@ -287,7 +286,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                                   color: p.card,
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: slot == s ? p.tint : p.card,
+                                    color: slot == s ? p.primary : p.card,
                                     width: 2,
                                   ),
                                 ),
@@ -628,7 +627,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
               color: filled
                   ? compact
                         ? p.fill2
-                        : p.tint
+                        : p.primary
                   : segment && selected
                   ? p.segOn
                   : null,
@@ -648,10 +647,10 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
                 color: filled
                     ? compact
                           ? p.text
-                          : p.onTint
+                          : p.onPrimary
                     : segment
                     ? p.text
-                    : p.tint,
+                    : p.text,
               ),
             ),
           ),
