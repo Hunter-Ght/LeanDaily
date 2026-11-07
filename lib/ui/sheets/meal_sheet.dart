@@ -577,6 +577,40 @@ class _MealSheetState extends State<MealSheet> {
     }
   }
 
+  /// 文字链接：设置 AI 连接。
+  Widget _aiLink() {
+    final p = context.pal;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Semantics(
+        button: true,
+        label: AppMessages.of(context).text('设置 AI 连接'),
+        child: Pressable(
+          onTap: _analyzing || _consenting ? null : _configureAi,
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LText(
+                  '设置 AI 连接',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: p.text,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                AppIcon('right', size: 14, color: p.text),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _label(String text) => Padding(
     padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
     child: LText(text, style: AppText.hint(context.pal)),
@@ -691,6 +725,7 @@ class _MealSheetState extends State<MealSheet> {
                                 '已经吃完？补拍剩余',
                                 () => setState(() => _showAfter = true),
                                 key: const ValueKey('offer-after-photos'),
+                                soft: true,
                               ),
                       ),
                       _label('补充，可选'),
@@ -701,10 +736,8 @@ class _MealSheetState extends State<MealSheet> {
                         placeholder: '例如米饭半碗、饮料无糖、两人分着吃',
                         lines: 2,
                       ),
-                      SheetButton(
-                        '设置 AI 连接',
-                        _analyzing || _consenting ? null : _configureAi,
-                      ),
+                      const SizedBox(height: 4),
+                      _aiLink(),
                       if (!_enabled)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(4, 10, 4, 0),
@@ -717,7 +750,7 @@ class _MealSheetState extends State<MealSheet> {
                       SheetButton(
                         _analyzing ? '识别中' : analyzeLabel,
                         _analyzing ? null : _analyze,
-                        primary: true,
+                        ink: true,
                       ),
                       Reveal(
                         visible: _analyzing,
@@ -725,7 +758,11 @@ class _MealSheetState extends State<MealSheet> {
                             ? Column(
                                 children: [
                                   const SizedBox(height: 12),
-                                  SheetButton('取消识别', _cancelAnalysis),
+                                  SheetButton(
+                                    '取消识别',
+                                    _cancelAnalysis,
+                                    soft: true,
+                                  ),
                                   Container(
                                     margin: const EdgeInsets.only(top: 12),
                                     padding: const EdgeInsets.symmetric(
@@ -835,6 +872,7 @@ class _MealSheetState extends State<MealSheet> {
                         '添加食物',
                         () => _change(() => _items.add(_item())),
                         icon: 'plus',
+                        soft: true,
                       ),
                     ],
                   ),
@@ -895,7 +933,7 @@ class _MealSheetState extends State<MealSheet> {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: _afterSkipped ? p.tint : p.fill2,
+                        color: _afterSkipped ? p.primary : p.fill2,
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: LText(
@@ -903,7 +941,7 @@ class _MealSheetState extends State<MealSheet> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: _afterSkipped ? p.onTint : p.text,
+                          color: _afterSkipped ? p.onPrimary : p.text,
                         ),
                       ),
                     ),
@@ -1007,7 +1045,7 @@ class _MealSheetState extends State<MealSheet> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AppIcon(icon, size: 22, color: p.secondary),
+                AppIcon(icon, size: 22, color: p.text),
                 const SizedBox(height: 6),
                 LText(
                   label,
@@ -1073,14 +1111,7 @@ class _MealSheetState extends State<MealSheet> {
             Expanded(
               child: Column(
                 children: [
-                  LText(
-                    _total(keys[i], i == 0),
-                    style: TextStyle(
-                      color: p.text,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  Text(_total(keys[i], i == 0), style: AppText.num(p, 26)),
                   const SizedBox(height: 6),
                   Container(
                     height: 3,
@@ -1190,7 +1221,7 @@ class _MealSheetState extends State<MealSheet> {
           ),
           field('portion', '份量', placeholder: '如 200g'),
           if (_hasAnalysis && _basis == records.basisBeforeOnly)
-            SheetButton('调整这项食用量', () => _itemRatio(it)),
+            SheetButton('调整这项食用量', () => _itemRatio(it), soft: true),
           Row(
             children: [
               Expanded(child: field('kcal', '热量', numeric: true)),

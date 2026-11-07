@@ -92,19 +92,12 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          LText(
-            '${widget.food['name']}',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: context.pal.text,
-            ),
-          ),
-          const SizedBox(height: 14),
+          LText('${widget.food['name']}', style: AppText.title(context.pal)),
+          const SizedBox(height: 16),
           Row(
             children: [
               FoodButton('－', () => _nudge(-_step)),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(
                 child: FoodField(
                   _grams ? '克数' : '份数',
@@ -113,35 +106,41 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
                   numeric: true,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               FoodButton('＋', () => _nudge(_step)),
             ],
           ),
           if (!_recent) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             LText(
               _hint(),
               style: TextStyle(fontSize: 13, color: context.pal.secondary),
             ),
             if (!_grams) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   for (final (i, q) in const [.5, 1, 1.5, 2].indexed) ...[
                     if (i > 0) const SizedBox(width: 8),
                     Expanded(
-                      child: FoodButton(
+                      child: FoodChip(
                         '${fmt(q)}${AppMessages.of(context).code == 'en' ? ' ' : ''}${AppMessages.of(context).text('${widget.food['unit']}')}',
                         () => _choose(q),
+                        selected: num.tryParse(_quantity) == q,
                       ),
                     ),
                   ],
                 ],
               ),
             ],
-            FoodButton(
-              _grams ? '改用份数（${widget.food['unit']}）' : '改用克数',
-              _switchMode,
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FoodButton(
+                _grams ? '改用份数（${widget.food['unit']}）' : '改用克数',
+                _switchMode,
+                link: true,
+              ),
             ),
           ],
           const SizedBox(height: 12),
@@ -152,7 +151,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
             )
           else
             NutritionSummary(kcal: entry['kcal'], protein: entry['protein']),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           FoodButton(
             '加入',
             entry == null
@@ -163,7 +162,12 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
                   },
             primary: true,
           ),
-          FoodButton('取消', () => SheetController.of(context).close()),
+          const SizedBox(height: 4),
+          FoodButton(
+            '取消',
+            () => SheetController.of(context).close(),
+            link: true,
+          ),
         ],
       ),
     );

@@ -21,9 +21,23 @@ class ChannelNative implements Native {
 
   Future<T?> _call<T>(String method, [Object? arguments]) async {
     try {
-      final limit = const {'exportDocument', 'importDocument', 'pickImages', 'requestNotify', 'http'}.contains(method) ? null : const Duration(seconds: 20);
+      final limit =
+          const {
+            'exportDocument',
+            'importDocument',
+            'pickImages',
+            'requestNotify',
+            'http',
+          }.contains(method)
+          ? null
+          : const Duration(seconds: 20);
       final call = _channel.invokeMethod<T>(method, arguments);
-      return await (limit == null ? call : call.timeout(limit, onTimeout: () => throw NativeError('原生功能无响应（$method）')));
+      return await (limit == null
+          ? call
+          : call.timeout(
+              limit,
+              onTimeout: () => throw NativeError('原生功能无响应（$method）'),
+            ));
     } on PlatformException catch (e) {
       throw NativeError(e.message ?? e.code);
     } on MissingPluginException catch (e) {

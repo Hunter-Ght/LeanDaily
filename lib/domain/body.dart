@@ -265,7 +265,9 @@ Targets buildTargets(Profile profile, {num? goalOverride}) {
 }
 
 /// 每日热量的安全下限：不低于基础代谢，男 1500 / 女 1200 千卡。
-int kcalFloor(Profile profile) => math.max(bmr(_profile(profile)), _male(_profile(profile)) ? 1500 : 1200).ceil();
+int kcalFloor(Profile profile) => math
+    .max(bmr(_profile(profile)), _male(_profile(profile)) ? 1500 : 1200)
+    .ceil();
 
 String _text(num n) =>
     n == n.roundToDouble() ? n.toInt().toString() : n.toString();

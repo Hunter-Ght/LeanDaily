@@ -140,10 +140,7 @@ class AlternativesSheet extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          LText(
-                            _line(context, e),
-                            style: AppText.hint(p),
-                          ),
+                          LText(_line(context, e), style: AppText.hint(p)),
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
                             child: RecoveryTag(info),

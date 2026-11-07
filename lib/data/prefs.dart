@@ -147,7 +147,8 @@ class CustomMusclesStore {
     return {
       if (v is Map)
         for (final e in v.entries)
-          if (e.key is String && e.value is String) e.key as String: e.value as String,
+          if (e.key is String && e.value is String)
+            e.key as String: e.value as String,
     };
   }
 

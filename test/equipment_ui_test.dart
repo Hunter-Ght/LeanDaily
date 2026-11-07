@@ -100,26 +100,27 @@ void main() {
     expect(customMuscles['我的自创动作'], 'chest_up');
   });
 
-  testWidgets('keyword-guessed custom name follows the guess and can be fixed', (
-    tester,
-  ) async {
-    await Harness.pump(tester);
-    await openTrain(tester);
-    await tester.enterText(input('搜索或输入动作'), '我的臀中肌外展');
-    await settle(tester);
-    await tester.tap(find.textContaining('使用「'));
-    await settle(tester);
-    // 名字里有“臀”，按关键字猜到臀部动作：部位跟着变成腿，并让用户确认肌肉
-    expect(find.text('腿'), findsWidgets);
-    expect(find.text('主要练哪块肌肉？'), findsOneWidget);
-    await tester.tap(find.text('其他'));
-    await settle(tester);
-    await tester.ensureVisible(find.text('后束肩'));
-    await tester.tap(find.text('后束肩'));
-    await settle(tester);
-    expect(customMuscles['我的臀中肌外展'], 'delt_rear');
-    expect(find.text('肩'), findsWidgets);
-  });
+  testWidgets(
+    'keyword-guessed custom name follows the guess and can be fixed',
+    (tester) async {
+      await Harness.pump(tester);
+      await openTrain(tester);
+      await tester.enterText(input('搜索或输入动作'), '我的臀中肌外展');
+      await settle(tester);
+      await tester.tap(find.textContaining('使用「'));
+      await settle(tester);
+      // 名字里有“臀”，按关键字猜到臀部动作：部位跟着变成腿，并让用户确认肌肉
+      expect(find.text('腿'), findsWidgets);
+      expect(find.text('主要练哪块肌肉？'), findsOneWidget);
+      await tester.tap(find.text('其他'));
+      await settle(tester);
+      await tester.ensureVisible(find.text('后束肩'));
+      await tester.tap(find.text('后束肩'));
+      await settle(tester);
+      expect(customMuscles['我的臀中肌外展'], 'delt_rear');
+      expect(find.text('肩'), findsWidgets);
+    },
+  );
 
   Future<void> openEquipmentPage(WidgetTester tester, String id) async {
     await openTrain(tester);
@@ -130,36 +131,37 @@ void main() {
     await settle(tester);
   }
 
-  testWidgets('back stack: picker > equipment > logger > back > back > cancel', (
-    tester,
-  ) async {
-    await Harness.pump(tester);
-    await openEquipmentPage(tester, 'leg-press');
-    // 器械详情页：左上返回、没有保存、记录按钮固定在底部
-    expect(find.text('返回'), findsOneWidget);
-    expect(find.text('取消'), findsNothing);
-    expect(find.text('保存'), findsNothing);
-    await tester.tap(find.text('记录这个动作'));
-    await settle(tester);
-    // 记组页：从器械详情进来，左上返回，右上保存
-    expect(find.text('更换'), findsOneWidget);
-    expect(find.text('返回'), findsOneWidget);
-    expect(find.text('保存'), findsOneWidget);
-    await tester.tap(find.text('返回'));
-    await settle(tester);
-    expect(find.byType(EquipmentDetail), findsOneWidget);
-    expect(find.text('保存'), findsNothing);
-    await tester.tap(find.text('返回'));
-    await settle(tester);
-    // 回到选动作页，保持“按器械”模式
-    expect(find.byType(EquipmentDetail), findsNothing);
-    expect(find.text('固定器械'), findsOneWidget);
-    expect(find.text('取消'), findsOneWidget);
-    expect(find.text('返回'), findsNothing);
-    await tester.tap(find.text('取消'));
-    await settle(tester);
-    expect(find.byType(TrainSheet), findsNothing);
-  });
+  testWidgets(
+    'back stack: picker > equipment > logger > back > back > cancel',
+    (tester) async {
+      await Harness.pump(tester);
+      await openEquipmentPage(tester, 'leg-press');
+      // 器械详情页：左上返回、没有保存、记录按钮固定在底部
+      expect(find.text('返回'), findsOneWidget);
+      expect(find.text('取消'), findsNothing);
+      expect(find.text('保存'), findsNothing);
+      await tester.tap(find.text('记录这个动作'));
+      await settle(tester);
+      // 记组页：从器械详情进来，左上返回，右上保存
+      expect(find.text('更换'), findsOneWidget);
+      expect(find.text('返回'), findsOneWidget);
+      expect(find.text('保存'), findsOneWidget);
+      await tester.tap(find.text('返回'));
+      await settle(tester);
+      expect(find.byType(EquipmentDetail), findsOneWidget);
+      expect(find.text('保存'), findsNothing);
+      await tester.tap(find.text('返回'));
+      await settle(tester);
+      // 回到选动作页，保持“按器械”模式
+      expect(find.byType(EquipmentDetail), findsNothing);
+      expect(find.text('固定器械'), findsOneWidget);
+      expect(find.text('取消'), findsOneWidget);
+      expect(find.text('返回'), findsNothing);
+      await tester.tap(find.text('取消'));
+      await settle(tester);
+      expect(find.byType(TrainSheet), findsNothing);
+    },
+  );
 
   testWidgets('system back steps back one level at a time', (tester) async {
     await Harness.pump(tester);

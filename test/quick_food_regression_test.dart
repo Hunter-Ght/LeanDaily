@@ -78,12 +78,9 @@ void main() {
         (f) => f['name'] == '米饭',
       );
       final serving = entryFor(rice, units: 1);
-      expect(
-        find.text(
-          '1 bowl (150 g) · ${fmt(serving['kcal'])} kcal / ${fmt(serving['protein'])} g protein',
-        ),
-        findsWidgets,
-      );
+      expect(find.text('1 bowl (150 g)'), findsWidgets);
+      expect(find.text(fmt(serving['kcal'])), findsWidgets);
+      expect(find.text(fmt(serving['protein'])), findsWidgets);
       expect(h.native.docs['android-state'], before);
       await h.shot(t, 'quick-food-serving-en');
       await t.tap(

@@ -7,6 +7,7 @@ import 'package:leandaily/app/routes.dart' show openQuickFood;
 import 'package:leandaily/app/app_controller.dart';
 import 'package:leandaily/domain/foods.dart';
 import 'package:leandaily/core/native.dart';
+import 'package:leandaily/ui/sheets/food/food_controls.dart';
 import 'package:leandaily/ui/sheets/food/portion_panel.dart';
 import 'package:leandaily/ui/sheets/quick_food_sheet.dart' show QuickFoodSheet;
 import 'package:leandaily/ui/today/today_page.dart';
@@ -57,7 +58,6 @@ void main() {
       await openFood(tester);
       // AI 拍照入口始终在最前面；没配置模型时说明只能存照片。
       expect(find.text('AI拍照识别'), findsOneWidget);
-      expect(find.text('未配置，可存照片'), findsOneWidget);
       await enterFood(tester, '搜索食物', '鸡胸肉');
       FocusManager.instance.primaryFocus?.unfocus();
       await settleFood(tester);
@@ -123,7 +123,9 @@ void main() {
     await tester.tap(
       find.descendant(
         of: find.byType(FoodPortionPanel),
-        matching: find.text('＋'),
+        matching: find.byWidgetPredicate(
+          (w) => w is FoodButton && w.label == '＋',
+        ),
       ),
     );
     await settleFood(tester);
@@ -295,8 +297,7 @@ void main() {
       'baseUrl': 'https://example.invalid',
     });
     await openFood(tester);
-    expect(find.text('未配置，可存照片'), findsNothing);
-    expect(find.text('拍张照自动算'), findsOneWidget);
+    expect(find.text('AI拍照识别'), findsOneWidget);
     await tester.tap(find.text('AI拍照识别'));
     await settleFood(tester);
     expect(find.byType(MealSheet), findsOneWidget);
@@ -315,7 +316,8 @@ void main() {
     // 现在是早上 9 点，默认按早餐推荐。
     expect(find.text('豆浆油条'), findsOneWidget);
     expect(find.text('黄焖鸡米饭'), findsNothing);
-    expect(find.textContaining('1 顿（380 g） · 405 千卡 / 蛋白 15 g'), findsOneWidget);
+    expect(find.text('1 顿（380 g）'), findsOneWidget);
+    expect(find.text('405'), findsOneWidget);
     // 切到午餐，推荐换成午餐常见的整顿饭。
     await tester.tap(find.text('午餐').first);
     await settleFood(tester);

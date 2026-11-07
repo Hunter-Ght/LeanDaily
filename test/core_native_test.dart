@@ -1,4 +1,3 @@
-
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/core/native.dart';
@@ -40,9 +39,7 @@ void main() {
 
   test('全部返回值解码', () async {
     expect(await native.all(), {'a': '中文'});
-    expect((await native.secretsGet()).toMap(), {
-      'modelKey': 'm',
-    });
+    expect((await native.secretsGet()).toMap(), {'modelKey': 'm'});
     expect(await native.photoWrite(bytes), '/photos/a.jpg');
     final photo = await native.photoRead('p');
     expect(photo.bytes, bytes);

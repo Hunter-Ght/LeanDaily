@@ -12,6 +12,7 @@ abstract interface class Native {
   // ---- 密钥（Keystore）----
   Future<Secrets> secretsGet();
   Future<void> secretsSet(Secrets values);
+
   /// 重写当前支持的密钥，丢弃旧版本遗留项。
   Future<void> pruneSecrets();
 
@@ -28,10 +29,14 @@ abstract interface class Native {
   Future<String> importDocument();
 
   // ---- 相机 / 相册 ----
-  Future<List<Uint8List>> pickImages({required PickSource source, required int limit});
+  Future<List<Uint8List>> pickImages({
+    required PickSource source,
+    required int limit,
+  });
 
   // ---- 时区 ----
   Future<({String today, String now})> clock(String tz);
+
   /// 手机当前的时区名（IANA）。
   Future<String> deviceTz();
   Future<int> zonedMs(String tz, String isoDate);
@@ -66,7 +71,11 @@ class Secrets {
 }
 
 class PhotoData {
-  const PhotoData({required this.bytes, required this.size, required this.sha256});
+  const PhotoData({
+    required this.bytes,
+    required this.size,
+    required this.sha256,
+  });
   final Uint8List bytes;
   final int size;
   final String sha256;
@@ -104,7 +113,13 @@ class HttpReply {
 }
 
 class ScheduledNote {
-  const ScheduledNote({required this.id, required this.title, required this.body, required this.atMs, this.plan = false});
+  const ScheduledNote({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.atMs,
+    this.plan = false,
+  });
   final int id;
   final String title;
   final String body;
@@ -127,7 +142,8 @@ class NativeError implements Exception {
 
 /// 内存实现：给单测用。时钟、HTTP 响应、选图结果都可以编排。
 class FakeNative implements Native {
-  FakeNative({DateTime? now, this.tz = 'Asia/Shanghai'}) : _now = now ?? DateTime(2026, 10, 15, 9, 30);
+  FakeNative({DateTime? now, this.tz = 'Asia/Shanghai'})
+    : _now = now ?? DateTime(2026, 10, 15, 9, 30);
 
   final Map<String, String> docs = {};
   Secrets secrets = const Secrets();
@@ -155,7 +171,8 @@ class FakeNative implements Native {
   set now(DateTime v) => _now = v;
 
   final StreamController<NotificationTap> _taps = StreamController.broadcast();
-  void tapNotification({bool plan = true}) => _taps.add(NotificationTap(plan: plan));
+  void tapNotification({bool plan = true}) =>
+      _taps.add(NotificationTap(plan: plan));
 
   @override
   Future<Map<String, String>> all() async => Map.of(docs);
@@ -178,13 +195,16 @@ class FakeNative implements Native {
   Future<void> pruneSecrets() async {
     pruneSecretsCalls++;
   }
+
   @override
   Future<void> secretsSet(Secrets values) async => secrets = values;
 
   @override
   Future<String> photoWrite(Uint8List bytes) async {
-    if (bytes.length < 3 || bytes[0] != 0xff || bytes[1] != 0xd8) throw const NativeError('操作失败：仅支持有效 JPEG 照片');
-    final path = '/fake/photos/${(_photoSeq++).toRadixString(16).padLeft(8, '0')}-0000-4000-8000-000000000000.jpg';
+    if (bytes.length < 3 || bytes[0] != 0xff || bytes[1] != 0xd8)
+      throw const NativeError('操作失败：仅支持有效 JPEG 照片');
+    final path =
+        '/fake/photos/${(_photoSeq++).toRadixString(16).padLeft(8, '0')}-0000-4000-8000-000000000000.jpg';
     photos[path] = bytes;
     return path;
   }
@@ -212,7 +232,8 @@ class FakeNative implements Native {
     httpLog.add(call);
     if (cancelledHttp.remove(call.id)) throw const NativeError('请求已取消');
     final h = onHttp;
-    if (h == null) throw StateError('FakeNative.onHttp 未设置：${call.method} ${call.url}');
+    if (h == null)
+      throw StateError('FakeNative.onHttp 未设置：${call.method} ${call.url}');
     return await h(call);
   }
 
@@ -221,7 +242,8 @@ class FakeNative implements Native {
 
   @override
   Future<void> exportDocument(String data, String name) async {
-    if (exported == null && importData == null && data.isEmpty) throw const NativeError('已取消导出');
+    if (exported == null && importData == null && data.isEmpty)
+      throw const NativeError('已取消导出');
     exported = data;
   }
 
@@ -233,12 +255,18 @@ class FakeNative implements Native {
   }
 
   @override
-  Future<List<Uint8List>> pickImages({required PickSource source, required int limit}) async => pickResult.take(limit).toList();
+  Future<List<Uint8List>> pickImages({
+    required PickSource source,
+    required int limit,
+  }) async => pickResult.take(limit).toList();
 
   @override
   Future<({String today, String now})> clock(String tz) async {
     String p(int n) => n.toString().padLeft(2, '0');
-    return (today: '${_now.year}-${p(_now.month)}-${p(_now.day)}', now: '${p(_now.hour)}:${p(_now.minute)}');
+    return (
+      today: '${_now.year}-${p(_now.month)}-${p(_now.day)}',
+      now: '${p(_now.hour)}:${p(_now.minute)}',
+    );
   }
 
   /// 假时钟的时区换算：把 tz 当作固定的 UTC+8。
@@ -250,7 +278,10 @@ class FakeNative implements Native {
 
   @override
   Future<String> zonedDate(String tz, int ms) async {
-    final d = DateTime.fromMillisecondsSinceEpoch(ms + 8 * 3600000, isUtc: true);
+    final d = DateTime.fromMillisecondsSinceEpoch(
+      ms + 8 * 3600000,
+      isUtc: true,
+    );
     String p(int n) => n.toString().padLeft(2, '0');
     return '${d.year}-${p(d.month)}-${p(d.day)}';
   }
@@ -259,7 +290,8 @@ class FakeNative implements Native {
   Future<String> deviceTz() async => tz;
 
   @override
-  Future<({bool granted, bool exact})> notifyState() async => (granted: notifyGranted, exact: exactGranted);
+  Future<({bool granted, bool exact})> notifyState() async =>
+      (granted: notifyGranted, exact: exactGranted);
   @override
   Future<bool> requestNotify() async => notifyGranted;
   @override
@@ -274,7 +306,8 @@ class FakeNative implements Native {
   }
 
   @override
-  Future<void> cancel(List<int> ids) async => scheduled.removeWhere((n) => ids.contains(n.id));
+  Future<void> cancel(List<int> ids) async =>
+      scheduled.removeWhere((n) => ids.contains(n.id));
   @override
   Future<List<int>> pendingIds() async => [for (final n in scheduled) n.id];
 

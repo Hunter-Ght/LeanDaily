@@ -32,8 +32,9 @@ void main() {
   for (final key in ['reminder', 'venues', 'protein', 'schedule', 'ladders']) {
     testWidgets('计划缺少 $key 时编辑弹层仍能打开', (t) async {
       final h = await SettingsHarness.pump(t);
-      final plan = jsonDecode(jsonEncode(h.controller.plan)) as Map<String, dynamic>
-        ..remove(key);
+      final plan =
+          jsonDecode(jsonEncode(h.controller.plan)) as Map<String, dynamic>
+            ..remove(key);
       h.controller.plan = plan;
       h.open(const PlanEditorSheet());
       await settle(t);
@@ -44,7 +45,8 @@ void main() {
 
   testWidgets('蛋白粉配置缺失时也能打开', (t) async {
     final h = await SettingsHarness.pump(t);
-    final plan = jsonDecode(jsonEncode(h.controller.plan)) as Map<String, dynamic>;
+    final plan =
+        jsonDecode(jsonEncode(h.controller.plan)) as Map<String, dynamic>;
     (plan['protein'] as Map).remove('powder');
     h.controller.plan = plan;
     h.open(const PlanEditorSheet());

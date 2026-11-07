@@ -52,7 +52,10 @@ const MUSCLE_PLAIN = {
 };
 
 /// 动作练哪里：主练（权重 ≥ 0.75，至少一块）与辅助（0.3 ≤ 权重 < 0.75），按权重从高到低。
-({List<String> main, List<String> assist}) muscleRoles(Object? name, [String? part]) {
+({List<String> main, List<String> assist}) muscleRoles(
+  Object? name, [
+  String? part,
+]) {
   final mv = musclesOf(name, part);
   if (mv == null) return (main: const <String>[], assist: const <String>[]);
   final entries = (mv['muscles'] as Map<String, num>).entries.toList()
@@ -70,6 +73,7 @@ const MUSCLE_PLAIN = {
     ],
   );
 }
+
 final GROUP = {for (final g in GROUPS) g['id']!: g};
 const _table = [
   [

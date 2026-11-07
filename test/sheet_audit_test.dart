@@ -110,7 +110,14 @@ void main() {
           await settle(tester);
           expect(find.byType(NutritionSummary), findsOneWidget);
           final summaryContext = tester.element(find.byType(NutritionSummary));
-          final value = tester.widget<Text>(find.textContaining(' 千卡').last);
+          final value = tester.widget<Text>(
+            find
+                .descendant(
+                  of: find.byType(NutritionSummary),
+                  matching: find.byType(Text),
+                )
+                .first,
+          );
           expect(value.style!.color, summaryContext.pal.text);
         }
         if (sheet == 'train') {

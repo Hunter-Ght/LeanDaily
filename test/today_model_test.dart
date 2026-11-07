@@ -17,7 +17,10 @@ void main() {
         File('test/fixtures/full_state.json').readAsStringSync(),
       )['state'],
     );
-    n.docs['fw-plan-v1'] = (jsonDecode(File('test/fixtures/legacy_store.json').readAsStringSync()) as Map)['fw-plan-v1'] as String;
+    n.docs['fw-plan-v1'] =
+        (jsonDecode(File('test/fixtures/legacy_store.json').readAsStringSync())
+                as Map)['fw-plan-v1']
+            as String;
     final app = AppController(native: n, clock: () => now);
     addTearDown(app.dispose);
     await app.boot();

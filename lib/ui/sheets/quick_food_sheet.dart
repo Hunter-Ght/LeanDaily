@@ -16,6 +16,7 @@ import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
+import '../kit/segments.dart';
 import '../kit/sheet.dart';
 import 'food/food_controls.dart';
 import 'food/portion_panel.dart';
@@ -44,10 +45,7 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
   String _mealFilter = '';
   String get _shownMeal => _mealFilter.isEmpty ? _meal : _mealFilter;
   String _name = '', _kcal = '', _protein = '', _carbs = '', _fat = '';
-  bool _more = false,
-      _configured = false,
-      _saving = false,
-      _initialized = false;
+  bool _more = false, _saving = false, _initialized = false;
   late String _date;
 
   @override
@@ -64,7 +62,6 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
     final app = context.app;
     try {
       final clock = await app.native.clock('${app.settings.value['tz']}');
-      final secret = await app.native.secretsGet();
       if (!mounted) return;
       final parts = clock.now.split(':');
       final minutes =
@@ -81,10 +78,6 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               ? '晚餐'
               : '加餐';
         }
-        _configured =
-            secret.modelKey.trim().isNotEmpty &&
-            '${app.settings.value['model'] ?? ''}'.trim().isNotEmpty &&
-            '${app.settings.value['baseUrl'] ?? ''}'.trim().isNotEmpty;
       });
     } on Object catch (e) {
       if (mounted) app.toast.show(AppController.message(e));
@@ -212,15 +205,13 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
     return ranked.take(12).toList();
   }
 
-  Widget _heading(String text) => Padding(
-    padding: const EdgeInsets.only(top: 20, bottom: 8),
-    child: LText(
-      text,
-      style: TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-        color: context.pal.text,
-      ),
+  Widget _heading(String text, {Widget? trailing}) => Padding(
+    padding: const EdgeInsets.only(top: 24, bottom: 6),
+    child: Row(
+      children: [
+        Expanded(child: LText(text, style: AppText.title(context.pal))),
+        ?trailing,
+      ],
     ),
   );
   Map<String, dynamic> get _powder => proteinPowderFood(
@@ -242,14 +233,16 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
   }
 
   Widget _food(Map<String, dynamic> food) {
+    final p = context.pal;
     final serving = entryFor(food, units: 1);
     final portion = food['recent'] == true
         ? '1 份（上次份量）'
         : '1 ${food['unit']}（${fmt(food['gramsPerUnit'])} g）';
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      constraints: const BoxConstraints(minHeight: 64),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: context.pal.sep, width: .5)),
+        border: Border(bottom: BorderSide(color: p.sep, width: .5)),
       ),
       child: Row(
         children: [
@@ -259,16 +252,63 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               children: [
                 LText(
                   '${food['name']}',
-                  style: TextStyle(fontSize: 16, color: context.pal.text),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: p.text,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 LText(
-                  '$portion · ${fmt(serving['kcal'])} 千卡 / 蛋白 ${fmt(serving['protein'])} g',
-                  style: TextStyle(fontSize: 12, color: context.pal.secondary),
+                  portion,
+                  style: TextStyle(fontSize: 13, color: p.secondary),
                 ),
               ],
             ),
           ),
+          const SizedBox(width: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(fmt(serving['kcal']), style: AppText.num(p, 18)),
+                  const SizedBox(width: 3),
+                  LText(
+                    '千卡',
+                    style: TextStyle(fontSize: 12, color: p.secondary),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 5,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: p.protein,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(fmt(serving['protein']), style: AppText.num(p, 15)),
+                  const SizedBox(width: 2),
+                  LText(
+                    'g',
+                    style: TextStyle(fontSize: 12, color: p.secondary),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(width: 10),
           Semantics(
             label: AppMessages.of(context).text('选择 ${food['name']}'),
             button: true,
@@ -279,15 +319,15 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
     );
   }
 
-  /// 记饮食入口的三个并排大按钮：AI 拍照、搜食物、手动输入。
+  /// 记饮食入口的三个并排按钮：AI 拍照、搜食物、手动输入。选中为墨色底。
   Widget _modeTile(
     String icon,
     String label,
-    String caption,
     bool selected,
     VoidCallback onTap,
   ) {
     final p = context.pal;
+    final fg = selected ? p.onPrimary : p.text;
     return Semantics(
       button: true,
       selected: selected,
@@ -295,31 +335,25 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
       child: Pressable(
         onTap: onTap,
         child: Container(
-          constraints: const BoxConstraints(minHeight: 84),
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+          constraints: const BoxConstraints(minHeight: 76),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
           decoration: BoxDecoration(
-            color: selected ? p.tintSoft : p.seg,
-            borderRadius: BorderRadius.circular(16),
+            color: selected ? p.primary : p.fill2,
+            borderRadius: BorderRadius.circular(18),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppIcon(icon, size: 22, color: selected ? p.tint : p.text),
-              const SizedBox(height: 6),
+              AppIcon(icon, size: 22, color: fg),
+              const SizedBox(height: 8),
               LText(
                 label,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: selected ? p.tint : p.text,
+                  color: fg,
                 ),
-              ),
-              const SizedBox(height: 2),
-              LText(
-                caption,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 11, color: p.secondary),
               ),
             ],
           ),
@@ -330,49 +364,6 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
 
   bool get _hasPowder =>
       ((context.app.plan['protein'] as Map?)?['powder'] as Map?) != null;
-
-  Widget _segments(
-    List<String> labels,
-    String value,
-    ValueChanged<String> change,
-  ) => Container(
-    padding: const EdgeInsets.all(3),
-    decoration: BoxDecoration(
-      color: context.pal.seg,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      children: [
-        for (final label in labels)
-          Expanded(
-            child: Semantics(
-              button: true,
-              label: AppMessages.of(context).text(label),
-              selected: label == value,
-              child: Pressable(
-                onTap: () => change(label),
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 44),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: label == value ? context.pal.segOn : null,
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: LText(
-                    label,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: context.pal.text,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-      ],
-    ),
-  );
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
@@ -415,30 +406,13 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  children: [
-                    LText(
-                      '已选 ${_items.length}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: context.pal.secondary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: NutritionSummary(
-                        kcal: total('kcal'),
-                        protein: total('protein'),
-                      ),
-                    ),
-                  ],
-                ),
                 Reveal(
                   visible: _items.isNotEmpty,
                   child: SizedBox(
-                    height: 54,
+                    height: 60,
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
+                      physics: const ClampingScrollPhysics(),
                       child: MotionList(
                         axis: Axis.horizontal,
                         children: [
@@ -446,11 +420,12 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                             Padding(
                               key: ObjectKey(item),
                               padding: const EdgeInsets.only(right: 8),
-                              child: FoodButton(
-                                '${item['name']} × ${item['portion']}  ×',
+                              child: FoodChip(
+                                '${item['name']} × ${item['portion']}',
                                 _saving
                                     ? null
                                     : () => setState(() => _items.remove(item)),
+                                removable: true,
                               ),
                             ),
                         ],
@@ -458,17 +433,42 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                _segments(['早餐', '午餐', '晚餐', '加餐'], _meal, (v) {
-                  if (!_saving) setState(() => _meal = v);
-                }),
-                const SizedBox(height: 10),
-                FoodButton(
-                  _saving ? '记录中…' : '记录',
-                  !_saving && _items.isNotEmpty && _meal.isNotEmpty
-                      ? _save
-                      : null,
-                  primary: true,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LText(
+                            '已选 ${_items.length}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: context.pal.secondary,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          NutritionSummary(
+                            kcal: total('kcal'),
+                            protein: total('protein'),
+                            size: 24,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      width: 116,
+                      child: FoodButton(
+                        _saving ? '记录中…' : '记录',
+                        !_saving && _items.isNotEmpty && _meal.isNotEmpty
+                            ? _save
+                            : null,
+                        primary: true,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -479,43 +479,37 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               Row(
                 children: [
                   Expanded(
-                    child: _modeTile(
-                      'camera',
-                      'AI拍照识别',
-                      _configured ? '拍张照自动算' : '未配置，可存照片',
-                      false,
-                      () {
-                        if (!_saving) _openPhoto();
-                      },
-                    ),
+                    child: _modeTile('camera', 'AI拍照识别', false, () {
+                      if (!_saving) _openPhoto();
+                    }),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _modeTile(
-                      'search',
-                      '搜食物',
-                      '常吃、常见一餐',
-                      _tab == '搜食物',
-                      () {
-                        if (!_saving) setState(() => _tab = '搜食物');
-                      },
-                    ),
+                    child: _modeTile('search', '搜食物', _tab == '搜食物', () {
+                      if (!_saving) setState(() => _tab = '搜食物');
+                    }),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _modeTile(
-                      'edit',
-                      '手动输入',
-                      '自己填营养',
-                      _tab == '手动输入',
-                      () {
-                        if (!_saving) setState(() => _tab = '手动输入');
-                      },
-                    ),
+                    child: _modeTile('edit', '手动输入', _tab == '手动输入', () {
+                      if (!_saving) setState(() => _tab = '手动输入');
+                    }),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              AppSegments(
+                labels: const ['早餐', '午餐', '晚餐', '加餐'],
+                selected: const ['早餐', '午餐', '晚餐', '加餐'].indexOf(_meal),
+                onChanged: (i) {
+                  if (_saving) return;
+                  setState(() {
+                    _meal = const ['早餐', '午餐', '晚餐', '加餐'][i];
+                    _mealFilter = '';
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
               PushSwitcher(
                 child: Column(
                   key: ValueKey('$_tab:${foods == null}'),
@@ -559,13 +553,17 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                                 )
                                 .take(4))
                           _food(food),
-                        _heading('常见一餐'),
-                        _segments(
-                          const ['早餐', '午餐', '晚餐', '加餐', '全部'],
-                          _mealFilter.isEmpty ? _meal : _mealFilter,
-                          (v) => setState(() => _mealFilter = v),
+                        _heading(
+                          '常见一餐',
+                          trailing: FoodChip(
+                            '全部',
+                            () => setState(
+                              () =>
+                                  _mealFilter = _mealFilter == '全部' ? '' : '全部',
+                            ),
+                            selected: _mealFilter == '全部',
+                          ),
                         ),
-                        const SizedBox(height: 4),
                         for (final food in foods.typicalMeals(
                           _shownMeal == '全部' ? _meal : _shownMeal,
                           onlyThisMeal: _shownMeal != '全部',
@@ -597,9 +595,13 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      FoodButton(
-                        _more ? '收起更多' : '更多',
-                        () => setState(() => _more = !_more),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FoodButton(
+                          _more ? '收起更多' : '更多',
+                          () => setState(() => _more = !_more),
+                          link: true,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Reveal(

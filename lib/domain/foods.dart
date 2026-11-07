@@ -62,7 +62,8 @@ class Foods {
         Map<String, dynamic>.unmodifiable({
           'name': name,
           'aliases': List<String>.unmodifiable(aliases.cast<String>()),
-          if (meals != null) 'meals': List<String>.unmodifiable(meals.cast<String>()),
+          if (meals != null)
+            'meals': List<String>.unmodifiable(meals.cast<String>()),
           'category': text('category'),
           'unit': text('unit'),
           'gramsPerUnit': number('gramsPerUnit', positive: true),
