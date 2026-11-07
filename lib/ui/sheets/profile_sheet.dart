@@ -217,9 +217,20 @@ class _ProfileSheetState extends State<ProfileSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const FormHint('还没有个人资料，先评估你的训练与饮食目标。'),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: LText(
+                '还没有个人资料，先评估你的训练与饮食目标。',
+                style: TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: context.pal.secondary,
+                ),
+              ),
+            ),
             FormButton(
               '开始评估',
+              filled: true,
               onTap: () async {
                 await Navigator.of(context, rootNavigator: true).push<void>(
                   PageRouteBuilder<void>(

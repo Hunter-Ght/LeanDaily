@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../domain/plan_insight.dart';
 import '../../domain/templates.dart';
+import '../../l10n/localized_text.dart';
+import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/plan_widgets.dart';
 import '../kit/sheet.dart';
@@ -96,13 +98,13 @@ class _TemplateBrowserSheetState extends State<TemplateBrowserSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const FormLabel('每周几天'),
+        const _Head('每周几天'),
         FormSegments(
           labels: const ['全部', '2', '3', '4', '5+'],
           selected: const [0, 2, 3, 4, 5].indexOf(_days),
           onChanged: (i) => setState(() => _days = const [0, 2, 3, 4, 5][i]),
         ),
-        const FormLabel('场地'),
+        const _Head('场地'),
         FormSegments(
           labels: const ['全部', '在家', '健身房'],
           selected: _place,
@@ -194,6 +196,23 @@ class _TemplateBrowserSheetState extends State<TemplateBrowserSheet> {
                   ],
                 ),
         ),
+      ),
+    ),
+  );
+}
+
+class _Head extends StatelessWidget {
+  const _Head(this.text);
+  final String text;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 18, 4, 8),
+    child: LText(
+      text,
+      style: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+        color: context.pal.text,
       ),
     ),
   );

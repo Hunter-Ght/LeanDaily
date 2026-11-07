@@ -141,7 +141,7 @@ class AboutPageFrame extends StatelessWidget {
                           '‹ 返回',
                           style: TextStyle(
                             fontSize: 17,
-                            color: context.pal.tint,
+                            color: context.pal.text,
                           ),
                         ),
                       ),

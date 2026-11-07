@@ -172,7 +172,7 @@ class _ProfileGoalSliderState extends State<ProfileGoalSlider> {
                     child: Container(
                       height: 6,
                       decoration: BoxDecoration(
-                        color: context.pal.tint,
+                        color: context.pal.primary,
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
@@ -184,7 +184,7 @@ class _ProfileGoalSliderState extends State<ProfileGoalSlider> {
                       height: 26,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: context.pal.tint,
+                        color: context.pal.primary,
                       ),
                     ),
                   ),
