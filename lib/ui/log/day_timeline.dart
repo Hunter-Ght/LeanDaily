@@ -309,47 +309,66 @@ class _Summary extends StatelessWidget {
     num sum(String k) =>
         meals.fold<num>(0, (v, m) => v + f.jsNumber(m[k]).toDouble());
     final protein = sum('protein'), kcal = sum('kcal');
-    Widget tile(String value, Color color, Widget caption) => Expanded(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(14, 14, 10, 12),
-        decoration: BoxDecoration(
-          color: p.card,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text(value, style: AppText.num(p, 28, color: color)),
+    // 窄屏（320 宽）也不折行：数字和“/ 目标”在同一行按需缩小，名称单独一行。
+    Widget tile(String value, String suffix, Color color, String label) =>
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(14, 14, 10, 12),
+            decoration: BoxDecoration(
+              color: p.card,
+              borderRadius: BorderRadius.circular(18),
             ),
-            const SizedBox(height: 6),
-            caption,
-          ],
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: value,
+                          style: AppText.num(p, 28, color: color),
+                        ),
+                        if (suffix.isNotEmpty)
+                          TextSpan(
+                            text: suffix,
+                            style: AppText.num(
+                              p,
+                              15,
+                              weight: FontWeight.w600,
+                              color: p.secondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                    maxLines: 1,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                LText(label, maxLines: 1, style: AppText.hint(p)),
+              ],
+            ),
+          ),
+        );
+    return IntrinsicHeight(
+      child: Row(
+        key: const ValueKey('day-summary-row'),
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tile('$work', '', p.tint, '组 · 训练'),
+          const SizedBox(width: 8),
+          tile(
+            f.fmt(protein.round()),
+            ' / ${f.fmt(app.proteinGoal)} g',
+            p.protein,
+            '蛋白',
+          ),
+          const SizedBox(width: 8),
+          tile(f.fmt(kcal.round()), ' / ${f.fmt(app.kcalGoal)}', p.kcal, '千卡'),
+        ],
       ),
-    );
-    Widget goalCaption(num goal, String unit) => Wrap(
-      spacing: 3,
-      children: [
-        Text('/ ${f.fmt(goal)}', style: AppText.hint(p)),
-        LText(unit, style: AppText.hint(p)),
-      ],
-    );
-    return Row(
-      key: const ValueKey('day-summary-row'),
-      children: [
-        tile('$work', p.tint, LText('组 · 训练', style: AppText.hint(p))),
-        const SizedBox(width: 8),
-        tile(
-          f.fmt(protein.round()),
-          p.protein,
-          goalCaption(app.proteinGoal, 'g 蛋白'),
-        ),
-        const SizedBox(width: 8),
-        tile(f.fmt(kcal.round()), p.kcal, goalCaption(app.kcalGoal, '千卡')),
-      ],
     );
   }
 }
