@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
-import '../../theme/tokens.dart';
 import '../../domain/format.dart';
 
 /// 进度页的区块：区块标题（AppText.title）+ 内容。默认不套卡片，靠留白分组；
