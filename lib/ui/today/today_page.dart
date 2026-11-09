@@ -263,6 +263,9 @@ class _TodayPageState extends State<TodayPage> {
     );
   }
 
+  void openFreeTraining() =>
+      openTrainSheet(context, preset: {'mode': 'recommend'});
+
   Future<void> start(TodayModel m) async {
     if (!m.train || m.complete || _enteringTraining) return;
     _enteringTraining = true;
@@ -435,7 +438,7 @@ class _TodayPageState extends State<TodayPage> {
               if (s['accept'] != null)
                 TodayButton(
                   todayTipWording('${s['acceptLabel']}'),
-                  soft: true,
+                  ink: true,
                   onTap: () => accept(s),
                 ),
               TodayButton(
@@ -444,7 +447,7 @@ class _TodayPageState extends State<TodayPage> {
                     : s['kind'] == 'deload'
                     ? '先不'
                     : '先保持',
-                neutral: true,
+                soft: true,
                 onTap: () async {
                   await app.declineSuggestion(s);
                   app.toast.show(jsTruthy(s['info']) ? '知道了' : '先保持，两周内不再提这一条');
@@ -542,7 +545,6 @@ class _TodayPageState extends State<TodayPage> {
                   key: const ValueKey('training'),
                   model: m,
                   onStart: () => start(m),
-                  onAdjust: adjust,
                 )
               : TodayRestCard(
                   key: const ValueKey('rest'),
@@ -569,10 +571,17 @@ class _TodayPageState extends State<TodayPage> {
             ),
             Reveal(
               visible: tips.length > 1,
-              child: TodayButton(
-                _showSuggestions ? '收起提示' : '还有 ${tips.length - 1} 条提示 ›',
-                onTap: () =>
-                    setState(() => _showSuggestions = !_showSuggestions),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 4),
+                  child: TodayButton(
+                    _showSuggestions ? '收起提示' : '还有 ${tips.length - 1} 条提示 ›',
+                    link: true,
+                    onTap: () =>
+                        setState(() => _showSuggestions = !_showSuggestions),
+                  ),
+                ),
               ),
             ),
           ],
@@ -591,15 +600,19 @@ class _TodayPageState extends State<TodayPage> {
               }
             },
             onWarm: () => patch({'warm': !jsTruthy(m.state['warm'])}),
+            onAdjust: adjust,
+            onFreeTraining: openFreeTraining,
           ),
         ),
-        // 次要入口：不按计划时看现在能练什么，训练日和休息日都显示。
-        Align(
-          key: const ValueKey('free-training'),
-          alignment: Alignment.center,
-          child: TodayButton(
-            '自由练：现在能练什么 ›',
-            onTap: () => openTrainSheet(context, preset: {'mode': 'recommend'}),
+        // 休息日没有动作列表：自由练入口单独成一行。训练日的入口在动作列表下方。
+        Reveal(
+          key: const ValueKey('rest-links'),
+          visible: !m.train,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: TodayLinkCard(
+              children: [TodayFreeTrainingRow(onTap: openFreeTraining)],
+            ),
           ),
         ),
         TodayNutritionStrip(key: const ValueKey('nutrition'), model: m),

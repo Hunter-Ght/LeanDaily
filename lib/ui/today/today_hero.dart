@@ -1,5 +1,3 @@
-import 'package:leandaily/l10n/app_messages.dart';
-
 import '../../l10n/localized_text.dart';
 
 import 'package:flutter/widgets.dart';
@@ -8,7 +6,6 @@ import '../../domain/format.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
-import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import 'today_figure.dart';
 import 'today_model.dart';
@@ -17,14 +14,9 @@ import 'today_widgets.dart';
 
 /// 首页主视觉：大标题 + 三个大数字 + 人体图 + 唯一的橙色主按钮。
 class TodayHero extends StatelessWidget {
-  const TodayHero({
-    super.key,
-    required this.model,
-    required this.onStart,
-    required this.onAdjust,
-  });
+  const TodayHero({super.key, required this.model, required this.onStart});
   final TodayModel model;
-  final VoidCallback onStart, onAdjust;
+  final VoidCallback onStart;
   @override
   Widget build(BuildContext context) {
     final m = model, p = context.pal;
@@ -176,36 +168,20 @@ class TodayHero extends StatelessWidget {
                     ],
             ),
           ),
-          Semantics(
-            button: true,
-            label: AppMessages.of(context).text(adjustmentSummary(m)),
-            child: Pressable(
-              onTap: onAdjust,
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 44),
-                alignment: Alignment.center,
-                child: LText(
-                  adjustmentSummary(m),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: p.secondary,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 }
 
+/// 今天偏离默认的状态：有点累 / 不舒服 / 精简。
+List<String> adjustmentParts(TodayModel m) => [
+  if (m.ready == 'tired') '有点累',
+  if (m.ready == 'bad') '不舒服',
+  if (m.lite) '精简',
+];
+
 String adjustmentSummary(TodayModel m) {
-  final parts = [
-    if (m.ready == 'tired') '有点累',
-    if (m.ready == 'bad') '不舒服',
-    if (m.lite) '精简',
-  ];
+  final parts = adjustmentParts(m);
   return '调整今天的训练${parts.isEmpty ? '' : ' · ${parts.join(' · ')}'} ›';
 }

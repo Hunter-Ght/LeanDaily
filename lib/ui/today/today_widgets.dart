@@ -94,10 +94,18 @@ class TodayButton extends StatelessWidget {
     this.height,
     this.fontSize,
     this.bold = false,
+    this.ink = false,
+    this.link = false,
   });
   final String label;
   final VoidCallback? onTap;
   final bool filled, selected, soft, large, neutral, choice, bold;
+
+  /// 非训练的主操作：墨色底。
+  final bool ink;
+
+  /// 文字链接：正文色加粗（不用灰字）。
+  final bool link;
   final double? height, fontSize;
   @override
   Widget build(BuildContext context) {
@@ -111,13 +119,15 @@ class TodayButton extends StatelessWidget {
         child: Container(
           constraints: BoxConstraints(minHeight: height ?? (large ? 56 : 44)),
           padding: EdgeInsets.symmetric(
-            horizontal: filled || selected || soft || neutral || choice
+            horizontal: filled || selected || soft || neutral || choice || ink
                 ? 14
                 : 0,
           ),
           decoration: BoxDecoration(
             color: filled || selected
                 ? p.tint
+                : ink
+                ? p.primary
                 : soft
                 ? p.fill2
                 : neutral
@@ -144,7 +154,9 @@ class TodayButton extends StatelessWidget {
                 fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
                 color: filled || selected
                     ? p.onTint
-                    : neutral || choice
+                    : ink
+                    ? p.onPrimary
+                    : neutral || choice || link
                     ? p.text
                     : soft
                     ? p.text
@@ -179,9 +191,15 @@ class TodayCard extends StatelessWidget {
 }
 
 class TodayBar extends StatelessWidget {
-  const TodayBar({super.key, required this.value, this.color, this.height = 8});
+  const TodayBar({
+    super.key,
+    required this.value,
+    this.color,
+    this.track,
+    this.height = 8,
+  });
   final double value;
-  final Color? color;
+  final Color? color, track;
   final double height;
   @override
   Widget build(BuildContext context) => ClipRRect(
@@ -189,7 +207,7 @@ class TodayBar extends StatelessWidget {
     child: SizedBox(
       height: height,
       child: ColoredBox(
-        color: context.pal.fill,
+        color: track ?? context.pal.fill,
         child: TweenAnimationBuilder<double>(
           tween: Tween(end: value.clamp(0, 1)),
           duration: Duration(

@@ -42,7 +42,7 @@ void main() {
   });
   testWidgets('empty day reacts to repository changes', (tester) async {
     final h = await Harness.pump(tester, tab: 1, empty: true);
-    expect(find.text('这天还没有记录').hitTestable(), findsOneWidget);
+    expect(find.text('今天练了吗？记一组或记一餐').hitTestable(), findsOneWidget);
     expect(find.bySemanticsLabel('修改 俯卧撑 第 1 组'), findsNothing);
     await h.controller.repo.addSets(
       date: h.controller.today,
@@ -53,7 +53,7 @@ void main() {
       ],
     );
     await tester.pumpAndSettle();
-    expect(find.text('这天还没有记录'), findsNothing);
+    expect(find.text('今天练了吗？记一组或记一餐'), findsNothing);
     expect(find.bySemanticsLabel('修改 俯卧撑 第 1 组'), findsOneWidget);
     expect(
       tester
@@ -65,6 +65,16 @@ void main() {
     await h.controller.repo.flush();
     await tester.pump(const Duration(seconds: 3));
     debugDisableShadows = true;
+  });
+  testWidgets('empty day guides by date: today and past', (tester) async {
+    final h = await Harness.pump(tester, tab: 1, empty: true);
+    expect(find.text('记一组').hitTestable(), findsOneWidget);
+    expect(find.text('记饮食').hitTestable(), findsOneWidget);
+    h.controller.setDate('2026-10-09');
+    await tester.pumpAndSettle();
+    expect(find.text('这天没有记录，可以补记').hitTestable(), findsOneWidget);
+    expect(find.text('记一组').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
   testWidgets('rest bar adds 72 pixels of scroll clearance', (tester) async {
     final h = await Harness.pump(tester, tab: 1);

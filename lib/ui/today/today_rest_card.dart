@@ -100,7 +100,7 @@ class TodayRestCard extends StatelessWidget {
             children: [
               TodayButton('今天想加练', soft: true, onTap: onSwap),
               if (jsTruthy(m.slot['overridden']))
-                TodayButton('恢复原计划', onTap: onRestore),
+                TodayButton('恢复原计划', link: true, onTap: onRestore),
             ],
           ),
         ],

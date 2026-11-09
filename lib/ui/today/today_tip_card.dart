@@ -54,6 +54,12 @@ class TodayTipCard extends StatelessWidget {
     );
 
     final p = context.pal;
+    // 状态用标题前的小圆点表示：提醒注意（疼痛）= 红，建议加量 = 恢复青；不用左侧色条。
+    final dot = warn
+        ? p.err
+        : good
+        ? p.recover
+        : null;
     return Container(
       // 外层的 Reveal/FadeSwitcher 给的是松约束，必须显式撑满，否则卡片缩成内容宽度并居中。
       width: double.infinity,
@@ -62,27 +68,46 @@ class TodayTipCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: p.card,
         borderRadius: BorderRadius.circular(22),
-        border: good || warn
-            ? Border(left: BorderSide(color: warn ? p.err : p.ok, width: 4))
-            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          text(todayTipWording(heading), size: 16, bold: true, color: p.text),
-          const SizedBox(height: 6),
-          text(todayTipWording(body)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (dot != null)
+                Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.only(top: 8, right: 8),
+                  decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+                ),
+              Expanded(
+                child: text(
+                  todayTipWording(heading),
+                  size: 17,
+                  bold: true,
+                  color: p.text,
+                  height: 1.3,
+                ),
+              ),
+            ],
+          ),
+          if (body.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            text(todayTipWording(body)),
+          ],
           Reveal(
             visible: extra != null,
             child: Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: 8),
               child: extra ?? const SizedBox.shrink(),
             ),
           ),
           Reveal(
             visible: actions.isNotEmpty,
             child: Padding(
-              padding: const EdgeInsets.only(top: 6),
+              padding: const EdgeInsets.only(top: 12),
               child: Wrap(spacing: 8, runSpacing: 8, children: actions),
             ),
           ),
