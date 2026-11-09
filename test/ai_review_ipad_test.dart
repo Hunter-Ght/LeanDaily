@@ -10,7 +10,7 @@ import 'package:leandaily/data/ai_consent.dart';
 import 'package:leandaily/l10n/app_messages.dart';
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
-import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 
 import 'meal_sheet_test.dart' show jpeg;
 import 'support/harness.dart';
@@ -107,7 +107,7 @@ void main() {
         expect(sent, 1);
         expect(photoSent, 0);
         expect(h.native.docs[AiConsent.storageKey], isNull);
-        await t.tap(find.text('Save').first);
+        await t.tap(find.text('Save').last);
         await t.pumpAndSettle();
         expect(
           h.controller.settings.value['baseUrl'],
@@ -115,7 +115,7 @@ void main() {
         );
         // Test the migration path too: a previous grant must not bypass the visible prompt.
         await AiConsent(h.native).grant(h.controller.settings.value);
-        SheetController.of(t.element(find.byType(AndroidSettingsSheet)))
+        SheetController.of(t.element(find.byType(AiSettingsSheet)))
             .close();
         await t.pumpAndSettle();
         await t.tap(find.text(messages.text('相册')).first);

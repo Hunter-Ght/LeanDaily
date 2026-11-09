@@ -12,7 +12,7 @@ import 'package:leandaily/data/vision.dart';
 import 'package:leandaily/l10n/app_messages.dart';
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
-import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/ai_consent_sheet.dart';
 import 'package:leandaily/app/routes.dart';
 
@@ -131,7 +131,7 @@ void main() {
       final h = await Harness.pump(t, empty: true, updateUrl: '');
       showAppSheet<void>(
         t.element(find.byType(Navigator).first),
-        (_) => const AndroidSettingsSheet(),
+        (_) => const AiSettingsSheet(),
       );
       await settle(t);
       final provider = find.text('服务商');
@@ -172,7 +172,7 @@ void main() {
     );
     showAppSheet<void>(
       t.element(find.byType(Navigator).first),
-      (_) => const AndroidSettingsSheet(),
+      (_) => const AiSettingsSheet(),
     );
     await settle(t);
     final field = find.descendant(
@@ -223,7 +223,7 @@ void main() {
     );
     showAppSheet<void>(
       t.element(find.byType(Navigator).first),
-      (_) => const AndroidSettingsSheet(),
+      (_) => const AiSettingsSheet(),
     );
     await settle(t);
     final button = find.text('服务商');
@@ -327,7 +327,7 @@ void main() {
       final before = h.native.docs['android-settings'];
       showAppSheet<void>(
         t.element(find.byType(Navigator).first),
-        (_) => const AndroidSettingsSheet(),
+        (_) => const AiSettingsSheet(),
       );
       await settle(t);
       final example = find.text('服务商');

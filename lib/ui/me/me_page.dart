@@ -10,6 +10,7 @@ import '../../config/app_links.dart' as links;
 import '../kit/form.dart';
 import 'about_pages.dart';
 import '../../app/routes.dart';
+import '../../config/ai_provider.dart';
 import '../../theme/theme.dart';
 import '../kit/grouped.dart';
 import '../kit/wordmark.dart';
@@ -126,9 +127,15 @@ class MePage extends StatelessWidget {
                 children: [
                   MeRow(
                     label: '备份与高级',
-                    sub: '备份恢复 · 拍照识别',
+                    sub: '备份、恢复与提醒',
                     icon: 'note',
                     onTap: () => openAndroidSettings(context),
+                  ),
+                  MeRow(
+                    label: 'AI 拍照识别',
+                    icon: 'camera',
+                    value: aiProviderLabel(app.settings.value),
+                    onTap: () => openAiSettings(context),
                   ),
                 ],
               ),

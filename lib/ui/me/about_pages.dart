@@ -14,7 +14,6 @@ import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
 import '../kit/markdown_lite.dart';
-import '../kit/pressable.dart';
 import '../kit/sheet.dart';
 
 class UpdateDot extends StatelessWidget {
@@ -114,65 +113,22 @@ class UpdateDetailsSheet extends StatelessWidget {
   );
 }
 
+/// 关于类页面的统一外壳：和全 App 弹层一样，左「关闭」、中标题。
 class AboutPageFrame extends StatelessWidget {
   const AboutPageFrame({super.key, required this.title, required this.child});
   final String title;
   final Widget child;
   @override
-  Widget build(BuildContext context) => ColoredBox(
-    color: context.pal.bg,
-    child: SafeArea(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 56,
-            child: Row(
-              children: [
-                Semantics(
-                  button: true,
-                  label: AppMessages.of(context).text('返回'),
-                  child: Pressable(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: SizedBox(
-                      width: 72,
-                      height: 48,
-                      child: Center(
-                        child: LText(
-                          '‹ 返回',
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: context.pal.text,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: LText(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: AppText.sect(context.pal),
-                  ),
-                ),
-                const SizedBox(width: 72),
-              ],
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 560),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
-                    child: child,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) => AppSheet(
+    title: title,
+    cancelLabel: '关闭',
+    child: Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 560),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 36),
+          child: child,
+        ),
       ),
     ),
   );

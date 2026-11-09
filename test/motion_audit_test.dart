@@ -115,7 +115,7 @@ void main() {
       tester,
     ) async {
       final h = await Harness.pump(tester, dark: dark);
-      openAndroidSettings(tester.element(find.byType(PageHost)));
+      openAiSettings(tester.element(find.byType(PageHost)));
       await tester.pumpAndSettle();
       await h.shot(tester, 'motion-advanced-${dark ? 'dark' : 'light'}');
       final address = find.descendant(

@@ -21,6 +21,7 @@ import '../kit/sheet.dart';
 import '../today/workout_title.dart';
 import 'settings/exercise_editor.dart';
 import 'settings/plan_library_section.dart';
+import 'settings/week_schedule_row.dart';
 
 class PlanEditorSheet extends StatefulWidget {
   const PlanEditorSheet({super.key});
@@ -398,47 +399,34 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
             GroupCard(
               children: [
                 for (final day in [1, 2, 3, 4, 5, 6, 0])
-                  GroupRow(
-                    label: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'][day],
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FormChoice(
-                          label:
-                              '${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][day]}安排',
-                          value: '${schedule['$day'] ?? ''}',
-                          options: {
-                            '': '休息',
-                            for (final id in _order)
-                              '$id': workoutTitle('${_workouts[id]['name']}'),
-                          },
-                          width: 125,
-                          onChanged: (v) => setState(() {
-                            if (v.isEmpty) {
-                              schedule.remove('$day');
-                            } else {
-                              schedule['$day'] = v;
-                            }
-                          }),
-                        ),
-                        if (schedule['$day'] != null &&
-                            _workouts[schedule['$day']]?['gym'] is Map)
-                          FormChoice(
-                            label:
-                                '${['周日', '周一', '周二', '周三', '周四', '周五', '周六'][day]}默认场地',
-                            value: venues['$day'] == 'gym' ? 'gym' : 'home',
-                            width: 102,
-                            options: const {'home': '居家', 'gym': '健身房'},
-                            onChanged: (v) => setState(() {
-                              if (v == 'gym') {
-                                venues['$day'] = v;
-                              } else {
-                                venues.remove('$day');
-                              }
-                            }),
-                          ),
-                      ],
-                    ),
+                  WeekScheduleRow(
+                    key: ValueKey('schedule-day-$day'),
+                    day: day,
+                    workout: '${schedule['$day'] ?? ''}',
+                    workoutOptions: {
+                      '': '休息',
+                      for (final id in _order)
+                        '$id': workoutTitle('${_workouts[id]['name']}'),
+                    },
+                    onWorkout: (v) => setState(() {
+                      if (v.isEmpty) {
+                        schedule.remove('$day');
+                      } else {
+                        schedule['$day'] = v;
+                      }
+                    }),
+                    venue:
+                        schedule['$day'] != null &&
+                            _workouts[schedule['$day']]?['gym'] is Map
+                        ? (venues['$day'] == 'gym' ? 'gym' : 'home')
+                        : null,
+                    onVenue: (v) => setState(() {
+                      if (v == 'gym') {
+                        venues['$day'] = v;
+                      } else {
+                        venues.remove('$day');
+                      }
+                    }),
                   ),
               ],
             ),

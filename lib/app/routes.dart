@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../ui/me/about_pages.dart';
 import '../ui/kit/sheet.dart';
+import '../ui/sheets/ai_settings_sheet.dart';
 import '../ui/sheets/alternatives_sheet.dart';
 import '../ui/sheets/android_settings_sheet.dart';
 import '../ui/sheets/edit_set_sheet.dart';
@@ -38,6 +39,10 @@ Future<void> openGoals(BuildContext context) =>
     showAppSheet<void>(context, (_) => const GoalsSheet());
 Future<void> openAndroidSettings(BuildContext context) =>
     showAppSheet<void>(context, (_) => const AndroidSettingsSheet());
+
+/// AI 拍照识别设置（服务商、接口、API Key）。
+Future<void> openAiSettings(BuildContext context) =>
+    showAppSheet<void>(context, (_) => const AiSettingsSheet());
 Future<void> openPlanEditor(BuildContext context) =>
     showAppSheet<void>(context, (_) => const PlanEditorSheet());
 
@@ -90,26 +95,12 @@ Future<void> openOnboarding(BuildContext context, {bool upgrade = false}) =>
       ),
     );
 
-Future<void> _openAboutPage(BuildContext context, Widget page) =>
-    Navigator.of(context, rootNavigator: true).push<void>(
-      PageRouteBuilder<void>(
-        pageBuilder: (_, _, _) => page,
-        transitionDuration: Duration(
-          milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 280,
-        ),
-        reverseTransitionDuration: Duration(
-          milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 220,
-        ),
-        transitionsBuilder: (_, animation, _, child) =>
-            FadeTransition(opacity: animation, child: child),
-      ),
-    );
 Future<void> openPrivacy(BuildContext context) =>
-    _openAboutPage(context, const PrivacyPage());
+    showAppSheet<void>(context, (_) => const PrivacyPage());
 Future<void> openCredits(BuildContext context) =>
-    _openAboutPage(context, const CreditsPage());
+    showAppSheet<void>(context, (_) => const CreditsPage());
 Future<void> openOpenSourceLicenses(BuildContext context) =>
-    _openAboutPage(context, const OpenSourceLicensesPage());
+    showAppSheet<void>(context, (_) => const OpenSourceLicensesPage());
 Future<void> openUpdateDetails(BuildContext context) async {
   final app = context.app;
   final info = app.updateInfo;

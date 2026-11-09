@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/plan_editor_sheet.dart';
 import 'package:leandaily/ui/kit/form.dart';
@@ -13,10 +14,10 @@ void main() {
   setUpAll(SettingsHarness.setUpAll);
   for (final dark in [false, true]) {
     final scheme = dark ? 'dark' : 'light';
-    testWidgets('android settings $scheme', (t) async {
+    testWidgets('ai settings $scheme', (t) async {
       final h = await SettingsHarness.pump(t, dark: dark);
-      h.open(const AndroidSettingsSheet()); await settle(t);
-      await h.shot(t, 'sheet-android-$scheme'); debugDisableShadows = true;
+      h.open(const AiSettingsSheet()); await settle(t);
+      await h.shot(t, 'sheet-ai-$scheme'); debugDisableShadows = true;
       await t.enterText(input('接口地址'), 'https://example.test/v1');
       await t.enterText(input('模型名称'), 'vision-test');
       await t.enterText(input('API Key'), 'local-test-key');
@@ -39,13 +40,18 @@ void main() {
       await t.pump(const Duration(seconds: 3));
     });
   }
-  testWidgets('settings validation, permissions, export and restore', (t) async {
+  testWidgets('ai settings validation', (t) async {
     final h = await SettingsHarness.pump(t, empty: true); debugDisableShadows = true;
-    h.open(const AndroidSettingsSheet()); await settle(t);
+    h.open(const AiSettingsSheet()); await settle(t);
     await t.enterText(input('接口地址'), 'http://example.test');
     await t.tap(find.text('保存').first); await settle(t);
     expect(find.text('模型接口必须使用 HTTPS'), findsOneWidget);
-    await t.enterText(input('接口地址'), '');
+    await t.pump(const Duration(seconds: 3));
+  });
+  testWidgets('backup settings: permissions, export and restore', (t) async {
+    final h = await SettingsHarness.pump(t, empty: true); debugDisableShadows = true;
+    h.open(const AndroidSettingsSheet()); await settle(t);
+    expect(find.text('保存'), findsNothing);
     h.native.notifyGranted = false;
     await reveal(t, find.text('锁屏休息提醒')); await t.tap(find.text('锁屏休息提醒')); await settle(t);
     expect(find.text('通知权限未开启，将仅显示页面倒计时'), findsOneWidget);
@@ -67,7 +73,7 @@ void main() {
   testWidgets('plan reset is a draft until saved and venue choices persist', (t) async {
     final h = await SettingsHarness.pump(t, size: const Size(393, 1700)); debugDisableShadows = true;
     h.open(const PlanEditorSheet()); await settle(t);
-    await t.tap(find.byWidgetPredicate((w) => w is FormChoice && w.label == '周一默认场地')); await settle(t);
+    await t.tap(find.byKey(const ValueKey('schedule-venue-1'))); await settle(t);
     await t.tap(find.text('健身房').last); await settle(t);
     await t.tap(find.text('保存').first); await settle(t);
     expect(h.controller.plan['venues']['1'], 'gym');

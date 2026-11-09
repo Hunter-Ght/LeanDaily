@@ -9,6 +9,7 @@ import 'package:leandaily/config/app_links.dart' as links;
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/kit/grouped.dart';
 import 'package:leandaily/ui/kit/markdown_lite.dart';
+import 'package:leandaily/ui/kit/sheet.dart';
 import 'package:leandaily/ui/me/about_pages.dart';
 import 'package:leandaily/ui/me/me_page.dart';
 
@@ -97,7 +98,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.textContaining('只有你选择拍摄饮食照片时'), findsOneWidget);
       await h.shot(tester, 'r-privacy-table-$mode');
-      await tapVisible(tester, '‹ 返回');
+      await tapVisible(tester, '关闭');
       await tapVisible(tester, '开源与致谢');
       expect(find.text('Quaternius'), findsOneWidget);
       expect(find.text('得意黑'), findsOneWidget);
@@ -129,11 +130,9 @@ void main() {
   });
   testWidgets('在线查看配置与 Markdown 段落/列表/粗体/代码/表格', (tester) async {
     final h = await Harness.pump(tester, tab: 3);
-    Navigator.of(tester.element(find.byType(MePage)), rootNavigator: true).push(
-      PageRouteBuilder<void>(
-        pageBuilder: (_, _, _) =>
-            const PrivacyPage(onlineUrl: 'https://example.test/privacy'),
-      ),
+    showAppSheet<void>(
+      tester.element(find.byType(MePage)),
+      (_) => const PrivacyPage(onlineUrl: 'https://example.test/privacy'),
     );
     await tester.pumpAndSettle();
     await tester.runAsync(() async {

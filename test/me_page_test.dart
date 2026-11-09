@@ -9,6 +9,7 @@ import 'package:leandaily/ui/sheets/profile_sheet.dart';
 import 'package:leandaily/ui/sheets/plan_editor_sheet.dart';
 import 'package:leandaily/ui/sheets/template_browser_sheet.dart';
 import 'package:leandaily/ui/sheets/goals_sheet.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
 
 import 'support/harness.dart';
@@ -52,6 +53,7 @@ void main() {
     ('每日目标与休息', GoalsSheet),
     ('提醒', PlanEditorSheet),
     ('备份与高级', AndroidSettingsSheet),
+    ('AI 拍照识别', AiSettingsSheet),
   ]) {
     testWidgets('me opens ${row.$1}', (tester) async {
       await Harness.pump(tester, tab: 3);
@@ -66,7 +68,9 @@ void main() {
     tester,
   ) async {
     await Harness.pump(tester, tab: 3);
-    expect(find.text('备份恢复 · 拍照识别'), findsOneWidget);
+    expect(find.text('备份、恢复与提醒'), findsOneWidget);
+    expect(find.text('AI 拍照识别'), findsOneWidget);
+    expect(find.text('未设置'), findsOneWidget);
     expect(find.text('立即同步'), findsNothing);
     await tester.ensureVisible(find.text('开始评估'));
     await tester.tap(find.text('开始评估'));

@@ -6,6 +6,7 @@ import 'package:leandaily/domain/body.dart';
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/kit/number_field.dart';
 import 'package:leandaily/ui/sheets/profile_sheet.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/goals_sheet.dart';
 import 'package:leandaily/ui/sheets/settings/profile_controls.dart';
@@ -194,7 +195,7 @@ void main() {
   });
   for (final dark in [false, true]) {
     testWidgets(
-      'advanced ${dark ? 'dark' : 'light'} keeps backup and model settings accessible',
+      'advanced ${dark ? 'dark' : 'light'} keeps backup and settings accessible, AI settings are separate',
       (t) async {
         final h = await SettingsHarness.pump(
           t,
@@ -207,8 +208,15 @@ void main() {
         expect(find.text('备份与高级'), findsOneWidget);
         expect(
           t.getTopLeft(find.text('备份与恢复')).dy,
-          lessThan(t.getTopLeft(find.text('拍照识别（AI）')).dy),
+          lessThan(t.getTopLeft(find.text('触感与提醒')).dy),
         );
+        expect(find.text('拍照识别（AI）'), findsNothing);
+        expect(find.text('API Key'), findsNothing);
+        await t.tap(find.text('关闭').first);
+        await settle(t);
+        h.open(const AiSettingsSheet());
+        await settle(t);
+        expect(find.text('API Key'), findsOneWidget);
         await t.tap(find.text('保存').first);
         await settle(t);
         expect(
@@ -264,13 +272,16 @@ void main() {
     t,
   ) async {
     final h = await SettingsHarness.pump(t, empty: true);
-    h.open(const AndroidSettingsSheet());
+    h.open(const AiSettingsSheet());
     await settle(t);
     await t.enterText(input('接口地址'), 'http://example.test');
     await t.tap(find.text('保存').first);
     await settle(t);
     expect(find.text('模型接口必须使用 HTTPS'), findsOneWidget);
-    await t.enterText(input('接口地址'), '');
+    await t.tap(find.text('取消').first);
+    await settle(t);
+    h.open(const AndroidSettingsSheet());
+    await settle(t);
     h.native.notifyGranted = false;
     await reveal(t, find.text('锁屏休息提醒'));
     await t.tap(find.text('锁屏休息提醒'));

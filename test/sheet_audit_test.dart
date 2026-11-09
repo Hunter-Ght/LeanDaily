@@ -7,6 +7,7 @@ import 'package:leandaily/domain/guide.dart';
 import 'package:leandaily/theme/theme.dart';
 import 'package:leandaily/ui/kit/grouped.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
+import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/edit_set_sheet.dart';
 import 'package:leandaily/ui/sheets/food/nutrition_summary.dart';
@@ -34,6 +35,7 @@ void main() {
       'editset',
       'plan',
       'advanced',
+      'ai',
       'guide',
     ]) {
       testWidgets('sheet $sheet $scheme at 393×852', (tester) async {
@@ -85,6 +87,8 @@ void main() {
             content = const PlanEditorSheet();
           case 'advanced':
             content = const AndroidSettingsSheet();
+          case 'ai':
+            content = const AiSettingsSheet();
           default:
             final guide = guideFor({'name': '高位俯卧撑'})!;
             await tester.runAsync(() async {
@@ -131,7 +135,7 @@ void main() {
             greaterThanOrEqualTo(44),
           );
         }
-        if (sheet == 'advanced' || sheet == 'plan') {
+        if (sheet == 'advanced' || sheet == 'ai' || sheet == 'plan') {
           expect(find.byType(GroupCard), findsWidgets);
           expect(find.byType(GroupRow), findsWidgets);
         }

@@ -16,7 +16,7 @@ import '../../core/native.dart';
 import '../../data/ai_consent.dart';
 import '../../config/ai_provider.dart';
 import 'ai_consent_sheet.dart';
-import 'android_settings_sheet.dart';
+import 'ai_settings_sheet.dart';
 import '../../domain/records.dart' as records;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
@@ -293,7 +293,7 @@ class _MealSheetState extends State<MealSheet> {
   }
 
   Future<void> _configureAi() async {
-    await showAppSheet<void>(context, (_) => const AndroidSettingsSheet());
+    await showAppSheet<void>(context, (_) => const AiSettingsSheet());
     if (!mounted) return;
     final secrets = await _app.settings.secrets();
     if (!mounted) return;
