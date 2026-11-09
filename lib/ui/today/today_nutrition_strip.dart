@@ -142,6 +142,8 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
     final frequent = recent
         .where((f) => powder.isEmpty || !isProteinPowder(f['name']))
         .take(powder.isEmpty ? 3 : 2);
+    final hasGoal = app.profile != null;
+    // 蛋白、热量两项并排：小标签 + 大数字 + 「/ 目标」小字；有资料时下面再加一条进度。
     Widget metric(
       String label,
       num value,
@@ -150,48 +152,80 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
       Color color,
     ) => Expanded(
       child: Padding(
-        padding: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.only(right: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            LText(
-              label,
-              style: TextStyle(fontSize: 13, height: 1.3, color: p.secondary),
-            ),
-            LText.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: fmt(value), style: AppText.num(p, 22)),
-                  TextSpan(
-                    text: ' / ${fmt(goal)} $unit',
-                    style: TextStyle(fontSize: 13, color: p.secondary),
+            Row(
+              children: [
+                LText(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.3,
+                    fontWeight: FontWeight.w600,
+                    color: p.secondary,
                   ),
-                ],
+                ),
+                const Spacer(),
+                Reveal(
+                  visible: hasGoal && value > goal && goal > 0,
+                  child: LText(
+                    '超出 ${fmt(value - goal)}',
+                    style: TextStyle(fontSize: 12, color: p.secondary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: LText.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: fmt(value), style: AppText.num(p, 28)),
+                    if (hasGoal)
+                      TextSpan(
+                        text: ' / ${fmt(goal)} $unit',
+                        style: TextStyle(fontSize: 13, color: p.secondary),
+                      )
+                    else ...[
+                      TextSpan(
+                        text: ' ',
+                        style: TextStyle(fontSize: 13, color: p.secondary),
+                      ),
+                      TextSpan(
+                        text: unit,
+                        style: TextStyle(fontSize: 13, color: p.secondary),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
             Reveal(
-              visible: value > goal && goal > 0,
-              child: LText(
-                '超出 ${fmt(value - goal)}',
-                style: TextStyle(fontSize: 12, color: p.secondary),
-              ),
-            ),
-            const SizedBox(height: 6),
-            AnimatedBuilder(
-              animation: _pulse,
-              builder: (context, _) => TodayBar(
-                height: 6,
-                value: goal > 0 ? (value / goal).clamp(0, 1).toDouble() : 0,
-                color:
-                    _pulsing.contains(label == '蛋白' ? 'protein' : 'kcal') &&
-                        !MediaQuery.disableAnimationsOf(context)
-                    ? Color.lerp(
-                        color,
-                        p.text,
-                        .25 * (1 - (2 * _pulse.value - 1).abs()),
-                      )!
-                    : color,
+              visible: hasGoal,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: AnimatedBuilder(
+                  animation: _pulse,
+                  builder: (context, _) => TodayBar(
+                    height: 6,
+                    track: p.fill2,
+                    value: goal > 0 ? (value / goal).clamp(0, 1).toDouble() : 0,
+                    color:
+                        _pulsing.contains(label == '蛋白' ? 'protein' : 'kcal') &&
+                            !MediaQuery.disableAnimationsOf(context)
+                        ? Color.lerp(
+                            color,
+                            p.text,
+                            .25 * (1 - (2 * _pulse.value - 1).abs()),
+                          )!
+                        : color,
+                  ),
+                ),
               ),
             ),
           ],
@@ -220,40 +254,18 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Reveal(
-                              visible: app.profile == null,
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: LText(
-                                  '已吃 ${fmt(kcal)} 千卡 · 蛋白 ${fmt(protein)} g',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: p.text,
-                                  ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                metric(
+                                  '蛋白',
+                                  protein,
+                                  app.proteinGoal,
+                                  'g',
+                                  p.protein,
                                 ),
-                              ),
-                            ),
-                            Reveal(
-                              visible: app.profile != null,
-                              child: Row(
-                                children: [
-                                  metric(
-                                    '蛋白',
-                                    protein,
-                                    app.proteinGoal,
-                                    'g',
-                                    p.protein,
-                                  ),
-                                  metric(
-                                    '热量',
-                                    kcal,
-                                    app.kcalGoal,
-                                    '千卡',
-                                    p.kcal,
-                                  ),
-                                ],
-                              ),
+                                metric('热量', kcal, app.kcalGoal, '千卡', p.kcal),
+                              ],
                             ),
                           ],
                         ),
@@ -375,15 +387,19 @@ class _TodayNutritionStripState extends State<TodayNutritionStrip>
                         style: TextStyle(fontSize: 13, color: p.secondary),
                       ),
                     ),
+                    const SizedBox(height: 8),
                     Wrap(
-                      spacing: 20,
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
                         TodayButton(
                           '记饮食',
+                          soft: true,
                           onTap: () => openQuickFood(context, date: m.iso),
                         ),
                         TodayButton(
                           'AI拍照记录',
+                          soft: true,
                           onTap: () {
                             app.setDate(m.iso);
                             openMealSheet(context);

@@ -16,6 +16,7 @@ import '../kit/menu.dart';
 import '../kit/photo_image.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
+import '../sheets/train/controls.dart' show SheetButton;
 import 'set_display.dart';
 
 /// 一天的记录：当天小结 + 按时间排序的时间线（训练块与饮食块混排）。
@@ -379,44 +380,61 @@ class _Empty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.pal;
-    Widget pill(String label, VoidCallback onTap) => _tap(
-      context,
-      label,
-      onTap,
-      Container(
-        constraints: const BoxConstraints(minHeight: 44),
-        padding: const EdgeInsets.symmetric(horizontal: 18),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: p.fill2,
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: LText(
-          label,
-          style: AppText.body(p).copyWith(fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
+    final p = context.pal, app = context.app;
+    final today = iso == app.today, future = iso.compareTo(app.today) > 0;
+    // 未来的日子还没有可记的：只说明一句，不引导补记。
+    final message = today
+        ? '今天练了吗？记一组或记一餐'
+        : future
+        ? '这天还没到'
+        : '这天没有记录，可以补记';
+    // 矮屏（320×640 一类）缩小人体图，让两个入口不必滚动就能看到。
+    final short = MediaQuery.sizeOf(context).height < 700;
+    final figureHeight = short ? 76.0 : 110.0;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 28),
+      padding: EdgeInsets.fromLTRB(8, short ? 8 : 24, 8, 28),
       child: Column(
         children: [
+          // 全中性的人体：还没有任何发力部位。
+          SizedBox(
+            width: figureHeight * 1.2,
+            height: figureHeight,
+            child: BodyFigure(height: figureHeight),
+          ),
+          SizedBox(height: short ? 8 : 14),
           LText(
-            '这天还没有记录',
+            message,
             textAlign: TextAlign.center,
-            style: AppText.hint(p).copyWith(fontSize: 15),
+            style: AppText.body(p).copyWith(fontSize: 16, height: 1.4),
           ),
-          const SizedBox(height: 14),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children: [
-              pill('记一组', () => openTrainSheet(context)),
-              pill('记饮食', () => openQuickFood(context, date: iso)),
-            ],
-          ),
+          if (!future) ...[
+            const SizedBox(height: 18),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 340),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: SheetButton(
+                        '记一组',
+                        () => openTrainSheet(context),
+                        primary: true,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SheetButton(
+                        '记饮食',
+                        () => openQuickFood(context, date: iso),
+                        soft: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -532,44 +550,67 @@ class _TrainingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: 64,
-                  height: 76,
-                  child: BodyFigure(height: 76, tones: tones()),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Wrap(
-                        spacing: 4,
-                        crossAxisAlignment: WrapCrossAlignment.center,
+            // 人体图放大到看得清练了哪里：两面各占约 0.6 倍高度的宽度，比例不被压扁。
+            LayoutBuilder(
+              builder: (context, box) {
+                final figureHeight = box.maxWidth >= 300 ? 112.0 : 92.0;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          for (final (i, part) in parts.indexed) ...[
-                            if (i > 0) Text('·', style: AppText.title(p)),
-                            LText(part, style: AppText.title(p)),
-                          ],
-                          LText('训练', style: AppText.title(p)),
+                          Wrap(
+                            spacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              for (final (i, part) in parts.indexed) ...[
+                                if (i > 0) Text('·', style: AppText.title(p)),
+                                LText(part, style: AppText.title(p)),
+                              ],
+                              LText('训练', style: AppText.title(p)),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 4,
+                            children: [
+                              _stat(
+                                context,
+                                '${groups.length}',
+                                '个动作',
+                                size: 16,
+                              ),
+                              _stat(context, '$work', '组', size: 16),
+                              if (minutes > 0)
+                                _stat(context, '$minutes', '分钟', size: 16),
+                            ],
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 12,
-                        runSpacing: 4,
-                        children: [
-                          _stat(context, '${groups.length}', '个动作', size: 16),
-                          _stat(context, '$work', '组', size: 16),
-                          if (minutes > 0)
-                            _stat(context, '$minutes', '分钟', size: 16),
-                        ],
+                    ),
+                    const SizedBox(width: 8),
+                    // 垫一块页面底色的圆角底：白卡上中性的肌肉才看得出轮廓，发力部位更突出。
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 6,
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                      decoration: BoxDecoration(
+                        color: p.bg,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: SizedBox(
+                        width: figureHeight * 1.2,
+                        height: figureHeight,
+                        child: BodyFigure(height: figureHeight, tones: tones()),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 8),
             MotionList(

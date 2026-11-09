@@ -111,7 +111,7 @@ void main() {
     final originalSets = jsonRows(
       h.controller.repo.day(h.controller.today)['sets'],
     ).length;
-    await tapVisible(tester, find.text('调整今天的训练 ›'));
+    await tapVisible(tester, find.bySemanticsLabel('调整今天的训练 ›'));
     final segments = find.byType(AppSegments);
     final group = find.byType(GroupCard).last;
     final groupBox = find
@@ -137,7 +137,7 @@ void main() {
     expect(h.controller.dayStates[h.controller.today]['ready'], 'bad');
     await tester.tap(find.text('取消'));
     await settle(tester);
-    expect(find.text('调整今天的训练 · 不舒服 · 精简 ›'), findsOneWidget);
+    expect(find.bySemanticsLabel('调整今天的训练 · 不舒服 · 精简 ›'), findsOneWidget);
     await tapVisible(tester, find.text('今天休息'));
     expect(TodayModel(h.controller).train, isFalse);
     await tapVisible(tester, find.text('恢复原计划'));
@@ -277,9 +277,9 @@ void main() {
     );
     expect(h.controller.dayStates[m.iso]['warm'], isTrue);
     expect(find.text(rules.join('\n')), findsNothing);
-    await tapVisible(tester, find.text('今天要记住的 ${rules.length} 点 ›'));
+    await tapVisible(tester, find.text('今天要记住的 ${rules.length} 点'));
     expect(find.text(rules.join('\n')), findsOneWidget);
-    await tapVisible(tester, find.text('今天要记住的 ${rules.length} 点 ›'));
+    await tapVisible(tester, find.text('今天要记住的 ${rules.length} 点'));
     expect(find.text(rules.join('\n')), findsNothing);
   });
 
@@ -372,7 +372,7 @@ void main() {
           await settle(tester);
         }
         if (scenario == 'adjust') {
-          await tapVisible(tester, find.text('调整今天的训练 ›'));
+          await tapVisible(tester, find.bySemanticsLabel('调整今天的训练 ›'));
         }
         await loadExerciseImages(tester);
         await h.shot(tester, 'r-today-$scenario-$scheme');

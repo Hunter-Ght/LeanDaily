@@ -52,7 +52,10 @@ void main() {
       ],
     );
     await settleFour(tester);
-    expect(find.text('已吃 140 千卡 · 蛋白 12 g'), findsOneWidget);
+    // 没有资料：只显示摄入的两个数字，没有目标和进度条。
+    expect(find.text('140 千卡', findRichText: true), findsOneWidget);
+    expect(find.text('12 g', findRichText: true), findsOneWidget);
+    expect(find.byType(TodayBar), findsNothing);
     expect(find.text('常吃'), findsNothing);
     await tester.tap(find.bySemanticsLabel(RegExp('展开营养条带')));
     await settleFour(tester);

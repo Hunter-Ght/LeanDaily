@@ -8,10 +8,11 @@ import '../../domain/format.dart';
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/exercise_thumb.dart';
+import '../kit/grouped.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
+import 'today_hero.dart';
 import 'today_model.dart';
-import 'today_widgets.dart';
 
 /// 今日动作：缩略图 + 名称 + 右侧大号「组×次」。
 class TodayActions extends StatefulWidget {
@@ -20,10 +21,12 @@ class TodayActions extends StatefulWidget {
     required this.model,
     required this.onOpen,
     required this.onWarm,
+    required this.onAdjust,
+    required this.onFreeTraining,
   });
   final TodayModel model;
   final ValueChanged<Map<String, dynamic>> onOpen;
-  final VoidCallback onWarm;
+  final VoidCallback onWarm, onAdjust, onFreeTraining;
   @override
   State<TodayActions> createState() => _TodayActionsState();
 }
@@ -47,10 +50,7 @@ class _TodayActionsState extends State<TodayActions> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: LText('今日动作', style: AppText.title(p)),
-          ),
+          _Header(model: m, onAdjust: widget.onAdjust),
           Semantics(
             button: true,
             label: AppMessages.of(context)
@@ -256,20 +256,43 @@ class _TodayActionsState extends State<TodayActions> {
               },
             ),
           ],
-          if (rules.isNotEmpty)
-            TodayButton(
-              '今天要记住的 ${rules.length} 点 ›',
-              onTap: () => setState(() => rulesOpen = !rulesOpen),
-            ),
-          Reveal(
-            visible: rulesOpen,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: LText(
-                rules.join('\n'),
-                style: TextStyle(fontSize: 13, height: 1.6, color: p.secondary),
-              ),
-            ),
+          const SizedBox(height: 12),
+          TodayLinkCard(
+            children: [
+              if (rules.isNotEmpty)
+                Column(
+                  children: [
+                    GroupRow(
+                      label: '今天要记住的 ${rules.length} 点',
+                      icon: 'note',
+                      onTap: () => setState(() => rulesOpen = !rulesOpen),
+                      chevron: false,
+                      trailing: _ExpandArrow(
+                        open: rulesOpen,
+                        onTap: () => setState(() => rulesOpen = !rulesOpen),
+                      ),
+                    ),
+                    Reveal(
+                      visible: rulesOpen,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(58, 0, 16, 14),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: LText(
+                            rules.join('\n'),
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.6,
+                              color: p.secondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              TodayFreeTrainingRow(onTap: widget.onFreeTraining),
+            ],
           ),
         ],
       ),
@@ -288,4 +311,120 @@ class _StatusFade extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           child: child,
         );
+}
+
+/// 「今日动作」标题；右侧是「调整」入口，当前状态（有点累 / 精简）用小标签标出。
+class _Header extends StatelessWidget {
+  const _Header({required this.model, required this.onAdjust});
+  final TodayModel model;
+  final VoidCallback onAdjust;
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          LText('今日动作', style: AppText.title(p)),
+          Semantics(
+            button: true,
+            excludeSemantics: true,
+            label: AppMessages.of(context).text(adjustmentSummary(model)),
+            child: Pressable(
+              onTap: onAdjust,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (final part in adjustmentParts(model)) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: p.fill2,
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: LText(
+                          part,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: p.secondary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    LText(
+                      '调整',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: p.text,
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    AppIcon('right', size: 14, color: p.text),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExpandArrow extends StatelessWidget {
+  const _ExpandArrow({required this.open, required this.onTap});
+  final bool open;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: Pressable(
+      onTap: onTap,
+      child: SizedBox(
+        width: 40,
+        height: 44,
+        child: Center(
+          child: AnimatedRotation(
+            turns: open ? .25 : 0,
+            duration: Duration(
+              milliseconds: MediaQuery.disableAnimationsOf(context) ? 0 : 200,
+            ),
+            child: AppIcon('right', size: 14, color: context.pal.tertiary),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// 首页动作列表下方的入口行：一张分组卡，图标块用中性底色。
+class TodayLinkCard extends StatelessWidget {
+  const TodayLinkCard({super.key, required this.children});
+  final List<Widget> children;
+  @override
+  Widget build(BuildContext context) =>
+      GroupScope(child: GroupCard(children: children));
+}
+
+/// 自由练入口：不按计划时看现在能练什么，训练日和休息日都显示。
+class TodayFreeTrainingRow extends StatelessWidget {
+  const TodayFreeTrainingRow({super.key, required this.onTap});
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => GroupRow(
+    key: const ValueKey('free-training'),
+    label: '自由练',
+    sub: '现在能练什么',
+    icon: 'spark',
+    onTap: onTap,
+  );
 }

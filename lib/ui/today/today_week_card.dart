@@ -111,95 +111,113 @@ class TodayWeekCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          LayoutBuilder(
-            builder: (context, box) => SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: math.max(box.maxWidth, 322),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (final d in plan.weekPlan(
-                      m.app.plan,
-                      m.iso,
-                      m.app.dayStates,
-                      m.history,
-                    ))
-                      Expanded(
-                        child: Semantics(
-                          button: true,
-                          label: AppMessages.of(context).text(
-                            '预览 ${d['label']} ${workoutTitle('${d['name']}')}',
-                          ),
-                          child: Pressable(
-                            onTap: () => openDayPreview(context, '${d['iso']}'),
-                            child: Container(
-                              constraints: const BoxConstraints(minHeight: 64),
-                              padding: const EdgeInsets.fromLTRB(0, 8, 0, 6),
-                              margin: const EdgeInsets.symmetric(horizontal: 1),
-                              decoration: BoxDecoration(
-                                color: jsTruthy(d['today']) ? p.fill2 : null,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Column(
-                                children: [
-                                  LText(
-                                    '${d['label']}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: jsTruthy(d['today'])
-                                          ? p.text
-                                          : p.secondary,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 18,
-                                    child: Center(
-                                      child: jsTruthy(d['done'])
-                                          ? AppIcon(
-                                              'check',
-                                              size: 14,
-                                              color: p.recover,
-                                            )
-                                          : d['kind'] == 'train'
-                                          ? Container(
-                                              width: 6,
-                                              height: 6,
-                                              decoration: BoxDecoration(
-                                                color: p.tint,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            )
-                                          : LText(
-                                              '·',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: p.tertiary,
-                                              ),
-                                            ),
-                                    ),
-                                  ),
-                                  LText(
-                                    '${workoutTitle('${d['name']}')}${d['venue'] == 'gym' ? ' · 馆' : ''}',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      height: 1.2,
-                                      color: p.secondary,
-                                    ),
-                                  ),
-                                ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final d in plan.weekPlan(
+                m.app.plan,
+                m.iso,
+                m.app.dayStates,
+                m.history,
+              ))
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    label: AppMessages.of(
+                      context,
+                    ).text('预览 ${d['label']} ${workoutTitle('${d['name']}')}'),
+                    child: Pressable(
+                      onTap: () => openDayPreview(context, '${d['iso']}'),
+                      child: Container(
+                        constraints: const BoxConstraints(minHeight: 56),
+                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                        margin: const EdgeInsets.symmetric(horizontal: 1),
+                        decoration: BoxDecoration(
+                          color: jsTruthy(d['today']) ? p.fill2 : null,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Column(
+                          children: [
+                            LText(
+                              '${d['label']}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: jsTruthy(d['today'])
+                                    ? FontWeight.w700
+                                    : FontWeight.w400,
+                                color: jsTruthy(d['today'])
+                                    ? p.text
+                                    : p.secondary,
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 8),
+                            _DayMark(
+                              done: jsTruthy(d['done']),
+                              train: d['kind'] == 'train',
+                              missed: jsTruthy(d['past']),
+                            ),
+                          ],
                         ),
                       ),
-                  ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// 一天的状态：已练 = 发力橙实心圆 + 勾；计划训练 = 橙色空心圆（已过去没练的变灰）；休息 = 中性小点。
+/// 部位名称留给点开的那天预览。
+class _DayMark extends StatelessWidget {
+  const _DayMark({
+    required this.done,
+    required this.train,
+    required this.missed,
+  });
+  final bool done, train, missed;
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: Center(
+        child: done
+            ? Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: p.tint,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: AppIcon('check', size: 14, color: p.onTint),
+                ),
+              )
+            : train
+            ? Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: missed ? p.tertiary : p.tint,
+                    width: 2,
+                  ),
+                ),
+              )
+            : Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: p.tertiary,
+                  shape: BoxShape.circle,
+                ),
+              ),
       ),
     );
   }

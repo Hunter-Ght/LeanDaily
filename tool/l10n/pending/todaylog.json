@@ -1,0 +1,21 @@
+{
+  "调整": {"en": "Adjust", "zh_Hant": "調整"},
+  "今天要记住的 {p0} 点": {
+    "en": "{p0} things to remember today",
+    "zh_Hant": "今天要記住的 {p0} 點"
+  },
+  "自由练": {"en": "Free workout", "zh_Hant": "自由練"},
+  "现在能练什么": {"en": "What can I train now", "zh_Hant": "現在能練什麼"},
+  "今天练了吗？记一组或记一餐": {
+    "en": "Trained today? Log a set or a meal.",
+    "zh_Hant": "今天練了嗎？記一組或記一餐"
+  },
+  "这天没有记录，可以补记": {
+    "en": "Nothing logged this day. You can add it now.",
+    "zh_Hant": "這天沒有記錄，可以補記"
+  },
+  "这天还没到": {
+    "en": "This day hasn't come yet",
+    "zh_Hant": "這天還沒到"
+  }
+}

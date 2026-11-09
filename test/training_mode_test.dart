@@ -689,6 +689,12 @@ void main() {
       h.controller.setTab(1);
       await settle(t);
       // 时间线上的组是紧凑小片；点开这组的菜单能看到完整感受。
+      // 训练块里的人体图放大后，这一组会落到底部导航后面，先把列表往上推一点。
+      await t.drag(
+        find.byKey(ValueKey('log-list-${h.controller.date}')),
+        const Offset(0, -240),
+      );
+      await settle(t);
       await t.tap(find.bySemanticsLabel('修改 哑铃地板卧推 第 1 组'));
       await settle(t);
       expect(find.textContaining('还能做 3+ 次'), findsOneWidget);
