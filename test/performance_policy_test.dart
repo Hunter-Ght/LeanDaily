@@ -67,13 +67,13 @@ void main() {
   });
 
   testWidgets('history projection reused until records change', (tester) async {
-    final h = await Harness.pump(tester, tab: 2, empty: true);
+    final h = await Harness.pump(tester, tab: 2);
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('肌肉状态详情'));
-    await tester.tap(find.text('肌肉状态详情'));
+    await tester.ensureVisible(find.text('查看每块肌肉'));
+    await tester.tap(find.text('查看每块肌肉'));
     await tester.pumpAndSettle();
     MuscleCard muscle() => tester.widget<MuscleCard>(find.byType(MuscleCard));
     final before = muscle().days;
@@ -95,7 +95,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(h.controller.repo.snapshotToken, isNot(same(token)));
     expect(muscle().days, isNot(same(before)));
-    expect(find.bySemanticsLabel('哑铃卧推 的估算极限'), findsOneWidget);
+    // 力量块：新动作排在最前，点开后只有 1 个数据点，不画曲线，只给一句提示。
+    await tester.ensureVisible(find.text('哑铃卧推'));
+    await tester.tap(find.text('哑铃卧推'));
+    await tester.pumpAndSettle();
+    expect(find.text('再练几次就能看到曲线'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 600));
   });
 
@@ -105,8 +109,8 @@ void main() {
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('肌肉状态详情'));
-    await tester.tap(find.text('肌肉状态详情'));
+    await tester.ensureVisible(find.text('查看每块肌肉'));
+    await tester.tap(find.text('查看每块肌肉'));
     await tester.pumpAndSettle();
     final tweens = find.descendant(
       of: find.byType(MuscleCard),

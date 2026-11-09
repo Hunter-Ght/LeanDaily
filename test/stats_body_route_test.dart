@@ -44,7 +44,7 @@ void main() {
           },
         );
         expect(find.byType(StatsPage), findsOneWidget);
-        expect(find.text('本周总览'), findsOneWidget);
+        expect(find.text('本周达成'), findsOneWidget);
         expect(find.text('今天'), findsNothing);
         if (mode == 'empty') {
           expect(find.text('记录体重，看见趋势'), findsOneWidget);
@@ -80,14 +80,30 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
-    expect(find.text('次数'), findsOneWidget);
     expect(find.text('自重 × '), findsWidgets);
     expect(find.text('9'), findsWidgets);
     expect(find.text('0 kg'), findsNothing);
+    // 点开这一行：只有 1 个点，不画曲线；再练一天后画次数曲线。
+    await tester.tap(find.text('俯卧撑'));
+    await tester.pumpAndSettle();
+    expect(find.text('次数'), findsOneWidget);
+    expect(find.text('再练几次就能看到曲线'), findsOneWidget);
+    await h.controller.repo.addSets(
+      date: '2026-10-10',
+      part: '胸',
+      exercise: '俯卧撑',
+      rows: [
+        {'weight': 0, 'reps': 6, 'type': '正式'},
+      ],
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
     expect(find.bySemanticsLabel('俯卧撑 的次数'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('review and personal bests expand on demand', (tester) async {
+  testWidgets('strength list and weekly review expand on demand', (
+    tester,
+  ) async {
     final h = await Harness.pump(tester, tab: 2, size: const Size(393, 2600));
     for (var i = 0; i < 7; i++) {
       await h.controller.repo.addSets(
@@ -107,10 +123,14 @@ void main() {
     for (var i = 0; i < 7; i++) {
       expect(find.text('测试动作$i'), findsWidgets);
     }
+    await tester.ensureVisible(find.text('本周回顾'));
+    await tester.tap(find.text('本周回顾'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('展开全部肌肉'));
     await tester.tap(find.text('展开全部肌肉'));
     await tester.pumpAndSettle();
     expect(find.text('展开全部肌肉'), findsNothing);
+    // 力量块的「收起」与本周回顾里的「收起」。
     expect(find.text('收起'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
   });

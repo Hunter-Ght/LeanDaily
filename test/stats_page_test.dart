@@ -29,10 +29,15 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.pumpAndSettle();
-      expect(find.text('本周总览'), findsOneWidget);
-      expect(find.text('个人最佳'), findsOneWidget);
+      expect(find.text('力量'), findsOneWidget);
+      expect(find.text('坚持'), findsOneWidget);
+      expect(find.text('本周达成'), findsOneWidget);
+      expect(find.text('本周回顾'), findsOneWidget);
+      expect(find.text('本周总览'), findsNothing);
+      expect(find.text('个人最佳'), findsNothing);
+      expect(find.text('动作曲线'), findsNothing);
       expect(find.byType(MuscleCard), findsNothing);
-      await tester.tap(find.text('肌肉状态详情'));
+      await tester.tap(find.text('查看每块肌肉'));
       await tester.pumpAndSettle();
       expect(find.byType(MuscleCard), findsOneWidget);
       await h.shot(tester, 'stats-${dark ? 'dark' : 'light'}');
@@ -49,8 +54,12 @@ void main() {
       size: const Size(1000, 1000),
     );
     debugDisableShadows = true;
-    expect(find.text('还没有正式组。'), findsOneWidget);
-    expect(find.text('记过正式组之后，这里会画出每次的估算极限。'), findsOneWidget);
+    // 没有训练记录：只有一个引导 + 体重，没有空的力量 / 坚持块。
+    expect(find.text('练 3 次后，这里会出现你的身体热力图和力量变化'), findsOneWidget);
+    expect(find.text('开始今天的训练'), findsOneWidget);
+    expect(find.text('力量'), findsNothing);
+    expect(find.text('坚持'), findsNothing);
+    expect(find.text('体重'), findsOneWidget);
     expect(find.byType(StatsPage), findsOneWidget);
     expect(tester.takeException(), isNull);
     await h.controller.repo.addSets(
@@ -63,8 +72,27 @@ void main() {
     );
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pumpAndSettle();
-    expect(find.text('还没有正式组。'), findsNothing);
-    expect(find.text('记过正式组之后，这里会画出每次的估算极限。'), findsNothing);
+    expect(find.text('练 3 次后，这里会出现你的身体热力图和力量变化'), findsNothing);
+    expect(find.text('力量'), findsOneWidget);
+    expect(find.text('坚持'), findsOneWidget);
+    expect(find.text('首次记录'), findsOneWidget);
+    // 只有 1 个数据点：点开后不画空坐标，给一句提示。
+    await tester.tap(find.text('哑铃卧推'));
+    await tester.pumpAndSettle();
+    expect(find.text('再练几次就能看到曲线'), findsOneWidget);
+    expect(find.bySemanticsLabel('哑铃卧推 的估算极限'), findsNothing);
+    // 同一动作再练一天：有了 2 个点，展开后画曲线。
+    await h.controller.repo.addSets(
+      date: '2026-10-10',
+      part: '胸',
+      exercise: '哑铃卧推',
+      rows: [
+        {'weight': 10, 'reps': 10, 'type': '正式'},
+      ],
+    );
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
+    expect(find.text('再练几次就能看到曲线'), findsNothing);
     expect(find.bySemanticsLabel('哑铃卧推 的估算极限'), findsOneWidget);
     final state = jsonMap(jsonDecode(h.native.docs['android-state']!));
     expect(

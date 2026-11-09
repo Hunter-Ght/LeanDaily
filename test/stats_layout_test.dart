@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:leandaily/ui/kit/body_figure.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/ui/stats/progress_sections.dart';
+import 'package:leandaily/ui/stats/streak_section.dart';
+import 'package:leandaily/ui/stats/strength_section.dart';
 
 import 'support/harness.dart';
 
@@ -29,8 +31,8 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.byType(HeatHero), findsOneWidget);
-        expect(find.byType(StreakGrid), findsOneWidget);
-        expect(find.byType(StrengthProgress), findsOneWidget);
+        expect(find.byType(StreakSection), findsOneWidget);
+        expect(find.byType(StrengthSection), findsOneWidget);
         expect(find.byType(SuggestionStrip), findsOneWidget);
         await h.shot(tester, 'progress-${e.key}-${dark ? 'dark' : 'light'}');
         expect(tester.takeException(), isNull);
