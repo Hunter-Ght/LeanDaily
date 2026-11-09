@@ -156,13 +156,15 @@ class _GuideBodyState extends State<GuideBody> {
             ),
           ),
         ),
-        line(
-          '${e['target'] != null ? '今天 ${plan.prescription(e)}' : '${e['sets']} 组 × ${e['min']}～${e['max']}'}${jsNumber(e['weight']) > 0 ? ' · ${fmt(e['weight'])} kg' : ''}',
-          size: 18,
-          top: 4,
-          bold: true,
-          secondary: false,
-        ),
+        // 不在计划里的动作（器械库、换一个、从肌肉找动作）没有组数，不显示这一行。
+        if (e['target'] != null || e['sets'] != null)
+          line(
+            '${e['target'] != null ? '今天 ${plan.prescription(e)}' : '${e['sets']} 组 × ${e['min']}～${e['max']}'}${jsNumber(e['weight']) > 0 ? ' · ${fmt(e['weight'])} kg' : ''}',
+            size: 18,
+            top: 4,
+            bold: true,
+            secondary: false,
+          ),
         if (last != null)
           line(
             '上次 ${('${last['date']}').substring(5).replaceAll('-', '/')}：${jsonRows(last['sets']).map((s) => jsNumber(s['w']) > 0 ? '${fmt(s['w'])}×${s['reps']}' : '${s['reps']}').join(' / ')}',
