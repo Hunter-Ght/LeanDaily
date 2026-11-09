@@ -48,10 +48,11 @@ class MuscleFocusCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // 两面人体各占一半宽；高度按人体比例（约 0.57）取，避免上下空出一截。
           SizedBox(
-            width: 112,
+            width: 128,
             child: BodyFigure(
-              height: 132,
+              height: 112,
               semanticLabel: messages.text('练哪里'),
               tones: {
                 for (final id in roles.assist) id: MuscleTone.assist,

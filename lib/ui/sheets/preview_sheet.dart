@@ -258,7 +258,7 @@ class PreviewSheet extends StatelessWidget {
   }
 }
 
-/// 「周六 · 练 背 · 腿」：星期与「练」正文色，部位发力橙；休息日是「周六 · 休息」。
+/// 第一行「周六 练」正文色，第二行部位发力橙；休息日是「周六 / 休息」。
 class _Title extends StatelessWidget {
   const _Title({required this.day, required this.verb, required this.what});
   final String day, what;
@@ -267,17 +267,25 @@ class _Title extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.pal;
     final style = AppText.display(p, size: 32);
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.end,
+    // 和首页「今天练 / 胸 · 背 · 腹」同样分两行：部位多时也不会在奇怪的地方折行。
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        LText(day, style: style),
-        Text(' · ', style: style.copyWith(color: p.tertiary)),
-        if (verb != null) ...[
-          LText(verb!, style: style),
-          const SizedBox(width: 10),
-          LText(what, style: AppText.display(p, size: 32, color: p.tint)),
-        ] else
-          LText(what, style: style),
+        Wrap(
+          children: [
+            LText(day, style: style),
+            if (verb != null) ...[
+              const SizedBox(width: 10),
+              LText(verb!, style: style),
+            ],
+          ],
+        ),
+        LText(
+          what,
+          style: verb != null
+              ? AppText.display(p, size: 32, color: p.tint)
+              : style,
+        ),
       ],
     );
   }
