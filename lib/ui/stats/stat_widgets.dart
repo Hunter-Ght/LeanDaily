@@ -55,95 +55,20 @@ class StatBlock extends StatelessWidget {
   }
 }
 
-class GoalRings extends CustomPainter {
-  GoalRings(this.values, this.goals, this.palette);
-  final List<num> values, goals;
-  final AppPalette palette;
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.scale(size.width / 72);
-    final colors = [palette.tint, palette.dotMeal, palette.kcal];
-    for (var i = 0; i < 3; i++) {
-      final rect = Rect.fromCircle(
-        center: const Offset(36, 36),
-        radius: 30 - i * 8,
-      );
-      final paint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..strokeCap = StrokeCap.round;
-      canvas.drawCircle(
-        const Offset(36, 36),
-        30 - i * 8,
-        paint..color = palette.fill,
-      );
-      canvas.drawArc(
-        rect,
-        -math.pi / 2,
-        math.pi * 2 * (values[i] / math.max(1, goals[i])).clamp(.08, 1),
-        false,
-        paint..color = colors[i],
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(GoalRings old) => true;
-}
-
-class WeekBars extends CustomPainter {
-  WeekBars(this.days, this.field, this.color, this.palette, this.labelStyle);
-  final List<Map<String, dynamic>> days;
-  final String field;
-  final Color color;
-  final AppPalette palette;
-  final TextStyle labelStyle;
-  @override
-  void paint(Canvas canvas, Size size) {
-    final max = days.fold<num>(1, (n, d) => math.max(n, d[field] as num));
-    final step = (size.width + 8) / 7;
-    for (var i = 0; i < days.length; i++) {
-      final h = math.max(4.0, (days[i][field] as num) / max * 64);
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(i * step, 64 - h, math.min(22, step - 8), h),
-          const Radius.circular(7),
-        ),
-        Paint()..color = color,
-      );
-      final text = TextPainter(
-        text: TextSpan(
-          text: '${days[i]['label']}',
-          style: labelStyle.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: palette.secondary,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-      text.paint(
-        canvas,
-        Offset(i * step + (math.min(22, step - 8) - text.width) / 2, 70),
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(WeekBars old) => true;
-}
-
 class EstimateChart extends CustomPainter {
-  EstimateChart(this.dots, this.color);
+  EstimateChart(this.dots, this.color, {this.viewHeight = 140});
   final List<Map<String, dynamic>> dots;
   final Color color;
+
+  /// 坐标系高度（宽固定 320）；数值全相同、只画一条平线时用矮一点的。
+  final double viewHeight;
   @override
   void paint(Canvas canvas, Size size) {
     // Preserve the SVG viewBox's aspect ratio and centered letterboxing.
-    final scale = math.min(size.width / 320, size.height / 140);
+    final scale = math.min(size.width / 320, size.height / viewHeight);
     canvas.translate(
       (size.width - 320 * scale) / 2,
-      (size.height - 140 * scale) / 2,
+      (size.height - viewHeight * scale) / 2,
     );
     canvas.scale(scale);
     final path = Path();
@@ -176,7 +101,7 @@ class EstimateChart extends CustomPainter {
 
   @override
   bool shouldRepaint(EstimateChart old) =>
-      old.dots != dots || old.color != color;
+      old.dots != dots || old.color != color || old.viewHeight != viewHeight;
 }
 
 String shortDate(Object? iso) {

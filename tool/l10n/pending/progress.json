@@ -23,26 +23,6 @@
     "en": "Not trained in 12 weeks",
     "zh_Hant": "近 12 週沒練過"
   },
-  "和{p0}持平": {
-    "en": "Same as {p0}",
-    "zh_Hant": "和{p0}持平"
-  },
-  "↑ 估算极限比 {p0} +{p1} kg": {
-    "en": "↑ Est. max +{p1} kg vs {p0}",
-    "zh_Hant": "↑ 估算極限比 {p0} +{p1} kg"
-  },
-  "估算极限比 {p0} −{p1} kg": {
-    "en": "Est. max −{p1} kg vs {p0}",
-    "zh_Hant": "估算極限比 {p0} −{p1} kg"
-  },
-  "↑ 比 {p0} +{p1} 次": {
-    "en": "↑ +{p1} reps vs {p0}",
-    "zh_Hant": "↑ 比 {p0} +{p1} 次"
-  },
-  "比 {p0} −{p1} 次": {
-    "en": "−{p1} reps vs {p0}",
-    "zh_Hant": "比 {p0} −{p1} 次"
-  },
   "再练几次就能看到曲线": {
     "en": "Train a few more times to see the curve",
     "zh_Hant": "再練幾次就能看到曲線"
@@ -58,5 +38,33 @@
   "灰色区间是每周的参考范围（直接训练组数，一个动作的一组算一组），竖线是上周的组数。": {
     "en": "The grey band is the weekly target range (direct sets, one set of an exercise counts as one). The vertical line marks last week's sets.",
     "zh_Hant": "灰色區間是每週的參考範圍（直接訓練組數，一個動作的一組算一組），豎線是上週的組數。"
+  },
+  "估算极限持平（比{p0}）": {
+    "en": "Est. max unchanged (vs {p0})",
+    "zh_Hant": "估算極限持平（比{p0}）"
+  },
+  "次数持平（比{p0}）": {
+    "en": "Reps unchanged (vs {p0})",
+    "zh_Hant": "次數持平（比{p0}）"
+  },
+  "↑ 估算极限 +{p0} kg（比{p1}）": {
+    "en": "↑ Est. max +{p0} kg (vs {p1})",
+    "zh_Hant": "↑ 估算極限 +{p0} kg（比{p1}）"
+  },
+  "估算极限 −{p0} kg（比{p1}）": {
+    "en": "Est. max −{p0} kg (vs {p1})",
+    "zh_Hant": "估算極限 −{p0} kg（比{p1}）"
+  },
+  "↑ 次数 +{p0}（比{p1}）": {
+    "en": "↑ Reps +{p0} (vs {p1})",
+    "zh_Hant": "↑ 次數 +{p0}（比{p1}）"
+  },
+  "次数 −{p0}（比{p1}）": {
+    "en": "Reps −{p0} (vs {p1})",
+    "zh_Hant": "次數 −{p0}（比{p1}）"
+  },
+  "次训练": {
+    "en": "sessions",
+    "zh_Hant": "次訓練"
   }
 }

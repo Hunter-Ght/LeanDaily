@@ -60,7 +60,7 @@ class _ReviewCardState extends State<ReviewCard> {
               ' / ${a['planned']} ',
               style: AppText.num(p, 20, color: p.secondary),
             ),
-            LText('次', style: TextStyle(fontSize: 15, color: p.secondary)),
+            LText('次训练', style: TextStyle(fontSize: 15, color: p.secondary)),
             const SizedBox(width: 12),
             Expanded(
               child: LText(

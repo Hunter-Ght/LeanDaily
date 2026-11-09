@@ -152,8 +152,9 @@ class _MuscleCardState extends State<MuscleCard> {
   Widget build(BuildContext context) {
     final p = context.pal;
     final hue = switch (mode) {
-      MuscleMode.fatigue => p.tint,
-      MuscleMode.volume => p.volume,
+      // 规范：恢复用恢复青，发力橙只表示发力 / 训练量。
+      MuscleMode.fatigue => p.recover,
+      MuscleMode.volume => p.tint,
       MuscleMode.detrain => p.detrain,
     };
     final muscles = status['byMuscle'] as Map<String, Map<String, dynamic>>;
@@ -294,8 +295,15 @@ class _MuscleCardState extends State<MuscleCard> {
                         const SizedBox(width: 12.0),
                         LText(
                           value(current),
-                          style: AppText.navWeek(p)
-                              .copyWith(color: hue, letterSpacing: 0),
+                          style: AppText.navWeek(p).copyWith(
+                            // 已恢复 = 青；恢复中 = 中性次要色。
+                            color: mode == MuscleMode.fatigue
+                                ? (current['recovered'] as bool
+                                      ? p.recover
+                                      : p.secondary)
+                                : hue,
+                            letterSpacing: 0,
+                          ),
                         ),
                       ],
                     ),
@@ -334,7 +342,6 @@ class _MuscleCardState extends State<MuscleCard> {
                                     visible[i]['id'] as String,
                                     '练它',
                                     p,
-                                    hue: hue,
                                   ),
                                 ],
                               ],
@@ -387,8 +394,6 @@ class _MuscleCardState extends State<MuscleCard> {
                 );
               },
             ),
-            const SizedBox(height: 12.0),
-            LText(_notes[mode.index], style: AppText.hint(p)),
             Pressable(
               onTap: () => setState(() => _showDetail = !_showDetail),
               child: Padding(
@@ -403,9 +408,16 @@ class _MuscleCardState extends State<MuscleCard> {
             Reveal(
               visible: _showDetail,
               child: _showDetail
-                  ? LText(
-                      '${status['setCount'] == 0 ? '记过正式组之后，这里就会亮起来。' : ''}根据你记的组数、次数和余力估算，仅供参考，恢复快慢因人而异。',
-                      style: AppText.hint(p),
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        LText(_notes[mode.index], style: AppText.hint(p)),
+                        const SizedBox(height: 6),
+                        LText(
+                          '${status['setCount'] == 0 ? '记过正式组之后，这里就会亮起来。' : ''}根据你记的组数、次数和余力估算，仅供参考，恢复快慢因人而异。',
+                          style: AppText.hint(p),
+                        ),
+                      ],
                     )
                   : const SizedBox.shrink(),
             ),
@@ -424,50 +436,49 @@ class _MuscleCardState extends State<MuscleCard> {
         (m['sets7'] as num) < (_targets[m['group']] ?? 6) * .5;
   }
 
-  Widget _openButton(String id, String label, AppPalette p, {Color? hue}) =>
-      Semantics(
-        button: true,
-        label: AppMessages.of(context)
-            .text(label == '练它' ? '练${MUSCLE[id]!['name']}的动作' : label),
-        child: Pressable(
-          onTap: () => widget.onOpen?.call(id),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-            child: Center(
-              widthFactor: 1,
-              child: Container(
-                constraints: BoxConstraints(minHeight: label == '练它' ? 30 : 44),
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: p.tintSoft,
-                  borderRadius: BorderRadius.circular(label == '练它' ? 99 : 14),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: LText(
-                        label,
-                        style: TextStyle(
-                          fontSize: label == '练它' ? 13 : 16,
-                          fontWeight: FontWeight.w600,
-                          color: hue ?? p.tint,
-                        ),
-                      ),
+  Widget _openButton(String id, String label, AppPalette p) => Semantics(
+    button: true,
+    label: AppMessages.of(context)
+        .text(label == '练它' ? '练${MUSCLE[id]!['name']}的动作' : label),
+    child: Pressable(
+      onTap: () => widget.onOpen?.call(id),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        child: Center(
+          widthFactor: 1,
+          child: Container(
+            constraints: BoxConstraints(minHeight: label == '练它' ? 30 : 44),
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: p.fill2,
+              borderRadius: BorderRadius.circular(label == '练它' ? 99 : 14),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: LText(
+                    label,
+                    style: TextStyle(
+                      fontSize: label == '练它' ? 13 : 16,
+                      fontWeight: FontWeight.w600,
+                      color: p.text,
                     ),
-                    if (label != '练它') ...[
-                      const SizedBox(width: 4),
-                      AppIcon('right', size: 16, color: p.tint),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
+                if (label != '练它') ...[
+                  const SizedBox(width: 4),
+                  AppIcon('right', size: 16, color: p.text),
+                ],
+              ],
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Widget _segments(AppPalette p) => AppSegments(
     labels: _labels,

@@ -187,17 +187,18 @@ class _StrengthRowView extends StatelessWidget {
             StatsRange.all => '第一次记录',
           };
     final v = fmt(row.delta);
+    // 变化按估算极限（自重动作按次数）算，文案里写明口径和对比基准。
     final text = switch (row.change) {
       StrengthChange.first => '首次记录',
       StrengthChange.idle => switch (range) {
         StatsRange.weeks12 => '近 12 周没练过',
         _ => '近 4 周没练过',
       },
-      StrengthChange.flat => '和$base持平',
+      StrengthChange.flat => row.bodyweight ? '次数持平（比$base）' : '估算极限持平（比$base）',
       StrengthChange.up =>
-        row.bodyweight ? '↑ 比 $base +$v 次' : '↑ 估算极限比 $base +$v kg',
+        row.bodyweight ? '↑ 次数 +$v（比$base）' : '↑ 估算极限 +$v kg（比$base）',
       StrengthChange.down =>
-        row.bodyweight ? '比 $base −$v 次' : '估算极限比 $base −$v kg',
+        row.bodyweight ? '次数 −$v（比$base）' : '估算极限 −$v kg（比$base）',
     };
     return LText(
       text,
@@ -226,6 +227,11 @@ class _Curve extends StatelessWidget {
             ]
           : points,
     );
+    // 数值全相同时线会贴在底部：改画一条矮的平线，放在中间。
+    final flat = chart['min'] == chart['max'];
+    final dots = [
+      for (final d in jsonRows(chart['dots'])) flat ? {...d, 'y': 30} : d,
+    ];
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -254,7 +260,7 @@ class _Curve extends StatelessWidget {
                 : '最近一次估算极限 · ${shortDate(last['iso'])} · ${fmt(last['weight'])}×${fmt(last['reps'])}',
             style: AppText.hint(p),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
           if (points.length < 2)
             LText('再练几次就能看到曲线', style: AppText.body(p).copyWith(fontSize: 15))
           else ...[
@@ -264,9 +270,13 @@ class _Curve extends StatelessWidget {
               image: true,
               child: SizedBox(
                 width: double.infinity,
-                height: 150,
+                height: flat ? 60 : 130,
                 child: CustomPaint(
-                  painter: EstimateChart(jsonRows(chart['dots']), p.tint),
+                  painter: EstimateChart(
+                    dots,
+                    p.tint,
+                    viewHeight: flat ? 60 : 140,
+                  ),
                 ),
               ),
             ),
