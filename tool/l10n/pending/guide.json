@@ -1,0 +1,7 @@
+{
+  "上次 $date": {"en": "Last time $date", "zh_Hant": "上次 $date"},
+  "次/侧": {"en": "reps/side", "zh_Hant": "次/側"},
+  "这天还在恢复": {"en": "Still recovering that day", "zh_Hant": "這天還在恢復"},
+  "下次训练": {"en": "Next workout", "zh_Hant": "下次訓練"},
+  "3D 模型 Quaternius（CC0），照片 free-exercise-db（Unlicense）": {"en": "3D model by Quaternius (CC0); photos from free-exercise-db (Unlicense)", "zh_Hant": "3D 模型 Quaternius（CC0），照片 free-exercise-db（Unlicense）"}
+}
