@@ -12,7 +12,10 @@ import 'stat_widgets.dart';
 import 'progress_sections.dart' show InkButton;
 
 class BodyRouteCard extends StatelessWidget {
-  const BodyRouteCard({super.key});
+  const BodyRouteCard({super.key, this.softAction = false});
+
+  /// 同屏已有主按钮（如空状态的「开始今天的训练」）时，「记体重」用次级样式。
+  final bool softAction;
   @override
   Widget build(BuildContext context) {
     final app = context.app, p = context.pal;
@@ -52,7 +55,7 @@ class BodyRouteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          InkButton('记体重', onTap: () => openBodyLog(context)),
+          InkButton('记体重', soft: softAction, onTap: () => openBodyLog(context)),
         ] else ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,

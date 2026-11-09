@@ -1,7 +1,3 @@
-import 'package:leandaily/l10n/app_messages.dart';
-
-import '../../l10n/localized_text.dart';
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -16,16 +12,15 @@ import '../../domain/format.dart';
 import '../../domain/goals.dart';
 import '../../domain/muscles.dart' show muscleStatus;
 import '../../domain/stats.dart';
-import '../../theme/theme.dart';
-import '../kit/form.dart';
 import '../kit/menu.dart';
 import '../../domain/stats_range.dart';
-import '../kit/pressable.dart';
+import '../../domain/week_achievement.dart';
 import 'body_route_card.dart';
-import 'weekly_review_card.dart';
+import 'weekly_review_card.dart' show weeklyReviewFor;
+import 'strength_section.dart';
+import 'streak_section.dart';
+import 'progress_empty.dart';
 import 'muscle/muscle_card.dart';
-import 'review_card.dart';
-import 'stat_widgets.dart';
 import 'progress_sections.dart';
 
 class StatsPage extends StatefulWidget {
@@ -36,8 +31,6 @@ class StatsPage extends StatefulWidget {
 }
 
 class _StatsPageState extends State<StatsPage> {
-  String picked = '';
-  bool allBests = false;
   StatsRange _range = StatsRange.weeks4;
   StatsRange? _summaryRange;
   Map<String, dynamic>? bodyPaths;
@@ -98,8 +91,6 @@ class _StatsPageState extends State<StatsPage> {
     return ListenableBuilder(
       listenable: app,
       builder: (context, _) {
-        final p = context.pal;
-        final review = weeklyReviewFor(app);
         // Tab changes, sync status and keyboard insets must not aggregate the
         // entire training/meal history again. A record mutation invalidates it.
         _refreshProjection(app);
@@ -112,236 +103,20 @@ class _StatsPageState extends State<StatsPage> {
           days,
         );
         final exercises = jsonRows(stats['exercises']);
-        final current =
-            exercises.where((e) => e['ex'] == picked).firstOrNull ??
-            exercises.firstOrNull;
-        final points = current == null
-            ? <Map<String, dynamic>>[]
-            : jsonRows(current['points']);
-        final bodyweight =
-            points.isNotEmpty &&
-            points.every((e) => jsNumber(e['weight']) == 0);
-        final chart = chartPoints(
-          bodyweight
-              ? [
-                  for (final e in points) {...e, 'e1': e['reps']},
-                ]
-              : points,
-        );
-        final last = points.lastOrNull;
         final bests = jsonRows(stats['bests']);
+        // 没有任何正式组 = 还没有训练记录：整页只放一个引导（体重可以独立记录）。
+        final empty = bests.isEmpty;
         final summary = _summary!;
-        final curveBlock = StatBlock(
-          title: '动作曲线',
-          children: current == null
-              ? [
-                  const SizedBox(height: 8),
-                  LText('记过正式组之后，这里会画出每次的估算极限。', style: AppText.hint(p)),
-                ]
-              : [
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (final e in exercises)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Semantics(
-                              button: true,
-                              selected: e == current,
-                              label: AppMessages.of(context).text('${e['ex']}'),
-                              child: Pressable(
-                                onTap: () =>
-                                    setState(() => picked = e['ex'] as String),
-                                child: Container(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 44,
-                                  ),
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: e == current ? p.primary : p.fill2,
-                                    borderRadius: BorderRadius.circular(99),
-                                  ),
-                                  child: LText(
-                                    '${e['ex']}',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: e == current
-                                          ? p.onPrimary
-                                          : p.text,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  LText(bodyweight ? '次数' : '估算极限', style: AppText.hint(p)),
-                  FadeSwitcher(
-                    child: KeyedSubtree(
-                      key: ValueKey('${current['ex']}:${last?['iso']}'),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            bodyweight ? fmt(last!['reps']) : fmt(last!['e1']),
-                            style: AppText.num(p, 40),
-                          ),
-                          LText(
-                            bodyweight ? ' 次' : ' kg',
-                            style: TextStyle(fontSize: 15, color: p.secondary),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  LText(
-                    bodyweight
-                        ? '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 次'
-                        : '最近一次估算极限 · ${shortDate(last['iso'])} · ${fmt(last['weight'])}×${fmt(last['reps'])}',
-                    style: AppText.hint(p),
-                  ),
-                  FadeSwitcher(
-                    child: KeyedSubtree(
-                      key: ValueKey('${current['ex']}:${last['iso']}'),
-                      child: Semantics(
-                        label: AppMessages.of(context).text(
-                          '${current['ex']} 的${bodyweight ? '次数' : '估算极限'}',
-                        ),
-                        image: true,
-                        child: SizedBox(
-                          height: 150,
-                          child: CustomPaint(
-                            painter: EstimateChart(
-                              jsonRows(chart['dots']),
-                              p.tint,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      for (final e in [
-                        jsonRows(chart['list']).first,
-                        jsonRows(chart['list']).last,
-                      ])
-                        LText(shortDate(e['iso']), style: AppText.hint(p)),
-                    ],
-                  ),
-                ],
-        );
-        final bestsBlock = StatBlock(
-          title: '个人最佳',
-          children: [
-            if (bests.isEmpty) LText('还没有正式组。', style: AppText.hint(p)),
-            for (final (index, b) in bests.indexed)
-              Reveal(
-                visible: allBests || index < 5,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: p.sep, width: .5)),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LText(
-                              '${b['ex']}',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                color: p.text,
-                              ),
-                            ),
-                            LText(
-                              jsNumber(b['heavy']) == 0
-                                  ? shortDate(b['date'])
-                                  : '极限 ${fmt(b['e1'])} · ${shortDate(b['date'])}',
-                              style: AppText.hint(p),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      jsNumber(b['heavy']) == 0
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                LText(
-                                  '自重 × ',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: p.secondary,
-                                  ),
-                                ),
-                                Text(
-                                  fmt(b['heavyReps']),
-                                  style: AppText.num(p, 22),
-                                ),
-                                LText(
-                                  ' 次',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: p.secondary,
-                                  ),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  fmt(b['heavy']),
-                                  style: AppText.num(p, 22),
-                                ),
-                                Text(
-                                  ' kg × ',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: p.secondary,
-                                  ),
-                                ),
-                                Text(
-                                  fmt(b['heavyReps']),
-                                  style: AppText.num(p, 22),
-                                ),
-                              ],
-                            ),
-                    ],
-                  ),
-                ),
-              ),
-            if (bests.length > 5)
-              FormButton(
-                allBests ? '收起' : '查看全部',
-                plain: true,
-                onTap: () => setState(() => allBests = !allBests),
-              ),
-          ],
+        final hits = weekHits(
+          weekDays: jsonRows(week['days']),
+          meals: _meals,
+          proteinGoal: app.proteinGoal,
+          kcalGoal: app.kcalGoal,
         );
         final muscleDetail = bodyPaths == null
             ? const SizedBox.shrink()
             : CollapsibleBlock(
-                title: '肌肉状态详情',
+                title: '查看每块肌肉',
                 child: MuscleCard(
                   days: _muscleDays,
                   nowMs: app.clock().millisecondsSinceEpoch,
@@ -349,17 +124,24 @@ class _StatsPageState extends State<StatsPage> {
                   onOpen: (id) => openMuscleExercises(context, id),
                 ),
               );
-        final hero = Reveal(
-          visible: bodyPaths != null,
-          child: bodyPaths == null
-              ? const SizedBox.shrink()
-              : HeatHero(
-                  heat: summary.heat,
-                  range: _range,
-                  bodyPaths: bodyPaths!,
-                  onOpen: (id) => openMuscleExercises(context, id),
-                  height: widget.wide ? 360 : 300,
-                ),
+        final hero = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Reveal(
+              visible: bodyPaths != null,
+              child: bodyPaths == null
+                  ? const SizedBox.shrink()
+                  : HeatHero(
+                      heat: summary.heat,
+                      range: _range,
+                      bodyPaths: bodyPaths!,
+                      onOpen: (id) => openMuscleExercises(context, id),
+                      height: widget.wide ? 360 : 300,
+                    ),
+            ),
+            const SizedBox(height: 8),
+            muscleDetail,
+          ],
         );
         final suggestion = SuggestionStrip(
           status: _status,
@@ -368,35 +150,31 @@ class _StatsPageState extends State<StatsPage> {
           owned: app.myGym,
           onOpen: (id) => openMuscleExercises(context, id),
         );
-        final reviewCard = Reveal(
-          visible: review != null,
-          child: review != null
-              ? WeeklyReviewCard(review: review)
-              : const SizedBox.shrink(),
-        );
-        final strength = StrengthProgress(
+        final strength = StrengthSection(
           exercises: exercises,
           bests: bests,
           today: app.today,
           range: _range,
         );
-        List<Widget> spaced(List<Widget> items) => [
+        final streak = StreakSection(
+          summary: summary,
+          hits: hits,
+          trainTarget: target,
+          review: weeklyReviewFor(app),
+        );
+        List<Widget> spaced(List<Widget> items, [double gap = 32]) => [
           for (final (i, w) in items.indexed) ...[
-            if (i > 0) const SizedBox(height: 16),
+            if (i > 0) SizedBox(height: gap),
             w,
           ],
         ];
-        final overview = _weekOverview(week, target);
-        final leftItems = [hero, suggestion, reviewCard, muscleDetail];
-        final rightItems = [
-          const BodyRouteCard(),
-          strength,
-          StreakGrid(summary: summary),
-          overview,
-          const ReviewCard(),
-          curveBlock,
-          bestsBlock,
-        ];
+        // 五块：热力人体（含建议）→ 体重 → 力量 → 坚持。没有记录时只剩引导 + 体重。
+        final leftItems = empty
+            ? [ProgressEmpty(height: widget.wide ? 300 : 240)]
+            : [hero, suggestion];
+        final rightItems = empty
+            ? [const BodyRouteCard(softAction: true)]
+            : [const BodyRouteCard(), strength, streak];
         return SingleChildScrollView(
           key: const PageStorageKey('stats-scroll'),
           padding: EdgeInsets.fromLTRB(
@@ -415,6 +193,7 @@ class _StatsPageState extends State<StatsPage> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       ProgressHeader(
+                        showRange: !empty,
                         trainDays: summary.trainDays,
                         range: _range,
                         onPickRange: _pickRange,
@@ -427,7 +206,7 @@ class _StatsPageState extends State<StatsPage> {
                               flex: 5,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: spaced(leftItems),
+                                children: spaced(leftItems, 16),
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -442,12 +221,11 @@ class _StatsPageState extends State<StatsPage> {
                         )
                       else
                         ...spaced([
-                          hero,
-                          suggestion,
-                          reviewCard,
-                          ...rightItems.take(3),
-                          muscleDetail,
-                          ...rightItems.skip(3),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: spaced(leftItems, 16),
+                          ),
+                          ...rightItems,
                         ]),
                     ],
                   );
@@ -472,86 +250,5 @@ class _StatsPageState extends State<StatsPage> {
     if (picked == null || !mounted) return;
     final next = StatsRange.values.firstWhere((r) => r.name == picked.id);
     if (next != _range) setState(() => _range = next);
-  }
-
-  Widget _weekOverview(Map<String, dynamic> week, num target) {
-    final app = context.app, p = context.pal;
-    final days = jsonRows(week['days']), meals = app.repo.allMeals();
-    final protein = days
-        .where(
-          (d) =>
-              jsNumber(
-                jsonMap(jsonMap(meals[d['iso']])['totals'])['protein'],
-              ) >=
-              app.proteinGoal,
-        )
-        .length;
-    final kcal = days
-        .where(
-          (d) =>
-              jsNumber(d['kcal']) >= app.kcalGoal * .9 &&
-              jsNumber(d['kcal']) <= app.kcalGoal * 1.1,
-        )
-        .length;
-    return StatBlock(
-      title: '本周总览',
-      children: [
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            for (final item in [
-              ('训练天数', '${week['trainDays']}/${fmt(target)}', p.tint),
-              ('蛋白达标', '$protein/7', p.protein),
-              ('热量在范围内', '$kcal/7', p.kcal),
-            ])
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(width: 16, height: 3, color: item.$3),
-                    const SizedBox(height: 8),
-                    Text(item.$2, style: AppText.num(p, 28)),
-                    LText(item.$1, style: AppText.hint(p)),
-                  ],
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            for (final item in [('训练', 'sets', p.tint), ('饮食', 'kcal', p.kcal)])
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    LText(item.$1, style: AppText.hint(p)),
-                    SizedBox(
-                      height: 84,
-                      child: CustomPaint(
-                        painter: WeekBars(
-                          [
-                            for (final day in days)
-                              {
-                                ...day,
-                                'label': AppMessages.of(context)
-                                    .text('${day['label']}'),
-                              },
-                          ],
-                          item.$2,
-                          item.$3,
-                          p,
-                          DefaultTextStyle.of(context).style,
-                        ),
-                        child: const SizedBox.expand(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
   }
 }

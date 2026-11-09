@@ -8,25 +8,51 @@ import '../../theme/theme.dart';
 import '../../theme/tokens.dart';
 import '../../domain/format.dart';
 
+/// 进度页的区块：区块标题（AppText.title）+ 内容。默认不套卡片，靠留白分组；
+/// [card] 为 true 时才套卡片（需要和周围内容分开的少数场合）。
 class StatBlock extends StatelessWidget {
-  const StatBlock({super.key, required this.title, required this.children});
+  const StatBlock({
+    super.key,
+    required this.title,
+    required this.children,
+    this.trailing,
+    this.card = false,
+  });
   final String title;
   final List<Widget> children;
+
+  /// 标题右侧的小字（如时间范围）。
+  final Widget? trailing;
+  final bool card;
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: context.pal.card,
-      borderRadius: BorderRadius.circular(22),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        LText(title, style: AppText.title(context.pal)),
-        ...children,
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    final p = context.pal;
+    return Container(
+      padding: card
+          ? const EdgeInsets.all(16)
+          : const EdgeInsets.symmetric(horizontal: 4),
+      decoration: card
+          ? BoxDecoration(
+              color: p.card,
+              borderRadius: BorderRadius.circular(22),
+            )
+          : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Expanded(child: LText(title, style: AppText.title(p))),
+              ?trailing,
+            ],
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
 }
 
 class GoalRings extends CustomPainter {

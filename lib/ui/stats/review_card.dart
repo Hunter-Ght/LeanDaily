@@ -7,11 +7,12 @@ import '../../domain/format.dart';
 import '../../domain/plan.dart';
 import '../../domain/progress.dart';
 import '../../theme/theme.dart';
-import 'stat_widgets.dart';
 import '../kit/form.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 
+/// 本周回顾的内容：本周完成次数、近 4 周出勤、按肌肉的周组数对比上周与说明。
+/// 外层标题由「坚持」里的可展开行提供。
 class ReviewCard extends StatefulWidget {
   const ReviewCard({super.key});
   @override
@@ -46,10 +47,10 @@ class _ReviewCardState extends State<ReviewCard> {
         : low.isNotEmpty && weekNumber(app.plan, app.today) >= 2
         ? '$low上周偏少，如果有精力，可以把这些部位的动作优先做完。'
         : '节奏正常。继续把次数做稳，需要加量时「今日」页会给建议。';
-    return StatBlock(
-      title: '本周回顾',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
         Row(
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
@@ -121,16 +122,8 @@ class _ReviewCardState extends State<ReviewCard> {
                                       ),
                                   top: 0,
                                   bottom: 0,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: p.tintSoft,
-                                      border: Border.symmetric(
-                                        vertical: BorderSide(
-                                          color: p.tertiary,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                    ),
+                                  child: ColoredBox(
+                                    color: p.tertiary.withValues(alpha: .45),
                                   ),
                                 ),
                                 Align(
@@ -140,17 +133,21 @@ class _ReviewCardState extends State<ReviewCard> {
                                     heightFactor: 1,
                                     child: DecoratedBox(
                                       decoration: BoxDecoration(
-                                        color:
-                                            jsNumber(g['week']) +
-                                                    jsNumber(g['last']) >=
-                                                jsNumber(band['lo'])
-                                            ? p.ok
-                                            : p.tertiary,
+                                        color: p.tint,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                     ),
                                   ),
                                 ),
+                                if (jsNumber(g['last']) > 0)
+                                  Positioned(
+                                    left: (box.maxWidth * pct(g['last']) - 1)
+                                        .clamp(0, box.maxWidth - 2),
+                                    width: 2,
+                                    top: 0,
+                                    bottom: 0,
+                                    child: ColoredBox(color: p.secondary),
+                                  ),
                               ],
                             ),
                           ),
@@ -226,7 +223,7 @@ class _ReviewCardState extends State<ReviewCard> {
           visible: hintOpen,
           child: hintOpen
               ? LText(
-                  '浅色区间是每周的参考范围（直接训练组数，一个动作的一组算一组）。',
+                  '灰色区间是每周的参考范围（直接训练组数，一个动作的一组算一组），竖线是上周的组数。',
                   style: AppText.hint(p),
                 )
               : const SizedBox.shrink(),

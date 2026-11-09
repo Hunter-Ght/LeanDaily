@@ -94,6 +94,7 @@ void main() {
       expect(h.controller.targets?['stage'], 'cut');
       final original = h.controller.kcalGoal;
       expect(find.byType(WeeklyReviewCard), findsOneWidget);
+      await tester.ensureVisible(find.text('应用：每日少 100 千卡'));
       await tester.tap(find.text('应用：每日少 100 千卡'));
       await settle(tester);
       expect(h.controller.kcalGoal, original - 100);
@@ -119,6 +120,7 @@ void main() {
       tab: 2,
       seed: seedReview,
     );
+    await tester.ensureVisible(find.text('先不调'));
     await tester.tap(find.text('先不调'));
     await settle(tester);
     expect(h.controller.kcalGoal, 2400);
@@ -134,6 +136,7 @@ void main() {
     );
     expect(find.textContaining('记体重能让回顾更准'), findsOneWidget);
     expect(find.text('先不调'), findsNothing);
+    await tester.ensureVisible(find.text('知道了'));
     await tester.tap(find.text('知道了'));
     await settle(tester);
     expect(h.controller.reviewDone, '2026-10-05');
@@ -204,7 +207,8 @@ void main() {
             weights: mode != 'nodata',
           ),
         );
-        if (mode == 'today') {
+        if (mode == 'today' || mode == 'progress') {
+          // 进度页里上周回顾在「坚持」块内，滚到可见再截图。
           await Scrollable.ensureVisible(
             tester.element(find.byType(WeeklyReviewCard)),
             alignment: .55,

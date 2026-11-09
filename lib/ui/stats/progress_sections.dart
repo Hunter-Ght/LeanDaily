@@ -19,7 +19,6 @@ import '../kit/body_figure.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import '../stats/muscle/body_map.dart';
-import 'stat_widgets.dart';
 
 /// 进度页的数据投影：只在记录变化或切换时间范围时重算一次。
 class ProgressSummary {
@@ -120,7 +119,11 @@ class ProgressHeader extends StatelessWidget {
     required this.trainDays,
     required this.range,
     required this.onPickRange,
+    this.showRange = true,
   });
+
+  /// 还没有训练记录时不显示时间范围。
+  final bool showRange;
   final int trainDays;
   final StatsRange range;
   final VoidCallback onPickRange;
@@ -136,8 +139,8 @@ class ProgressHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              LText(rangeEyebrow(range), style: AppText.hint(p)),
-              if (trainDays > 0) ...[
+              if (showRange) LText(rangeEyebrow(range), style: AppText.hint(p)),
+              if (showRange && trainDays > 0) ...[
                 Text(' · ', style: AppText.hint(p)),
                 LText('练了', style: AppText.hint(p)),
                 Text(
@@ -157,46 +160,51 @@ class ProgressHeader extends StatelessWidget {
           Row(
             children: [
               Expanded(child: LText('进度', style: AppText.display(p, size: 34))),
-              Semantics(
-                button: true,
-                label: AppMessages.of(context).text('时间范围'),
-                value: AppMessages.of(context).text(rangePill(range)),
-                child: Pressable(
-                  onTap: onPickRange,
-                  child: Container(
-                    constraints: const BoxConstraints(
-                      minHeight: 44,
-                      minWidth: 44,
-                    ),
-                    padding: const EdgeInsets.only(left: 16, right: 12),
-                    decoration: BoxDecoration(
-                      color: p.fill2,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FadeSwitcher(
-                          child: LText(
-                            rangePill(range),
-                            key: ValueKey(range),
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: p.text,
+              if (showRange)
+                Semantics(
+                  button: true,
+                  label: AppMessages.of(context).text('时间范围'),
+                  value: AppMessages.of(context).text(rangePill(range)),
+                  child: Pressable(
+                    onTap: onPickRange,
+                    child: Container(
+                      constraints: const BoxConstraints(
+                        minHeight: 44,
+                        minWidth: 44,
+                      ),
+                      padding: const EdgeInsets.only(left: 16, right: 12),
+                      decoration: BoxDecoration(
+                        color: p.fill2,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FadeSwitcher(
+                            child: LText(
+                              rangePill(range),
+                              key: ValueKey(range),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: p.text,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 2),
-                        Transform.rotate(
-                          angle: math.pi / 2,
-                          child: AppIcon('right', size: 16, color: p.secondary),
-                        ),
-                      ],
+                          const SizedBox(width: 2),
+                          Transform.rotate(
+                            angle: math.pi / 2,
+                            child: AppIcon(
+                              'right',
+                              size: 16,
+                              color: p.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
         ],
@@ -456,163 +464,7 @@ class SuggestionStrip extends StatelessWidget {
   }
 }
 
-/// 力量进步：动作最佳重量 × 次数，及较范围起点的变化（估算极限）。
-class StrengthProgress extends StatelessWidget {
-  const StrengthProgress({
-    super.key,
-    required this.exercises,
-    required this.bests,
-    required this.today,
-    this.range = StatsRange.weeks4,
-  });
-  final List<Map<String, dynamic>> exercises, bests;
-  final String today;
-  final StatsRange range;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.pal;
-    final windowDays = switch (range) {
-      StatsRange.weeks4 => 28,
-      StatsRange.weeks12 => 84,
-      StatsRange.all => 0,
-    };
-    final edge = calendar.shiftDate(today, -windowDays);
-    final recent = calendar.shiftDate(today, -(windowDays - 1));
-    final rows =
-        <({Map<String, dynamic> best, num? delta, String last, bool body})>[];
-    for (final b in bests) {
-      final ex = exercises.where((e) => e['ex'] == b['ex']).firstOrNull;
-      final points = ex == null
-          ? <Map<String, dynamic>>[]
-          : jsonRows(ex['points']);
-      if (points.isEmpty) continue;
-      final body = points.every((e) => jsNumber(e['weight']) == 0);
-      num key(Map<String, dynamic> e) => jsNumber(body ? e['reps'] : e['e1']);
-      final last = '${points.last['iso']}';
-      // 「全部」：与最早一次记录比较。
-      final before = range == StatsRange.all
-          ? points.take(1)
-          : points.where((e) => '${e['iso']}'.compareTo(edge) <= 0);
-      final within = range == StatsRange.all
-          ? points.skip(1)
-          : points.where((e) => '${e['iso']}'.compareTo(recent) >= 0);
-      num? delta;
-      if (before.isNotEmpty && within.isNotEmpty) {
-        final prior = before.map(key).reduce(math.max);
-        final now = within.map(key).reduce(math.max);
-        delta = now - prior;
-      }
-      rows.add((best: b, delta: delta, last: last, body: body));
-    }
-    // 有变化的在前，其次按最近训练时间。
-    rows.sort((a, b) {
-      final ad = a.delta == null ? 0 : 1, bd = b.delta == null ? 0 : 1;
-      if (ad != bd) return bd.compareTo(ad);
-      return b.last.compareTo(a.last);
-    });
-    final shown = rows.take(3).toList();
-    return StatBlock(
-      title: '力量进步',
-      children: [
-        if (shown.isEmpty) ...[
-          const SizedBox(height: 8),
-          LText('记过正式组后，这里会显示最佳成绩和进步。', style: AppText.hint(p)),
-        ] else ...[
-          const SizedBox(height: 4),
-          LText(switch (range) {
-            StatsRange.weeks4 => '最佳成绩 · 较 4 周前',
-            StatsRange.weeks12 => '最佳成绩 · 较 12 周前',
-            StatsRange.all => '最佳成绩 · 较最初',
-          }, style: AppText.hint(p)),
-          const SizedBox(height: 6),
-          for (final (i, r) in shown.indexed)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                border: i == 0
-                    ? null
-                    : Border(top: BorderSide(color: p.sep, width: .5)),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: LText(
-                      '${r.best['ex']}',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: p.text,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  _best(p, r.best, r.body),
-                  const SizedBox(width: 12),
-                  SizedBox(width: 62, child: _delta(p, r.delta, r.body)),
-                ],
-              ),
-            ),
-        ],
-      ],
-    );
-  }
-
-  Widget _best(AppPalette p, Map<String, dynamic> b, bool body) {
-    final unit = TextStyle(fontSize: 13, color: p.secondary);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.baseline,
-      textBaseline: TextBaseline.alphabetic,
-      children: [
-        if (!body) ...[
-          Text(fmt(b['heavy']), style: AppText.num(p, 24)),
-          LText(' kg', style: unit),
-          Text(' × ', style: unit),
-        ] else
-          LText('自重 × ', style: unit),
-        Text(fmt(b['heavyReps']), style: AppText.num(p, 24)),
-      ],
-    );
-  }
-
-  Widget _delta(AppPalette p, num? d, bool body) {
-    final unit = TextStyle(fontSize: 12, color: p.secondary);
-    if (d == null) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: LText('新记录中', style: unit),
-      );
-    }
-    if (d.abs() < .05) {
-      return Align(
-        alignment: Alignment.centerRight,
-        child: LText('持平', style: unit),
-      );
-    }
-    final up = d > 0;
-    final value = (d.abs() * 10).round() / 10;
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Text(
-            '${up ? '+' : '−'}${fmt(value)}',
-            style: AppText.num(p, 17, color: up ? p.recover : p.secondary),
-          ),
-          LText(body ? ' 次' : ' kg', style: unit),
-        ],
-      ),
-    );
-  }
-}
-
-/// 坚持格子：近 12 周每天是否训练（发力橙深浅），连续天数。
+/// 坚持格子：近 12 周每天是否训练（发力橙深浅）+ 图例。
 class StreakGrid extends StatelessWidget {
   const StreakGrid({super.key, required this.summary});
   final ProgressSummary summary;
@@ -623,20 +475,9 @@ class StreakGrid extends StatelessWidget {
     final today = summary.today;
     final monday = calendar.mondayOf(today);
     final start = calendar.shiftDate(monday, -11 * 7);
-    return StatBlock(
-      title: '坚持',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text('${summary.streak}', style: AppText.num(p, 44, color: p.tint)),
-            const SizedBox(width: 6),
-            LText('天连续', style: TextStyle(fontSize: 15, color: p.secondary)),
-          ],
-        ),
-        const SizedBox(height: 14),
         Semantics(
           image: true,
           label: AppMessages.of(context).text('近 12 周训练日历'),
@@ -715,7 +556,7 @@ class StreakGrid extends StatelessWidget {
   }
 }
 
-/// 可展开的区块头：点「展开 / 收起」切换，内容默认收起。
+/// 区块里的可展开部分：一行标题 + 小箭头，点一下展开 / 收起，内容默认收起。不套卡片。
 class CollapsibleBlock extends StatefulWidget {
   const CollapsibleBlock({
     super.key,
@@ -741,25 +582,29 @@ class _CollapsibleBlockState extends State<CollapsibleBlock> {
         Semantics(
           button: true,
           expanded: open,
+          label: AppMessages.of(context).text(widget.title),
           child: Pressable(
             onTap: () => setState(() => open = !open),
             child: Container(
               constraints: const BoxConstraints(minHeight: 52),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: p.card,
-                borderRadius: BorderRadius.circular(18),
+                border: Border(top: BorderSide(color: p.sep, width: .5)),
               ),
               child: Row(
                 children: [
-                  Expanded(child: LText(widget.title, style: AppText.title(p))),
-                  LText(
-                    open ? '收起' : '展开',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: p.secondary,
+                  Expanded(
+                    child: LText(
+                      widget.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: p.text,
+                      ),
                     ),
+                  ),
+                  Transform.rotate(
+                    angle: open ? -math.pi / 2 : math.pi / 2,
+                    child: AppIcon('right', size: 16, color: p.secondary),
                   ),
                 ],
               ),
@@ -769,7 +614,7 @@ class _CollapsibleBlockState extends State<CollapsibleBlock> {
         Reveal(
           visible: open,
           child: Padding(
-            padding: const EdgeInsets.only(top: 12),
+            padding: const EdgeInsets.only(top: 4, bottom: 8),
             child: widget.child,
           ),
         ),
@@ -780,7 +625,15 @@ class _CollapsibleBlockState extends State<CollapsibleBlock> {
 
 /// 墨色主按钮（非训练主操作）：背景 primary，文字 onPrimary。
 class InkButton extends StatelessWidget {
-  const InkButton(this.label, {super.key, required this.onTap});
+  const InkButton(
+    this.label, {
+    super.key,
+    required this.onTap,
+    this.soft = false,
+  });
+
+  /// 同屏已有主按钮时用次级样式（浅灰底、正文色）。
+  final bool soft;
   final String label;
   final VoidCallback onTap;
   @override
@@ -795,7 +648,7 @@ class InkButton extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 48),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: p.primary,
+            color: soft ? p.fill2 : p.primary,
             borderRadius: BorderRadius.circular(14),
           ),
           child: LText(
@@ -803,7 +656,7 @@ class InkButton extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: p.onPrimary,
+              color: soft ? p.text : p.onPrimary,
             ),
           ),
         ),
