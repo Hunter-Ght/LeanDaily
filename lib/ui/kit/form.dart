@@ -272,7 +272,8 @@ class _FormSwitchState extends State<FormSwitch>
                 width: 51,
                 height: 31,
                 decoration: BoxDecoration(
-                  color: Color.lerp(p.fill, p.ok, _x.value.clamp(0, 1)),
+                  // 打开为墨色（新规范没有系统绿）；深色下墨色是浅色，滑块随之变深。
+                  color: Color.lerp(p.fill, p.primary, _x.value.clamp(0, 1)),
                   borderRadius: BorderRadius.circular(99),
                 ),
                 child: Align(
@@ -283,7 +284,11 @@ class _FormSwitchState extends State<FormSwitch>
                       width: 27,
                       height: 27,
                       decoration: BoxDecoration(
-                        color: p.onTint,
+                        color: Color.lerp(
+                          p.onTint,
+                          p.onPrimary,
+                          _x.value.clamp(0, 1),
+                        ),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(

@@ -9,7 +9,6 @@ import '../../../domain/format.dart';
 import '../../../domain/movements.dart';
 import '../../../domain/muscles.dart';
 import '../../../theme/theme.dart';
-import '../../kit/badge.dart';
 
 /// 一个动作的主练肌肉和恢复状态，器械弹层与记组页头部共用。
 class ExerciseInfo {
@@ -140,28 +139,30 @@ class RecoveryTag extends StatelessWidget {
   Widget build(BuildContext context) {
     if (info.ready == null) return const SizedBox.shrink();
     final p = context.pal;
-    final warn = ToneBadge.tone(p, 'shoulder', p.bg.computeLuminance() < 0.1);
     final ok = info.ready!;
-    final fg = ok ? p.recover : warn.fg;
+    // 可以练：恢复青实心点；恢复中：中性底 + 空心青圈（还在恢复的路上），不用发力橙。
+    final fg = ok ? p.recover : p.secondary;
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: large ? 12 : 8,
         vertical: large ? 6 : 2,
       ),
       decoration: BoxDecoration(
-        color: ok ? p.recoverSoft : warn.bg,
+        color: ok ? p.recoverSoft : p.fill2,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (ok) ...[
-            DecoratedBox(
-              decoration: BoxDecoration(color: fg, shape: BoxShape.circle),
-              child: const SizedBox(width: 6, height: 6),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: ok ? p.recover : null,
+              border: ok ? null : Border.all(color: p.recover, width: 1.5),
+              shape: BoxShape.circle,
             ),
-            SizedBox(width: large ? 7 : 5),
-          ],
+            child: const SizedBox(width: 6, height: 6),
+          ),
+          SizedBox(width: large ? 7 : 5),
           Flexible(
             child: LText(
               info.recovery,

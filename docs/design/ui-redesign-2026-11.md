@@ -49,3 +49,11 @@
 7. **滚动**：弹层内的主滚动区由 `AppSheet` 提供（已修好“滑回顶部先空一大片再弹回”）。不要在弹层里另外加 `BouncingScrollPhysics`；嵌套的竖向滚动区用 `SheetController.of(context).physics` 或 `ClampingScrollPhysics`。底部固定按钮放 `AppSheet.footer`。
 8. **菜单/确认**：用 `showActionMenu`（`MenuAction` 支持 `detail` 说明、`group` 分组、`effort` 训练项）与 `showConfirm`，不要自己画菜单。
 9. **训练中打开的弹层**会自动沿用深色（不用处理）。
+
+## 五、第三轮补充（2026-11-08）
+
+1. **开关**（`FormSwitch`）打开为墨色，不再是系统绿。新界面不要再用 `p.ok` 绿色做状态色。
+2. **恢复状态标签**（`RecoveryTag`）：可以练 = 恢复青底 + 实心青点；恢复中 = 中性 `fill2` 底 + 空心青圈 + 次要色文字。**发力橙不表示“没恢复”。**
+3. **空状态**：不要一堆空卡片或一行灰字。整页 / 整块只放一个引导：淡化的 `BodyFigure` 或图标 + 一句正文色说明 + 一个明确的下一步按钮。
+4. **图表数据太少**（只有 1 个点）时不画空坐标，改成一句提示和那一个数字。
+5. **只格式化自己改过的文件**：`dart format <文件>`，不要 `dart format lib` 或整个仓库。
