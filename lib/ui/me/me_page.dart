@@ -9,6 +9,7 @@ import '../../config/app_info.dart';
 import '../../config/app_links.dart' as links;
 import '../kit/form.dart';
 import 'about_pages.dart';
+import 'backup_nudge.dart';
 import '../../app/routes.dart';
 import '../../config/ai_provider.dart';
 import '../../theme/theme.dart';
@@ -43,6 +44,7 @@ class MePage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
                 child: LText('我的', style: AppText.display(p, size: 34)),
               ),
+              if (app.shouldNudgeBackup) const BackupNudgeCard(),
               const ProfileCard(),
               const GroupHeader('训练'),
               GroupCard(
@@ -127,7 +129,9 @@ class MePage extends StatelessWidget {
                 children: [
                   MeRow(
                     label: '备份与高级',
-                    sub: '备份、恢复与提醒',
+                    sub: app.systemBackup.enabled
+                        ? '随 iPhone 备份'
+                        : app.backupStatusLabel,
                     icon: 'note',
                     onTap: () => openAndroidSettings(context),
                   ),

@@ -147,4 +147,16 @@ class ChannelNative implements Native {
   Future<void> openUrl(String url) => _call<void>('openUrl', {'url': url});
   @override
   Future<void> minimize() => _call<void>('minimize');
+  @override
+  Future<SystemBackupState> systemBackupState() async {
+    final m = await _call<Map<Object?, Object?>>('systemBackupState');
+    return SystemBackupState(
+      supported: m?['supported'] == true,
+      enabled: m?['enabled'] == true,
+    );
+  }
+
+  @override
+  Future<void> setSystemBackup(bool on) =>
+      _call<void>('setSystemBackup', {'enabled': on});
 }

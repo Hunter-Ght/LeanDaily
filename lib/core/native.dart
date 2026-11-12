@@ -53,6 +53,19 @@ abstract interface class Native {
   Future<void> keepAwake(bool on);
   Future<void> openUrl(String url);
   Future<void> minimize();
+
+  // ---- 随系统备份（仅 iOS；Android 的系统自动备份由 manifest 静态关闭）----
+  /// 是否支持把本机记录交给系统备份，以及现在是否已开启。
+  Future<SystemBackupState> systemBackupState();
+
+  /// 开启或关闭「随 iPhone 备份」。只改数据库和照片目录的备份标记，不含 API Key。
+  Future<void> setSystemBackup(bool on);
+}
+
+class SystemBackupState {
+  const SystemBackupState({required this.supported, required this.enabled});
+  const SystemBackupState.unsupported() : supported = false, enabled = false;
+  final bool supported, enabled;
 }
 
 enum PickSource { camera, gallery }
@@ -293,6 +306,28 @@ class FakeNative implements Native {
   Future<void> openUrl(String url) async => opened.add(url);
   @override
   Future<void> minimize() async {}
+
+  /// 默认当作 Android（不支持）；iOS 相关测试把 [systemBackupSupported] 设为 true。
+  bool systemBackupSupported = false;
+  bool systemBackupEnabled = false;
+  final List<bool> systemBackupCalls = [];
+  Object? failSystemBackup;
+  @override
+  Future<SystemBackupState> systemBackupState() async => SystemBackupState(
+    supported: systemBackupSupported,
+    enabled: systemBackupSupported && systemBackupEnabled,
+  );
+  @override
+  Future<void> setSystemBackup(bool on) async {
+    final err = failSystemBackup;
+    if (err != null) {
+      failSystemBackup = null;
+      throw err;
+    }
+    if (!systemBackupSupported) throw const NativeError('当前系统不支持');
+    systemBackupCalls.add(on);
+    systemBackupEnabled = on;
+  }
 
   /// 便捷：读 JSON 文档。
   Object? json(String key) => docs[key] == null ? null : jsonDecode(docs[key]!);

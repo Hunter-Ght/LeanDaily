@@ -37,7 +37,10 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     try {
       await action();
     } on Object catch (e) {
-      if (mounted) setState(() => _error = AppController.message(e));
+      final message = AppController.message(e);
+      // 自己在系统选择器里点了取消，不是出错。
+      final cancelled = message == '已取消导出' || message == '已取消导入';
+      if (mounted && !cancelled) setState(() => _error = message);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -56,9 +59,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
     )) {
       return;
     }
-    await backup.restoreBackup(app.native, app.repo, b);
-    await app.reminders.scheduleRest(0);
-    await app.reloadAfterRestore();
+    await app.restoreFromBackup(b);
     if (mounted) {
       _cfg = Map.of(app.settings.value);
       SheetController.of(context).close();
@@ -93,16 +94,39 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
           const GroupHeader('备份与恢复'),
           GroupCard(
             children: [
-              _button('导出备份', () async {
-                await backup.exportBackup(app.native, app.repo);
-                app.toast.show('备份已导出');
-              }),
+              GroupRow(
+                label: '导出备份',
+                sub: app.backupStatusLabel,
+                onTap: _busy ? null : () => _run(app.exportBackup),
+              ),
               GroupRow(label: '从备份恢复', onTap: _busy ? null : _restore),
             ],
           ),
           const GroupFooter(
             '包含记录、照片和设置，不含密钥。单个备份最多 100MB。卸载 APP 会删除手机记录，请定期导出。',
           ),
+          const GroupFooter(
+            '导出时可以选择保存位置，比如「文件」、云盘或下载目录。换手机时带上这个文件，在新手机的欢迎页或这里选「从备份恢复」。',
+          ),
+          if (app.systemBackup.supported) ...[
+            const GroupHeader('随 iPhone 备份'),
+            GroupCard(
+              children: [
+                GroupRow(
+                  label: '随 iPhone 备份',
+                  trailing: FormSwitch(
+                    label: '随 iPhone 备份',
+                    value: app.systemBackup.enabled,
+                    onChanged: (v) => _run(() => app.setSystemBackup(v)),
+                  ),
+                ),
+              ],
+            ),
+            const GroupFooter(
+              '默认关闭，记录只留在这部手机上。打开后，记录和照片会进入 iCloud 或电脑上的 iPhone 备份，换 iPhone 恢复时自动回来。API Key 不会进入备份，换机后需要重新填写。',
+            ),
+            const GroupFooter('照片也会一起备份，会占用 iCloud 空间。关闭后，之后的备份不再包含这些记录。'),
+          ],
           const GroupHeader('触感与提醒'),
           GroupCard(
             children: [

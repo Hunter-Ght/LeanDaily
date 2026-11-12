@@ -13,6 +13,8 @@ import '../data/update_check.dart';
 export '../data/update_check.dart' show UpdateStatus;
 import '../core/haptics.dart';
 import 'diagnostics.dart';
+import '../data/backup.dart' as backup_io;
+import '../data/backup_status.dart';
 import '../data/body_log_store.dart';
 import '../data/plan_store.dart';
 import '../data/prefs.dart';
@@ -21,6 +23,7 @@ import '../data/reminders.dart';
 import '../data/repository.dart';
 import '../data/state_doc.dart' show newId;
 import '../data/vision.dart';
+import '../domain/backup_reminder.dart' as backup_rules;
 import '../domain/body.dart' as body;
 import '../domain/calendar.dart' as calendar;
 import '../domain/foods.dart';
@@ -31,7 +34,7 @@ import '../domain/plan.dart' as plan_lib;
 import '../domain/progress.dart' as progress_lib;
 import '../domain/progress_options.dart';
 import '../domain/format.dart' show jsonMap;
-import '../domain/records.dart' show DomainError;
+import '../domain/records.dart' show DomainError, truthy;
 import '../domain/movements.dart' show customMuscles;
 
 /// 轻提示（顶部小胶囊）。
@@ -165,6 +168,7 @@ class AppController extends ChangeNotifier {
        planStore = PlanStore(native, clock: clock),
        profileStore = ProfileStore(native),
        bodyLog = BodyLogStore(native),
+       backupStatusStore = BackupStatusStore(native),
        reminders = Reminders(native, clock: clock),
        vision = Vision(native) {
     rest = RestTimer(_persistRest, () {
@@ -469,6 +473,7 @@ class AppController extends ChangeNotifier {
       await _loadProfile();
       await _loadReview();
       await _loadHints();
+      await _loadBackupStatus();
       final cachedUpdate = _hints['updateInfo'];
       if (updateUrl.isNotEmpty && cachedUpdate is Map) {
         updateInfo = parseUpdate(jsonEncode(cachedUpdate));
@@ -792,6 +797,115 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------------------------------------------------------------- 备份提醒 / 随系统备份
+
+  final BackupStatusStore backupStatusStore;
+  BackupStatus backupStatus = const BackupStatus();
+
+  /// 本机是否支持「随 iPhone 备份」，以及是否已开启。Android 上不支持。
+  SystemBackupState systemBackup = const SystemBackupState.unsupported();
+
+  Future<void> _loadBackupStatus() async {
+    backupStatus = await backupStatusStore.load();
+    try {
+      systemBackup = await native.systemBackupState();
+    } on Object {
+      systemBackup = const SystemBackupState.unsupported();
+    }
+  }
+
+  int get _nowMs => clock().millisecondsSinceEpoch;
+
+  /// 「我的」页备份行的状态文案。
+  String get backupStatusLabel => backup_rules.backupStatusText(
+    lastBackupMs: backupStatus.lastExportMs,
+    nowMs: _nowMs,
+  );
+
+  backup_rules.BackupFacts? _backupFacts;
+  int _backupFactsRevision = -1;
+  String _backupFactsDay = '';
+  backup_rules.BackupFacts get backupFacts {
+    if (_backupFacts == null ||
+        _backupFactsRevision != repo.revision ||
+        _backupFactsDay != today) {
+      final state = repo.state;
+      Iterable<String> dates(String kind, bool Function(Map r) keep) => [
+        for (final r in (state[kind] as Map).values)
+          if (!truthy((r as Map)['deleted']) && keep(r)) r['date'] as String,
+      ];
+      _backupFacts = backup_rules.backupFacts(
+        trainDates: dates('sets', (r) => r['type'] != '热身'),
+        mealDates: dates('meals', (_) => true),
+        today: today,
+      );
+      _backupFactsRevision = repo.revision;
+      _backupFactsDay = today;
+    }
+    return _backupFacts!;
+  }
+
+  /// 「我的」页顶部是否显示备份提示卡。训练页是单独的全屏页面，不会出现这张卡。
+  bool get shouldNudgeBackup =>
+      booted &&
+      today.isNotEmpty &&
+      backup_rules.shouldNudgeBackup(
+        facts: backupFacts,
+        lastBackupMs: backupStatus.lastExportMs,
+        snoozeUntilMs: backupStatus.snoozeUntilMs,
+        nowMs: _nowMs,
+        systemBackupOn: systemBackup.enabled,
+      );
+
+  Future<void> _saveBackupStatus(BackupStatus next) async {
+    backupStatus = next;
+    notifyListeners();
+    try {
+      await backupStatusStore.save(next);
+    } on Object {
+      // 只影响提醒的时间，不影响记录和备份文件。
+    }
+  }
+
+  /// 点“以后再说”：14 天内不再提示。
+  Future<void> snoozeBackupNudge() => _saveBackupStatus(
+    backupStatus.copyWith(
+      snoozeUntilMs: backup_rules.backupSnoozeUntil(_nowMs),
+    ),
+  );
+
+  /// 导出备份文件（系统文件选择器让用户选存放位置）。成功后记下时间。
+  /// 用户取消或失败会抛出异常，不更新时间。
+  Future<void> exportBackup() async {
+    await backup_io.exportBackup(native, repo, clock: clock);
+    await _saveBackupStatus(BackupStatus(lastExportMs: _nowMs));
+    toast.show('备份已保存到你选择的位置');
+  }
+
+  /// 打开或关闭「随 iPhone 备份」。失败时保持原状并提示。
+  Future<void> setSystemBackup(bool on) async {
+    try {
+      await native.setSystemBackup(on);
+      systemBackup = SystemBackupState(supported: true, enabled: on);
+      notifyListeners();
+    } on Object {
+      toast.show('设置未保存，请稍后再试');
+    }
+  }
+
+  /// 用已校验的备份替换本机记录，并回到可用状态。引导页和「备份与高级」共用。
+  Future<void> restoreFromBackup(Map<String, dynamic> b) async {
+    await backup_io.restoreBackup(native, repo, b);
+    await reminders.scheduleRest(0);
+    await reloadAfterRestore();
+    // 现在手机上的记录就等于这份备份；从备份生成的时间开始算“上次备份”。
+    final created = DateTime.tryParse('${b['created']}')
+        ?.millisecondsSinceEpoch;
+    await _saveBackupStatus(BackupStatus(lastExportMs: created));
+    // 换新手机恢复的人不该再被引导页拦住。
+    if (needsOnboarding) await skipOnboarding();
+  }
+
   /// 备份恢复之后，把偏好重新读一遍。
   Future<void> reloadAfterRestore() async {
     await settings.load();
@@ -804,6 +918,13 @@ class AppController extends ChangeNotifier {
     progress = await _loadProgress();
     dayStates = await dayStatesStore.load();
     await _loadProfile();
+    try {
+      bodyEntries = await bodyLog.load();
+    } on Object {
+      bodyEntries = [];
+    }
+    await _loadReview();
+    await _loadHints();
     rest.clear();
     notifyListeners();
     _scheduleReminders();

@@ -12,7 +12,7 @@ Do not automatically select **Data Not Collected**. Local-only core records and 
 | Public links | Browser request to GitHub/GitHub Pages | User opens link | Hosting policy applies |
 | Export | Records/photos to user-selected file destination | Explicit export | User/target storage controlled |
 
-No app accounts, ads, tracking SDKs, analytics or crash-reporting SDKs. No HealthKit integration. Camera and system photo picker only; local notifications. No automatic cloud sync. Local database/photos excluded from automatic system backup. API keys and AI consent excluded from exported backups.
+No app accounts, ads, tracking SDKs, analytics or crash-reporting SDKs. No HealthKit integration. Camera and system photo picker only; local notifications. No automatic cloud sync. By default the local database/photos are excluded from automatic system backup (Android auto-backup stays disabled). On iOS the user can opt in via "Include in iPhone backup" (Backup & advanced), which puts the database and photos into the user's own iCloud or computer iPhone backup; the choice can be reversed at any time. API keys (device-only Keychain) are never included in exported or iPhone backups. AI consent is excluded from exported backups; with the iPhone-backup opt-in it travels inside the database, bound to the same endpoint, and the API key must be re-entered on a new phone.
 
 ## App Store Connect
 

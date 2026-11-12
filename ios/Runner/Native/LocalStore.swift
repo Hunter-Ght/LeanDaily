@@ -22,10 +22,13 @@ final class LocalStore {
             .appendingPathComponent("LeanDaily", isDirectory: true)
         self.service = service ?? "\(Bundle.main.bundleIdentifier ?? "app.leandaily").credentials.v1"
         try fm.createDirectory(at: self.root, withIntermediateDirectories: true)
-        try protect(self.root)
         let marker = self.root.appendingPathComponent(".installation")
+        let fresh = !fm.fileExists(atPath: marker.path)
+        // Excluded from backup by default. The user may opt in (setBackupIncluded); an existing
+        // choice is stored on the directory itself and must survive relaunch.
+        try protect(self.root, exclude: fresh ? true : nil)
         // Keychain survives uninstall. A fresh app sandbox must not resurrect an old API key.
-        if !fm.fileExists(atPath: marker.path) {
+        if fresh {
             try deleteSecret()
             try Data("1".utf8).write(to: marker, options: .atomic)
         }
@@ -45,11 +48,33 @@ final class LocalStore {
     }
     deinit { sqlite3_close(db) }
 
-    private func protect(_ url: URL) throws {
+    /// `exclude` nil means "follow the current choice for the whole data directory".
+    private func protect(_ url: URL, exclude: Bool? = nil) throws {
         var value = url
-        var resources = URLResourceValues(); resources.isExcludedFromBackup = true
+        var resources = URLResourceValues(); resources.isExcludedFromBackup = exclude ?? !backupIncluded
         try value.setResourceValues(resources)
         try FileManager.default.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: url.path)
+    }
+    /// True when the user opted in to system (iCloud / computer) backup. The API Key lives in the
+    /// Keychain with ThisDeviceOnly accessibility, so it never travels with a backup either way.
+    var backupIncluded: Bool {
+        let values = try? root.resourceValues(forKeys: [.isExcludedFromBackupKey])
+        return values?.isExcludedFromBackup == false
+    }
+    /// Applies the choice to the data directory (database, WAL files) and to every photo.
+    func setBackupIncluded(_ included: Bool) throws {
+        let fm = FileManager.default
+        var targets = [root]
+        let photos = root.appendingPathComponent("photos", isDirectory: true)
+        if fm.fileExists(atPath: photos.path) {
+            targets.append(photos)
+            targets += (try fm.contentsOfDirectory(at: photos, includingPropertiesForKeys: nil))
+        }
+        for url in targets {
+            var value = url
+            var resources = URLResourceValues(); resources.isExcludedFromBackup = !included
+            try value.setResourceValues(resources)
+        }
     }
     private func execute(_ sql: String) throws {
         guard sqlite3_exec(db, sql, nil, nil, nil) == SQLITE_OK else { throw NativeFailure("本机数据保存失败，请检查存储空间") }

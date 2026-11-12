@@ -8,6 +8,7 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
+import '../../data/backup.dart' as backup;
 import '../../domain/body.dart';
 import '../../domain/templates.dart';
 import '../../theme/theme.dart';
@@ -41,6 +42,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
   );
   String? _selected;
   bool _saving = false;
+  bool _restoring = false;
   bool _initialized = false;
   bool _programmatic = false;
   int _dragOrigin = 0;
@@ -117,6 +119,23 @@ class _OnboardingFlowState extends State<OnboardingFlow>
           SpringSimulation(_onboardingSpring, _pages.offset, step * width, 0),
         )
         .then((_) => _programmatic = false);
+  }
+
+  /// 换新手机的人：直接选备份文件恢复，不用再走一遍评估。成功后外壳自动进入首页。
+  Future<void> _restore() async {
+    if (_saving || _restoring) return;
+    final app = context.app;
+    setState(() => _restoring = true);
+    try {
+      final b = await backup.chooseBackup(app.native);
+      await app.restoreFromBackup(b);
+      app.toast.show('记录已恢复');
+    } on Object catch (e) {
+      final message = AppController.message(e);
+      if (message != '已取消导入') app.toast.show(message);
+    } finally {
+      if (mounted) setState(() => _restoring = false);
+    }
   }
 
   Future<void> _skip() async {
@@ -211,7 +230,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                   end: .96,
                 ).animate(CurvedAnimation(parent: _exit, curve: Curves.easeIn)),
                 child: AbsorbPointer(
-                  absorbing: _saving,
+                  absorbing: _saving || _restoring,
                   child: Column(
                     children: [
                       Padding(
@@ -383,6 +402,14 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   ? _finish
                                   : () => _go(_step + 1),
                             ),
+                            if (_step == 0 && !widget.upgrade) ...[
+                              const SizedBox(height: 6),
+                              OnboardingButton(
+                                label: _restoring ? '正在恢复…' : '已有备份？从备份恢复',
+                                textOnly: true,
+                                onTap: _restoring ? null : _restore,
+                              ),
+                            ],
                             if (_step == 1) ...[
                               const SizedBox(height: 6),
                               OnboardingButton(
