@@ -10,6 +10,7 @@ import '../kit/transitions.dart';
 
 import '../../app/app_controller.dart';
 import '../../domain/format.dart';
+import '../../domain/ladders.dart' show ladderLabel;
 import '../../domain/plan.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
@@ -435,7 +436,11 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
             for (final entry
                 in (d['ladders'] is Map ? d['ladders'] as Map : const {})
                     .entries) ...[
-              const GroupHeader('进阶阶段（俯卧撑）'),
+              GroupHeader(
+                entry.key == 'pushup' && entry.value['label'] == null
+                    ? '进阶阶段（俯卧撑）'
+                    : '进阶阶段（${ladderLabel('${entry.key}', entry.value)}）',
+              ),
               GroupCard(
                 children: [
                   GroupRow(
@@ -456,7 +461,12 @@ class _PlanEditorSheetState extends State<PlanEditorSheet> {
                 ],
               ),
               GroupFooter(
-                '升级条件：${entry.value['steps'][entry.value['stage']]['hint']}。达到后「今日」页会提示你升级。',
+                // 阶梯最后一级没有下一级可升，只显示那一句说明。
+                entry.value['label'] != null &&
+                        entry.value['stage'] ==
+                            (entry.value['steps'] as List).length - 1
+                    ? '${entry.value['steps'][entry.value['stage']]['hint']}'
+                    : '升级条件：${entry.value['steps'][entry.value['stage']]['hint']}。达到后「今日」页会提示你升级。',
               ),
             ],
             const GroupHeader('蛋白质'),

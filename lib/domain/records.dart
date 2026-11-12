@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'e1rm.dart';
+
 class DomainError implements Exception {
   const DomainError(this.message);
   final String message;
@@ -204,7 +206,7 @@ Map<String, dynamic> dayOf(Map<String, dynamic> state, String date) {
   for (final s in work) {
     best['${s['ex']}'] = math.max(
       (best['${s['ex']}'] ?? 0) as num,
-      r1(number(s['w']) * (1 + number(s['reps']) / 30)),
+      r1(estimateE1rm(number(s['w']), number(s['reps']))),
     );
   }
   num volume(Iterable<Map<String, dynamic>> rows) =>

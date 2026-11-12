@@ -1,6 +1,7 @@
 import '../../app/app_controller.dart';
 import '../../domain/format.dart';
 import '../../domain/deload.dart';
+import '../../domain/plan_upgrade.dart';
 import '../../domain/plan.dart' as plan;
 import '../../domain/progress.dart' as progress;
 import '../../domain/muscles.dart';
@@ -95,11 +96,30 @@ class TodayModel {
         return d != 0 ? d : a.$1.compareTo(b.$1);
       });
     var setSuggestions = 0;
-    suggestions = sorted
+    final picked = sorted
         .map((e) => e.$2)
         .where((s) => s['kind'] != 'sets' || ++setSuggestions == 1)
         .take(3)
         .toList();
+    // 方案升级建议优先级最低：有疼痛、减量、升降级、加量这类要处理的建议时不出现；
+    // 只剩「先保持」这类纯提示时，让位给升级建议，所以同一时间最多一条建议。
+    final pressing = picked.any(
+      (s) => s['kind'] != 'variant' && s['kind'] != 'gear',
+    );
+    planUpgrade = pressing
+        ? null
+        : planUpgradeSuggestion(
+            templateId: app.activeTemplateId,
+            plan: app.plan,
+            days: history,
+            dayStates: app.dayStates,
+            progress: app.progress,
+            today: iso,
+            profile: app.profile,
+            targets: app.targets,
+            options: app.progressOptions,
+          );
+    suggestions = planUpgrade == null ? picked : [];
     if (train) {
       final previous = Map<String, Map<String, dynamic>>.from(history)
         ..remove(iso);
@@ -129,6 +149,7 @@ class TodayModel {
   final before = <String, Map<String, dynamic>>{},
       after = <String, Map<String, dynamic>>{};
   late final List<Map<String, dynamic>> all, suggestions;
+  late final Map<String, dynamic>? planUpgrade;
   List<Map<String, dynamic>> recovery = [];
   late final Map<String, dynamic>? next, missed;
   bool get train => slot['kind'] == 'train';

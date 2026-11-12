@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'e1rm.dart';
 import 'movements.dart';
 export 'movements.dart' show MUSCLE;
 
@@ -30,7 +31,8 @@ double _number(Object? v) {
 }
 
 bool _truth(Object? v) => v != null && v != false && v != '' && v != 0;
-double _e1(Map s) => _number(s['w']) * (1 + _number(s['reps']) / 30);
+double _e1(Map s) =>
+    estimateE1rm(_number(s['w']), _number(s['reps'])).toDouble();
 int dateMs(String iso, [int hour = NOMINAL_HOUR]) {
   final p = iso.split('-').map(int.parse).toList();
   return DateTime(p[0], p[1], p[2], hour).millisecondsSinceEpoch;

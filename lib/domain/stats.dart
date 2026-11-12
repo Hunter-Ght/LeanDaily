@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'calendar.dart' as calendar;
+import 'e1rm.dart';
 
 typedef _Json = Map<String, dynamic>;
 _Json _map(Object? value) =>
@@ -21,7 +22,7 @@ num _number(Object? value) {
 
 num _round(num value) => value.isFinite ? (value + .5).floor() : value;
 num _e1(Object? weight, Object? reps) =>
-    _round(_number(weight) * (1 + _number(reps) / 30) * 10) / 10;
+    estimateE1rmRounded(_number(weight), _number(reps));
 List<_Json> _workSets(Object? day) => [
   for (final s in _list(_map(day)['sets']))
     if (s is Map &&

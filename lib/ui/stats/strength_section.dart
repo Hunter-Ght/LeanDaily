@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:leandaily/l10n/app_messages.dart';
 
+import '../../domain/e1rm.dart' show e1rmReliable;
 import '../../domain/format.dart';
 import '../../domain/stats.dart' show chartPoints;
 import '../../domain/stats_range.dart';
@@ -260,6 +261,12 @@ class _Curve extends StatelessWidget {
                 : '最近一次估算极限 · ${shortDate(last['iso'])} · ${fmt(last['weight'])}×${fmt(last['reps'])}',
             style: AppText.hint(p),
           ),
+          // 估算极限在 12 次以内才比较准；次数多时照常显示，但标明仅供参考。
+          if (!body && !e1rmReliable(jsNumber(last['reps'])))
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: LText('次数超过 12 次，估算偏差较大，仅供参考', style: AppText.hint(p)),
+            ),
           const SizedBox(height: 6),
           if (points.length < 2)
             LText('再练几次就能看到曲线', style: AppText.body(p).copyWith(fontSize: 15))

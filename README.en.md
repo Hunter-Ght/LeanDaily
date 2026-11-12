@@ -57,7 +57,7 @@ It is a fully offline app: no account, no ads, no analytics, no server.
 
 <img src="docs/images/feature-training.png" alt="Workout mode" width="100%">
 
-**Rule-based progression, no black box.** All rules are deterministic, explained and tested — see [docs/PROGRESSION.md](docs/PROGRESSION.md). Double progression within a rep range; faster for beginners, stricter for advanced lifters; equipment-aware load steps; pain/form flags freeze progression; return-from-break regression; a *suggest-only* deload; special protection for under-18s and for cutting phases. A 26-week simulation test suite guards against absurd recommendations.
+**Rule-based progression, no black box.** All rules are deterministic, explained and tested — see [docs/PROGRESSION.md](docs/PROGRESSION.md). Double progression within a rep range; faster for beginners, stricter for advanced lifters; equipment-aware load steps; pain/form flags freeze progression; return-from-break regression; a *suggest-only* deload; bodyweight ladders (push-up, squat, row, bridge, core) that move up only when you max the reps with energy to spare; a suggest-only "try a higher-level plan" card after eight steady weeks; one Epley formula for estimated 1RM; special protection for under-18s and for cutting phases. A 26-week simulation test suite guards against absurd recommendations.
 
 **Nutrition, kept simple.** Daily calorie + protein targets (Mifflin-St Jeor with safety floors), ~300 built-in foods, one-tap favourites, optional photo recognition through *your own* OpenAI-compatible endpoint (never contacted unless you configure it).
 
@@ -114,9 +114,9 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/DESIGN.md](docs/DESIG
 
 ## Roadmap
 
-- [ ] Bodyweight progression ladders (squat / row / bridge / crunch)
-- [ ] "Graduate to the next plan" suggestions
-- [ ] Estimated 1RM as a unified strength metric
+- [x] Bodyweight progression ladders (squat / row / bridge / core)
+- [x] "Graduate to the next plan" suggestions
+- [x] Estimated 1RM as a unified strength metric
 - [x] English, Simplified Chinese and Traditional Chinese UI
 - [x] iOS builds and TestFlight upload (App Store release pending)
 

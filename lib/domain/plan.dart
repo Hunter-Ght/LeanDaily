@@ -1036,6 +1036,11 @@ Map<String, dynamic> resolveEx(
     'step': step,
     'stage': stage,
     'stages': steps.length,
+    // 新增的自重阶梯每一级自带要点、器材和是否分侧；俯卧撑阶梯没有这些字段，保持原样。
+    if (step['tip'] is String && (step['tip'] as String).isNotEmpty)
+      'tip': step['tip'],
+    if (step['gear'] is String) 'gear': step['gear'],
+    if (step['side'] is bool) 'side': step['side'],
   };
 }
 
