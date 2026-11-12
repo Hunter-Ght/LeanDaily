@@ -143,6 +143,36 @@ final class NativePickers: NSObject, UIDocumentPickerDelegate, PHPickerViewContr
             DispatchQueue.main.async { self.finish(result) }
         }
     }
+    /// Presents the system share sheet for one PNG. The reply is sent once the sheet is on screen, not when
+    /// it is dismissed, so the Dart side never waits on the user. The temporary file is removed when the sheet ends.
+    func shareImage(bytes: Data, name: String, anchor: [Double]?, done: @escaping (Result<Any?, Error>) -> Void) {
+        guard !bytes.isEmpty, bytes.count <= 30 * 1024 * 1024 else { done(.failure(NativeFailure("图片无效"))); return }
+        guard let controller = presenter, !controller.isBeingDismissed else {
+            done(.failure(NativeFailure("暂时无法打开分享面板"))); return
+        }
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("leandaily-share-\(UUID())", isDirectory: true)
+        var filename = (name as NSString).lastPathComponent
+        if filename.isEmpty || filename == "." || filename == ".." { filename = "LeanDaily.png" }
+        if (filename as NSString).pathExtension.lowercased() != "png" { filename += ".png" }
+        let url = folder.appendingPathComponent(filename)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try bytes.write(to: url, options: [.atomic])
+        } catch { try? FileManager.default.removeItem(at: folder); done(.failure(error)); return }
+        let sheet = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        sheet.completionWithItemsHandler = { _, _, _, _ in try? FileManager.default.removeItem(at: folder) }
+        // On iPad the sheet is a popover and crashes without a source. Point it at the button when Dart knows
+        // where it is, otherwise at the bottom edge of the presenting view.
+        if let popover = sheet.popoverPresentationController {
+            popover.sourceView = controller.view
+            if let a = anchor, a.count == 4 {
+                popover.sourceRect = CGRect(x: a[0], y: a[1], width: a[2], height: a[3])
+            } else {
+                popover.sourceRect = CGRect(x: controller.view.bounds.midX, y: controller.view.bounds.maxY - 1, width: 1, height: 1)
+            }
+        }
+        controller.present(sheet, animated: true) { done(.success(nil)) }
+    }
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         if presentationController.presentedViewController is PHPickerViewController || presentationController.presentedViewController is UIImagePickerController {
             finish(.success([Data]()))

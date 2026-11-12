@@ -117,6 +117,15 @@ final class NativeChannel implements MethodChannel.MethodCallHandler {
                 case "cancel": async(result, () -> { notifier.cancel((List<?>)call.arguments); return null; }); break;
                 case "pendingIds": async(result, notifier::pendingIds); break;
                 case "takeLaunchPayload": result.success(launchPayload); launchPayload = null; break;
+                case "shareImage": {
+                    byte[] image = (byte[])args.get("bytes"); String imageName = string(args,"name","");
+                    IO.execute(() -> {
+                        try {
+                            java.io.File file = Share.write(activity, image, imageName);
+                            main.post(() -> { try { Share.start(activity, file); result.success(null); } catch (Exception e) { fail(result, e); } });
+                        } catch (Exception e) { main.post(() -> fail(result, e)); }
+                    }); break;
+                }
                 case "keepAwake":
                     if (Boolean.TRUE.equals(call.arguments)) activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                     else activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

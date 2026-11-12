@@ -1,0 +1,15 @@
+{
+  "分享": {"en": "Share", "zh_Hant": "分享"},
+  "分享图片": {"en": "Share image", "zh_Hant": "分享圖片"},
+  "分享卡片预览": {"en": "Share card preview", "zh_Hant": "分享卡片預覽"},
+  "外观": {"en": "Appearance", "zh_Hant": "外觀"},
+  "浅色": {"en": "Light", "zh_Hant": "淺色"},
+  "深色": {"en": "Dark", "zh_Hant": "深色"},
+  "比例": {"en": "Ratio", "zh_Hant": "比例"},
+  "显示重量": {"en": "Show weight", "zh_Hant": "顯示重量"},
+  "天训练": {"en": "days trained", "zh_Hant": "天訓練"},
+  "周连续": {"en": "week streak", "zh_Hant": "週連續"},
+  "生成图片失败，请重试": {"en": "Couldn't create the image. Please try again.", "zh_Hant": "產生圖片失敗，請重試"},
+  "图片无效": {"en": "Invalid image", "zh_Hant": "圖片無效"},
+  "暂时无法打开分享面板": {"en": "Can't open the share sheet right now", "zh_Hant": "暫時無法開啟分享面板"}
+}

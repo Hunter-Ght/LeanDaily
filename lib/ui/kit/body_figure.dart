@@ -47,6 +47,7 @@ class BodyFigure extends StatefulWidget {
 
   static Future<Map<String, dynamic>>? _data;
   static Map<String, dynamic>? _loaded;
+  static bool get isLoaded => _loaded != null;
   static Future<Map<String, dynamic>> load() => _data ??= rootBundle
       .loadString('assets/muscle_map.json')
       .then((s) => _loaded = jsonDecode(s) as Map<String, dynamic>);

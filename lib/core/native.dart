@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui' show Rect;
 
 /// 原生能力的门面。契约见 MIGRATION.md 第 2 节。
 /// 真实实现 [ChannelNative]走 MethodChannel；测试用 [FakeNative]。
@@ -48,6 +49,11 @@ abstract interface class Native {
   /// 点了通知。冷启动时由 [takeLaunchPayload] 取。
   Stream<NotificationTap> get notificationTaps;
   Future<NotificationTap?> takeLaunchPayload();
+
+  // ---- 分享 ----
+  /// 调起系统分享面板分享一张 PNG。[anchor] 是触发按钮在屏幕上的位置（逻辑像素），
+  /// iPad 的分享浮层指向它；iPhone 与 Android 忽略。
+  Future<void> shareImage(Uint8List bytes, String name, {Rect? anchor});
 
   // ---- 杂项 ----
   Future<void> keepAwake(bool on);
@@ -117,6 +123,14 @@ class NotificationTap {
   final bool plan;
 }
 
+/// [FakeNative.shareImage] 收到的一次分享。
+class SharedImage {
+  const SharedImage(this.bytes, this.name, this.anchor);
+  final Uint8List bytes;
+  final String name;
+  final Rect? anchor;
+}
+
 /// 原生层抛出的错误，message 已是面向用户的中文。
 class NativeError implements Exception {
   const NativeError(this.message);
@@ -135,6 +149,7 @@ class FakeNative implements Native {
   final List<HttpCall> httpLog = [];
   final List<ScheduledNote> scheduled = [];
   final List<String> opened = [];
+  final List<SharedImage> shared = [];
   final Set<String> cancelledHttp = {};
   String tz;
   DateTime _now;
@@ -285,6 +300,18 @@ class FakeNative implements Native {
     final p = launchPayload;
     launchPayload = null;
     return p;
+  }
+
+  /// 记录调用；置 [failNextShare] 可模拟分享失败。
+  Object? failNextShare;
+  @override
+  Future<void> shareImage(Uint8List bytes, String name, {Rect? anchor}) async {
+    final err = failNextShare;
+    if (err != null) {
+      failNextShare = null;
+      throw err;
+    }
+    shared.add(SharedImage(bytes, name, anchor));
   }
 
   @override

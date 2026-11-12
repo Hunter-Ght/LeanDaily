@@ -7,9 +7,12 @@ import '../../domain/format.dart';
 import '../../domain/plan.dart';
 import '../../domain/progress.dart';
 import '../../theme/theme.dart';
+import '../../l10n/app_messages.dart';
 import '../kit/form.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
+import '../share/share_data.dart';
+import '../share/share_sheet.dart';
 
 /// 本周回顾的内容：本周完成次数、近 4 周出勤、按肌肉的周组数对比上周与说明。
 /// 外层标题由「坚持」里的可展开行提供。
@@ -28,6 +31,10 @@ class _ReviewCardState extends State<ReviewCard> {
       app.plan,
       app.repo.allDays(),
       app.dayStates,
+      app.today,
+    );
+    final share = WeekShare.build(
+      app.repo.allDays().map((k, v) => MapEntry(k, jsonMap(v))),
       app.today,
     );
     final a = jsonMap(r['adherence']);
@@ -208,16 +215,41 @@ class _ReviewCardState extends State<ReviewCard> {
           note,
           style: TextStyle(fontSize: 15, height: 1.45, color: p.text),
         ),
-        Pressable(
-          onTap: () => setState(() => hintOpen = !hintOpen),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: LText(
-              hintOpen ? '收起说明' : '说明',
-              style: AppText.hint(p)
-                  .copyWith(color: p.text, fontWeight: FontWeight.w600),
+        Row(
+          children: [
+            Pressable(
+              onTap: () => setState(() => hintOpen = !hintOpen),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: LText(
+                  hintOpen ? '收起说明' : '说明',
+                  style: AppText.hint(p)
+                      .copyWith(color: p.text, fontWeight: FontWeight.w600),
+                ),
+              ),
             ),
-          ),
+            const Spacer(),
+            if (share != null)
+              Semantics(
+                button: true,
+                label: AppMessages.of(context).text('分享'),
+                child: Pressable(
+                  onTap: () => openShareSheet(context, share),
+                  child: Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 44,
+                      minWidth: 44,
+                    ),
+                    alignment: Alignment.centerRight,
+                    child: LText(
+                      '分享',
+                      style: AppText.hint(p)
+                          .copyWith(color: p.text, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
         Reveal(
           visible: hintOpen,
