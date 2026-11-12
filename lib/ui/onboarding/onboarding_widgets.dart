@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 
 class OnboardingCard extends StatelessWidget {
   const OnboardingCard({super.key, required this.child, this.selected = false});
@@ -156,10 +157,14 @@ class OnboardingNumber extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.suffix = 'cm',
+    this.length = false,
   });
   final String label;
   final num? value;
   final String suffix;
+
+  /// 围度（腰围、颈围、臀围）：值按 cm 存储，英制下以 in 显示和输入。
+  final bool length;
   final ValueChanged<num?> onChanged;
 
   @override
@@ -168,7 +173,11 @@ class OnboardingNumber extends StatefulWidget {
 
 class _OnboardingNumberState extends State<OnboardingNumber> {
   late final _text = TextEditingController(
-    text: widget.value?.toString() ?? '',
+    text: widget.value == null
+        ? ''
+        : widget.length && context.units.isImperial
+        ? context.units.length(widget.value!)
+        : widget.value.toString(),
   );
   final _focus = FocusNode();
   @override
@@ -205,18 +214,26 @@ class _OnboardingNumberState extends State<OnboardingNumber> {
                     decimal: true,
                   ),
                   textAlign: TextAlign.right,
-                  onChanged: (text) => widget.onChanged(
-                    text.trim().isEmpty
+                  onChanged: (text) {
+                    final n = text.trim().isEmpty
                         ? null
-                        : num.tryParse(text) ?? double.nan,
-                  ),
+                        : num.tryParse(text) ?? double.nan;
+                    widget.onChanged(
+                      n != null && widget.length
+                          ? context.units.lengthToCm(n)
+                          : n,
+                    );
+                  },
                 ),
               ),
             ),
           ),
         ),
         const SizedBox(width: 8),
-        LText(widget.suffix, style: AppText.hint(context.pal)),
+        LText(
+          widget.length ? context.units.lengthUnit : widget.suffix,
+          style: AppText.hint(context.pal),
+        ),
       ],
     ),
   );

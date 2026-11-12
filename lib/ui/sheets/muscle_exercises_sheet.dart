@@ -18,6 +18,7 @@ import '../kit/pressable.dart';
 import '../kit/sheet.dart';
 import '../kit/transitions.dart';
 import '../today/workout_title.dart';
+import '../kit/units_scope.dart';
 
 /// 从肌肉找到动作，再用领域层推荐训练日。所有修改通过 AppController 落盘。
 class MuscleExercisesSheet extends StatefulWidget {
@@ -555,7 +556,7 @@ class _MuscleExercisesSheetState extends State<MuscleExercisesSheet> {
         ),
         const SizedBox(height: 2),
         LText(
-          '${prescription({...spec, 'target': spec['sets']})}${jsNumber(spec['weight']) != 0 ? ' · ${fmt(spec['weight'])} kg' : ''}${version ? '　·　${venue == 'gym' ? '健身房版' : '居家版'}' : ''}',
+          '${prescription({...spec, 'target': spec['sets']})}${jsNumber(spec['weight']) != 0 ? ' · ${context.units.loadText(jsNumber(spec['weight']))}' : ''}${version ? '　·　${venue == 'gym' ? '健身房版' : '居家版'}' : ''}',
           style: AppText.hint(p),
         ),
         if (showTags)

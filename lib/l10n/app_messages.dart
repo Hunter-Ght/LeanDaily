@@ -69,7 +69,22 @@ class AppMessages {
   final _cache = <String, String>{};
   String text(String source) {
     if (_cache.length > 4096) _cache.clear();
-    return _cache.putIfAbsent(source, () => _text(source, 0));
+    return _cache.putIfAbsent(source, () => _unitText(source));
+  }
+
+  static final _lbNumber = RegExp(r'\blb\b');
+  static final _kgWord = RegExp(r'\bkg\b');
+
+  /// 英制下界面会拼出「49.5 lb」这样的文案；翻译表里只有 kg 的版本，
+  /// 所以查表时把 lb 当 kg 匹配，译文里的 kg 再换回 lb。
+  String _unitText(String source) {
+    if (code == 'zh_Hans' ||
+        !_lbNumber.hasMatch(source) ||
+        (_catalogs[code]?.containsKey(source) ?? false)) {
+      return _text(source, 0);
+    }
+    final looked = _text(source.replaceAll(_lbNumber, 'kg'), 0);
+    return looked.replaceAll(_kgWord, 'lb');
   }
 
   String _text(String source, int depth) {

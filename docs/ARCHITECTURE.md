@@ -34,7 +34,7 @@ SQLite 里一张 `documents(key, value)` 表，一个键一份 JSON 文档：
 | 键 | 内容 |
 | --- | --- |
 | `android-state` | 训练组、饮食、每日摘要等记录 |
-| `android-settings` | 时区、触感、拍照识别配置（密钥另存加密） |
+| `android-settings` | 时区、触感、单位（公制/英制，显示用，存储仍是 kg / cm）、拍照识别配置（密钥另存加密） |
 | `fw-plans-v1` | 计划库（多份计划，使用中的一份） |
 | `fw-plan-v1` | 使用中计划的副本（兼容旧版读取） |
 | `fw-plan-day-v1` | 每天的临时调整（状态、精简、改练、场地、替换动作） |

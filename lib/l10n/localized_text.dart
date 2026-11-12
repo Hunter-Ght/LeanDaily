@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../domain/units.dart';
+import '../ui/kit/units_scope.dart';
 import 'app_messages.dart';
 
 /// Explicit display boundary for legacy canonical content and messages. Input
@@ -57,11 +59,19 @@ class LText extends StatelessWidget {
   final TextWidthBasis? textWidthBasis;
   final TextHeightBehavior? textHeightBehavior;
   final Color? selectionColor;
-  static InlineSpan translateSpan(InlineSpan span, AppMessages messages) {
+  static InlineSpan translateSpan(
+    InlineSpan span,
+    AppMessages messages, [
+    Units units = Units.metric,
+  ]) {
     if (span is! TextSpan) return span;
     return TextSpan(
-      text: span.text == null ? null : messages.text(span.text!),
-      children: span.children?.map((s) => translateSpan(s, messages)).toList(),
+      text: span.text == null
+          ? null
+          : units.localizeText(messages.text(span.text!)),
+      children: span.children
+          ?.map((s) => translateSpan(s, messages, units))
+          .toList(),
       style: span.style,
       recognizer: span.recognizer,
       mouseCursor: span.mouseCursor,
@@ -78,12 +88,13 @@ class LText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final messages = AppMessages.of(context);
+    final units = context.units;
     final label = semanticsLabel == null
         ? null
         : messages.text(semanticsLabel!);
     if (span != null) {
       return Text.rich(
-        localize ? translateSpan(span!, messages) : span!,
+        localize ? translateSpan(span!, messages, units) : span!,
         style: style,
         strutStyle: strutStyle,
         textAlign: textAlign,
@@ -100,7 +111,7 @@ class LText extends StatelessWidget {
       );
     }
     return Text(
-      localize ? messages.text(data!) : data!,
+      localize ? units.localizeText(messages.text(data!)) : data!,
       style: style,
       strutStyle: strutStyle,
       textAlign: textAlign,

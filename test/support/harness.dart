@@ -51,6 +51,7 @@ class Harness {
     bool empty = false,
     bool newUser = false,
     String updateUrl = links.updateCheckUrl,
+    String? region,
     void Function(FakeNative native)? seed,
   }) async {
     tester.view.devicePixelRatio = shotScale;
@@ -97,6 +98,7 @@ class Harness {
       localeOverride: locale,
       clock: () => now,
       updateUrl: updateUrl,
+      regionCode: region,
     );
     final key = GlobalKey();
     addTearDown(() async {

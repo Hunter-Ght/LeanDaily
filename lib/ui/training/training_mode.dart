@@ -25,6 +25,7 @@ import '../kit/app_icon.dart';
 import '../kit/body_figure.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 import '../today/today_model.dart';
 import '../today/workout_title.dart';
 import 'training_logic.dart';
@@ -305,7 +306,7 @@ class _TrainingModeState extends State<_TrainingBody>
         _flag = null;
         if (pb) {
           _pbLabel =
-              '${e['name']} · ${w > 0 ? '${fmt(w)} kg × ' : '自重 '}${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
+              '${e['name']} · ${w > 0 ? '${context.units.loadText(w)} × ' : '自重 '}${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
         }
       });
       _feedbackMotion.forward(
@@ -721,7 +722,7 @@ class _TrainingModeState extends State<_TrainingBody>
   }
 
   Widget summaryView(TodayModel m) {
-    final p = context.pal;
+    final p = context.pal, units = context.units;
     final names = m.all.map((e) => e['name']).toSet();
     final rows = jsonRows(m.day['sets'])
         .where((s) => names.contains(s['ex']) && s['type'] != '热身')
@@ -782,7 +783,7 @@ class _TrainingModeState extends State<_TrainingBody>
       final w = jsNumber(s['w']);
       final unit = ex != null && ex['unit'] == 'sec' ? 's' : '';
       return ex != null && trainingHasLoad(ex, [s]) && w > 0
-          ? '${fmt(w)}×$reps$unit'
+          ? '${units.load(w)}×$reps$unit'
           : '$reps$unit';
     }
 
@@ -830,8 +831,8 @@ class _TrainingModeState extends State<_TrainingBody>
                     child: bigStat(
                       allBody
                           ? fmt(bodyReps > 0 ? bodyReps : bodySeconds)
-                          : fmt(volume),
-                      allBody ? (bodyReps > 0 ? '次' : '秒') : 'kg',
+                          : fmt(units.loadValue(volume)),
+                      allBody ? (bodyReps > 0 ? '次' : '秒') : units.weightUnit,
                       allBody ? '自重' : '训练量',
                       size: 60,
                     ),
@@ -1073,6 +1074,7 @@ class _TrainingModeState extends State<_TrainingBody>
               weight: w,
               reps: r,
               seconds: sec,
+              units: context.units,
             ),
           ),
           if (sets.length + 1 == total) ...[
@@ -1101,7 +1103,7 @@ class _TrainingModeState extends State<_TrainingBody>
     Map<String, dynamic> target,
     double availableHeight,
   ) {
-    final p = context.pal;
+    final p = context.pal, units = context.units;
     final r = _reps ?? trainingReps(e, target, sets),
         w = _weight ?? trainingWeight(e, target, sets);
     final loaded = trainingHasLoad(e, sets);
@@ -1117,12 +1119,17 @@ class _TrainingModeState extends State<_TrainingBody>
           child: TrainingNumber(
             key: ValueKey('$_id-${e['name']}-weight'),
             label: '重量',
-            value: w,
-            step: jsTruthy(e['machine'])
-                ? jsNumber(jsonMap(_app!.progress['steps'])[e['name']] ?? 2.5)
-                : .5,
+            value: units.loadValue(w),
+            step: 1,
+            stepper: (current, up) => units.stepLoad(
+              e,
+              current,
+              up: up,
+              explicitKg: jsonMap(_app!.progress['steps'])[e['name']] as num?,
+            ),
+            unit: units.weightUnit,
             minimum: 0,
-            onChanged: (v) => _weight = v,
+            onChanged: (v) => _weight = units.loadToKg(v),
           ),
         ),
       if (loaded) const SizedBox(width: 12),
@@ -1222,7 +1229,7 @@ class _TrainingModeState extends State<_TrainingBody>
           padding: const EdgeInsets.only(top: 4),
           child: last == null
               ? LText(
-                  '目标 ${e['target']} 组 × ${target['reps'] ?? e['min']} ${sec ? '秒' : '次'}${loaded ? ' · ${fmt(w)} kg' : ' · 自重'}',
+                  '目标 ${e['target']} 组 × ${target['reps'] ?? e['min']} ${sec ? '秒' : '次'}${loaded ? ' · ${context.units.loadText(w)}' : ' · 自重'}',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: p.secondary, fontSize: 14),
                 )
@@ -1231,7 +1238,7 @@ class _TrainingModeState extends State<_TrainingBody>
                     children: [
                       TextSpan(
                         text:
-                            '上一组 ${trainingSetDetail(loaded: loaded && jsNumber(last['w']) > 0, weight: jsNumber(last['w']), reps: jsNumber(last['reps']), seconds: sec)}',
+                            '上一组 ${trainingSetDetail(loaded: loaded && jsNumber(last['w']) > 0, weight: jsNumber(last['w']), reps: jsNumber(last['reps']), seconds: sec, units: context.units)}',
                       ),
                       if (lastRpe != null) ...[
                         const TextSpan(text: ' · '),
@@ -1670,9 +1677,17 @@ class TrainingNumber extends StatefulWidget {
     required this.step,
     required this.minimum,
     required this.onChanged,
+    this.stepper,
+    this.unit,
   });
   final String label;
   final num value, step, minimum;
+
+  /// 自定义加减结果（当前值、方向 → 新值）；没有时按固定的 [step]。
+  final num Function(num current, bool up)? stepper;
+
+  /// 读数下方的单位文字；没有时「重量」写 kg、「次数」写次。
+  final String? unit;
   final ValueChanged<num> onChanged;
   @override
   State<TrainingNumber> createState() => _TrainingNumberState();
@@ -1699,9 +1714,10 @@ class _TrainingNumberState extends State<TrainingNumber> {
   }
 
   void step(num d) {
+    final current = jsNumber(_text.text);
     final n = math.max(
       widget.minimum,
-      ((jsNumber(_text.text) + d) * 10).round() / 10,
+      widget.stepper?.call(current, d > 0) ?? ((current + d) * 10).round() / 10,
     );
     if (n == jsNumber(_text.text)) return;
     HapticScope.of(context)?.tick();
@@ -1795,11 +1811,12 @@ class _TrainingNumberState extends State<TrainingNumber> {
               ),
               const SizedBox(height: 4),
               LText(
-                widget.label == '重量'
-                    ? 'kg'
-                    : widget.label == '次数'
-                    ? '次'
-                    : widget.label,
+                widget.unit ??
+                    (widget.label == '重量'
+                        ? 'kg'
+                        : widget.label == '次数'
+                        ? '次'
+                        : widget.label),
                 style: TextStyle(color: p.secondary, fontSize: 14),
               ),
               const SizedBox(height: 12),

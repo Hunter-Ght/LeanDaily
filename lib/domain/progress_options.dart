@@ -1,3 +1,5 @@
+import 'units.dart';
+
 /// Explicit opt-in to the app's progression rules. Null options retain Web parity.
 class ProgressOptions {
   const ProgressOptions({
@@ -5,12 +7,16 @@ class ProgressOptions {
     this.stage,
     this.age,
     this.venue,
+    this.units = Units.metric,
     this.deloadActive = false,
   });
 
   final String? experience, stage, venue;
   final int? age;
   final bool deloadActive;
+
+  /// Display units only. Rules compute in kg; imperial just picks 5 / 2.5 lb steps.
+  final Units units;
   String get level => experience ?? 'some';
   bool get youth => stage == 'youth' || (age != null && age! < 18);
   int get repConfirms => level == 'new' ? 1 : 2;
@@ -21,12 +27,14 @@ class ProgressOptions {
     stage: stage,
     age: age,
     venue: venue,
+    units: units,
     deloadActive: active,
   );
 }
 
 /// Equipment increments, in kg. Explicit user increments take precedence.
 num loadStep(Map<String, dynamic> ex, num weight, ProgressOptions options) {
+  if (options.units.isImperial) return options.units.progressStepKg(ex, weight);
   final name = '${ex['name']} ${ex['gear'] ?? ''}';
   if (name.contains('哑铃')) return weight < 10 ? 1 : 2;
   return weight < 20 ? 1.25 : 2.5;

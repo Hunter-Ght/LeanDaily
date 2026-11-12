@@ -30,6 +30,7 @@ import '../domain/templates.dart' as templates;
 import '../domain/plan.dart' as plan_lib;
 import '../domain/progress.dart' as progress_lib;
 import '../domain/progress_options.dart';
+import '../domain/units.dart';
 import '../domain/format.dart' show jsonMap;
 import '../domain/records.dart' show DomainError;
 import '../domain/movements.dart' show customMuscles;
@@ -152,6 +153,7 @@ class AppController extends ChangeNotifier {
     Clock? clock,
     this.localeOverride,
     String? updateUrl,
+    this.regionCode,
   }) : updateUrl = updateUrl ?? links.platformUpdateCheckUrl,
        clock = clock ?? DateTime.now,
        repo = Repository(native, clock: clock),
@@ -180,6 +182,26 @@ class AppController extends ChangeNotifier {
   }
 
   final Locale? localeOverride;
+
+  /// 系统地区（如 `US`），只用来决定新安装的默认单位。
+  final String? regionCode;
+
+  /// 当前单位制。没选过时：全新安装按系统地区（美国英制），老用户保持公制。
+  Units get units {
+    final saved = settings.value['units'];
+    if (saved == 'imperial' || saved == 'metric') return Units.byId(saved);
+    return needsOnboarding ? Units.forRegion(regionCode) : Units.metric;
+  }
+
+  Future<void> setUnits(Units value) async {
+    try {
+      await settings.save({...settings.value, 'units': value.id});
+      if (!_updateDisposed) notifyListeners();
+    } on Object {
+      toast.show('设置未保存，请稍后再试');
+    }
+  }
+
   String languagePreference = 'system';
   Locale get resolvedLocale =>
       localeOverride ??
@@ -380,6 +402,7 @@ class AppController extends ChangeNotifier {
     stage: targets?['stage'] as String?,
     age: (profile?['age'] as num?)?.toInt(),
     venue: profile?['venue'] as String?,
+    units: units,
     deloadActive:
         today.isNotEmpty &&
         jsonMap(progress['deload'])['week'] == calendar.mondayOf(today),
@@ -890,6 +913,15 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> skipOnboarding() async {
+    // 引导结束后「全新安装」的判断就不再成立，先把当时的默认单位存下来。
+    if (settings.value['units'] == null) {
+      final chosen = units;
+      try {
+        await settings.save({...settings.value, 'units': chosen.id});
+      } on Object {
+        // 存不上就保持公制，不挡住引导。
+      }
+    }
     await profileStore.markOnboarded();
     onboarded = true;
     notifyListeners();

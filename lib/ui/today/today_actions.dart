@@ -13,6 +13,7 @@ import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import 'today_hero.dart';
 import 'today_model.dart';
+import '../kit/units_scope.dart';
 
 /// 今日动作：缩略图 + 名称 + 右侧大号「组×次」。
 class TodayActions extends StatefulWidget {
@@ -131,13 +132,13 @@ class _TodayActionsState extends State<TodayActions> {
                 final weight = jsNumber(target['weight'] ?? e['weight']);
                 final sec = e['unit'] == 'sec';
                 final lastLine = !skipped && last.isNotEmpty
-                    ? '上次 ${jsNumber(last['weight']) > 0 ? '${fmt(last['weight'])} kg' : '自重'} × ${fmt(last['minReps'])}${sec ? ' 秒' : ''}'
+                    ? '上次 ${jsNumber(last['weight']) > 0 ? context.units.loadText(jsNumber(last['weight'])) : '自重'} × ${fmt(last['minReps'])}${sec ? ' 秒' : ''}'
                     : '';
                 final sub = skipped
                     ? '精简版不练'
                     : [
                         if (weight > 0)
-                          '${increased ? '↑ ' : ''}${fmt(weight)} kg',
+                          '${increased ? '↑ ' : ''}${context.units.loadText(weight)}',
                         if (done > 0 && !complete)
                           '已练 ${fmt(done)}/${fmt(sets)} 组',
                       ].join('  ');

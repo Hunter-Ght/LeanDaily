@@ -12,10 +12,12 @@ import '../onboarding/onboarding_flow.dart';
 import '../../app/routes.dart';
 import '../kit/grouped.dart';
 import '../../domain/body.dart';
+import '../../domain/units.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/menu.dart';
 import '../kit/sheet.dart';
+import '../kit/units_scope.dart';
 import 'settings/profile_controls.dart';
 import 'settings/profile_plan_selection.dart';
 
@@ -138,6 +140,98 @@ class _ProfileSheetState extends State<ProfileSheet> {
   void _set(String key, Object? value) => setState(() {
     _profile![key] = value;
   });
+
+  /// 英制下输入框里正在敲的原文：存成 kg/cm 再转回来会吃掉小数点，所以先留着原文。
+  final _drafts = <String, String>{};
+
+  /// 体重 / 围度输入。公制沿用原来的数字框；英制按 lb / in 输入，存回 kg / cm。
+  Widget _measure(String key, String label, {required bool weight}) {
+    final units = context.units;
+    if (!units.isImperial) {
+      return _number(key, label, suffix: weight ? '公斤' : '厘米');
+    }
+    final stored = _profile![key] as num?;
+    return Row(
+      children: [
+        Expanded(
+          child: FormInput(
+            key: ValueKey('$key-imperial'),
+            label: label,
+            value:
+                _drafts[key] ??
+                (stored == null
+                    ? ''
+                    : weight
+                    ? units.bodyWeight(stored)
+                    : units.length(stored)),
+            numeric: true,
+            boxed: true,
+            onChanged: (s) {
+              final n = num.tryParse(s);
+              if (s.isNotEmpty && (n == null || !n.isFinite)) return;
+              _drafts[key] = s;
+              _set(
+                key,
+                n == null
+                    ? null
+                    : weight
+                    ? units.bodyWeightToKg(n)
+                    : units.lengthToCm(n),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8),
+          child: LText(
+            weight ? units.weightUnit : units.lengthUnit,
+            style: TextStyle(color: context.pal.secondary),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 英制身高：英尺 + 英寸两个框，存成 cm。
+  Widget _heightImperial(Units units) {
+    final (feet, inches) = units.feetInches(_profile!['heightCm'] as num);
+    void change(String key, String s) {
+      final n = num.tryParse(s);
+      if (s.isNotEmpty && (n == null || !n.isFinite)) return;
+      _drafts[key] = s;
+      final ft = key == 'heightFt' ? (n ?? 0) : feet;
+      final inch = key == 'heightIn' ? (n ?? 0) : inches;
+      _set('heightCm', units.heightFromFeetInches(ft, inch));
+    }
+
+    Widget field(String key, String label, String unit, int value) => Expanded(
+      child: Row(
+        children: [
+          Expanded(
+            child: FormInput(
+              key: ValueKey(key),
+              label: label,
+              value: _drafts[key] ?? '$value',
+              numeric: true,
+              boxed: true,
+              onChanged: (s) => change(key, s),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: LText(unit, style: TextStyle(color: context.pal.secondary)),
+          ),
+        ],
+      ),
+    );
+    return Row(
+      children: [
+        field('heightFt', '身高 ft', 'ft', feet),
+        field('heightIn', '身高 in', 'in', inches),
+      ],
+    );
+  }
+
   Widget _number(String key, String label, {String suffix = ''}) => Row(
     children: [
       Expanded(
@@ -210,7 +304,7 @@ class _ProfileSheetState extends State<ProfileSheet> {
   );
   @override
   Widget build(BuildContext context) {
-    final p = _profile;
+    final p = _profile, units = context.units;
     if (p == null) {
       return AppSheet(
         title: '我的资料与目标',
@@ -322,14 +416,20 @@ class _ProfileSheetState extends State<ProfileSheet> {
                 _row(
                   'heightCm',
                   '身高',
-                  '${p['heightCm']} 厘米',
-                  _number('heightCm', '身高', suffix: '厘米'),
+                  units.isImperial
+                      ? units.heightText(p['heightCm'] as num)
+                      : '${p['heightCm']} 厘米',
+                  units.isImperial
+                      ? _heightImperial(units)
+                      : _number('heightCm', '身高', suffix: '厘米'),
                 ),
                 _row(
                   'weightKg',
                   '体重',
-                  '${p['weightKg']} 公斤',
-                  _number('weightKg', '体重', suffix: '公斤'),
+                  units.isImperial
+                      ? units.bodyWeightText(p['weightKg'] as num)
+                      : '${p['weightKg']} 公斤',
+                  _measure('weightKg', '体重', weight: true),
                   trailing: Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: FormButton(
@@ -346,6 +446,7 @@ class _ProfileSheetState extends State<ProfileSheet> {
                                 for (final field in ['weightKg', 'waistCm']) {
                                   if (app.profile![field] != before?[field]) {
                                     _profile![field] = app.profile![field];
+                                    _drafts.remove(field);
                                   }
                                 }
                               });
@@ -366,9 +467,9 @@ class _ProfileSheetState extends State<ProfileSheet> {
                       if (p['bodyFatMethod'] == 'picker')
                         const FormHint('参考档位估算，误差约 ±4%。'),
                       if (p['bodyFatMethod'] == 'navy') ...[
-                        _number('neckCm', '颈围', suffix: '厘米'),
+                        _measure('neckCm', '颈围', weight: false),
                         if (p['sex'] == 'female')
-                          _number('hipCm', '臀围', suffix: '厘米'),
+                          _measure('hipCm', '臀围', weight: false),
                         const FormHint('填写腰围和颈围；女性还需填写臀围。围度不完整时使用 BMI 估算。'),
                       ],
                     ],
@@ -378,8 +479,12 @@ class _ProfileSheetState extends State<ProfileSheet> {
                 _row(
                   'waistCm',
                   '腰围',
-                  p['waistCm'] == null ? '未填写' : '${p['waistCm']} 厘米',
-                  _number('waistCm', '腰围', suffix: '厘米'),
+                  p['waistCm'] == null
+                      ? '未填写'
+                      : units.isImperial
+                      ? units.lengthText(p['waistCm'] as num)
+                      : '${p['waistCm']} 厘米',
+                  _measure('waistCm', '腰围', weight: false),
                 ),
               ],
             ),

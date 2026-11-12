@@ -10,6 +10,7 @@ import '../theme/theme.dart';
 import '../theme/tokens.dart';
 import '../ui/kit/app_icon.dart';
 import '../ui/kit/toast.dart';
+import '../ui/kit/units_scope.dart';
 import '../ui/kit/transitions.dart';
 import 'app_controller.dart';
 import 'diagnostics.dart';
@@ -107,18 +108,21 @@ class _LeanDailyAppState extends State<LeanDailyApp>
             palette: palette,
             child: AppScope(
               controller: controller,
-              child: HapticScope(
-                haptics: controller.haptics,
-                child: DefaultTextStyle(
-                  style: AppText.body(palette).copyWith(
-                    fontFamily: widget.fontFamily,
-                    fontFamilyFallback: widget.fontFamilyFallback,
-                  ),
-                  child: ColoredBox(
-                    color: palette.bg,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [?navigator, const ToastHost()],
+              child: UnitsScope(
+                units: controller.units,
+                child: HapticScope(
+                  haptics: controller.haptics,
+                  child: DefaultTextStyle(
+                    style: AppText.body(palette).copyWith(
+                      fontFamily: widget.fontFamily,
+                      fontFamilyFallback: widget.fontFamilyFallback,
+                    ),
+                    child: ColoredBox(
+                      color: palette.bg,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [?navigator, const ToastHost()],
+                      ),
                     ),
                   ),
                 ),
@@ -176,7 +180,11 @@ class _LauncherState extends State<_Launcher> {
       }
       if (!mounted) return;
       setState(
-        () => _controller = AppController(native: widget.native, deviceTz: tz),
+        () => _controller = AppController(
+          native: widget.native,
+          deviceTz: tz,
+          regionCode: PlatformDispatcher.instance.locale.countryCode,
+        ),
       );
     } on Object catch (e, st) {
       Diagnostics.error(e, st);

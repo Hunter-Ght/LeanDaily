@@ -15,6 +15,7 @@ import '../kit/exercise_thumb.dart';
 import '../kit/pressable.dart';
 import '../kit/sheet.dart';
 import '../today/workout_title.dart';
+import '../kit/units_scope.dart';
 
 /// 某一天的预览：首页 hero 的缩小版。训练日是大标题 + 三个大数字 + 人体图 + 动作列表，
 /// 休息日是大标题 + 一句建议 + 恢复人体图 + 下次训练预告。
@@ -329,7 +330,7 @@ class _ExerciseLine extends StatelessWidget {
                     ),
                     if (weight > 0)
                       Text(
-                        '${fmt(weight)} kg',
+                        context.units.loadText(weight),
                         style: TextStyle(fontSize: 13, color: p.secondary),
                       ),
                     if (jsTruthy(e['optional']))

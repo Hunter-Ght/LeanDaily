@@ -6,10 +6,14 @@ import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
 
+import '../../app/app_controller.dart';
 import '../../domain/body.dart';
 import '../../app/routes.dart';
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/segments.dart';
+import '../kit/units_scope.dart';
+import '../../domain/units.dart';
 import '../kit/app_icon.dart';
 import 'onboarding_widgets.dart';
 import 'ruler.dart';
@@ -68,23 +72,75 @@ class IdentityStep extends StatelessWidget {
       OnboardingCard(
         child: Column(
           children: [
-            for (final field in const [
-              ('age', '年龄', '岁', 10.0, 90.0, 1.0),
-              ('heightCm', '身高', 'cm', 120.0, 230.0, 1.0),
-              ('weightKg', '体重', 'kg', 30.0, 250.0, .1),
-            ]) ...[
+            const UnitSwitch(),
+            const SizedBox(height: 8),
+            ProfileRuler(
+              key: const ValueKey('age'),
+              label: '年龄',
+              unit: '岁',
+              value: (profile['age'] as num).toDouble(),
+              min: 10,
+              max: 90,
+              step: 1,
+              onChanged: (v) => onChanged('age', v),
+            ),
+            const SizedBox(height: 8),
+            if (context.units.isImperial)
               ProfileRuler(
-                key: ValueKey(field.$1),
-                label: field.$2,
-                unit: field.$3,
-                value: (profile[field.$1] as num).toDouble(),
-                min: field.$4,
-                max: field.$5,
-                step: field.$6,
-                onChanged: (v) => onChanged(field.$1, v),
+                key: const ValueKey('heightCm-imperial'),
+                label: '身高',
+                unit: 'in',
+                value: context.units
+                    .heightInches(profile['heightCm'] as num)
+                    .clamp(48, 90)
+                    .toDouble(),
+                min: 48,
+                max: 90,
+                step: 1,
+                majorEvery: 12,
+                format: (v) =>
+                    context.units.heightText(context.units.heightFromInches(v)),
+                onChanged: (v) =>
+                    onChanged('heightCm', context.units.heightFromInches(v)),
+              )
+            else
+              ProfileRuler(
+                key: const ValueKey('heightCm'),
+                label: '身高',
+                unit: 'cm',
+                value: (profile['heightCm'] as num).toDouble(),
+                min: 120,
+                max: 230,
+                step: 1,
+                onChanged: (v) => onChanged('heightCm', v),
               ),
-              if (field.$1 != 'weightKg') const SizedBox(height: 8),
-            ],
+            const SizedBox(height: 8),
+            if (context.units.isImperial)
+              ProfileRuler(
+                key: const ValueKey('weightKg-imperial'),
+                label: '体重',
+                unit: 'lb',
+                value: context.units
+                    .bodyWeightValue(profile['weightKg'] as num)
+                    .clamp(67, 551)
+                    .toDouble(),
+                min: 67,
+                max: 551,
+                step: .1,
+                onChanged: (v) =>
+                    onChanged('weightKg', context.units.bodyWeightToKg(v)),
+              )
+            else
+              ProfileRuler(
+                key: const ValueKey('weightKg'),
+                label: '体重',
+                unit: 'kg',
+                value: (profile['weightKg'] as num).toDouble(),
+                min: 30,
+                max: 250,
+                step: .1,
+                onChanged: (v) => onChanged('weightKg', v),
+              ),
           ],
         ),
       ),
@@ -350,5 +406,23 @@ class _ConditionsStepState extends State<ConditionsStep> {
             : const SizedBox.shrink(),
       ),
     ],
+  );
+}
+
+/// 引导第一步里的小分段：公制 / 英制。选择立即生效并存进设置。
+class UnitSwitch extends StatelessWidget {
+  const UnitSwitch({super.key});
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.centerRight,
+    child: SizedBox(
+      width: 220,
+      child: AppSegments(
+        labels: const ['kg · cm', 'lb · ft in'],
+        selected: context.units.isImperial ? 1 : 0,
+        onChanged: (i) =>
+            context.app.setUnits(i == 1 ? Units.imperial : Units.metric),
+      ),
+    ),
   );
 }

@@ -19,9 +19,13 @@ class StepperField extends StatelessWidget {
     required this.unit,
     required this.step,
     this.focusNode,
+    this.stepper,
   });
   final String value, label, unit;
   final double step;
+
+  /// 自定义加减结果（当前值、方向 → 新值）。英制重量的步长随数值变化，用它覆盖 [step]。
+  final num Function(num current, bool up)? stepper;
   final FocusNode? focusNode;
   final ValueChanged<String> onChanged;
 
@@ -29,13 +33,17 @@ class StepperField extends StatelessWidget {
     if (value.trim().isEmpty) {
       if (delta > 0) {
         HapticScope.of(context)?.selection();
-        onChanged('$step'.replaceFirst(RegExp(r'\.0$'), ''));
+        onChanged(
+          '${stepper?.call(0, true) ?? step}'.replaceFirst(RegExp(r'\.0$'), ''),
+        );
       }
       return;
     }
     final n = double.tryParse(value);
     if (n == null || !n.isFinite) return;
-    final next = ((n + delta) * 1000).round() / 1000;
+    final next = stepper != null
+        ? stepper!(n, delta > 0).toDouble()
+        : ((n + delta) * 1000).round() / 1000;
     if ((next < 0 ? 0 : next) == n) return;
     HapticScope.of(context)?.selection();
     onChanged(

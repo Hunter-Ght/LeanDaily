@@ -157,6 +157,7 @@ class BodyFatStep extends StatelessWidget {
                                     key: ValueKey(key),
                                     label: label,
                                     value: profile[key] as num?,
+                                    length: true,
                                     onChanged: (v) => onChanged(key, v),
                                   ),
                                   LText(note, style: AppText.hint(context.pal)),

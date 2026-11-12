@@ -10,6 +10,7 @@ import '../../domain/format.dart';
 import '../../theme/theme.dart';
 import '../sheets/train/controls.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 
 String routeName(Object? stage) =>
     const {
@@ -47,7 +48,7 @@ class ProfileCard extends StatelessWidget {
           LText(
             profile == null
                 ? '填几个数字，得到适合你身材的计划和每日目标'
-                : '体脂约 ${fmt((t?['bodyFat'] as Map?)?['value'])}% · 体重 ${fmt(profile['weightKg'])} kg${t?['stage'] == 'youth' ? '' : ' · 目标体脂 ${fmt(t?['goalBodyFat'])}%'}',
+                : '体脂约 ${fmt((t?['bodyFat'] as Map?)?['value'])}% · 体重 ${context.units.bodyWeightText(profile['weightKg'] as num)}${t?['stage'] == 'youth' ? '' : ' · 目标体脂 ${fmt(t?['goalBodyFat'])}%'}',
             style: TextStyle(fontSize: 15, height: 1.5, color: p.secondary),
           ),
           const SizedBox(height: 16),

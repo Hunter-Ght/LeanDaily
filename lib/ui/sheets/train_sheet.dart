@@ -10,7 +10,10 @@ import '../../app/app_controller.dart';
 import '../../domain/equipment.dart';
 import '../../domain/guide.dart';
 import '../../domain/movements.dart';
+import '../../domain/format.dart' show jsNumber;
 import '../../domain/records.dart' as records;
+import '../../domain/units.dart';
+import '../kit/units_scope.dart';
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/badge.dart';
@@ -81,9 +84,12 @@ class _TrainSheetState extends State<TrainSheet> {
     });
   }
 
-  Map<String, dynamic> _row([Map? src]) => {
+  /// [src] 来自已存的记录时，重量是 kg，要换成界面当前单位的文字。
+  Map<String, dynamic> _row([Map? src, Units? fromKg]) => {
     'id': _seq++,
-    'weight': '${src?['weight'] ?? ''}',
+    'weight': fromKg != null && fromKg.isImperial && src?['weight'] is num
+        ? fromKg.load(src!['weight'] as num)
+        : '${src?['weight'] ?? ''}',
     'reps': '${src?['reps'] ?? ''}',
     'rpe': '${src?['rpe'] ?? ''}',
     'type': src?['type'] ?? '正式',
@@ -102,7 +108,9 @@ class _TrainSheetState extends State<TrainSheet> {
     _exercise = p['exercise'] as String? ?? '';
     _page = _exercise.isEmpty ? _Page.pick : _Page.log;
     _unilateral = p['uni'] == true;
-    _rows = (p['rows'] as List? ?? []).map((r) => _row(r as Map)).toList();
+    _rows = (p['rows'] as List? ?? [])
+        .map((r) => _row(r as Map, context.units))
+        .toList();
     if (_rows.isEmpty) _rows.add(_row());
   }
 
@@ -123,8 +131,10 @@ class _TrainSheetState extends State<TrainSheet> {
       (context.app.repo.recentByExercise()['last'] as Map)[name] as Map?;
   List<Map> _lastSets(String name) =>
       ((_last(name)?['sets'] as List?) ?? []).cast<Map>();
-  String _fmt(Object? v) => '$v'.replaceFirst(RegExp(r'\.0$'), '');
-  String _lastLine(String name) => lastLineOf(_last(name));
+  String _fmt(Object? v) => context.units.isImperial
+      ? context.units.load(jsNumber(v))
+      : '$v'.replaceFirst(RegExp(r'\.0$'), '');
+  String _lastLine(String name) => lastLineOf(_last(name), context.units);
 
   Future<void> _pick(String name, {String? part}) async {
     if (_filled && _exercise.isNotEmpty && _exercise != name) {
@@ -257,6 +267,7 @@ class _TrainSheetState extends State<TrainSheet> {
       _show(_Page.pick, () => _error = '先选择动作');
       return;
     }
+    final units = context.units;
     final sets = _rows
         .where(
           (r) =>
@@ -281,7 +292,10 @@ class _TrainSheetState extends State<TrainSheet> {
     for (var i = 0; i < sets.length; i++) {
       final s = sets[i];
       final w = s['weight'] as double, reps = s['reps'] as double;
-      if (!(w >= 0) || !(reps >= 1) || reps != reps.truncateToDouble()) {
+      if (!(w >= 0) ||
+          !(reps >= 1) ||
+          reps != reps.truncateToDouble() ||
+          (units.isImperial && w > units.loadValue(1000))) {
         setState(() => _error = '第 ${i + 1} 组的重量或次数不对');
         return;
       }
@@ -291,6 +305,11 @@ class _TrainSheetState extends State<TrainSheet> {
       if (rpe != null && !(rpe >= 1 && rpe <= 10)) {
         setState(() => _error = '第 ${i + 1} 组吃力程度要在 1 到 10');
         return;
+      }
+    }
+    if (units.isImperial) {
+      for (final s in sets) {
+        s['weight'] = units.loadToKg(s['weight'] as double);
       }
     }
     final app = context.app;
@@ -1415,8 +1434,15 @@ class _TrainSheetState extends State<TrainSheet> {
             onChanged: (s) => change('weight', s),
             label: '重量',
             focusNode: _focus(row),
-            unit: 'kg',
+            unit: context.units.weightUnit,
             step: 2.5,
+            stepper: context.units.isImperial
+                ? (current, up) => context.units.stepLoad(
+                    {'name': _exercise},
+                    current,
+                    up: up,
+                  )
+                : null,
           ),
           const SizedBox(height: 10),
           StepperField(

@@ -6,6 +6,7 @@ import 'package:leandaily/l10n/app_messages.dart';
 
 import '../../app/app_controller.dart';
 import '../../domain/format.dart';
+import '../../domain/units.dart';
 import '../../l10n/localized_text.dart';
 import '../../theme/theme.dart';
 import '../kit/exercise_thumb.dart';
@@ -276,9 +277,10 @@ String trainingSetDetail({
   required num weight,
   required num reps,
   required bool seconds,
+  Units units = Units.metric,
 }) {
   final unit = seconds ? '秒' : '次';
   return loaded
-      ? '${fmt(weight)} kg × ${fmt(reps)} $unit'
+      ? '${units.loadText(weight)} × ${fmt(reps)} $unit'
       : '${fmt(reps)} $unit';
 }

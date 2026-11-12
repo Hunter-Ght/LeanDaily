@@ -10,6 +10,7 @@ import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/exercise_thumb.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 
 /// 今日页与预览共用的 Web ExerciseRow。
 class TodayExerciseRow extends StatelessWidget {
@@ -59,7 +60,7 @@ class TodayExerciseRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       LText(
-                        '${plan.prescription(exercise)}${jsNumber(exercise['weight']) > 0 ? ' · ${fmt(exercise['weight'])} kg' : ''}',
+                        '${plan.prescription(exercise)}${jsNumber(exercise['weight']) > 0 ? ' · ${context.units.loadText(jsNumber(exercise['weight']))}' : ''}',
                         style: TextStyle(fontSize: 14, color: p.secondary),
                       ),
                       if (skipped || jsTruthy(exercise['optional']))

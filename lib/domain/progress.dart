@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'format.dart';
 import 'progress_options.dart';
+import 'units.dart';
 import 'plan.dart';
 import 'calendar.dart' show mondayOf, daysApart;
 import 'movements.dart' show musclesOf, GROUPS;
@@ -47,6 +48,9 @@ num _sets(Map<String, dynamic> ex) =>
 num _max(Iterable<num> ns, [num floor = 0]) => ns.fold<num>(floor, math.max);
 num _min(Iterable<num> ns) => ns.reduce(math.min);
 String _s(Object? v) => jsString(v);
+
+/// 建议文案里的重量：公制与原来一致，英制写 lb（规则本身仍按 kg 计算）。
+String _w(Units u, num kg) => u.isImperial ? u.loadText(kg) : '${_s(kg)} kg';
 Map<String, dynamic> emptyProgress() => {
   'v': 1,
   'anchors': <String, dynamic>{},
@@ -438,6 +442,7 @@ Map<String, dynamic>? suggest(
   if (options?.deloadActive == true && !recentPain) return null;
   if (!recentPain && (t['calibrate'] == true || evals.isEmpty)) return null;
   final unit = _unitOf(ex) == 'sec' ? '秒' : '次', name = ex['name'] as String;
+  final units = options?.units ?? Units.metric;
   Map<String, dynamic>? pick(String kind, Map<String, dynamic> body) =>
       _declined('$name:$kind', progress, today)
       ? null
@@ -496,11 +501,11 @@ Map<String, dynamic>? suggest(
         0,
         options == null
             ? ((jsNumber(t['weight']) - stepKg) * 10 + 0.5).floor() / 10
-            : jsNumber(t['weight']) - stepKg,
+            : units.snapLoad(jsNumber(t['weight']) - stepKg),
       );
       return pick('ease', {
         'title': '$name：连续两次没到 ${_s(ex['min'])} $unit',
-        'body': '重量现在偏大。降到 ${_s(next)} kg，把 ${_s(ex['min'])} $unit做标准再往上加。',
+        'body': '重量现在偏大。降到 ${_w(units, next)}，把 ${_s(ex['min'])} $unit做标准再往上加。',
         'accept': {
           'type': 'anchor',
           'name': name,
@@ -508,7 +513,7 @@ Map<String, dynamic>? suggest(
           'reps': ex['min'],
           'weight': next,
         },
-        'acceptLabel': '降到 ${_s(next)} kg',
+        'acceptLabel': '降到 ${_w(units, next)}',
       });
     }
     return pick('ease', {
@@ -550,7 +555,7 @@ Map<String, dynamic>? suggest(
           : loadStep(ex, jsNumber(t['weight']), options);
       final next = options == null
           ? ((jsNumber(t['weight']) + stepKg) * 10 + 0.5).floor() / 10
-          : jsNumber(t['weight']) + stepKg;
+          : units.snapLoad(jsNumber(t['weight']) + stepKg);
       final pct = jsNumber(t['weight']) > 0
           ? stepKg / jsNumber(t['weight'])
           : 0;
@@ -559,12 +564,12 @@ Map<String, dynamic>? suggest(
         'title':
             '$name：连续${options?.level == 'trained' ? '三' : '两'}次做满 ${_s(ex['max'])} $unit',
         'body': big
-            ? '下一档 ${_s(next)} kg 涨幅约 ${(pct * 100 + 0.5).floor()}%，偏大。可以先再稳练一阵，或找更小的配重片；想试的话次数从 ${_s(ex['min'])} 次起。'
-            : '动作没变形、还有余力的话，试 ${_s(next)} kg（+${stepKg == stepKg.roundToDouble()
-                  ? stepKg.toInt()
-                  : options == null
-                  ? stepKg.toStringAsFixed(1)
-                  : _s(stepKg)} kg），次数回到 ${_s(ex['min'])} $unit。',
+            ? '下一档 ${_w(units, next)} 涨幅约 ${(pct * 100 + 0.5).floor()}%，偏大。可以先再稳练一阵，或找更小的配重片；想试的话次数从 ${_s(ex['min'])} 次起。'
+            : '动作没变形、还有余力的话，试 ${_w(units, next)}（+${units.isImperial ? units.loadText(stepKg) : '${stepKg == stepKg.roundToDouble()
+                        ? stepKg.toInt()
+                        : options == null
+                        ? stepKg.toStringAsFixed(1)
+                        : _s(stepKg)} kg'}），次数回到 ${_s(ex['min'])} $unit。',
         if (options == null || pct <= .15)
           'accept': {
             'type': 'anchor',
@@ -576,9 +581,9 @@ Map<String, dynamic>? suggest(
         if (options != null && pct > .15) ...{
           'info': true,
           'body':
-              '下一档 ${_s(next)} kg 涨幅约 ${(pct * 100 + 0.5).floor()}%，偏大。先找更小的配重，或改用合适的变式，当前重量先保持。',
+              '下一档 ${_w(units, next)} 涨幅约 ${(pct * 100 + 0.5).floor()}%，偏大。先找更小的配重，或改用合适的变式，当前重量先保持。',
         },
-        'acceptLabel': big ? '还是试一档' : '试 ${_s(next)} kg',
+        'acceptLabel': big ? '还是试一档' : '试 ${_w(units, next)}',
         'step': jsTruthy(ex['machine']) ? stepKg : null,
       });
     }
