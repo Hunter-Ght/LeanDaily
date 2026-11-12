@@ -45,9 +45,9 @@ SQLite 里一张 `documents(key, value)` 表，一个键一份 JSON 文档：
 | `fw-review-v1` / `fw-hints-v1` | 周回顾已处理的周；各类一次性提示（场地、体重提醒、更新检查） |
 | `fw-onboarded-v1` / `fw-plan-legacy-v1` | 是否完成引导；升级前计划快照 |
 
-导出备份时把这些文档和照片打成一个 JSON（格式标识 `leandaily-backup`，导入同时接受旧标识 `lianchiji-backup`）。**默认不参与系统备份，用户可选择开启**：Android 的 `allowBackup=false` 是静态配置，不提供开关；iOS 默认把数据目录（数据库和照片）标为不备份，用户在「备份与高级 → 随 iPhone 备份」打开后，`LocalStore.setBackupIncluded` 把数据目录、照片目录及每张照片的 `isExcludedFromBackup` 设为 false，关闭再设回 true（原生通道 `systemBackupState` / `setSystemBackup`）。API Key 在 Keychain（仅本设备）里，任何情况下都不进备份。
+导出备份时把这些文档和照片打成一个 JSON（格式标识 `leandaily-backup`，导入同时接受旧标识 `lianchiji-backup`）。**默认不参与系统备份，用户可选择开启**：Android 的 `allowBackup=false` 是静态配置，不提供开关；iOS 默认把数据目录（数据库和照片）标为不备份，用户在「备份与高级 → 随设备备份」打开后，`LocalStore.setBackupIncluded` 把数据目录、照片目录及每张照片的 `isExcludedFromBackup` 设为 false，关闭再设回 true（原生通道 `systemBackupState` / `setSystemBackup`）。API Key 在 Keychain（仅本设备）里，任何情况下都不进备份。
 
-备份提醒：`domain/backup_reminder.dart` 是纯函数规则（累计 ≥10 个训练日或最早记录 ≥14 天，且从未备份或超过 30 天；点“以后再说”静默 14 天；开了随 iPhone 备份则不提示）。上次导出时间和静默到期时间存在 `leandaily-backup-v1`（`data/backup_status.dart`），只属于这部手机，不进备份文件；恢复备份后按备份文件的生成时间重新计算。
+备份提醒：`domain/backup_reminder.dart` 是纯函数规则（累计 ≥10 个训练日或最早记录 ≥14 天，且从未备份或超过 30 天；点“以后再说”静默 14 天；开了随设备备份则不提示）。上次导出时间和静默到期时间存在 `leandaily-backup-v1`（`data/backup_status.dart`），只属于这部手机，不进备份文件；恢复备份后按备份文件的生成时间重新计算。
 
 写入原则：记录读-改-写在同一个串行队列里；计划库多文档写入失败会回滚；不能原子写多文档的地方（原生层不提供事务）在代码里有注释说明。
 

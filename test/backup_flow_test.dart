@@ -174,7 +174,7 @@ void main() {
       expect(find.text('45 天前备份'), findsOneWidget);
     });
 
-    testWidgets('打开了随 iPhone 备份就不再提示', (tester) async {
+    testWidgets('打开了随设备备份就不再提示', (tester) async {
       await Harness.pump(
         tester,
         tab: 3,
@@ -184,7 +184,7 @@ void main() {
         },
       );
       expect(find.byType(BackupNudgeCard), findsNothing);
-      expect(find.text('随 iPhone 备份'), findsOneWidget);
+      expect(find.text('已随设备备份'), findsOneWidget);
     });
 
     testWidgets('今日页和训练页没有这张卡', (tester) async {
@@ -206,10 +206,11 @@ void main() {
       await tester.pump(const Duration(seconds: 4));
     });
 
-    testWidgets('Android：不显示随 iPhone 备份开关', (tester) async {
+    testWidgets('Android：不显示随设备备份开关', (tester) async {
       await Harness.pump(tester, tab: 3, empty: true);
       await _openBackupSheet(tester);
-      expect(find.text('随 iPhone 备份'), findsNothing);
+      expect(find.text('随设备备份'), findsNothing);
+      expect(find.text('系统备份'), findsNothing);
       expect(find.byType(AndroidSettingsSheet), findsOneWidget);
     });
 
@@ -222,10 +223,12 @@ void main() {
         seed: (n) => n.systemBackupSupported = true,
       );
       await _openBackupSheet(tester);
-      expect(find.text('随 iPhone 备份'), findsNWidgets(2)); // 分组标题 + 行
+      expect(find.text('系统备份'), findsOneWidget);
+      expect(find.text('随设备备份'), findsOneWidget);
+      expect(find.text('iCloud 或电脑'), findsOneWidget);
       expect(find.textContaining('API Key 不会进入备份'), findsOneWidget);
       expect(h.native.systemBackupEnabled, isFalse);
-      final toggle = find.bySemanticsLabel('随 iPhone 备份');
+      final toggle = find.bySemanticsLabel('随设备备份');
       await tester.ensureVisible(toggle.last);
       await tester.tap(toggle.last);
       await tester.pumpAndSettle();
@@ -247,7 +250,7 @@ void main() {
       );
       await _openBackupSheet(tester);
       h.native.failSystemBackup = const NativeError('坏了');
-      final toggle = find.bySemanticsLabel('随 iPhone 备份');
+      final toggle = find.bySemanticsLabel('随设备备份');
       await tester.tap(toggle.last);
       await tester.pumpAndSettle();
       expect(h.controller.systemBackup.enabled, isFalse);
@@ -261,9 +264,9 @@ void main() {
       final file = await _sampleBackup();
       final h = await Harness.pump(tester, newUser: true);
       expect(find.byType(OnboardingFlow), findsOneWidget);
-      expect(find.text('已有备份？从备份恢复'), findsOneWidget);
+      expect(find.text('恢复备份'), findsOneWidget);
       h.native.importData = file;
-      await tester.tap(find.text('已有备份？从备份恢复'));
+      await tester.tap(find.text('恢复备份'));
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingFlow), findsNothing);
       expect(h.controller.needsOnboarding, isFalse);
@@ -277,10 +280,37 @@ void main() {
       await tester.pump(const Duration(seconds: 4));
     });
 
+    for (final size in [const Size(393, 850), const Size(360, 740)]) {
+      testWidgets('引导第 1 步：隐私政策提示、继续和恢复入口都在首屏 $size', (tester) async {
+        await Harness.pump(tester, newUser: true, size: size);
+        final screen = Offset.zero & size;
+        for (final rect in [
+          tester.getRect(find.text('隐私政策 ›')),
+          tester.getRect(find.text('继续即表示你了解 ')),
+          tester.getRect(find.bySemanticsLabel('继续')),
+          tester.getRect(find.text('恢复备份')),
+        ]) {
+          expect(screen.contains(rect.topLeft), isTrue, reason: '$rect');
+          expect(screen.contains(rect.bottomRight), isTrue, reason: '$rect');
+        }
+        // 隐私政策提示在「继续」上方，没被按钮盖住。
+        expect(
+          tester.getRect(find.text('隐私政策 ›')).bottom,
+          lessThanOrEqualTo(tester.getRect(find.bySemanticsLabel('继续')).top),
+        );
+        // 恢复入口在左上，不压到右上的“跳过”。
+        expect(
+          tester.getRect(find.text('恢复备份')).right,
+          lessThan(tester.getRect(find.text('跳过')).left),
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
     testWidgets('选了不是备份的文件：留在引导页并提示', (tester) async {
       final h = await Harness.pump(tester, newUser: true);
       h.native.importData = '{"hello":1}';
-      await tester.tap(find.text('已有备份？从备份恢复'));
+      await tester.tap(find.text('恢复备份'));
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingFlow), findsOneWidget);
       expect(find.text('不是支持的薄肌日课备份'), findsOneWidget);
@@ -289,7 +319,7 @@ void main() {
 
     testWidgets('在选择器里取消：安静地留在引导页', (tester) async {
       final h = await Harness.pump(tester, newUser: true);
-      await tester.tap(find.text('已有备份？从备份恢复'));
+      await tester.tap(find.text('恢复备份'));
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingFlow), findsOneWidget);
       expect(find.text('已取消导入'), findsNothing);
@@ -302,7 +332,7 @@ void main() {
       await tester.tap(find.text('开始评估'));
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingFlow), findsOneWidget);
-      expect(find.text('已有备份？从备份恢复'), findsNothing);
+      expect(find.text('恢复备份'), findsNothing);
       await tester.pump(const Duration(seconds: 3));
     });
   });
@@ -349,6 +379,14 @@ void main() {
         locale: locale,
       );
       await h.shot(tester, 'backup-onboarding-$name');
+      final small = await Harness.pump(
+        tester,
+        newUser: true,
+        dark: dark,
+        locale: locale,
+        size: const Size(360, 740),
+      );
+      await small.shot(tester, 'backup-onboarding-360-$name');
       expect(tester.takeException(), isNull);
     }
   });

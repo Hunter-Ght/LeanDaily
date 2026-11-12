@@ -8,7 +8,7 @@ LeanDaily is a free, open-source training and food journal. No account is requir
 
 ## 1. Data on your device
 
-Your profile (including age, sex, height and body measurements), training plans, workout logs, meal records, photos, goals and settings are stored locally. By default, local records and photos are excluded from automatic Android/iCloud backup, and there is no automatic cloud sync. On iPhone you can turn on "Include in iPhone backup" under Backup & advanced; your records and photos then go into your own iCloud or computer iPhone backup, which Apple stores under its own rules. You can turn it off at any time, and later backups will no longer include them. API keys are stored using Android Keystore encryption or a device-only iOS Keychain entry and are excluded from exported backups and from iPhone backups.
+Your profile (including age, sex, height and body measurements), training plans, workout logs, meal records, photos, goals and settings are stored locally. By default, local records and photos are excluded from automatic Android/iCloud backup, and there is no automatic cloud sync. On iPhone and iPad you can turn on "Include in device backup" under Backup & advanced; your records and photos then go into your own iCloud or computer backup of the device, which Apple stores under its own rules. You can turn it off at any time, and later backups will no longer include them. API keys are stored using Android Keystore encryption or a device-only iOS Keychain entry and are excluded from exported backups and from device backups.
 
 ## 2. Optional AI photo recognition
 

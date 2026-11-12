@@ -106,16 +106,17 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
             '包含记录、照片和设置，不含密钥。单个备份最多 100MB。卸载 APP 会删除手机记录，请定期导出。',
           ),
           const GroupFooter(
-            '导出时可以选择保存位置，比如「文件」、云盘或下载目录。换手机时带上这个文件，在新手机的欢迎页或这里选「从备份恢复」。',
+            '导出时可以选择保存位置，比如「文件」、云盘或下载目录。换手机时带上这个文件，在新手机的欢迎页点「恢复备份」，或在这里选「从备份恢复」。',
           ),
           if (app.systemBackup.supported) ...[
-            const GroupHeader('随 iPhone 备份'),
+            const GroupHeader('系统备份'),
             GroupCard(
               children: [
                 GroupRow(
-                  label: '随 iPhone 备份',
+                  label: '随设备备份',
+                  sub: 'iCloud 或电脑',
                   trailing: FormSwitch(
-                    label: '随 iPhone 备份',
+                    label: '随设备备份',
                     value: app.systemBackup.enabled,
                     onChanged: (v) => _run(() => app.setSystemBackup(v)),
                   ),
@@ -123,7 +124,7 @@ class _AndroidSettingsSheetState extends State<AndroidSettingsSheet> {
               ],
             ),
             const GroupFooter(
-              '默认关闭，记录只留在这部手机上。打开后，记录和照片会进入 iCloud 或电脑上的 iPhone 备份，换 iPhone 恢复时自动回来。API Key 不会进入备份，换机后需要重新填写。',
+              '默认关闭，记录只留在这台设备上。打开后，记录和照片会进入 iCloud 或电脑上的设备备份，换设备恢复时自动回来。API Key 不会进入备份，换设备后需要重新填写。',
             ),
             const GroupFooter('照片也会一起备份，会占用 iCloud 空间。关闭后，之后的备份不再包含这些记录。'),
           ],

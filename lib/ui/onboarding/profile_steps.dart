@@ -16,6 +16,30 @@ import 'ruler.dart';
 
 typedef ProfileChange = void Function(String key, Object? value);
 
+/// 第 1 步底部「继续即表示你了解 隐私政策」。固定在「继续」按钮上方，小屏也不会被滚走或盖住。
+class PrivacyNote extends StatelessWidget {
+  const PrivacyNote({super.key});
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      LText('继续即表示你了解 ', style: AppText.hint(context.pal)),
+      Semantics(
+        button: true,
+        label: AppMessages.of(context).text('隐私政策'),
+        child: Pressable(
+          onTap: () => openPrivacy(context),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
+            alignment: Alignment.center,
+            child: LText('隐私政策 ›', style: AppText.hint(context.pal)),
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
 class IdentityStep extends StatelessWidget {
   const IdentityStep({
     super.key,
@@ -87,24 +111,6 @@ class IdentityStep extends StatelessWidget {
             ],
           ],
         ),
-      ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          LText('继续即表示你了解 ', style: AppText.hint(context.pal)),
-          Semantics(
-            button: true,
-            label: AppMessages.of(context).text('隐私政策'),
-            child: Pressable(
-              onTap: () => openPrivacy(context),
-              child: Container(
-                constraints: const BoxConstraints(minHeight: 44, minWidth: 44),
-                alignment: Alignment.center,
-                child: LText('隐私政策 ›', style: AppText.hint(context.pal)),
-              ),
-            ),
-          ),
-        ],
       ),
     ],
   );

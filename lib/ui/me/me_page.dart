@@ -130,7 +130,7 @@ class MePage extends StatelessWidget {
                   MeRow(
                     label: '备份与高级',
                     sub: app.systemBackup.enabled
-                        ? '随 iPhone 备份'
+                        ? '已随设备备份'
                         : app.backupStatusLabel,
                     icon: 'note',
                     onTap: () => openAndroidSettings(context),

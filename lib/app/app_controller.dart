@@ -802,7 +802,7 @@ class AppController extends ChangeNotifier {
   final BackupStatusStore backupStatusStore;
   BackupStatus backupStatus = const BackupStatus();
 
-  /// 本机是否支持「随 iPhone 备份」，以及是否已开启。Android 上不支持。
+  /// 本机是否支持「随设备备份」，以及是否已开启。Android 上不支持。
   SystemBackupState systemBackup = const SystemBackupState.unsupported();
 
   Future<void> _loadBackupStatus() async {
@@ -882,7 +882,7 @@ class AppController extends ChangeNotifier {
     toast.show('备份已保存到你选择的位置');
   }
 
-  /// 打开或关闭「随 iPhone 备份」。失败时保持原状并提示。
+  /// 打开或关闭「随设备备份」。失败时保持原状并提示。
   Future<void> setSystemBackup(bool on) async {
     try {
       await native.setSystemBackup(on);

@@ -58,7 +58,7 @@ abstract interface class Native {
   /// 是否支持把本机记录交给系统备份，以及现在是否已开启。
   Future<SystemBackupState> systemBackupState();
 
-  /// 开启或关闭「随 iPhone 备份」。只改数据库和照片目录的备份标记，不含 API Key。
+  /// 开启或关闭「随设备备份」。只改数据库和照片目录的备份标记，不含 API Key。
   Future<void> setSystemBackup(bool on);
 }
 

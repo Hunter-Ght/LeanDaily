@@ -247,6 +247,27 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                       label: '上一步',
                                       onTap: () => _go(_step - 1),
                                     )
+                                  : _step == 0 && !widget.upgrade
+                                  // 换新手机的人：第 1 步左上角直接恢复，不挤占底部的隐私政策提示。
+                                  ? SizedBox(
+                                      height: 44,
+                                      child: OverflowBox(
+                                        alignment: Alignment.centerLeft,
+                                        minWidth: 0,
+                                        maxWidth: 132,
+                                        child: FittedBox(
+                                          // 英文更长：整体缩一点，不换行、不挤到中间的进度点。
+                                          fit: BoxFit.scaleDown,
+                                          alignment: Alignment.centerLeft,
+                                          child: OnboardingButton(
+                                            label: _restoring
+                                                ? '正在恢复…'
+                                                : '恢复备份',
+                                            onTap: _restoring ? null : _restore,
+                                          ),
+                                        ),
+                                      ),
+                                    )
                                   : const SizedBox(height: 44),
                             ),
                             Expanded(
@@ -385,6 +406,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   style: AppText.hint(p).copyWith(color: p.err),
                                 ),
                               ),
+                            if (_step == 0) const PrivacyNote(),
                             OnboardingButton(
                               label: _saving
                                   ? '正在保存…'
@@ -402,14 +424,6 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   ? _finish
                                   : () => _go(_step + 1),
                             ),
-                            if (_step == 0 && !widget.upgrade) ...[
-                              const SizedBox(height: 6),
-                              OnboardingButton(
-                                label: _restoring ? '正在恢复…' : '已有备份？从备份恢复',
-                                textOnly: true,
-                                onTap: _restoring ? null : _restore,
-                              ),
-                            ],
                             if (_step == 1) ...[
                               const SizedBox(height: 6),
                               OnboardingButton(

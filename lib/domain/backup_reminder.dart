@@ -61,7 +61,7 @@ int? daysSinceBackup({required int? lastBackupMs, required int nowMs}) {
 ///
 /// - 没什么记录：不提示。
 /// - 点过“以后再说”且还没到期：不提示。
-/// - 已经打开了系统备份（iPhone 备份）：不提示，记录有别的保障。
+/// - 已经打开了系统备份（随设备备份）：不提示，记录有别的保障。
 /// - 从没手动备份过，或超过 [backupStaleDays] 天没备份：提示。
 bool shouldNudgeBackup({
   required BackupFacts facts,
