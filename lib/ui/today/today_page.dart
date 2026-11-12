@@ -491,7 +491,6 @@ class _TodayPageState extends State<TodayPage> {
             actions: [
               TodayButton(
                 '看看',
-                soft: true,
                 onTap: () => openTemplateBrowser(
                   context,
                   templateId: '${u['templateId']}',
