@@ -142,6 +142,15 @@ class ChannelNative implements Native {
   }
 
   @override
+  Future<void> shareImage(Uint8List bytes, String name, {Rect? anchor}) =>
+      _call<void>('shareImage', {
+        'bytes': bytes,
+        'name': name,
+        if (anchor != null)
+          'anchor': [anchor.left, anchor.top, anchor.width, anchor.height],
+      });
+
+  @override
   Future<void> keepAwake(bool on) => _call<void>('keepAwake', on);
   @override
   Future<void> openUrl(String url) => _call<void>('openUrl', {'url': url});

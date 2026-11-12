@@ -25,6 +25,8 @@ import '../kit/app_icon.dart';
 import '../kit/body_figure.dart';
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
+import '../share/share_data.dart';
+import '../share/share_sheet.dart';
 import '../today/today_model.dart';
 import '../today/workout_title.dart';
 import 'training_logic.dart';
@@ -152,6 +154,9 @@ class _TrainingModeState extends State<_TrainingBody>
   bool _warm = false, _summary = false, _saving = false;
   bool _feedbackExpanded = false, _inputFocused = false;
   String? _pbLabel;
+
+  /// 这次练习里破的纪录（同一动作只留最新一条），分享卡上最多列 2 条。
+  final _records = <ShareRecord>[];
   num? _reps, _weight;
   int? _remaining;
   String? _flag;
@@ -306,6 +311,16 @@ class _TrainingModeState extends State<_TrainingBody>
         if (pb) {
           _pbLabel =
               '${e['name']} · ${w > 0 ? '${fmt(w)} kg × ' : '自重 '}${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
+          final detail = '${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
+          _records
+            ..removeWhere((x) => x.name == '${e['name']}')
+            ..add(
+              ShareRecord(
+                name: '${e['name']}',
+                detail: detail,
+                load: w > 0 ? '${fmt(w)} kg × ${fmt(r)}' : null,
+              ),
+            );
         }
       });
       _feedbackMotion.forward(
@@ -717,6 +732,26 @@ class _TrainingModeState extends State<_TrainingBody>
             child: LText(note, style: AppText.hint(p)),
           ),
       ],
+    );
+  }
+
+  /// 小结页的「分享」：把今天的训练做成一张卡片，进预览。
+  Future<void> shareSummary(TodayModel m) {
+    final names = m.all.map((e) => e['name']).toSet();
+    final rows = jsonRows(m.day['sets'])
+        .where((s) => names.contains(s['ex']) && s['type'] != '热身')
+        .toList();
+    return openShareSheet(
+      context,
+      trainShareFrom(
+        iso: m.iso,
+        workoutName: '${m.workout['name'] ?? '训练'}',
+        rows: rows,
+        minutes: _elapsed.elapsed.inMinutes,
+        records: _records.length > 2
+            ? _records.sublist(_records.length - 2)
+            : List.of(_records),
+      ),
     );
   }
 
@@ -1574,6 +1609,12 @@ class _TrainingModeState extends State<_TrainingBody>
                                                     }
                                                   },
                                             primary: true,
+                                          ),
+                                        if (_summary)
+                                          button(
+                                            '分享',
+                                            () => shareSummary(m),
+                                            secondary: true,
                                           ),
                                         if (_warm)
                                           button(

@@ -129,6 +129,9 @@ final class NativeChannel {
             case "pendingIds": notifications.pending { self.complete(.success($0), result) }
             case "takeLaunchPayload":
                 notificationListenerReady = true; result(launchPayload); launchPayload = nil
+            case "shareImage":
+                guard let bytes = args["bytes"] as? FlutterStandardTypedData else { throw NativeFailure("图片无效") }
+                pickers.shareImage(bytes: bytes.data, name: args["name"] as? String ?? "", anchor: (args["anchor"] as? [NSNumber])?.map(\.doubleValue)) { self.complete($0, result) }
             case "keepAwake": UIApplication.shared.isIdleTimerDisabled = call.arguments as? Bool ?? false; result(nil)
             case "openUrl":
                 guard let url = URL(string: try text(args, "url")), ["https", "http"].contains(url.scheme?.lowercased() ?? ""), url.host != nil else { throw NativeFailure("链接无效") }
