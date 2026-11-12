@@ -8,6 +8,7 @@ import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
+import '../../data/backup.dart' as backup;
 import '../../domain/body.dart';
 import '../../domain/templates.dart';
 import '../../theme/theme.dart';
@@ -41,6 +42,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
   );
   String? _selected;
   bool _saving = false;
+  bool _restoring = false;
   bool _initialized = false;
   bool _programmatic = false;
   int _dragOrigin = 0;
@@ -117,6 +119,23 @@ class _OnboardingFlowState extends State<OnboardingFlow>
           SpringSimulation(_onboardingSpring, _pages.offset, step * width, 0),
         )
         .then((_) => _programmatic = false);
+  }
+
+  /// 换新手机的人：直接选备份文件恢复，不用再走一遍评估。成功后外壳自动进入首页。
+  Future<void> _restore() async {
+    if (_saving || _restoring) return;
+    final app = context.app;
+    setState(() => _restoring = true);
+    try {
+      final b = await backup.chooseBackup(app.native);
+      await app.restoreFromBackup(b);
+      app.toast.show('记录已恢复');
+    } on Object catch (e) {
+      final message = AppController.message(e);
+      if (message != '已取消导入') app.toast.show(message);
+    } finally {
+      if (mounted) setState(() => _restoring = false);
+    }
   }
 
   Future<void> _skip() async {
@@ -211,7 +230,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                   end: .96,
                 ).animate(CurvedAnimation(parent: _exit, curve: Curves.easeIn)),
                 child: AbsorbPointer(
-                  absorbing: _saving,
+                  absorbing: _saving || _restoring,
                   child: Column(
                     children: [
                       Padding(
@@ -227,6 +246,27 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   ? OnboardingButton(
                                       label: '上一步',
                                       onTap: () => _go(_step - 1),
+                                    )
+                                  : _step == 0 && !widget.upgrade
+                                  // 换新手机的人：第 1 步左上角直接恢复，不挤占底部的隐私政策提示。
+                                  ? SizedBox(
+                                      height: 44,
+                                      child: OverflowBox(
+                                        alignment: Alignment.centerLeft,
+                                        minWidth: 0,
+                                        maxWidth: 132,
+                                        child: FittedBox(
+                                          // 英文更长：整体缩一点，不换行、不挤到中间的进度点。
+                                          fit: BoxFit.scaleDown,
+                                          alignment: Alignment.centerLeft,
+                                          child: OnboardingButton(
+                                            label: _restoring
+                                                ? '正在恢复…'
+                                                : '恢复备份',
+                                            onTap: _restoring ? null : _restore,
+                                          ),
+                                        ),
+                                      ),
                                     )
                                   : const SizedBox(height: 44),
                             ),
@@ -366,6 +406,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   style: AppText.hint(p).copyWith(color: p.err),
                                 ),
                               ),
+                            if (_step == 0) const PrivacyNote(),
                             OnboardingButton(
                               label: _saving
                                   ? '正在保存…'

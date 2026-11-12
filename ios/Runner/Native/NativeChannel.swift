@@ -139,6 +139,11 @@ final class NativeChannel {
                     if opened { result(nil) } else { result(self.error(NativeFailure("暂时无法打开页面"))) }
                 }
             case "minimize": result(nil) // iOS applications must not programmatically suspend or exit.
+            case "systemBackupState": async(result) {
+                let enabled = try self.database().backupIncluded
+                return ["supported": true, "enabled": enabled]
+            }
+            case "setSystemBackup": async(result) { try self.database().setBackupIncluded(args["enabled"] as? Bool ?? false); return nil }
             default: result(FlutterMethodNotImplemented)
             }
         } catch { result(self.error(error)) }

@@ -1,0 +1,82 @@
+{
+  "还没备份过": {
+    "en": "Never backed up",
+    "zh_Hant": "還沒備份過"
+  },
+  "今天已备份": {
+    "en": "Backed up today",
+    "zh_Hant": "今天已備份"
+  },
+  "昨天备份": {
+    "en": "Backed up yesterday",
+    "zh_Hant": "昨天備份"
+  },
+  "{p0} 天前备份": {
+    "en": "Backed up {p0} days ago",
+    "zh_Hant": "{p0} 天前備份"
+  },
+  "{p0} 个月前备份": {
+    "en": "Backed up {p0} months ago",
+    "zh_Hant": "{p0} 個月前備份"
+  },
+  "已经一个多月没备份了，导出一份最新的吧。": {
+    "en": "It's been over a month since your last backup. Export a fresh one.",
+    "zh_Hant": "已經一個多月沒備份了，匯出一份最新的吧。"
+  },
+  "现在备份": {
+    "en": "Back up now",
+    "zh_Hant": "現在備份"
+  },
+  "以后再说": {
+    "en": "Not now",
+    "zh_Hant": "以後再說"
+  },
+  "照片也会一起备份，会占用 iCloud 空间。关闭后，之后的备份不再包含这些记录。": {
+    "en": "Photos are included too and use iCloud storage. After you turn this off, future backups no longer include your records.",
+    "zh_Hant": "照片也會一起備份，會佔用 iCloud 空間。關閉後，之後的備份不再包含這些記錄。"
+  },
+  "备份已保存到你选择的位置": {
+    "en": "Backup saved to the location you chose",
+    "zh_Hant": "備份已儲存到你選擇的位置"
+  },
+  "记录已恢复": {
+    "en": "Records restored",
+    "zh_Hant": "記錄已恢復"
+  },
+  "正在恢复…": {
+    "en": "Restoring…",
+    "zh_Hant": "正在恢復…"
+  },
+  "记录只存在这部手机上，换机前先备份一份。": {
+    "en": "Your records live only on this phone. Back up before you switch phones.",
+    "zh_Hant": "記錄只存在這部手機上，換機前先備份一份。"
+  },
+  "恢复备份": {
+    "en": "Restore backup",
+    "zh_Hant": "恢復備份"
+  },
+  "系统备份": {
+    "en": "System backup",
+    "zh_Hant": "系統備份"
+  },
+  "随设备备份": {
+    "en": "Include in device backup",
+    "zh_Hant": "隨裝置備份"
+  },
+  "已随设备备份": {
+    "en": "In device backup",
+    "zh_Hant": "已隨裝置備份"
+  },
+  "iCloud 或电脑": {
+    "en": "iCloud or computer",
+    "zh_Hant": "iCloud 或電腦"
+  },
+  "默认关闭，记录只留在这台设备上。打开后，记录和照片会进入 iCloud 或电脑上的设备备份，换设备恢复时自动回来。API Key 不会进入备份，换设备后需要重新填写。": {
+    "en": "Off by default, so your records stay on this device only. When on, your records and photos go into your iCloud or computer backup of this device and come back automatically when you restore a new device. Your API key is never included; you'll need to enter it again on the new device.",
+    "zh_Hant": "預設關閉，記錄只留在這台裝置上。開啟後，記錄和照片會進入 iCloud 或電腦上的裝置備份，換裝置恢復時自動回來。API Key 不會進入備份，換裝置後需要重新填寫。"
+  },
+  "导出时可以选择保存位置，比如「文件」、云盘或下载目录。换手机时带上这个文件，在新手机的欢迎页点「恢复备份」，或在这里选「从备份恢复」。": {
+    "en": "You choose where to save the file, such as Files, a cloud drive, or Downloads. When you switch phones, bring the file along and tap \"Restore backup\" on the new phone's welcome screen, or choose \"Restore from backup\" here.",
+    "zh_Hant": "匯出時可以選擇儲存位置，例如「檔案」、雲端硬碟或下載目錄。換手機時帶上這個檔案，在新手機的歡迎頁點「恢復備份」，或在這裡選「從備份恢復」。"
+  }
+}

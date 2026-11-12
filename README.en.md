@@ -71,7 +71,7 @@ Unfolded, the app switches to a side rail and two panes: today's plan on the lef
 
 ## Privacy
 
-No account, ads, analytics, crash reporting or tracking SDKs. Core records and photos stay on the device and are excluded from automatic system backup. Optional AI recognition sends selected photos, the meal name and your note to your chosen provider only after separate consent; provider retention and fees may apply. Manual logging works without AI. Android update checks can be disabled. Public links open in your browser.
+No account, ads, analytics, crash reporting or tracking SDKs. Core records and photos stay on the device and are excluded from automatic system backup by default (iPhone and iPad users can opt in to "Include in device backup" in Backup & advanced). Optional AI recognition sends selected photos, the meal name and your note to your chosen provider only after separate consent; provider retention and fees may apply. Manual logging works without AI. Android update checks can be disabled. Public links open in your browser.
 
 English, Simplified Chinese and Traditional Chinese are available in Me → Language. Read the [full privacy policy](PRIVACY.en.md) and [US storefront release guide](docs/US_STORE_RELEASE.md).
 

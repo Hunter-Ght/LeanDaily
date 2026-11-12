@@ -132,6 +132,11 @@ final class NativeChannel implements MethodChannel.MethodCallHandler {
                     result.success(null); break;
                 case "openUrl": activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(string(args,"url","")))); result.success(null); break;
                 case "minimize": activity.moveTaskToBack(true); result.success(null); break;
+                // Android 的系统自动备份在 manifest 里静态关闭，没有可开关的选项。
+                case "systemBackupState": {
+                    Map<String,Object> out = new LinkedHashMap<>(); out.put("supported", false); out.put("enabled", false); result.success(out); break;
+                }
+                case "setSystemBackup": result.error("native", "当前系统不支持", null); break;
                 default: result.notImplemented();
             }
         } catch (Exception e) { fail(result, e); }

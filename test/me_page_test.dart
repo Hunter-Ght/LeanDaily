@@ -68,7 +68,7 @@ void main() {
     tester,
   ) async {
     await Harness.pump(tester, tab: 3);
-    expect(find.text('备份、恢复与提醒'), findsOneWidget);
+    expect(find.text('还没备份过'), findsOneWidget);
     expect(find.text('AI 拍照识别'), findsOneWidget);
     expect(find.text('未设置'), findsOneWidget);
     expect(find.text('立即同步'), findsNothing);
