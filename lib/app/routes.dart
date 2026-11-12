@@ -70,8 +70,11 @@ Future<void> openMuscleExercises(BuildContext context, String muscleId) =>
 
 Future<void> openProfile(BuildContext context) =>
     showAppSheet<void>(context, (_) => const ProfileSheet());
-Future<void> openTemplateBrowser(BuildContext context) =>
-    showAppSheet<void>(context, (_) => const TemplateBrowserSheet());
+Future<void> openTemplateBrowser(BuildContext context, {String? templateId}) =>
+    showAppSheet<void>(
+      context,
+      (_) => TemplateBrowserSheet(initialTemplateId: templateId),
+    );
 Future<void> openQuickFood(
   BuildContext context, {
   String? date,

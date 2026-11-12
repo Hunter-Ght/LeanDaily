@@ -480,6 +480,33 @@ class _TodayPageState extends State<TodayPage> {
                   )
                 : null,
           ),
+        if (m.planUpgrade case final u?)
+          TodayTipCard(
+            model: m,
+            key: const ValueKey('suggestion-planUpgrade'),
+            heading: '${u['title']}',
+            // 排在训练建议之后、提醒之前。
+            priority: 5,
+            body: '${u['body']}',
+            actions: [
+              TodayButton(
+                '看看',
+                soft: true,
+                onTap: () => openTemplateBrowser(
+                  context,
+                  templateId: '${u['templateId']}',
+                ),
+              ),
+              TodayButton(
+                '先不',
+                soft: true,
+                onTap: () async {
+                  await app.declineSuggestion(u);
+                  app.toast.show('好的，28 天内不再提这一条');
+                },
+              ),
+            ],
+          ),
         if (!_notifyOk && jsTruthy(jsonMap(app.plan['reminder'])['enabled']))
           TodayTipCard(
             model: m,

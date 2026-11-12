@@ -385,6 +385,15 @@ class AppController extends ChangeNotifier {
         jsonMap(progress['deload'])['week'] == calendar.mondayOf(today),
   );
 
+  /// 当前使用的方案来自哪个模板；自己建的、导入的方案返回 null。
+  String? get activeTemplateId {
+    final id = library.activeId;
+    if (id == null) return null;
+    final item = library.items.where((i) => i['id'] == id).firstOrNull;
+    if (item?['source'] != 'template') return null;
+    return item?['templateId'] as String?;
+  }
+
   /// Uses the existing progress document, so backup and restore include deloads.
   Map<String, dynamic> get deloadState => jsonMap(progress['deload']);
 

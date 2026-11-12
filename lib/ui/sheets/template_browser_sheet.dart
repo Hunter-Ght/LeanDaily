@@ -12,8 +12,15 @@ import '../kit/transitions.dart';
 
 /// Returning from preview preserves the catalog filters and scroll offset.
 class TemplateBrowserSheet extends StatefulWidget {
-  const TemplateBrowserSheet({super.key, this.beforeActivate});
+  const TemplateBrowserSheet({
+    super.key,
+    this.beforeActivate,
+    this.initialTemplateId,
+  });
   final Future<bool> Function()? beforeActivate;
+
+  /// 直接打开这个模板的预览（今日页的「换更高阶方案」建议用）。
+  final String? initialTemplateId;
   @override
   State<TemplateBrowserSheet> createState() => _TemplateBrowserSheetState();
 }
@@ -24,6 +31,15 @@ class _TemplateBrowserSheetState extends State<TemplateBrowserSheet> {
   bool _busy = false;
   String _error = '';
   final PageStorageBucket _bucket = PageStorageBucket();
+  @override
+  void initState() {
+    super.initState();
+    final id = widget.initialTemplateId;
+    if (id != null) {
+      _selected = templates.where((t) => t['id'] == id).firstOrNull;
+    }
+  }
+
   Future<bool> _back() async {
     if (_busy) return false;
     if (_selected == null) return true;

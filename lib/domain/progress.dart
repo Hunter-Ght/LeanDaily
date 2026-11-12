@@ -1,7 +1,9 @@
 // ignore_for_file: constant_identifier_names
 import 'dart:math' as math;
 
+import 'e1rm.dart';
 import 'format.dart';
+import 'ladders.dart';
 import 'progress_options.dart';
 import 'plan.dart';
 import 'calendar.dart' show mondayOf, daysApart;
@@ -319,6 +321,16 @@ Map<String, dynamic> targetFor(
   };
 }
 
+/// 老计划的动作正好是某条预设阶梯的一级、后面还有更难的一级，而且计划里还没有这条阶梯。
+({String id, int stage})? _adoptable(
+  Map<String, dynamic> ex,
+  Map<String, dynamic> plan,
+) {
+  final m = ladderMatch(ex);
+  if (m == null || jsonMap(plan['ladders']).containsKey(m.id)) return null;
+  return m.stage + 1 < ladderPreset(m.id)!.steps.length ? m : null;
+}
+
 bool _declined(String key, Map<String, dynamic>? progress, String today) {
   final at = jsonMap(progress?['declined'])[key];
   return jsTruthy(at) && daysApart(at as String, today) < CFG['declineDays']!;
@@ -466,6 +478,10 @@ Map<String, dynamic>? suggest(
   final ladder = jsonMap(jsonMap(plan['ladders'])[ex['ladder']]);
   final ladderSteps = jsonRows(ladder['steps']),
       stage = _n(ladder['stage']).toInt();
+  // 老计划里的自重动作没有阶梯：做满时可以建议「加入阶梯并升一级」，由用户接受或忽略。
+  final adopt = options == null || ladder.isNotEmpty || ex.containsKey('ladder')
+      ? null
+      : _adoptable(ex, plan);
   final steps = {
     if (options != null) ...jsonMap(plan['steps']),
     ...jsonMap(progress?['steps']),
@@ -530,11 +546,32 @@ Map<String, dynamic>? suggest(
       return pick('ladder', {
         'title':
             '$name：连续${options?.level == 'trained' ? '三' : '两'}次做满 ${_s(ex['max'])} $unit',
-        'body': '动作标准的话，换更难的「${nx['name']}」，次数从 ${_s(nx['min'])} 次起步。',
+        'body': nx['upBody'] is String
+            ? nx['upBody']
+            : '动作标准的话，换更难的「${nx['name']}」，次数从 ${_s(nx['min'])} 次起步。',
         'accept': {
           'type': 'ladder',
           'ladderId': ex['ladder'],
           'stage': stage + 1,
+          'date': t['lastDate'],
+        },
+        'acceptLabel': '升级到${nx['name']}',
+      });
+    }
+    if (adopt != null) {
+      final preset = ladderPreset(adopt.id)!;
+      final nx = preset.steps[adopt.stage + 1];
+      return pick('ladder', {
+        'title':
+            '$name：连续${options?.level == 'trained' ? '三' : '两'}次做满 ${_s(ex['max'])} $unit',
+        'body': nx['upBody'] is String
+            ? nx['upBody']
+            : '动作标准的话，换更难的「${nx['name']}」，次数从 ${_s(nx['min'])} 次起步。',
+        'accept': {
+          'type': 'ladder',
+          'ladderId': adopt.id,
+          'stage': adopt.stage + 1,
+          'adopt': {'exName': name},
           'date': t['lastDate'],
         },
         'acceptLabel': '升级到${nx['name']}',
@@ -717,6 +754,26 @@ Map<String, dynamic> applyAccept(
       'cal': true,
     };
   } else if (acc['type'] == 'ladder') {
+    final adopt = acc['adopt'];
+    final id = '${acc['ladderId']}';
+    if (adopt is Map &&
+        ladderPreset(id) != null &&
+        jsonMap(next['ladders'])[id] == null) {
+      // 老计划里这个动作还没有阶梯：把预设阶梯加进计划，再把这个动作接上去。
+      if (next['ladders'] is! Map) next['ladders'] = <String, dynamic>{};
+      next['ladders'][id] = buildLadder(id, jsNumber(acc['stage']).toInt());
+      for (final w in jsonMap(next['workouts']).values) {
+        for (final e in [
+          ...(w['exercises'] as List),
+          ...(jsonMap(w['gym'])['exercises'] as List? ?? []),
+        ]) {
+          if (e['name'] == adopt['exName'] &&
+              ladderMatch(jsonMap(e))?.id == id) {
+            e['ladder'] = id;
+          }
+        }
+      }
+    }
     final ladder = next['ladders'][acc['ladderId']];
     ladder['stage'] = jsNumber(acc['stage'])
         .clamp(0, (ladder['steps'] as List).length - 1);
@@ -751,8 +808,7 @@ bool isPersonalBest(
   Object? reps, [
   Object? weight = 0,
 ]) {
-  num metric(Object? w, Object? r) =>
-      jsNumber(w) > 0 ? jsNumber(w) * (1 + jsNumber(r) / 30) : jsNumber(r);
+  num metric(Object? w, Object? r) => strengthMetric(jsNumber(w), jsNumber(r));
   num best = 0;
   var seen = false;
   for (final day in (days ?? {}).values) {

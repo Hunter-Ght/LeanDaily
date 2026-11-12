@@ -703,6 +703,15 @@ const Map<String, String> NAME_MAP = {
   "坐姿臂屈伸机": "seated-dip",
   "双杠臂屈伸": "dip",
   "悬垂举腿": "hanging-leg-raise",
+  // 自重阶梯里的变式：和原动作用同一份示范，区别写在每一级的要点里。
+  "停顿深蹲": "squat",
+  "慢速保加利亚分腿蹲": "bulgarian-split-squat",
+  "高角度反向划船": "inverted-row",
+  "脚垫高反向划船": "inverted-row",
+  "单臂辅助反向划船": "inverted-row",
+  "停顿臀桥": "glute-bridge",
+  "肩垫高单腿臀桥": "single-leg-bridge",
+  "悬垂屈膝举腿": "hanging-leg-raise",
 };
 const List<Map<String, String>> LIB_OPTIONS = [
   {"key": "incline-pushup", "label": "高位俯卧撑"},

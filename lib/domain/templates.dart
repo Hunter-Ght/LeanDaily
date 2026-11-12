@@ -3,6 +3,7 @@ library;
 
 import 'catalog.dart' show catalog;
 import 'guide.dart' show guideFor;
+import 'ladders.dart';
 import 'plan.dart' as plans;
 import 'template_data.dart';
 export 'template_data.dart' show templates, defaultTemplateId;
@@ -35,6 +36,9 @@ Map<String, dynamic> buildPlan(
     };
     // 自重计划也带一套健身房版：没选场地的新用户默认拿到它，今日页仍能切到健身房。
     final homeOnly = templateId == 'dumbbell-3';
+    // 居家自重和居家哑铃模板里的自重动作带进阶阶梯（深蹲、反向划船、臀桥、腹肌）。
+    final laddered = bodyweight || homeOnly;
+    final usedLadders = <String>{};
     final chestSeen = <String, bool>{};
     final workouts = <String, dynamic>{};
     final schedule = <String, dynamic>{};
@@ -58,6 +62,14 @@ Map<String, dynamic> buildPlan(
               }
               final ex = _exercise(name);
               final core = j < day.coreCount;
+              final ladderId = laddered && venue == 'home'
+                  ? _ladderStartingAt(name)
+                  : null;
+              if (ladderId != null) usedLadders.add(ladderId);
+              final start = ladderId == null
+                  ? null
+                  : ladderPreset(ladderId)!.steps[ladderPreset(ladderId)!
+                        .start];
               return <String, dynamic>{
                 ...ex,
                 'id': '${id}_${venue}_${j + 1}',
@@ -76,6 +88,14 @@ Map<String, dynamic> buildPlan(
                 'optional': false,
                 'rest': core ? 120 : 60,
                 if (name == '高位俯卧撑') 'ladder': 'pushup',
+                if (start != null) ...{
+                  'ladder': ladderId,
+                  'min': start['min'],
+                  'max': start['max'],
+                  'side': start['side'],
+                  'gear': start['gear'],
+                  'tip': start['tip'],
+                },
               };
             })(),
         ];
@@ -103,6 +123,9 @@ Map<String, dynamic> buildPlan(
     plan['schedule'] = schedule;
     plan['order'] = workouts.keys.toList();
     plan['venues'] = venues;
+    for (final id in usedLadders) {
+      (plan['ladders'] as Map<String, dynamic>)[id] = buildLadder(id);
+    }
     // New templates use a 4–6 core prescription at every pushup stage.
     final ladder = plan['ladders']['pushup'] as Map<String, dynamic>;
     for (final step in ladder['steps'] as List) {
@@ -144,6 +167,14 @@ Map<String, dynamic> buildPlan(
   };
   // Normalize once to fill all canonical fields, notably img on legacy specs.
   return plans.normalizePlan(plan);
+}
+
+/// 新建模板时，这个动作正好是哪条阶梯的起点（深蹲、反向划船、臀桥、反向卷腹）。
+String? _ladderStartingAt(String name) {
+  for (final p in ladderPresets) {
+    if (p.steps[p.start]['name'] == name) return p.id;
+  }
+  return null;
 }
 
 Map<String, dynamic> _exercise(String name) {
