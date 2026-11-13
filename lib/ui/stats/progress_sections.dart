@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:leandaily/l10n/app_messages.dart';
 
 import '../../domain/calendar.dart' as calendar;
+import '../../domain/cardio.dart';
 import '../../domain/format.dart';
 import '../../domain/equipment.dart' show partOfExercise;
 import '../../domain/free_training.dart';
@@ -31,6 +32,7 @@ class ProgressSummary {
     this.streak,
     this.setsByDate,
     this.today,
+    this.cardioDates,
   );
 
   final StatsRange range;
@@ -46,10 +48,14 @@ class ProgressSummary {
   final Map<String, int> setsByDate;
   final String today;
 
+  /// 有有氧记录的日期：算活动日，连续天数不断，但不计入训练天数和肌肉统计。
+  final Set<String> cardioDates;
+
   factory ProgressSummary.build(
     Map<String, Map<String, dynamic>> days,
     String today, [
     StatsRange range = StatsRange.weeks4,
+    Set<String> cardioDates = const {},
   ]) {
     final sets = workSets(days);
     String? first;
@@ -81,12 +87,11 @@ class ProgressSummary {
     for (var i = 0; i < window.days; i++) {
       if (byDate.containsKey(calendar.shiftDate(today, -i))) count++;
     }
-    var streak = 0;
-    var cursor = byDate.containsKey(today) ? 0 : 1;
-    while (byDate.containsKey(calendar.shiftDate(today, -cursor))) {
-      streak++;
-      cursor++;
-    }
+    final streak = activeStreak(
+      today: today,
+      strengthDates: byDate.keys.toSet(),
+      cardioDates: cardioDates,
+    );
     return ProgressSummary._(
       range,
       window,
@@ -96,6 +101,7 @@ class ProgressSummary {
       streak,
       byDate,
       today,
+      cardioDates,
     );
   }
 }
@@ -532,11 +538,27 @@ class StreakGrid extends StatelessWidget {
             ],
             const SizedBox(width: 3),
             LText('多', style: AppText.hint(p)),
+            if (summary.cardioDates.isNotEmpty) ...[
+              const SizedBox(width: 14),
+              Container(
+                width: 12,
+                height: 12,
+                margin: const EdgeInsets.only(right: 5),
+                decoration: BoxDecoration(
+                  color: _cardioColor(p),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+              LText('有氧日', style: AppText.hint(p)),
+            ],
           ],
         ),
       ],
     );
   }
+
+  /// 只有有氧、没有力量的活动日：用「坚持」的绿色，不用发力橙。
+  static Color _cardioColor(AppPalette p) => p.ok.withValues(alpha: .6);
 
   static Color _level(AppPalette p, double l) =>
       l == 0 ? p.fill : Color.lerp(p.tintSoft, p.tint, l)!;
@@ -545,11 +567,16 @@ class StreakGrid extends StatelessWidget {
     final future = iso.compareTo(summary.today) > 0;
     final sets = summary.setsByDate[iso] ?? 0;
     final level = sets == 0 ? 0.0 : (sets < 5 ? .4 : (sets < 10 ? .7 : 1.0));
+    final cardioOnly = sets == 0 && summary.cardioDates.contains(iso);
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: future ? p.fill.withValues(alpha: 0) : _level(p, level),
+        color: future
+            ? p.fill.withValues(alpha: 0)
+            : cardioOnly
+            ? _cardioColor(p)
+            : _level(p, level),
         borderRadius: BorderRadius.circular(math.max(3, size * .22)),
       ),
     );

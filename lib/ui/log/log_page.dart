@@ -210,6 +210,7 @@ class _LogPageState extends State<LogPage> with TickerProviderStateMixin {
     iso: iso,
     today: context.app.today,
     marks: marks,
+    cardio: (date) => context.app.cardioOn(date).isNotEmpty,
     progress: expansion,
     persistent: persistent,
     onPick: (date) => pick(date, collapse: true),

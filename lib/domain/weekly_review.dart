@@ -1,4 +1,5 @@
 import 'calendar.dart';
+import 'cardio.dart';
 import 'format.dart' hide shiftDate;
 
 /// Reviews only the last completed calendar week; absent records are unknown.
@@ -13,6 +14,7 @@ Map<String, dynamic>? weeklyReview({
   required int trainTarget,
   required int kcalFloor,
   required String done,
+  List<Map<String, dynamic>> cardio = const [],
 }) {
   final monday = mondayOf(today);
   if (daysApart(monday, today) > 3) return null;
@@ -40,6 +42,11 @@ Map<String, dynamic>? weeklyReview({
     if (kcalGoal > 0 && kcal >= kcalGoal * .9 && kcal <= kcalGoal * 1.1) {
       kcalDays++;
     }
+  }
+  // 有氧只增加「有记录的天数」和总分钟，不进训练天数。
+  for (final e in cardio) {
+    final date = '${e['date']}';
+    if (inWeek(date, week)) recorded.add(date);
   }
   final weights = <double>[], oldWeights = <double>[];
   for (final entry in bodyEntries) {
@@ -123,6 +130,11 @@ Map<String, dynamic>? weeklyReview({
     'label': '${labelDate(week)}–${labelDate(shiftDate(week, 6))}',
     'trainDays': trainDays,
     'trainTarget': trainTarget,
+    'cardioMinutes': cardioMinutes(
+      cardio,
+      from: week,
+      until: shiftDate(week, 7),
+    ),
     'proteinDays': proteinDays,
     'kcalDays': kcalDays,
     'mealDays': mealDays,

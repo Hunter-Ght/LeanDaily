@@ -3,6 +3,8 @@ import '../../l10n/localized_text.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
+import '../../domain/calendar.dart' as cal;
+import '../../domain/cardio.dart' show cardioMinutes;
 import '../../domain/format.dart';
 import '../../domain/plan.dart';
 import '../../domain/progress.dart';
@@ -36,6 +38,12 @@ class _ReviewCardState extends State<ReviewCard> {
     final share = WeekShare.build(
       app.repo.allDays().map((k, v) => MapEntry(k, jsonMap(v))),
       app.today,
+    );
+    final monday = cal.mondayOf(app.today);
+    final cardio = cardioMinutes(
+      app.cardioEntries,
+      from: monday,
+      until: cal.shiftDate(monday, 7),
     );
     final a = jsonMap(r['adherence']);
     final rows = jsonMap(r['groups']).values
@@ -82,6 +90,13 @@ class _ReviewCardState extends State<ReviewCard> {
             ),
           ],
         ),
+        if (cardio > 0) ...[
+          const SizedBox(height: 6),
+          LText(
+            '本周有氧 $cardio 分钟',
+            style: TextStyle(fontSize: 14, color: p.secondary),
+          ),
+        ],
         const SizedBox(height: 8),
         for (final (index, g) in rows.indexed)
           Reveal(

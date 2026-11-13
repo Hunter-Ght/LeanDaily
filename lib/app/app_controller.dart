@@ -16,6 +16,8 @@ import 'diagnostics.dart';
 import '../data/backup.dart' as backup_io;
 import '../data/backup_status.dart';
 import '../data/body_log_store.dart';
+import '../data/cardio_store.dart';
+import '../domain/cardio.dart' as cardio;
 import '../data/my_foods_store.dart';
 import '../data/plan_store.dart';
 import '../data/prefs.dart';
@@ -171,6 +173,10 @@ class AppController extends ChangeNotifier {
        planStore = PlanStore(native, clock: clock),
        profileStore = ProfileStore(native),
        bodyLog = BodyLogStore(native),
+       cardioStore = CardioStore(
+         native,
+         now: clock == null ? null : () => clock().millisecondsSinceEpoch,
+       ),
        backupStatusStore = BackupStatusStore(native),
        myFoodsStore = MyFoodsStore(native),
        reminders = Reminders(native, clock: clock),
@@ -351,6 +357,88 @@ class AppController extends ChangeNotifier {
 
   /// 体重/腰围记录，按日期升序；每天最多一条。
   List<Map<String, dynamic>> bodyEntries = [];
+
+  /// 有氧记录（独立文档，不进力量统计），按日期升序。
+  final CardioStore cardioStore;
+  List<Map<String, dynamic>> cardioEntries = [];
+  Map<String, List<Map<String, dynamic>>> _cardioByDate = {};
+
+  Future<void> _loadCardio() async {
+    try {
+      cardioEntries = await cardioStore.load();
+    } on Object {
+      cardioEntries = []; // 有氧记录损坏不影响启动
+    }
+    _cardioByDate = {};
+    for (final e in cardioEntries) {
+      (_cardioByDate[e['date'] as String] ??= []).add(e);
+    }
+  }
+
+  /// 某天的有氧记录。
+  List<Map<String, dynamic>> cardioOn(String date) =>
+      _cardioByDate[date] ?? const [];
+
+  /// 有有氧记录的日期（活动日，见 domain/cardio.dart 的坚持规则）。
+  Set<String> get cardioDates => _cardioByDate.keys.toSet();
+
+  /// 记有氧的默认值：上次记的类型和时长；还没有记录就是走路 20 分钟。
+  ({String type, int minutes}) get lastCardio {
+    final last = cardioEntries.isEmpty
+        ? null
+        : (cardioEntries.toList()..sort(
+                (a, b) =>
+                    ((a['ts'] ?? 0) as num).compareTo((b['ts'] ?? 0) as num),
+              ))
+              .last;
+    return (
+      type: '${last?['type'] ?? 'walk'}',
+      minutes: ((last?['minutes'] ?? cardio.cardioDefaultMinutes) as num)
+          .toInt(),
+    );
+  }
+
+  Future<void> saveCardio({
+    required String date,
+    required String type,
+    required int minutes,
+    num? distanceKm,
+    String? effort,
+    String? id,
+  }) async {
+    if (id == null) {
+      await cardioStore.add(
+        date: date,
+        type: type,
+        minutes: minutes,
+        distanceKm: distanceKm,
+        effort: effort,
+      );
+    } else {
+      await cardioStore.update(
+        id,
+        type: type,
+        minutes: minutes,
+        distanceKm: distanceKm,
+        effort: effort,
+      );
+    }
+    await _loadCardio();
+    notifyListeners();
+  }
+
+  Future<void> deleteCardio(String id) async {
+    await cardioStore.remove(id);
+    await _loadCardio();
+    notifyListeners();
+  }
+
+  Future<void> restoreCardio(Map<String, dynamic> entry) async {
+    await cardioStore.restore(entry);
+    await _loadCardio();
+    notifyListeners();
+  }
+
   final Reminders reminders;
   final Vision vision;
   late final RestTimer rest;
@@ -533,6 +621,7 @@ class AppController extends ChangeNotifier {
       } on Object {
         bodyEntries = []; // 体重记录损坏不影响启动
       }
+      await _loadCardio();
       await _loadMyFoods();
       final r = await restTimerStore.load();
       rest.restore(
@@ -1069,6 +1158,7 @@ class AppController extends ChangeNotifier {
     } on Object {
       bodyEntries = [];
     }
+    await _loadCardio();
     await _loadReview();
     await _loadHints();
     rest.clear();
