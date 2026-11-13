@@ -1,0 +1,4416 @@
+[
+  {
+    "name": "贝果",
+    "aliases": [
+      "bagel (4 in)",
+      "bagel",
+      "plain bagel"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 105,
+    "kcal100": 257,
+    "protein100": 10,
+    "carbs100": 50,
+    "fat100": 1.6
+  },
+  {
+    "name": "全麦贝果",
+    "aliases": [
+      "whole wheat bagel",
+      "wheat bagel"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 105,
+    "kcal100": 250,
+    "protein100": 10.1,
+    "carbs100": 51,
+    "fat100": 1.5
+  },
+  {
+    "name": "奶油奶酪贝果",
+    "aliases": [
+      "bagel with cream cheese",
+      "bagel and cream cheese",
+      "bagel cream cheese"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 135,
+    "kcal100": 276,
+    "protein100": 9.1,
+    "carbs100": 39.8,
+    "fat100": 8.8
+  },
+  {
+    "name": "英式玛芬",
+    "aliases": [
+      "english muffin"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 57,
+    "kcal100": 227,
+    "protein100": 8,
+    "carbs100": 44,
+    "fat100": 1.8
+  },
+  {
+    "name": "蛋芝士英式玛芬三明治",
+    "aliases": [
+      "breakfast sandwich (egg and cheese)",
+      "egg mcmuffin",
+      "egg sandwich",
+      "breakfast sandwich"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 137,
+    "kcal100": 220,
+    "protein100": 12.4,
+    "carbs100": 22,
+    "fat100": 9.5
+  },
+  {
+    "name": "燕麦粥（水煮）",
+    "aliases": [
+      "oatmeal (cooked with water)",
+      "oats",
+      "porridge",
+      "cooked oatmeal"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 234,
+    "kcal100": 71,
+    "protein100": 2.5,
+    "carbs100": 12,
+    "fat100": 1.5
+  },
+  {
+    "name": "隔夜燕麦",
+    "aliases": [
+      "overnight oats",
+      "overnight oatmeal"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 240,
+    "kcal100": 110,
+    "protein100": 5,
+    "carbs100": 16,
+    "fat100": 3
+  },
+  {
+    "name": "传统燕麦片（干）",
+    "aliases": [
+      "old-fashioned oats (dry)",
+      "rolled oats",
+      "dry oats",
+      "quick oats"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 81,
+    "kcal100": 379,
+    "protein100": 13.2,
+    "carbs100": 67.7,
+    "fat100": 6.5
+  },
+  {
+    "name": "燕麦圈麦片",
+    "aliases": [
+      "oat cereal (toasted)",
+      "cheerios",
+      "oat cereal",
+      "cereal"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 28,
+    "kcal100": 376,
+    "protein100": 12,
+    "carbs100": 74,
+    "fat100": 6
+  },
+  {
+    "name": "玉米片麦片",
+    "aliases": [
+      "corn flakes",
+      "cornflakes",
+      "cereal"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 28,
+    "kcal100": 357,
+    "protein100": 7.5,
+    "carbs100": 84,
+    "fat100": 0.4
+  },
+  {
+    "name": "糖霜麦片",
+    "aliases": [
+      "frosted cereal",
+      "sugary cereal",
+      "frosted flakes",
+      "cereal"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 40,
+    "kcal100": 375,
+    "protein100": 4.4,
+    "carbs100": 89,
+    "fat100": 0.5
+  },
+  {
+    "name": "格兰诺拉麦片",
+    "aliases": [
+      "granola",
+      "muesli"
+    ],
+    "category": "美式早餐",
+    "unit": "份",
+    "gramsPerUnit": 61,
+    "kcal100": 471,
+    "protein100": 10,
+    "carbs100": 64,
+    "fat100": 20
+  },
+  {
+    "name": "薄煎饼",
+    "aliases": [
+      "pancakes",
+      "pancake",
+      "flapjacks",
+      "hotcakes"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 38,
+    "kcal100": 227,
+    "protein100": 6.4,
+    "carbs100": 28.3,
+    "fat100": 9.7
+  },
+  {
+    "name": "华夫饼",
+    "aliases": [
+      "waffle",
+      "waffles"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 75,
+    "kcal100": 291,
+    "protein100": 7.9,
+    "carbs100": 32.9,
+    "fat100": 14.1
+  },
+  {
+    "name": "法式吐司",
+    "aliases": [
+      "french toast",
+      "french toast slice"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 65,
+    "kcal100": 229,
+    "protein100": 7.7,
+    "carbs100": 16.3,
+    "fat100": 14.1
+  },
+  {
+    "name": "枫糖浆",
+    "aliases": [
+      "maple syrup",
+      "syrup",
+      "pancake syrup"
+    ],
+    "category": "美式早餐",
+    "unit": "汤匙",
+    "gramsPerUnit": 20,
+    "kcal100": 260,
+    "protein100": 0,
+    "carbs100": 67,
+    "fat100": 0.1
+  },
+  {
+    "name": "芝士蛋卷",
+    "aliases": [
+      "cheese omelet",
+      "omelette",
+      "omelet",
+      "eggs omelet"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 130,
+    "kcal100": 195,
+    "protein100": 12.5,
+    "carbs100": 1,
+    "fat100": 15.5
+  },
+  {
+    "name": "培根（煎熟）",
+    "aliases": [
+      "bacon",
+      "bacon strip",
+      "bacon slice",
+      "cooked bacon"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 8,
+    "kcal100": 541,
+    "protein100": 37,
+    "carbs100": 1.4,
+    "fat100": 42
+  },
+  {
+    "name": "火鸡培根",
+    "aliases": [
+      "turkey bacon",
+      "turkey bacon strip"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 8,
+    "kcal100": 382,
+    "protein100": 29,
+    "carbs100": 2.2,
+    "fat100": 28
+  },
+  {
+    "name": "早餐香肠",
+    "aliases": [
+      "breakfast sausage",
+      "sausage patty",
+      "sausage link"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 27,
+    "kcal100": 339,
+    "protein100": 19,
+    "carbs100": 1.5,
+    "fat100": 28.5
+  },
+  {
+    "name": "薯饼",
+    "aliases": [
+      "hash browns",
+      "hash brown",
+      "hashbrowns"
+    ],
+    "category": "美式早餐",
+    "unit": "份",
+    "gramsPerUnit": 100,
+    "kcal100": 197,
+    "protein100": 2.3,
+    "carbs100": 26,
+    "fat100": 9.4
+  },
+  {
+    "name": "牛油果吐司",
+    "aliases": [
+      "avocado toast",
+      "avocado on toast",
+      "avo toast"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 107,
+    "kcal100": 204,
+    "protein100": 5.3,
+    "carbs100": 19.5,
+    "fat100": 12.6
+  },
+  {
+    "name": "烤吐司（白面包）",
+    "aliases": [
+      "toast (white bread)",
+      "toast",
+      "white toast",
+      "sandwich bread"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 266,
+    "protein100": 8.9,
+    "carbs100": 49,
+    "fat100": 3.3
+  },
+  {
+    "name": "黄油吐司",
+    "aliases": [
+      "buttered toast",
+      "toast with butter"
+    ],
+    "category": "美式早餐",
+    "unit": "片",
+    "gramsPerUnit": 33,
+    "kcal100": 334,
+    "protein100": 7.7,
+    "carbs100": 41.6,
+    "fat100": 15.1
+  },
+  {
+    "name": "希腊酸奶（原味，全脂）",
+    "aliases": [
+      "greek yogurt, plain (whole milk)",
+      "greek yogurt",
+      "plain greek yogurt"
+    ],
+    "category": "美式早餐",
+    "unit": "盒",
+    "gramsPerUnit": 170,
+    "kcal100": 97,
+    "protein100": 9,
+    "carbs100": 4,
+    "fat100": 5
+  },
+  {
+    "name": "希腊酸奶（原味，脱脂）",
+    "aliases": [
+      "greek yogurt, plain (nonfat)",
+      "greek yogurt nonfat",
+      "fat free greek yogurt"
+    ],
+    "category": "美式早餐",
+    "unit": "盒",
+    "gramsPerUnit": 170,
+    "kcal100": 59,
+    "protein100": 10.2,
+    "carbs100": 3.6,
+    "fat100": 0.4
+  },
+  {
+    "name": "希腊酸奶（水果味，低脂）",
+    "aliases": [
+      "greek yogurt, fruit flavored (low-fat)",
+      "flavored greek yogurt",
+      "fruit greek yogurt"
+    ],
+    "category": "美式早餐",
+    "unit": "盒",
+    "gramsPerUnit": 150,
+    "kcal100": 95,
+    "protein100": 8,
+    "carbs100": 13,
+    "fat100": 1.5
+  },
+  {
+    "name": "原味酸奶（低脂）",
+    "aliases": [
+      "yogurt, plain (low-fat)",
+      "plain yogurt",
+      "yoghurt"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 245,
+    "kcal100": 63,
+    "protein100": 5.3,
+    "carbs100": 7,
+    "fat100": 1.6
+  },
+  {
+    "name": "水果酸奶（低脂）",
+    "aliases": [
+      "yogurt, fruit (low-fat)",
+      "fruit yogurt",
+      "yoghurt"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 245,
+    "kcal100": 99,
+    "protein100": 3.7,
+    "carbs100": 18.6,
+    "fat100": 1.4
+  },
+  {
+    "name": "酸奶杯配格兰诺拉",
+    "aliases": [
+      "greek yogurt parfait",
+      "yogurt parfait",
+      "parfait"
+    ],
+    "category": "美式早餐",
+    "unit": "杯",
+    "gramsPerUnit": 240,
+    "kcal100": 110,
+    "protein100": 8.6,
+    "carbs100": 13,
+    "fat100": 2.8
+  },
+  {
+    "name": "甜甜圈（糖霜）",
+    "aliases": [
+      "glazed donut",
+      "doughnut",
+      "donut"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 49,
+    "kcal100": 403,
+    "protein100": 5.7,
+    "carbs100": 46,
+    "fat100": 22.5
+  },
+  {
+    "name": "蓝莓玛芬",
+    "aliases": [
+      "blueberry muffin",
+      "muffin"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 110,
+    "kcal100": 377,
+    "protein100": 5,
+    "carbs100": 54,
+    "fat100": 15.5
+  },
+  {
+    "name": "肉桂卷",
+    "aliases": [
+      "cinnamon roll",
+      "cinnamon bun"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 88,
+    "kcal100": 360,
+    "protein100": 5,
+    "carbs100": 52,
+    "fat100": 15
+  },
+  {
+    "name": "牛角包",
+    "aliases": [
+      "croissant",
+      "butter croissant"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 57,
+    "kcal100": 406,
+    "protein100": 8.2,
+    "carbs100": 45.8,
+    "fat100": 21
+  },
+  {
+    "name": "黄油饼（比司吉）",
+    "aliases": [
+      "buttermilk biscuit",
+      "biscuit"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 353,
+    "protein100": 7,
+    "carbs100": 45,
+    "fat100": 17
+  },
+  {
+    "name": "夹心烤饼点心",
+    "aliases": [
+      "toaster pastry",
+      "pop tart",
+      "pop-tart"
+    ],
+    "category": "美式早餐",
+    "unit": "个",
+    "gramsPerUnit": 52,
+    "kcal100": 390,
+    "protein100": 4.5,
+    "carbs100": 68,
+    "fat100": 11
+  },
+  {
+    "name": "全麦面包",
+    "aliases": [
+      "whole wheat bread",
+      "wheat bread",
+      "whole grain bread"
+    ],
+    "category": "美式主食面包",
+    "unit": "片",
+    "gramsPerUnit": 32,
+    "kcal100": 252,
+    "protein100": 12.3,
+    "carbs100": 42.7,
+    "fat100": 3.5
+  },
+  {
+    "name": "酸面包",
+    "aliases": [
+      "sourdough bread",
+      "sourdough"
+    ],
+    "category": "美式主食面包",
+    "unit": "片",
+    "gramsPerUnit": 50,
+    "kcal100": 289,
+    "protein100": 11.7,
+    "carbs100": 56.4,
+    "fat100": 2.5
+  },
+  {
+    "name": "黑麦面包",
+    "aliases": [
+      "rye bread",
+      "rye"
+    ],
+    "category": "美式主食面包",
+    "unit": "片",
+    "gramsPerUnit": 32,
+    "kcal100": 259,
+    "protein100": 8.5,
+    "carbs100": 48,
+    "fat100": 3.3
+  },
+  {
+    "name": "汉堡面包",
+    "aliases": [
+      "hamburger bun",
+      "burger bun",
+      "hot dog bun",
+      "bun"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 43,
+    "kcal100": 279,
+    "protein100": 9.3,
+    "carbs100": 50,
+    "fat100": 4.3
+  },
+  {
+    "name": "晚餐小面包",
+    "aliases": [
+      "dinner roll",
+      "roll",
+      "bread roll"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 28,
+    "kcal100": 310,
+    "protein100": 8.8,
+    "carbs100": 51,
+    "fat100": 7
+  },
+  {
+    "name": "玉米面包",
+    "aliases": [
+      "cornbread",
+      "corn bread"
+    ],
+    "category": "美式主食面包",
+    "unit": "块",
+    "gramsPerUnit": 60,
+    "kcal100": 289,
+    "protein100": 6.5,
+    "carbs100": 42,
+    "fat100": 9.8
+  },
+  {
+    "name": "玉米饼皮",
+    "aliases": [
+      "corn tortilla",
+      "tortilla corn"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 26,
+    "kcal100": 218,
+    "protein100": 5.7,
+    "carbs100": 44.6,
+    "fat100": 2.9
+  },
+  {
+    "name": "面粉饼皮",
+    "aliases": [
+      "flour tortilla (8 in)",
+      "tortilla",
+      "wrap",
+      "flour tortilla"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 49,
+    "kcal100": 304,
+    "protein100": 8.2,
+    "carbs100": 50,
+    "fat100": 7.7
+  },
+  {
+    "name": "皮塔饼",
+    "aliases": [
+      "pita bread",
+      "pita",
+      "pita pocket"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 275,
+    "protein100": 9.1,
+    "carbs100": 55.7,
+    "fat100": 1.2
+  },
+  {
+    "name": "印度烤饼",
+    "aliases": [
+      "naan",
+      "naan bread"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 90,
+    "kcal100": 290,
+    "protein100": 9,
+    "carbs100": 50,
+    "fat100": 5
+  },
+  {
+    "name": "咸苏打饼干（盐味）",
+    "aliases": [
+      "saltine crackers",
+      "crackers",
+      "saltines"
+    ],
+    "category": "美式主食面包",
+    "unit": "片",
+    "gramsPerUnit": 3,
+    "kcal100": 421,
+    "protein100": 9.5,
+    "carbs100": 74,
+    "fat100": 10.5
+  },
+  {
+    "name": "奶酪小饼干",
+    "aliases": [
+      "cheese crackers",
+      "cheez-it"
+    ],
+    "category": "美式主食面包",
+    "unit": "份",
+    "gramsPerUnit": 30,
+    "kcal100": 500,
+    "protein100": 10,
+    "carbs100": 57,
+    "fat100": 27
+  },
+  {
+    "name": "长粒白米饭",
+    "aliases": [
+      "white rice (long-grain, cooked)",
+      "rice",
+      "cooked rice"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 158,
+    "kcal100": 130,
+    "protein100": 2.7,
+    "carbs100": 28.2,
+    "fat100": 0.3
+  },
+  {
+    "name": "长粒糙米饭",
+    "aliases": [
+      "brown rice (long-grain, cooked)",
+      "brown rice",
+      "cooked brown rice"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 195,
+    "kcal100": 123,
+    "protein100": 2.7,
+    "carbs100": 25.6,
+    "fat100": 1
+  },
+  {
+    "name": "熟藜麦",
+    "aliases": [
+      "quinoa (cooked)",
+      "quinoa cooked"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 185,
+    "kcal100": 120,
+    "protein100": 4.4,
+    "carbs100": 21.3,
+    "fat100": 1.9
+  },
+  {
+    "name": "意大利面（煮熟）",
+    "aliases": [
+      "pasta (cooked)",
+      "spaghetti",
+      "penne",
+      "noodles",
+      "macaroni"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 140,
+    "kcal100": 158,
+    "protein100": 5.8,
+    "carbs100": 30.9,
+    "fat100": 0.9
+  },
+  {
+    "name": "全麦意面（煮熟）",
+    "aliases": [
+      "whole wheat pasta (cooked)",
+      "wheat pasta"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 140,
+    "kcal100": 124,
+    "protein100": 5.3,
+    "carbs100": 26.5,
+    "fat100": 0.5
+  },
+  {
+    "name": "库斯库斯（煮熟）",
+    "aliases": [
+      "couscous (cooked)",
+      "couscous"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 157,
+    "kcal100": 112,
+    "protein100": 3.8,
+    "carbs100": 23.2,
+    "fat100": 0.2
+  },
+  {
+    "name": "烤土豆（带皮）",
+    "aliases": [
+      "baked potato",
+      "potato baked",
+      "russet potato"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 173,
+    "kcal100": 93,
+    "protein100": 2.5,
+    "carbs100": 21.2,
+    "fat100": 0.1
+  },
+  {
+    "name": "烤红薯（带皮）",
+    "aliases": [
+      "baked sweet potato",
+      "sweet potato",
+      "yam"
+    ],
+    "category": "美式主食面包",
+    "unit": "个",
+    "gramsPerUnit": 114,
+    "kcal100": 90,
+    "protein100": 2,
+    "carbs100": 20.7,
+    "fat100": 0.2
+  },
+  {
+    "name": "土豆泥",
+    "aliases": [
+      "mashed potatoes",
+      "mashed potato"
+    ],
+    "category": "美式主食面包",
+    "unit": "杯",
+    "gramsPerUnit": 210,
+    "kcal100": 113,
+    "protein100": 2,
+    "carbs100": 16.5,
+    "fat100": 4.2
+  },
+  {
+    "name": "炸薯条（快餐）",
+    "aliases": [
+      "french fries (fast food)",
+      "fries",
+      "chips and fries"
+    ],
+    "category": "美式主食面包",
+    "unit": "份",
+    "gramsPerUnit": 117,
+    "kcal100": 312,
+    "protein100": 3.4,
+    "carbs100": 41,
+    "fat100": 15
+  },
+  {
+    "name": "薯球",
+    "aliases": [
+      "tater tots",
+      "tots",
+      "potato tots"
+    ],
+    "category": "美式主食面包",
+    "unit": "份",
+    "gramsPerUnit": 84,
+    "kcal100": 190,
+    "protein100": 2,
+    "carbs100": 25,
+    "fat100": 9
+  },
+  {
+    "name": "水煮蛋",
+    "aliases": [
+      "egg, hard-boiled",
+      "hard boiled egg",
+      "boiled egg"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 155,
+    "protein100": 12.6,
+    "carbs100": 1.1,
+    "fat100": 10.6
+  },
+  {
+    "name": "炒蛋",
+    "aliases": [
+      "egg, scrambled",
+      "scrambled egg",
+      "eggs scrambled"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 61,
+    "kcal100": 149,
+    "protein100": 10,
+    "carbs100": 1.6,
+    "fat100": 11
+  },
+  {
+    "name": "煎蛋",
+    "aliases": [
+      "egg, fried",
+      "eggs fried",
+      "sunny side up",
+      "over easy"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 46,
+    "kcal100": 196,
+    "protein100": 13.6,
+    "carbs100": 0.8,
+    "fat100": 15.3
+  },
+  {
+    "name": "水波蛋",
+    "aliases": [
+      "egg, poached",
+      "eggs poached"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 50,
+    "kcal100": 143,
+    "protein100": 12.5,
+    "carbs100": 0.7,
+    "fat100": 9.5
+  },
+  {
+    "name": "烤鸡胸肉",
+    "aliases": [
+      "chicken breast, grilled",
+      "grilled chicken",
+      "chicken breast",
+      "baked chicken breast",
+      "chicken"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 165,
+    "protein100": 31,
+    "carbs100": 0,
+    "fat100": 3.6
+  },
+  {
+    "name": "烤鸡腿肉（去皮）",
+    "aliases": [
+      "chicken thigh, roasted (skinless)",
+      "chicken thigh",
+      "baked chicken thigh"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 85,
+    "kcal100": 209,
+    "protein100": 26,
+    "carbs100": 0,
+    "fat100": 10.9
+  },
+  {
+    "name": "烤全鸡（带皮）",
+    "aliases": [
+      "rotisserie chicken (meat and skin)",
+      "rotisserie chicken",
+      "roast chicken"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 239,
+    "protein100": 27,
+    "carbs100": 0,
+    "fat100": 13.6
+  },
+  {
+    "name": "炸鸡块（带骨）",
+    "aliases": [
+      "fried chicken",
+      "fried chicken piece",
+      "fried chicken breast",
+      "fried chicken thigh"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 130,
+    "kcal100": 250,
+    "protein100": 22,
+    "carbs100": 9,
+    "fat100": 14
+  },
+  {
+    "name": "烤鸡翅（带骨）",
+    "aliases": [
+      "chicken wings (roasted)",
+      "wings",
+      "baked wings"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 30,
+    "kcal100": 254,
+    "protein100": 24,
+    "carbs100": 0,
+    "fat100": 17
+  },
+  {
+    "name": "水牛城辣鸡翅",
+    "aliases": [
+      "buffalo wings",
+      "hot wings",
+      "buffalo chicken wings",
+      "wings"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 30,
+    "kcal100": 270,
+    "protein100": 22,
+    "carbs100": 2,
+    "fat100": 19
+  },
+  {
+    "name": "炸鸡块（快餐）",
+    "aliases": [
+      "chicken nuggets",
+      "nuggets",
+      "chicken nugget"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 16,
+    "kcal100": 296,
+    "protein100": 15,
+    "carbs100": 18,
+    "fat100": 18
+  },
+  {
+    "name": "火鸡碎肉（93%瘦）",
+    "aliases": [
+      "ground turkey (93% lean, cooked)",
+      "ground turkey"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 213,
+    "protein100": 27,
+    "carbs100": 0,
+    "fat100": 11
+  },
+  {
+    "name": "烤火鸡胸肉",
+    "aliases": [
+      "turkey breast, roasted",
+      "roast turkey",
+      "turkey breast"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 147,
+    "protein100": 30,
+    "carbs100": 0,
+    "fat100": 2.2
+  },
+  {
+    "name": "火腿片（熟食）",
+    "aliases": [
+      "deli ham",
+      "sliced ham",
+      "lunch meat ham"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 115,
+    "protein100": 17,
+    "carbs100": 2,
+    "fat100": 4
+  },
+  {
+    "name": "烤牛肉片（熟食）",
+    "aliases": [
+      "deli roast beef",
+      "sliced roast beef",
+      "lunch meat roast beef"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 124,
+    "protein100": 19,
+    "carbs100": 1,
+    "fat100": 4.5
+  },
+  {
+    "name": "烤火腿",
+    "aliases": [
+      "baked ham",
+      "ham",
+      "ham steak"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 160,
+    "protein100": 22,
+    "carbs100": 0.5,
+    "fat100": 7.5
+  },
+  {
+    "name": "意大利辣香肠",
+    "aliases": [
+      "pepperoni",
+      "pepperoni slices"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "片",
+    "gramsPerUnit": 5,
+    "kcal100": 504,
+    "protein100": 19,
+    "carbs100": 4,
+    "fat100": 46
+  },
+  {
+    "name": "牛肉糜（85%瘦，煎熟）",
+    "aliases": [
+      "ground beef (85% lean, cooked)",
+      "ground beef",
+      "hamburger meat"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 250,
+    "protein100": 26,
+    "carbs100": 0,
+    "fat100": 15.4
+  },
+  {
+    "name": "牛肉糜（93%瘦，煎熟）",
+    "aliases": [
+      "ground beef (93% lean, cooked)",
+      "lean ground beef"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 200,
+    "protein100": 26,
+    "carbs100": 0,
+    "fat100": 10
+  },
+  {
+    "name": "牛肉饼（80%瘦，煎熟）",
+    "aliases": [
+      "beef burger patty (cooked)",
+      "hamburger patty",
+      "burger patty"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 85,
+    "kcal100": 271,
+    "protein100": 25.9,
+    "carbs100": 0,
+    "fat100": 18.4
+  },
+  {
+    "name": "肋眼牛排（烤）",
+    "aliases": [
+      "ribeye steak (grilled)",
+      "ribeye",
+      "rib eye",
+      "steak"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 170,
+    "kcal100": 291,
+    "protein100": 24,
+    "carbs100": 0,
+    "fat100": 21
+  },
+  {
+    "name": "西冷牛排（烤）",
+    "aliases": [
+      "sirloin steak (grilled)",
+      "sirloin",
+      "top sirloin",
+      "steak"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 170,
+    "kcal100": 214,
+    "protein100": 29,
+    "carbs100": 0,
+    "fat100": 10
+  },
+  {
+    "name": "烤猪排（去骨）",
+    "aliases": [
+      "pork chop (boneless, grilled)",
+      "pork chop"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "块",
+    "gramsPerUnit": 130,
+    "kcal100": 196,
+    "protein100": 27,
+    "carbs100": 0,
+    "fat100": 9.5
+  },
+  {
+    "name": "手撕猪肉（烧烤酱）",
+    "aliases": [
+      "pulled pork (bbq sauce)",
+      "bbq pulled pork",
+      "pulled pork sandwich filling"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 195,
+    "protein100": 17,
+    "carbs100": 9,
+    "fat100": 10.5
+  },
+  {
+    "name": "热狗肠",
+    "aliases": [
+      "frankfurter (no bun)",
+      "frankfurter",
+      "wiener",
+      "hot dog frank"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 45,
+    "kcal100": 300,
+    "protein100": 11,
+    "carbs100": 3,
+    "fat100": 27
+  },
+  {
+    "name": "植物肉汉堡饼",
+    "aliases": [
+      "plant-based burger patty",
+      "veggie burger",
+      "beyond burger",
+      "impossible burger"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 113,
+    "kcal100": 204,
+    "protein100": 18,
+    "carbs100": 6,
+    "fat100": 12.5
+  },
+  {
+    "name": "炸鸡柳",
+    "aliases": [
+      "chicken tenders",
+      "chicken strips",
+      "chicken fingers"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 45,
+    "kcal100": 260,
+    "protein100": 17,
+    "carbs100": 15,
+    "fat100": 15
+  },
+  {
+    "name": "牛肉丸（意式）",
+    "aliases": [
+      "meatballs (beef)",
+      "italian meatballs",
+      "meatball"
+    ],
+    "category": "美式肉禽蛋",
+    "unit": "个",
+    "gramsPerUnit": 28,
+    "kcal100": 214,
+    "protein100": 14,
+    "carbs100": 8,
+    "fat100": 14
+  },
+  {
+    "name": "烤三文鱼（养殖）",
+    "aliases": [
+      "salmon, baked (farmed)",
+      "salmon",
+      "baked salmon",
+      "grilled salmon"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 206,
+    "protein100": 22.1,
+    "carbs100": 0,
+    "fat100": 12.4
+  },
+  {
+    "name": "野生三文鱼（烤）",
+    "aliases": [
+      "salmon, wild (cooked)",
+      "wild salmon",
+      "sockeye salmon"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 182,
+    "protein100": 25.4,
+    "carbs100": 0,
+    "fat100": 8.1
+  },
+  {
+    "name": "烟熏三文鱼",
+    "aliases": [
+      "smoked salmon",
+      "lox",
+      "nova lox"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 56,
+    "kcal100": 117,
+    "protein100": 18.3,
+    "carbs100": 0,
+    "fat100": 4.3
+  },
+  {
+    "name": "烤金枪鱼排",
+    "aliases": [
+      "tuna steak (grilled)",
+      "ahi tuna",
+      "yellowfin tuna"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 139,
+    "protein100": 30.7,
+    "carbs100": 0,
+    "fat100": 1
+  },
+  {
+    "name": "煮虾",
+    "aliases": [
+      "shrimp (cooked)",
+      "shrimp",
+      "prawns",
+      "boiled shrimp"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 85,
+    "kcal100": 99,
+    "protein100": 24,
+    "carbs100": 0.2,
+    "fat100": 0.3
+  },
+  {
+    "name": "炸虾（面包糠）",
+    "aliases": [
+      "breaded fried shrimp",
+      "fried shrimp",
+      "popcorn shrimp"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 85,
+    "kcal100": 242,
+    "protein100": 21,
+    "carbs100": 11,
+    "fat100": 12
+  },
+  {
+    "name": "炸鱼条",
+    "aliases": [
+      "fish sticks",
+      "fish fingers",
+      "breaded fish"
+    ],
+    "category": "美式海鲜",
+    "unit": "个",
+    "gramsPerUnit": 28,
+    "kcal100": 250,
+    "protein100": 12,
+    "carbs100": 21,
+    "fat100": 13
+  },
+  {
+    "name": "烤鳕鱼",
+    "aliases": [
+      "cod, baked",
+      "baked cod",
+      "cod fillet"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 105,
+    "protein100": 22.8,
+    "carbs100": 0,
+    "fat100": 0.9
+  },
+  {
+    "name": "烤罗非鱼",
+    "aliases": [
+      "tilapia, baked",
+      "baked tilapia",
+      "tilapia fillet"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 128,
+    "protein100": 26.2,
+    "carbs100": 0,
+    "fat100": 2.7
+  },
+  {
+    "name": "炸鲶鱼",
+    "aliases": [
+      "catfish, breaded and fried",
+      "fried catfish"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 113,
+    "kcal100": 229,
+    "protein100": 18.1,
+    "carbs100": 8,
+    "fat100": 13.3
+  },
+  {
+    "name": "油浸沙丁鱼罐头",
+    "aliases": [
+      "sardines (canned in oil)",
+      "sardines can",
+      "canned sardines"
+    ],
+    "category": "美式海鲜",
+    "unit": "罐",
+    "gramsPerUnit": 92,
+    "kcal100": 208,
+    "protein100": 24.6,
+    "carbs100": 0,
+    "fat100": 11.5
+  },
+  {
+    "name": "蟹肉（熟）",
+    "aliases": [
+      "crab meat (cooked)",
+      "crab",
+      "lump crab"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 85,
+    "kcal100": 87,
+    "protein100": 18.1,
+    "carbs100": 0,
+    "fat100": 1.1
+  },
+  {
+    "name": "蒸龙虾肉",
+    "aliases": [
+      "lobster (steamed)",
+      "lobster tail",
+      "lobster meat"
+    ],
+    "category": "美式海鲜",
+    "unit": "份",
+    "gramsPerUnit": 85,
+    "kcal100": 98,
+    "protein100": 20.5,
+    "carbs100": 1.3,
+    "fat100": 0.6
+  },
+  {
+    "name": "2%低脂牛奶",
+    "aliases": [
+      "milk (2% reduced fat)",
+      "2% milk",
+      "two percent milk",
+      "milk"
+    ],
+    "category": "美式奶制品",
+    "unit": "杯",
+    "gramsPerUnit": 244,
+    "kcal100": 50,
+    "protein100": 3.3,
+    "carbs100": 4.8,
+    "fat100": 2
+  },
+  {
+    "name": "1%低脂牛奶",
+    "aliases": [
+      "milk (1% low-fat)",
+      "1% milk",
+      "one percent milk",
+      "milk"
+    ],
+    "category": "美式奶制品",
+    "unit": "杯",
+    "gramsPerUnit": 244,
+    "kcal100": 42,
+    "protein100": 3.4,
+    "carbs100": 5.2,
+    "fat100": 1
+  },
+  {
+    "name": "巧克力牛奶（低脂）",
+    "aliases": [
+      "chocolate milk (reduced fat)",
+      "chocolate milk"
+    ],
+    "category": "美式奶制品",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 76,
+    "protein100": 3.2,
+    "carbs100": 10.5,
+    "fat100": 2
+  },
+  {
+    "name": "无糖杏仁奶",
+    "aliases": [
+      "almond milk (unsweetened)",
+      "almond milk"
+    ],
+    "category": "美式奶制品",
+    "unit": "杯",
+    "gramsPerUnit": 240,
+    "kcal100": 15,
+    "protein100": 0.6,
+    "carbs100": 0.3,
+    "fat100": 1.2
+  },
+  {
+    "name": "燕麦奶",
+    "aliases": [
+      "oat milk",
+      "oatly",
+      "oat beverage"
+    ],
+    "category": "美式奶制品",
+    "unit": "杯",
+    "gramsPerUnit": 240,
+    "kcal100": 50,
+    "protein100": 1.3,
+    "carbs100": 6.7,
+    "fat100": 2.1
+  },
+  {
+    "name": "奶油牛奶各半",
+    "aliases": [
+      "half-and-half",
+      "half and half",
+      "creamer"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 131,
+    "protein100": 3.1,
+    "carbs100": 4.3,
+    "fat100": 11.5
+  },
+  {
+    "name": "淡奶油（高脂）",
+    "aliases": [
+      "heavy cream",
+      "heavy whipping cream",
+      "whipping cream"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 340,
+    "protein100": 2.8,
+    "carbs100": 2.7,
+    "fat100": 36
+  },
+  {
+    "name": "咖啡奶精（调味）",
+    "aliases": [
+      "coffee creamer (flavored)",
+      "creamer",
+      "coffee mate"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 233,
+    "protein100": 0.7,
+    "carbs100": 33,
+    "fat100": 10
+  },
+  {
+    "name": "黄油（加盐）",
+    "aliases": [
+      "butter (salted)",
+      "stick of butter",
+      "butter pat"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 14,
+    "kcal100": 717,
+    "protein100": 0.9,
+    "carbs100": 0.1,
+    "fat100": 81
+  },
+  {
+    "name": "奶油奶酪",
+    "aliases": [
+      "cream cheese",
+      "philadelphia",
+      "cream cheese spread"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 342,
+    "protein100": 5.9,
+    "carbs100": 4.1,
+    "fat100": 34.2
+  },
+  {
+    "name": "酸奶油",
+    "aliases": [
+      "sour cream",
+      "sourcream"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 12,
+    "kcal100": 198,
+    "protein100": 2.4,
+    "carbs100": 4.6,
+    "fat100": 19.4
+  },
+  {
+    "name": "喷射奶油",
+    "aliases": [
+      "whipped cream",
+      "whipped topping",
+      "cool whip"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 8,
+    "kcal100": 257,
+    "protein100": 3.2,
+    "carbs100": 12.5,
+    "fat100": 22.2
+  },
+  {
+    "name": "切片奶酪（美国芝士）",
+    "aliases": [
+      "american cheese",
+      "cheese slice",
+      "american cheese slice",
+      "processed cheese"
+    ],
+    "category": "美式奶制品",
+    "unit": "片",
+    "gramsPerUnit": 21,
+    "kcal100": 371,
+    "protein100": 22,
+    "carbs100": 5,
+    "fat100": 28
+  },
+  {
+    "name": "瑞士奶酪",
+    "aliases": [
+      "swiss cheese",
+      "swiss"
+    ],
+    "category": "美式奶制品",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 380,
+    "protein100": 26.9,
+    "carbs100": 5.4,
+    "fat100": 27.8
+  },
+  {
+    "name": "波罗伏洛奶酪",
+    "aliases": [
+      "provolone cheese",
+      "provolone"
+    ],
+    "category": "美式奶制品",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 351,
+    "protein100": 25.6,
+    "carbs100": 2.1,
+    "fat100": 26.6
+  },
+  {
+    "name": "低脂马苏里拉（奶酪棒）",
+    "aliases": [
+      "mozzarella, part-skim (string cheese)",
+      "string cheese",
+      "mozzarella stick",
+      "cheese stick"
+    ],
+    "category": "美式奶制品",
+    "unit": "根",
+    "gramsPerUnit": 28,
+    "kcal100": 254,
+    "protein100": 24.3,
+    "carbs100": 2.8,
+    "fat100": 15.9
+  },
+  {
+    "name": "帕玛森奶酪（碎）",
+    "aliases": [
+      "parmesan cheese (grated)",
+      "parmesan",
+      "parmigiano"
+    ],
+    "category": "美式奶制品",
+    "unit": "汤匙",
+    "gramsPerUnit": 5,
+    "kcal100": 431,
+    "protein100": 38.5,
+    "carbs100": 4.1,
+    "fat100": 28.6
+  },
+  {
+    "name": "菲达奶酪",
+    "aliases": [
+      "feta cheese",
+      "feta"
+    ],
+    "category": "美式奶制品",
+    "unit": "份",
+    "gramsPerUnit": 28,
+    "kcal100": 264,
+    "protein100": 14.2,
+    "carbs100": 4.1,
+    "fat100": 21.3
+  },
+  {
+    "name": "瑞可塔奶酪（半脱脂）",
+    "aliases": [
+      "ricotta cheese (part-skim)",
+      "ricotta"
+    ],
+    "category": "美式奶制品",
+    "unit": "份",
+    "gramsPerUnit": 124,
+    "kcal100": 138,
+    "protein100": 11.4,
+    "carbs100": 5.1,
+    "fat100": 7.9
+  },
+  {
+    "name": "羽衣甘蓝（生）",
+    "aliases": [
+      "kale (raw)",
+      "kale"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 21,
+    "kcal100": 49,
+    "protein100": 4.3,
+    "carbs100": 8.8,
+    "fat100": 0.9
+  },
+  {
+    "name": "罗马生菜（生）",
+    "aliases": [
+      "romaine lettuce",
+      "romaine",
+      "lettuce"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 47,
+    "kcal100": 17,
+    "protein100": 1.2,
+    "carbs100": 3.3,
+    "fat100": 0.3
+  },
+  {
+    "name": "什锦嫩叶沙拉菜",
+    "aliases": [
+      "mixed salad greens",
+      "spring mix",
+      "salad greens",
+      "mixed greens"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 40,
+    "kcal100": 20,
+    "protein100": 1.8,
+    "carbs100": 3.6,
+    "fat100": 0.3
+  },
+  {
+    "name": "芝麻菜（生）",
+    "aliases": [
+      "arugula",
+      "rocket"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 20,
+    "kcal100": 25,
+    "protein100": 2.6,
+    "carbs100": 3.7,
+    "fat100": 0.7
+  },
+  {
+    "name": "蒸西兰花",
+    "aliases": [
+      "broccoli (steamed)",
+      "steamed broccoli",
+      "broccoli florets"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 156,
+    "kcal100": 35,
+    "protein100": 2.4,
+    "carbs100": 7.2,
+    "fat100": 0.4
+  },
+  {
+    "name": "球芽甘蓝（煮）",
+    "aliases": [
+      "brussels sprouts (cooked)",
+      "brussel sprouts"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 156,
+    "kcal100": 36,
+    "protein100": 2.6,
+    "carbs100": 7.1,
+    "fat100": 0.5
+  },
+  {
+    "name": "甜玉米粒（煮）",
+    "aliases": [
+      "sweet corn (cooked kernels)",
+      "corn",
+      "corn kernels"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 164,
+    "kcal100": 96,
+    "protein100": 3.4,
+    "carbs100": 21,
+    "fat100": 1.5
+  },
+  {
+    "name": "青豌豆（煮）",
+    "aliases": [
+      "green peas (cooked)",
+      "peas"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 160,
+    "kcal100": 84,
+    "protein100": 5.4,
+    "carbs100": 15.6,
+    "fat100": 0.2
+  },
+  {
+    "name": "卷心菜（生）",
+    "aliases": [
+      "cabbage (raw)",
+      "green cabbage",
+      "shredded cabbage"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 70,
+    "kcal100": 25,
+    "protein100": 1.3,
+    "carbs100": 5.8,
+    "fat100": 0.1
+  },
+  {
+    "name": "莳萝酸黄瓜",
+    "aliases": [
+      "dill pickles",
+      "pickle",
+      "pickles",
+      "pickle spear"
+    ],
+    "category": "美式蔬果",
+    "unit": "根",
+    "gramsPerUnit": 35,
+    "kcal100": 11,
+    "protein100": 0.3,
+    "carbs100": 2.3,
+    "fat100": 0.2
+  },
+  {
+    "name": "黑橄榄",
+    "aliases": [
+      "olives (ripe, canned)",
+      "black olives",
+      "olives"
+    ],
+    "category": "美式蔬果",
+    "unit": "份",
+    "gramsPerUnit": 15,
+    "kcal100": 116,
+    "protein100": 0.8,
+    "carbs100": 6,
+    "fat100": 10.9
+  },
+  {
+    "name": "黑莓",
+    "aliases": [
+      "blackberries",
+      "blackberry"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 144,
+    "kcal100": 43,
+    "protein100": 1.4,
+    "carbs100": 9.6,
+    "fat100": 0.5
+  },
+  {
+    "name": "蜜瓜",
+    "aliases": [
+      "honeydew melon",
+      "honeydew"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 170,
+    "kcal100": 36,
+    "protein100": 0.5,
+    "carbs100": 9.1,
+    "fat100": 0.1
+  },
+  {
+    "name": "椰枣（大）",
+    "aliases": [
+      "dates (medjool)",
+      "medjool dates",
+      "date"
+    ],
+    "category": "美式蔬果",
+    "unit": "个",
+    "gramsPerUnit": 24,
+    "kcal100": 277,
+    "protein100": 1.8,
+    "carbs100": 75,
+    "fat100": 0.2
+  },
+  {
+    "name": "无糖苹果酱",
+    "aliases": [
+      "applesauce (unsweetened)",
+      "apple sauce"
+    ],
+    "category": "美式蔬果",
+    "unit": "杯",
+    "gramsPerUnit": 244,
+    "kcal100": 42,
+    "protein100": 0.2,
+    "carbs100": 11.3,
+    "fat100": 0.1
+  },
+  {
+    "name": "蔬菜沙拉（配油醋汁）",
+    "aliases": [
+      "garden salad with vinaigrette",
+      "side salad",
+      "house salad",
+      "green salad"
+    ],
+    "category": "美式蔬果",
+    "unit": "碗",
+    "gramsPerUnit": 205,
+    "kcal100": 52.6,
+    "protein100": 1.2,
+    "carbs100": 4.7,
+    "fat100": 3.6
+  },
+  {
+    "name": "黑豆（煮）",
+    "aliases": [
+      "black beans (cooked)",
+      "black beans"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 172,
+    "kcal100": 132,
+    "protein100": 8.9,
+    "carbs100": 23.7,
+    "fat100": 0.5
+  },
+  {
+    "name": "斑豆（煮）",
+    "aliases": [
+      "pinto beans (cooked)",
+      "pinto beans"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 171,
+    "kcal100": 143,
+    "protein100": 9,
+    "carbs100": 26.2,
+    "fat100": 0.7
+  },
+  {
+    "name": "芸豆（煮）",
+    "aliases": [
+      "kidney beans (cooked)",
+      "red kidney beans"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 177,
+    "kcal100": 127,
+    "protein100": 8.7,
+    "carbs100": 22.8,
+    "fat100": 0.5
+  },
+  {
+    "name": "小扁豆（煮）",
+    "aliases": [
+      "lentils (cooked)",
+      "lentils"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 198,
+    "kcal100": 116,
+    "protein100": 9,
+    "carbs100": 20.1,
+    "fat100": 0.4
+  },
+  {
+    "name": "墨西哥豆泥",
+    "aliases": [
+      "refried beans",
+      "refried pinto beans"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 238,
+    "kcal100": 94,
+    "protein100": 5.4,
+    "carbs100": 15.6,
+    "fat100": 1.2
+  },
+  {
+    "name": "焗豆（罐头）",
+    "aliases": [
+      "baked beans (canned)",
+      "baked beans",
+      "bbq beans"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "杯",
+    "gramsPerUnit": 254,
+    "kcal100": 94,
+    "protein100": 4.7,
+    "carbs100": 21.1,
+    "fat100": 0.4
+  },
+  {
+    "name": "鹰嘴豆泥",
+    "aliases": [
+      "hummus",
+      "humus",
+      "chickpea dip"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 229,
+    "protein100": 7.4,
+    "carbs100": 14.9,
+    "fat100": 17.1
+  },
+  {
+    "name": "花生酱（经典，含糖）",
+    "aliases": [
+      "peanut butter (creamy)",
+      "peanut butter",
+      "pb",
+      "skippy",
+      "jif"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "汤匙",
+    "gramsPerUnit": 16,
+    "kcal100": 588,
+    "protein100": 25,
+    "carbs100": 20,
+    "fat100": 50
+  },
+  {
+    "name": "杏仁酱",
+    "aliases": [
+      "almond butter",
+      "almond paste"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "汤匙",
+    "gramsPerUnit": 16,
+    "kcal100": 614,
+    "protein100": 21,
+    "carbs100": 18.8,
+    "fat100": 55.5
+  },
+  {
+    "name": "什锦坚果（烤）",
+    "aliases": [
+      "mixed nuts (roasted)",
+      "mixed nuts",
+      "nuts"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "把",
+    "gramsPerUnit": 28,
+    "kcal100": 607,
+    "protein100": 20,
+    "carbs100": 21.4,
+    "fat100": 53.5
+  },
+  {
+    "name": "奇亚籽",
+    "aliases": [
+      "chia seeds",
+      "chia"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "汤匙",
+    "gramsPerUnit": 12,
+    "kcal100": 486,
+    "protein100": 16.5,
+    "carbs100": 42.1,
+    "fat100": 30.7
+  },
+  {
+    "name": "亚麻籽（磨粉）",
+    "aliases": [
+      "ground flaxseed",
+      "flax",
+      "flaxseed"
+    ],
+    "category": "美式豆类坚果",
+    "unit": "汤匙",
+    "gramsPerUnit": 7,
+    "kcal100": 534,
+    "protein100": 18.3,
+    "carbs100": 28.9,
+    "fat100": 42.2
+  },
+  {
+    "name": "芝士通心粉",
+    "aliases": [
+      "mac and cheese",
+      "macaroni and cheese",
+      "mac n cheese",
+      "mac & cheese"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 164,
+    "protein100": 6.6,
+    "carbs100": 18,
+    "fat100": 7.4
+  },
+  {
+    "name": "意式番茄肉酱面",
+    "aliases": [
+      "spaghetti with meat sauce",
+      "spaghetti bolognese",
+      "spaghetti and meatballs"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 330,
+    "kcal100": 133,
+    "protein100": 5.9,
+    "carbs100": 21.5,
+    "fat100": 2.5
+  },
+  {
+    "name": "白酱意面",
+    "aliases": [
+      "fettuccine alfredo",
+      "alfredo",
+      "pasta alfredo"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 300,
+    "kcal100": 169,
+    "protein100": 5.2,
+    "carbs100": 22.3,
+    "fat100": 6.3
+  },
+  {
+    "name": "意大利千层面",
+    "aliases": [
+      "lasagna",
+      "lasagne"
+    ],
+    "category": "美式整餐外食",
+    "unit": "块",
+    "gramsPerUnit": 250,
+    "kcal100": 135,
+    "protein100": 8,
+    "carbs100": 13,
+    "fat100": 5.8
+  },
+  {
+    "name": "牛肉辣豆汤",
+    "aliases": [
+      "chili (beef and beans)",
+      "chili con carne",
+      "chili"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 122,
+    "protein100": 8.5,
+    "carbs100": 12,
+    "fat100": 4.5
+  },
+  {
+    "name": "花生酱香蕉吐司",
+    "aliases": [
+      "peanut butter banana toast",
+      "pb banana toast"
+    ],
+    "category": "美式整餐外食",
+    "unit": "片",
+    "gramsPerUnit": 101,
+    "kcal100": 225,
+    "protein100": 8.8,
+    "carbs100": 29.3,
+    "fat100": 9.3
+  },
+  {
+    "name": "鸡肉卷饼",
+    "aliases": [
+      "chicken burrito",
+      "burrito"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 360,
+    "kcal100": 184,
+    "protein100": 12.7,
+    "carbs100": 20.3,
+    "fat100": 5.5
+  },
+  {
+    "name": "豆泥芝士卷饼",
+    "aliases": [
+      "bean and cheese burrito",
+      "burrito",
+      "bean burrito"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 250,
+    "kcal100": 183,
+    "protein100": 7.8,
+    "carbs100": 22.7,
+    "fat100": 6.8
+  },
+  {
+    "name": "早餐卷饼（鸡蛋香肠芝士）",
+    "aliases": [
+      "breakfast burrito",
+      "egg burrito",
+      "breakfast wrap"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 190,
+    "kcal100": 215,
+    "protein100": 9.5,
+    "carbs100": 20,
+    "fat100": 11.5
+  },
+  {
+    "name": "鸡肉卷饼碗（无饼皮）",
+    "aliases": [
+      "chicken burrito bowl",
+      "burrito bowl",
+      "chipotle bowl",
+      "chicken bowl"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 485,
+    "kcal100": 142,
+    "protein100": 10.9,
+    "carbs100": 13,
+    "fat100": 5.1
+  },
+  {
+    "name": "牛肉卷饼碗",
+    "aliases": [
+      "steak burrito bowl",
+      "steak bowl",
+      "carne asada bowl"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 455,
+    "kcal100": 152,
+    "protein100": 11,
+    "carbs100": 13.9,
+    "fat100": 5.7
+  },
+  {
+    "name": "墨西哥脆壳牛肉塔可",
+    "aliases": [
+      "beef tacos (hard shell)",
+      "taco",
+      "tacos",
+      "ground beef taco"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 229,
+    "protein100": 15.7,
+    "carbs100": 9.9,
+    "fat100": 13.7
+  },
+  {
+    "name": "软饼鸡肉塔可",
+    "aliases": [
+      "chicken tacos (soft)",
+      "chicken taco",
+      "taco",
+      "tacos"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 128,
+    "kcal100": 192,
+    "protein100": 16.4,
+    "carbs100": 17.2,
+    "fat100": 5.9
+  },
+  {
+    "name": "墨西哥芝士薄饼",
+    "aliases": [
+      "cheese quesadilla",
+      "quesadilla"
+    ],
+    "category": "美式整餐外食",
+    "unit": "块",
+    "gramsPerUnit": 210,
+    "kcal100": 311,
+    "protein100": 17.4,
+    "carbs100": 24.8,
+    "fat100": 15.5
+  },
+  {
+    "name": "墨西哥玉米片配芝士",
+    "aliases": [
+      "nachos with cheese",
+      "nacho chips",
+      "nachos"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 240,
+    "kcal100": 288,
+    "protein100": 8.2,
+    "carbs100": 21.6,
+    "fat100": 19.3
+  },
+  {
+    "name": "芝士汉堡（快餐单层）",
+    "aliases": [
+      "cheeseburger",
+      "burger",
+      "cheeseburger single"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 114,
+    "kcal100": 263,
+    "protein100": 13,
+    "carbs100": 29,
+    "fat100": 10.5
+  },
+  {
+    "name": "汉堡（快餐单层）",
+    "aliases": [
+      "hamburger",
+      "burger",
+      "plain hamburger"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 100,
+    "kcal100": 250,
+    "protein100": 12,
+    "carbs100": 31,
+    "fat100": 8
+  },
+  {
+    "name": "双层芝士汉堡",
+    "aliases": [
+      "double cheeseburger",
+      "double burger",
+      "double cheese burger"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 157,
+    "kcal100": 287,
+    "protein100": 16,
+    "carbs100": 21,
+    "fat100": 16
+  },
+  {
+    "name": "餐厅培根芝士汉堡",
+    "aliases": [
+      "restaurant bacon cheeseburger",
+      "bacon cheeseburger",
+      "pub burger"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 250,
+    "kcal100": 270,
+    "protein100": 14,
+    "carbs100": 18,
+    "fat100": 15
+  },
+  {
+    "name": "炸鸡三明治",
+    "aliases": [
+      "fried chicken sandwich",
+      "chicken sandwich",
+      "crispy chicken sandwich"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 183,
+    "kcal100": 240,
+    "protein100": 15,
+    "carbs100": 22,
+    "fat100": 9.3
+  },
+  {
+    "name": "烤鸡三明治",
+    "aliases": [
+      "grilled chicken sandwich",
+      "chicken sandwich",
+      "grilled chicken burger"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 213,
+    "kcal100": 192,
+    "protein100": 18.8,
+    "carbs100": 14.7,
+    "fat100": 5.9
+  },
+  {
+    "name": "热狗（含面包）",
+    "aliases": [
+      "hot dog with bun",
+      "hot dog",
+      "hotdog",
+      "chili dog"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 101,
+    "kcal100": 263,
+    "protein100": 9.1,
+    "carbs100": 25.1,
+    "fat100": 14
+  },
+  {
+    "name": "芝士披萨块（大片）",
+    "aliases": [
+      "pizza slice (cheese, large)",
+      "pizza",
+      "cheese pizza",
+      "slice of pizza"
+    ],
+    "category": "美式整餐外食",
+    "unit": "片",
+    "gramsPerUnit": 107,
+    "kcal100": 266,
+    "protein100": 11.4,
+    "carbs100": 33,
+    "fat100": 10.4
+  },
+  {
+    "name": "意式辣香肠披萨块",
+    "aliases": [
+      "pepperoni pizza slice",
+      "pepperoni pizza",
+      "pizza"
+    ],
+    "category": "美式整餐外食",
+    "unit": "片",
+    "gramsPerUnit": 107,
+    "kcal100": 281,
+    "protein100": 12,
+    "carbs100": 30,
+    "fat100": 12.5
+  },
+  {
+    "name": "火鸡三明治",
+    "aliases": [
+      "turkey sandwich",
+      "deli sandwich",
+      "turkey and cheese sandwich"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 219,
+    "kcal100": 183,
+    "protein100": 13.3,
+    "carbs100": 15,
+    "fat100": 7.7
+  },
+  {
+    "name": "火腿芝士三明治",
+    "aliases": [
+      "ham and cheese sandwich",
+      "ham sandwich",
+      "ham & cheese"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 162,
+    "kcal100": 222,
+    "protein100": 13.5,
+    "carbs100": 18.8,
+    "fat100": 9.9
+  },
+  {
+    "name": "花生酱果酱三明治",
+    "aliases": [
+      "peanut butter and jelly sandwich",
+      "pb&j",
+      "pbj",
+      "pb and j"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 108,
+    "kcal100": 364,
+    "protein100": 12.1,
+    "carbs100": 44.3,
+    "fat100": 16.5
+  },
+  {
+    "name": "培根生菜番茄三明治",
+    "aliases": [
+      "blt sandwich",
+      "blt"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 154,
+    "kcal100": 250,
+    "protein100": 9.5,
+    "carbs100": 19.5,
+    "fat100": 14.7
+  },
+  {
+    "name": "烤芝士三明治",
+    "aliases": [
+      "grilled cheese sandwich",
+      "grilled cheese"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 108,
+    "kcal100": 349,
+    "protein100": 13.3,
+    "carbs100": 27.4,
+    "fat100": 20.1
+  },
+  {
+    "name": "潜艇三明治（15 厘米）",
+    "aliases": [
+      "sub sandwich (6 in)",
+      "sub",
+      "hoagie",
+      "submarine sandwich",
+      "subway"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 255,
+    "kcal100": 194,
+    "protein100": 11.8,
+    "carbs100": 20.2,
+    "fat100": 7.2
+  },
+  {
+    "name": "费城牛肉芝士三明治",
+    "aliases": [
+      "philly cheesesteak",
+      "cheesesteak",
+      "philly"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 330,
+    "kcal100": 212,
+    "protein100": 15.5,
+    "carbs100": 18.8,
+    "fat100": 7.8
+  },
+  {
+    "name": "鸡肉凯撒卷",
+    "aliases": [
+      "chicken caesar wrap",
+      "chicken wrap",
+      "caesar wrap",
+      "wrap"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 233,
+    "kcal100": 223,
+    "protein100": 16.2,
+    "carbs100": 16.1,
+    "fat100": 10.1
+  },
+  {
+    "name": "烤鸡肉沙拉",
+    "aliases": [
+      "salad with grilled chicken",
+      "chicken salad",
+      "grilled chicken salad",
+      "salad with chicken"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 360,
+    "kcal100": 95.4,
+    "protein100": 9.4,
+    "carbs100": 3.1,
+    "fat100": 5.1
+  },
+  {
+    "name": "凯撒沙拉（加鸡肉）",
+    "aliases": [
+      "chicken caesar salad",
+      "caesar salad",
+      "caesar"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 320,
+    "kcal100": 157,
+    "protein100": 12.4,
+    "carbs100": 6.6,
+    "fat100": 8.8
+  },
+  {
+    "name": "科布沙拉",
+    "aliases": [
+      "cobb salad",
+      "cobb"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 420,
+    "kcal100": 153,
+    "protein100": 11.1,
+    "carbs100": 3.2,
+    "fat100": 10.8
+  },
+  {
+    "name": "希腊沙拉",
+    "aliases": [
+      "greek salad"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 53.3,
+    "protein100": 1,
+    "carbs100": 3.9,
+    "fat100": 4.2
+  },
+  {
+    "name": "烤鸡胸配米饭和西兰花",
+    "aliases": [
+      "chicken, rice and broccoli",
+      "chicken and rice",
+      "chicken rice bowl"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 370,
+    "kcal100": 116,
+    "protein100": 11.8,
+    "carbs100": 13.4,
+    "fat100": 1.4
+  },
+  {
+    "name": "照烧鸡肉饭",
+    "aliases": [
+      "teriyaki chicken with rice",
+      "teriyaki chicken",
+      "chicken teriyaki bowl"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 420,
+    "kcal100": 121,
+    "protein100": 11.2,
+    "carbs100": 15.3,
+    "fat100": 1.2
+  },
+  {
+    "name": "橙汁鸡配炒饭",
+    "aliases": [
+      "orange chicken with fried rice",
+      "orange chicken",
+      "chinese takeout"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 420,
+    "kcal100": 190,
+    "protein100": 8,
+    "carbs100": 25,
+    "fat100": 6
+  },
+  {
+    "name": "中式外卖炒饭",
+    "aliases": [
+      "fried rice (takeout)",
+      "fried rice",
+      "chinese fried rice"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 163,
+    "protein100": 3.5,
+    "carbs100": 26,
+    "fat100": 5
+  },
+  {
+    "name": "中式外卖炒面",
+    "aliases": [
+      "lo mein",
+      "chow mein",
+      "lo mein noodles"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 300,
+    "kcal100": 138,
+    "protein100": 5,
+    "carbs100": 20,
+    "fat100": 4
+  },
+  {
+    "name": "泰式炒河粉",
+    "aliases": [
+      "pad thai",
+      "padthai"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 350,
+    "kcal100": 160,
+    "protein100": 6,
+    "carbs100": 23,
+    "fat100": 5
+  },
+  {
+    "name": "日式拉面",
+    "aliases": [
+      "ramen bowl (restaurant)",
+      "ramen",
+      "tonkotsu ramen",
+      "noodle soup"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 500,
+    "kcal100": 110,
+    "protein100": 6,
+    "carbs100": 12,
+    "fat100": 4
+  },
+  {
+    "name": "方便面（煮好，含汤）",
+    "aliases": [
+      "instant ramen (prepared)",
+      "instant ramen",
+      "cup noodles",
+      "ramen noodles"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 400,
+    "kcal100": 90,
+    "protein100": 2,
+    "carbs100": 12.5,
+    "fat100": 3.5
+  },
+  {
+    "name": "越南牛肉河粉",
+    "aliases": [
+      "pho",
+      "beef pho",
+      "vietnamese noodle soup"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 600,
+    "kcal100": 60,
+    "protein100": 4,
+    "carbs100": 8,
+    "fat100": 1.2
+  },
+  {
+    "name": "加州卷（8块）",
+    "aliases": [
+      "california roll (8 pieces)",
+      "sushi roll",
+      "sushi",
+      "california roll"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 203,
+    "kcal100": 127,
+    "protein100": 4.6,
+    "carbs100": 21.5,
+    "fat100": 2.5
+  },
+  {
+    "name": "辣金枪鱼卷（6块）",
+    "aliases": [
+      "spicy tuna roll (6 pieces)",
+      "spicy tuna roll",
+      "sushi roll",
+      "tuna roll"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 188,
+    "kcal100": 157,
+    "protein100": 7.3,
+    "carbs100": 20.1,
+    "fat100": 4.8
+  },
+  {
+    "name": "三文鱼握寿司（2贯）",
+    "aliases": [
+      "salmon nigiri (2 pieces)",
+      "nigiri",
+      "salmon sushi",
+      "sushi"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 80,
+    "kcal100": 171,
+    "protein100": 9.8,
+    "carbs100": 20.9,
+    "fat100": 4.8
+  },
+  {
+    "name": "炸鱼薯条",
+    "aliases": [
+      "fish and chips",
+      "fish & chips",
+      "fried fish and fries"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 295,
+    "kcal100": 260,
+    "protein100": 8.7,
+    "carbs100": 28.1,
+    "fat100": 12.7
+  },
+  {
+    "name": "手撕猪肉三明治",
+    "aliases": [
+      "bbq pulled pork sandwich",
+      "pulled pork sandwich",
+      "bbq sandwich"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 225,
+    "kcal100": 201,
+    "protein100": 11.4,
+    "carbs100": 20.8,
+    "fat100": 8.2
+  },
+  {
+    "name": "鸡肉派",
+    "aliases": [
+      "chicken pot pie",
+      "pot pie"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 250,
+    "kcal100": 235,
+    "protein100": 8,
+    "carbs100": 21,
+    "fat100": 13
+  },
+  {
+    "name": "肉饼配土豆泥",
+    "aliases": [
+      "meatloaf with mashed potatoes",
+      "meatloaf"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 440,
+    "kcal100": 138,
+    "protein100": 9,
+    "carbs100": 10.8,
+    "fat100": 6.5
+  },
+  {
+    "name": "鸡汤面",
+    "aliases": [
+      "chicken noodle soup",
+      "chicken soup"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 35,
+    "protein100": 2.5,
+    "carbs100": 4,
+    "fat100": 1
+  },
+  {
+    "name": "番茄汤",
+    "aliases": [
+      "tomato soup",
+      "tomato bisque"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 250,
+    "kcal100": 50,
+    "protein100": 1.1,
+    "carbs100": 8.5,
+    "fat100": 1.4
+  },
+  {
+    "name": "蛤蜊浓汤（新英格兰）",
+    "aliases": [
+      "clam chowder (new england)",
+      "clam chowder",
+      "chowder"
+    ],
+    "category": "美式整餐外食",
+    "unit": "碗",
+    "gramsPerUnit": 245,
+    "kcal100": 95,
+    "protein100": 4.5,
+    "carbs100": 11,
+    "fat100": 3.9
+  },
+  {
+    "name": "炸鸡配土豆泥玉米",
+    "aliases": [
+      "fried chicken dinner",
+      "southern fried chicken plate"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 380,
+    "kcal100": 162,
+    "protein100": 11,
+    "carbs100": 14.1,
+    "fat100": 7.1
+  },
+  {
+    "name": "蛋沙拉三明治",
+    "aliases": [
+      "egg salad sandwich",
+      "egg sandwich"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 169,
+    "kcal100": 252,
+    "protein100": 9.8,
+    "carbs100": 17,
+    "fat100": 15.7
+  },
+  {
+    "name": "金枪鱼三明治",
+    "aliases": [
+      "tuna sandwich",
+      "tuna salad sandwich",
+      "tuna melt"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 196,
+    "kcal100": 207,
+    "protein100": 13.6,
+    "carbs100": 14.6,
+    "fat100": 9.9
+  },
+  {
+    "name": "蔬菜鹰嘴豆泥卷",
+    "aliases": [
+      "veggie hummus wrap",
+      "veggie wrap",
+      "vegetarian wrap"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 230,
+    "kcal100": 143,
+    "protein100": 4.3,
+    "carbs100": 20,
+    "fat100": 5.4
+  },
+  {
+    "name": "铁板鸡肉法士达",
+    "aliases": [
+      "chicken fajitas",
+      "fajita",
+      "fajitas"
+    ],
+    "category": "美式整餐外食",
+    "unit": "份",
+    "gramsPerUnit": 328,
+    "kcal100": 152,
+    "protein100": 13.3,
+    "carbs100": 12.3,
+    "fat100": 5.3
+  },
+  {
+    "name": "玉米热狗",
+    "aliases": [
+      "corn dog",
+      "corndog"
+    ],
+    "category": "美式整餐外食",
+    "unit": "个",
+    "gramsPerUnit": 175,
+    "kcal100": 262,
+    "protein100": 9,
+    "carbs100": 25,
+    "fat100": 14
+  },
+  {
+    "name": "冰淇淋（香草）",
+    "aliases": [
+      "ice cream (vanilla)",
+      "vanilla ice cream",
+      "ice cream scoop"
+    ],
+    "category": "美式零食甜点",
+    "unit": "勺",
+    "gramsPerUnit": 66,
+    "kcal100": 207,
+    "protein100": 3.5,
+    "carbs100": 23.6,
+    "fat100": 11
+  },
+  {
+    "name": "冷冻酸奶",
+    "aliases": [
+      "frozen yogurt",
+      "froyo",
+      "soft serve"
+    ],
+    "category": "美式零食甜点",
+    "unit": "勺",
+    "gramsPerUnit": 72,
+    "kcal100": 159,
+    "protein100": 4,
+    "carbs100": 24,
+    "fat100": 5.6
+  },
+  {
+    "name": "墨西哥玉米片",
+    "aliases": [
+      "tortilla chips",
+      "chips",
+      "corn chips",
+      "doritos"
+    ],
+    "category": "美式零食甜点",
+    "unit": "份",
+    "gramsPerUnit": 28,
+    "kcal100": 489,
+    "protein100": 7.5,
+    "carbs100": 63,
+    "fat100": 23
+  },
+  {
+    "name": "爆米花（空气爆）",
+    "aliases": [
+      "popcorn (air-popped)",
+      "popcorn"
+    ],
+    "category": "美式零食甜点",
+    "unit": "杯",
+    "gramsPerUnit": 8,
+    "kcal100": 387,
+    "protein100": 12.9,
+    "carbs100": 77.8,
+    "fat100": 4.5
+  },
+  {
+    "name": "爆米花（微波黄油味）",
+    "aliases": [
+      "popcorn (microwave butter)",
+      "microwave popcorn"
+    ],
+    "category": "美式零食甜点",
+    "unit": "杯",
+    "gramsPerUnit": 8,
+    "kcal100": 480,
+    "protein100": 9,
+    "carbs100": 56,
+    "fat100": 26
+  },
+  {
+    "name": "硬脆椒盐卷饼",
+    "aliases": [
+      "pretzels (hard)",
+      "pretzel twists",
+      "pretzel"
+    ],
+    "category": "美式零食甜点",
+    "unit": "份",
+    "gramsPerUnit": 28,
+    "kcal100": 380,
+    "protein100": 9,
+    "carbs100": 79,
+    "fat100": 3.5
+  },
+  {
+    "name": "软椒盐卷饼",
+    "aliases": [
+      "soft pretzel",
+      "big pretzel"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 120,
+    "kcal100": 338,
+    "protein100": 8.8,
+    "carbs100": 70,
+    "fat100": 2.5
+  },
+  {
+    "name": "糙米饼",
+    "aliases": [
+      "rice cake (puffed)",
+      "rice cakes",
+      "puffed rice cake"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 9,
+    "kcal100": 387,
+    "protein100": 8.2,
+    "carbs100": 81.5,
+    "fat100": 2.8
+  },
+  {
+    "name": "格兰诺拉棒",
+    "aliases": [
+      "granola bar",
+      "granola bars",
+      "nature valley"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 35,
+    "kcal100": 450,
+    "protein100": 7,
+    "carbs100": 66,
+    "fat100": 17
+  },
+  {
+    "name": "能量棒",
+    "aliases": [
+      "energy bar",
+      "clif bar",
+      "cliff bar"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 68,
+    "kcal100": 368,
+    "protein100": 13,
+    "carbs100": 65,
+    "fat100": 7
+  },
+  {
+    "name": "巧克力曲奇",
+    "aliases": [
+      "chocolate chip cookie",
+      "cookie"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 30,
+    "kcal100": 488,
+    "protein100": 5.2,
+    "carbs100": 65,
+    "fat100": 23
+  },
+  {
+    "name": "奶油夹心巧克力饼干",
+    "aliases": [
+      "chocolate sandwich cookie",
+      "oreo",
+      "oreos"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 11,
+    "kcal100": 471,
+    "protein100": 4.4,
+    "carbs100": 70,
+    "fat100": 20
+  },
+  {
+    "name": "布朗尼",
+    "aliases": [
+      "brownie",
+      "brownies"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 56,
+    "kcal100": 405,
+    "protein100": 4.5,
+    "carbs100": 56,
+    "fat100": 17.5
+  },
+  {
+    "name": "巧克力蛋糕（带糖霜）",
+    "aliases": [
+      "chocolate cake with frosting",
+      "cake",
+      "slice of cake"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 95,
+    "kcal100": 371,
+    "protein100": 3.9,
+    "carbs100": 54,
+    "fat100": 16
+  },
+  {
+    "name": "纽约芝士蛋糕",
+    "aliases": [
+      "cheesecake",
+      "new york cheesecake"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 125,
+    "kcal100": 321,
+    "protein100": 5.5,
+    "carbs100": 25.5,
+    "fat100": 22.5
+  },
+  {
+    "name": "苹果派",
+    "aliases": [
+      "apple pie",
+      "pie",
+      "slice of pie"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 125,
+    "kcal100": 237,
+    "protein100": 1.9,
+    "carbs100": 34,
+    "fat100": 11
+  },
+  {
+    "name": "牛奶巧克力棒",
+    "aliases": [
+      "milk chocolate bar",
+      "chocolate",
+      "hershey"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 43,
+    "kcal100": 535,
+    "protein100": 7.7,
+    "carbs100": 59.4,
+    "fat100": 29.7
+  },
+  {
+    "name": "深色巧克力（70-85%）",
+    "aliases": [
+      "dark chocolate (70-85%)",
+      "dark chocolate bar"
+    ],
+    "category": "美式零食甜点",
+    "unit": "块",
+    "gramsPerUnit": 28,
+    "kcal100": 598,
+    "protein100": 7.8,
+    "carbs100": 45.9,
+    "fat100": 42.6
+  },
+  {
+    "name": "花生焦糖巧克力棒",
+    "aliases": [
+      "chocolate caramel peanut bar",
+      "snickers",
+      "candy bar"
+    ],
+    "category": "美式零食甜点",
+    "unit": "个",
+    "gramsPerUnit": 52,
+    "kcal100": 480,
+    "protein100": 7.7,
+    "carbs100": 63,
+    "fat100": 23
+  },
+  {
+    "name": "软糖",
+    "aliases": [
+      "gummy candy",
+      "gummy bears",
+      "gummies",
+      "haribo"
+    ],
+    "category": "美式零食甜点",
+    "unit": "份",
+    "gramsPerUnit": 30,
+    "kcal100": 343,
+    "protein100": 6.9,
+    "carbs100": 77,
+    "fat100": 0.5
+  },
+  {
+    "name": "什锦果仁干果",
+    "aliases": [
+      "trail mix",
+      "gorp"
+    ],
+    "category": "美式零食甜点",
+    "unit": "把",
+    "gramsPerUnit": 37,
+    "kcal100": 462,
+    "protein100": 13.8,
+    "carbs100": 44.9,
+    "fat100": 29.4
+  },
+  {
+    "name": "葡萄干（小盒）",
+    "aliases": [
+      "raisins (small box)",
+      "raisin box"
+    ],
+    "category": "美式零食甜点",
+    "unit": "盒",
+    "gramsPerUnit": 43,
+    "kcal100": 299,
+    "protein100": 3.1,
+    "carbs100": 79.2,
+    "fat100": 0.5
+  },
+  {
+    "name": "香草奶昔",
+    "aliases": [
+      "milkshake (vanilla)",
+      "shake",
+      "vanilla shake",
+      "milk shake"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 340,
+    "kcal100": 112,
+    "protein100": 3.2,
+    "carbs100": 18,
+    "fat100": 3
+  },
+  {
+    "name": "柠檬青柠汽水",
+    "aliases": [
+      "lemon-lime soda",
+      "sprite",
+      "7up",
+      "soda",
+      "pop"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 41,
+    "protein100": 0,
+    "carbs100": 10.3,
+    "fat100": 0
+  },
+  {
+    "name": "根汁汽水",
+    "aliases": [
+      "root beer",
+      "root beer soda",
+      "soda"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 41,
+    "protein100": 0,
+    "carbs100": 10.6,
+    "fat100": 0
+  },
+  {
+    "name": "姜汁汽水",
+    "aliases": [
+      "ginger ale",
+      "ginger soda"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 34,
+    "protein100": 0,
+    "carbs100": 8.8,
+    "fat100": 0
+  },
+  {
+    "name": "无糖汽水",
+    "aliases": [
+      "diet soda",
+      "diet coke",
+      "diet cola",
+      "zero soda"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 0,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "苹果汁",
+    "aliases": [
+      "apple juice",
+      "apple cider"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 248,
+    "kcal100": 46,
+    "protein100": 0.1,
+    "carbs100": 11.3,
+    "fat100": 0.1
+  },
+  {
+    "name": "蔓越莓果汁饮料",
+    "aliases": [
+      "cranberry juice cocktail",
+      "cranberry juice"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 253,
+    "kcal100": 54,
+    "protein100": 0,
+    "carbs100": 13.6,
+    "fat100": 0.1
+  },
+  {
+    "name": "柠檬水",
+    "aliases": [
+      "lemonade",
+      "lemon water sweet"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 248,
+    "kcal100": 40,
+    "protein100": 0.1,
+    "carbs100": 10.4,
+    "fat100": 0
+  },
+  {
+    "name": "甜冰茶",
+    "aliases": [
+      "sweet tea",
+      "iced tea",
+      "sweetened iced tea"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 355,
+    "kcal100": 35,
+    "protein100": 0,
+    "carbs100": 9,
+    "fat100": 0
+  },
+  {
+    "name": "无糖冰茶",
+    "aliases": [
+      "unsweetened iced tea",
+      "iced tea unsweetened"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 355,
+    "kcal100": 1,
+    "protein100": 0,
+    "carbs100": 0.3,
+    "fat100": 0
+  },
+  {
+    "name": "能量饮料",
+    "aliases": [
+      "energy drink",
+      "red bull",
+      "monster",
+      "energy"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 45,
+    "protein100": 0.4,
+    "carbs100": 11,
+    "fat100": 0
+  },
+  {
+    "name": "拿铁（2%奶，12 盎司）",
+    "aliases": [
+      "latte (2% milk, 12 oz)",
+      "latte",
+      "caffe latte",
+      "coffee latte"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 354,
+    "kcal100": 42,
+    "protein100": 2.8,
+    "carbs100": 4.2,
+    "fat100": 1.7
+  },
+  {
+    "name": "香草拿铁（2%奶，12 盎司）",
+    "aliases": [
+      "vanilla latte (2% milk, 12 oz)",
+      "flavored latte",
+      "vanilla latte"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 354,
+    "kcal100": 56,
+    "protein100": 3.1,
+    "carbs100": 7.9,
+    "fat100": 1.7
+  },
+  {
+    "name": "卡布奇诺（2%奶，12 盎司）",
+    "aliases": [
+      "cappuccino (2% milk, 12 oz)",
+      "cappuccino"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 354,
+    "kcal100": 30,
+    "protein100": 2,
+    "carbs100": 3.5,
+    "fat100": 1.3
+  },
+  {
+    "name": "热巧克力（牛奶）",
+    "aliases": [
+      "hot chocolate (with milk)",
+      "hot cocoa",
+      "cocoa"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 77,
+    "protein100": 3.5,
+    "carbs100": 11,
+    "fat100": 2.6
+  },
+  {
+    "name": "水果奶昔",
+    "aliases": [
+      "fruit smoothie",
+      "smoothie",
+      "strawberry banana smoothie",
+      "fruit and yogurt smoothie"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 480,
+    "kcal100": 72,
+    "protein100": 1.2,
+    "carbs100": 16,
+    "fat100": 0.6
+  },
+  {
+    "name": "花生酱香蕉蛋白奶昔",
+    "aliases": [
+      "peanut butter banana protein smoothie",
+      "protein smoothie"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 397,
+    "kcal100": 109,
+    "protein100": 9.3,
+    "carbs100": 10.8,
+    "fat100": 3.6
+  },
+  {
+    "name": "啤酒（普通）",
+    "aliases": [
+      "beer (regular)",
+      "beer",
+      "lager",
+      "ipa"
+    ],
+    "category": "美式饮品",
+    "unit": "瓶",
+    "gramsPerUnit": 355,
+    "kcal100": 43,
+    "protein100": 0.5,
+    "carbs100": 3.6,
+    "fat100": 0
+  },
+  {
+    "name": "淡啤酒",
+    "aliases": [
+      "light beer",
+      "bud light",
+      "miller lite",
+      "beer"
+    ],
+    "category": "美式饮品",
+    "unit": "瓶",
+    "gramsPerUnit": 355,
+    "kcal100": 29,
+    "protein100": 0.2,
+    "carbs100": 1.6,
+    "fat100": 0
+  },
+  {
+    "name": "红葡萄酒",
+    "aliases": [
+      "red wine",
+      "wine",
+      "red wine glass"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 150,
+    "kcal100": 85,
+    "protein100": 0.1,
+    "carbs100": 2.6,
+    "fat100": 0
+  },
+  {
+    "name": "白葡萄酒",
+    "aliases": [
+      "white wine",
+      "wine",
+      "white wine glass"
+    ],
+    "category": "美式饮品",
+    "unit": "杯",
+    "gramsPerUnit": 150,
+    "kcal100": 82,
+    "protein100": 0.1,
+    "carbs100": 2.6,
+    "fat100": 0
+  },
+  {
+    "name": "烈酒（40度）",
+    "aliases": [
+      "spirits (80 proof)",
+      "vodka",
+      "whiskey",
+      "whisky",
+      "gin",
+      "rum",
+      "tequila",
+      "liquor"
+    ],
+    "category": "美式饮品",
+    "unit": "份",
+    "gramsPerUnit": 42,
+    "kcal100": 231,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 0
+  },
+  {
+    "name": "硬苏打气泡酒",
+    "aliases": [
+      "hard seltzer",
+      "white claw",
+      "truly",
+      "seltzer"
+    ],
+    "category": "美式饮品",
+    "unit": "罐",
+    "gramsPerUnit": 355,
+    "kcal100": 28,
+    "protein100": 0,
+    "carbs100": 0.6,
+    "fat100": 0
+  },
+  {
+    "name": "液体蛋白",
+    "aliases": [
+      "liquid egg whites",
+      "egg whites",
+      "egg white carton"
+    ],
+    "category": "美式高蛋白",
+    "unit": "份",
+    "gramsPerUnit": 46,
+    "kcal100": 52,
+    "protein100": 10.9,
+    "carbs100": 0.7,
+    "fat100": 0.2
+  },
+  {
+    "name": "火鸡肉片（熟食）",
+    "aliases": [
+      "deli turkey",
+      "sliced turkey",
+      "deli turkey breast",
+      "lunch meat"
+    ],
+    "category": "美式高蛋白",
+    "unit": "片",
+    "gramsPerUnit": 28,
+    "kcal100": 104,
+    "protein100": 18,
+    "carbs100": 3.5,
+    "fat100": 1.7
+  },
+  {
+    "name": "牛肉干",
+    "aliases": [
+      "beef jerky",
+      "jerky",
+      "beef stick",
+      "meat stick"
+    ],
+    "category": "美式高蛋白",
+    "unit": "份",
+    "gramsPerUnit": 28,
+    "kcal100": 290,
+    "protein100": 46,
+    "carbs100": 14,
+    "fat100": 5
+  },
+  {
+    "name": "金枪鱼沙拉（蛋黄酱）",
+    "aliases": [
+      "tuna salad",
+      "tuna salad scoop"
+    ],
+    "category": "美式高蛋白",
+    "unit": "份",
+    "gramsPerUnit": 120,
+    "kcal100": 187,
+    "protein100": 16,
+    "carbs100": 9,
+    "fat100": 9.5
+  },
+  {
+    "name": "水浸金枪鱼罐头（白肉）",
+    "aliases": [
+      "canned tuna, albacore (in water)",
+      "tuna can",
+      "tuna",
+      "canned tuna"
+    ],
+    "category": "美式高蛋白",
+    "unit": "罐",
+    "gramsPerUnit": 112,
+    "kcal100": 128,
+    "protein100": 23.6,
+    "carbs100": 0,
+    "fat100": 2.7
+  },
+  {
+    "name": "水浸金枪鱼罐头（淡味）",
+    "aliases": [
+      "canned tuna, light (in water)",
+      "light tuna",
+      "chunk light tuna",
+      "tuna can"
+    ],
+    "category": "美式高蛋白",
+    "unit": "罐",
+    "gramsPerUnit": 112,
+    "kcal100": 116,
+    "protein100": 25.5,
+    "carbs100": 0,
+    "fat100": 0.8
+  },
+  {
+    "name": "低脂茅屋奶酪（2%）",
+    "aliases": [
+      "cottage cheese (2% low-fat)",
+      "cottage cheese"
+    ],
+    "category": "美式高蛋白",
+    "unit": "杯",
+    "gramsPerUnit": 226,
+    "kcal100": 81,
+    "protein100": 10.4,
+    "carbs100": 4.8,
+    "fat100": 2.3
+  },
+  {
+    "name": "即饮蛋白奶昔",
+    "aliases": [
+      "protein shake (ready-to-drink)",
+      "premier protein",
+      "protein shake",
+      "rtd shake"
+    ],
+    "category": "美式高蛋白",
+    "unit": "瓶",
+    "gramsPerUnit": 340,
+    "kcal100": 47,
+    "protein100": 8.8,
+    "carbs100": 1.5,
+    "fat100": 0.9
+  },
+  {
+    "name": "蛋白粉加牛奶奶昔",
+    "aliases": [
+      "protein shake (whey and 2% milk)",
+      "whey shake",
+      "protein shake with milk"
+    ],
+    "category": "美式高蛋白",
+    "unit": "杯",
+    "gramsPerUnit": 275,
+    "kcal100": 88,
+    "protein100": 11.6,
+    "carbs100": 5.4,
+    "fat100": 2.2
+  },
+  {
+    "name": "蛋白棒",
+    "aliases": [
+      "protein bar",
+      "quest bar",
+      "protein bars"
+    ],
+    "category": "美式高蛋白",
+    "unit": "个",
+    "gramsPerUnit": 60,
+    "kcal100": 350,
+    "protein100": 33,
+    "carbs100": 33,
+    "fat100": 12
+  },
+  {
+    "name": "高蛋白酸奶杯",
+    "aliases": [
+      "high-protein yogurt cup",
+      "oikos pro",
+      "ratio protein",
+      "high protein yogurt"
+    ],
+    "category": "美式高蛋白",
+    "unit": "盒",
+    "gramsPerUnit": 150,
+    "kcal100": 67,
+    "protein100": 10,
+    "carbs100": 4,
+    "fat100": 0.7
+  },
+  {
+    "name": "冰岛酸奶（原味）",
+    "aliases": [
+      "skyr (plain)",
+      "icelandic yogurt",
+      "siggi's",
+      "skyr yogurt"
+    ],
+    "category": "美式高蛋白",
+    "unit": "盒",
+    "gramsPerUnit": 150,
+    "kcal100": 63,
+    "protein100": 11,
+    "carbs100": 4,
+    "fat100": 0.2
+  },
+  {
+    "name": "特级初榨橄榄油",
+    "aliases": [
+      "olive oil (extra virgin)",
+      "evoo",
+      "cooking oil"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 13.5,
+    "kcal100": 884,
+    "protein100": 0,
+    "carbs100": 0,
+    "fat100": 100
+  },
+  {
+    "name": "蛋黄酱",
+    "aliases": [
+      "mayonnaise",
+      "mayo"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 14,
+    "kcal100": 680,
+    "protein100": 1,
+    "carbs100": 0.6,
+    "fat100": 75
+  },
+  {
+    "name": "番茄酱",
+    "aliases": [
+      "ketchup",
+      "catsup"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 17,
+    "kcal100": 101,
+    "protein100": 1,
+    "carbs100": 27.4,
+    "fat100": 0.1
+  },
+  {
+    "name": "黄芥末酱",
+    "aliases": [
+      "yellow mustard",
+      "mustard"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 60,
+    "protein100": 3.7,
+    "carbs100": 5.8,
+    "fat100": 3.3
+  },
+  {
+    "name": "烧烤酱",
+    "aliases": [
+      "bbq sauce",
+      "barbecue sauce"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 17,
+    "kcal100": 172,
+    "protein100": 0.8,
+    "carbs100": 40.8,
+    "fat100": 0.6
+  },
+  {
+    "name": "田园沙拉酱",
+    "aliases": [
+      "ranch dressing",
+      "ranch",
+      "salad dressing"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 450,
+    "protein100": 1.5,
+    "carbs100": 6,
+    "fat100": 47
+  },
+  {
+    "name": "凯撒沙拉酱",
+    "aliases": [
+      "caesar dressing",
+      "caesar"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 470,
+    "protein100": 2,
+    "carbs100": 3,
+    "fat100": 50
+  },
+  {
+    "name": "油醋汁",
+    "aliases": [
+      "vinaigrette dressing",
+      "italian dressing",
+      "balsamic vinaigrette"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 350,
+    "protein100": 0.1,
+    "carbs100": 10,
+    "fat100": 35
+  },
+  {
+    "name": "墨西哥番茄莎莎酱",
+    "aliases": [
+      "salsa",
+      "pico de gallo",
+      "salsa dip"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 16,
+    "kcal100": 36,
+    "protein100": 1.5,
+    "carbs100": 7,
+    "fat100": 0.2
+  },
+  {
+    "name": "牛油果酱",
+    "aliases": [
+      "guacamole",
+      "guac"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 15,
+    "kcal100": 155,
+    "protein100": 2,
+    "carbs100": 8.5,
+    "fat100": 14
+  },
+  {
+    "name": "意式番茄红酱",
+    "aliases": [
+      "marinara sauce",
+      "pasta sauce",
+      "spaghetti sauce"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "杯",
+    "gramsPerUnit": 250,
+    "kcal100": 50,
+    "protein100": 1.4,
+    "carbs100": 8,
+    "fat100": 1.5
+  },
+  {
+    "name": "榛子可可酱",
+    "aliases": [
+      "chocolate hazelnut spread",
+      "nutella"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 18,
+    "kcal100": 539,
+    "protein100": 6.3,
+    "carbs100": 57.5,
+    "fat100": 30.9
+  },
+  {
+    "name": "草莓果酱",
+    "aliases": [
+      "jam or jelly",
+      "jelly",
+      "strawberry jam",
+      "preserves"
+    ],
+    "category": "美式酱料油脂",
+    "unit": "汤匙",
+    "gramsPerUnit": 20,
+    "kcal100": 278,
+    "protein100": 0.4,
+    "carbs100": 70,
+    "fat100": 0.1
+  },
+  {
+    "name": "鸡蛋培根吐司早餐",
+    "aliases": [
+      "eggs, bacon and toast breakfast",
+      "bacon and eggs",
+      "american breakfast"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 199,
+    "kcal100": 228,
+    "protein100": 11.6,
+    "carbs100": 14.9,
+    "fat100": 13.1,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "燕麦配香蕉花生酱",
+    "aliases": [
+      "oatmeal with banana and peanut butter",
+      "oatmeal banana pb"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 350,
+    "kcal100": 99.8,
+    "protein100": 3.1,
+    "carbs100": 15.5,
+    "fat100": 3.4,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "贝果配奶油奶酪和咖啡",
+    "aliases": [
+      "bagel with cream cheese and coffee",
+      "bagel breakfast"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 185,
+    "kcal100": 215,
+    "protein100": 7.5,
+    "carbs100": 30.3,
+    "fat100": 7,
+    "meals": [
+      "早餐"
+    ]
+  },
+  {
+    "name": "希腊酸奶配莓果和格兰诺拉",
+    "aliases": [
+      "greek yogurt with berries and granola",
+      "yogurt bowl",
+      "yogurt parfait"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 320,
+    "kcal100": 101,
+    "protein100": 6.6,
+    "carbs100": 14.4,
+    "fat100": 2.2,
+    "meals": [
+      "早餐",
+      "加餐"
+    ]
+  },
+  {
+    "name": "火鸡三明治配薯片",
+    "aliases": [
+      "turkey sandwich with chips",
+      "sandwich and chips"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 247,
+    "kcal100": 223,
+    "protein100": 12.5,
+    "carbs100": 19.3,
+    "fat100": 10.8,
+    "meals": [
+      "午餐"
+    ]
+  },
+  {
+    "name": "芝士汉堡薯条套餐",
+    "aliases": [
+      "cheeseburger and fries",
+      "burger and fries",
+      "burger meal"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 281,
+    "kcal100": 288,
+    "protein100": 12.4,
+    "carbs100": 26.6,
+    "fat100": 14.6,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "意大利肉酱面配蔬菜",
+    "aliases": [
+      "spaghetti with meat sauce and salad",
+      "pasta dinner"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 425,
+    "kcal100": 120,
+    "protein100": 4.9,
+    "carbs100": 17.7,
+    "fat100": 3.2,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "烤鸡配土豆和豆角",
+    "aliases": [
+      "roast chicken, potato and green beans",
+      "chicken dinner"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 418,
+    "kcal100": 115,
+    "protein100": 11.9,
+    "carbs100": 10.5,
+    "fat100": 2.9,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "三文鱼米饭西兰花",
+    "aliases": [
+      "salmon, rice and broccoli",
+      "salmon dinner"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 405,
+    "kcal100": 134,
+    "protein100": 8.3,
+    "carbs100": 13.3,
+    "fat100": 5.1,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "牛排配烤土豆和蔬菜",
+    "aliases": [
+      "steak, baked potato and vegetables",
+      "steak dinner"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 448,
+    "kcal100": 137,
+    "protein100": 12.5,
+    "carbs100": 9.7,
+    "fat100": 5.4,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "塔可三个配米饭豆子",
+    "aliases": [
+      "three tacos with rice and beans",
+      "taco plate",
+      "taco dinner"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 400,
+    "kcal100": 213,
+    "protein100": 13.4,
+    "carbs100": 15.7,
+    "fat100": 10.4,
+    "meals": [
+      "晚餐"
+    ]
+  },
+  {
+    "name": "意式辣香肠披萨两片",
+    "aliases": [
+      "pepperoni pizza (2 slices)",
+      "two slices of pizza"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 214,
+    "kcal100": 281,
+    "protein100": 12,
+    "carbs100": 30,
+    "fat100": 12.5,
+    "meals": [
+      "午餐",
+      "晚餐"
+    ]
+  },
+  {
+    "name": "蛋白奶昔配香蕉",
+    "aliases": [
+      "protein shake with a banana",
+      "shake and banana"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 393,
+    "kcal100": 88.3,
+    "protein100": 8.5,
+    "carbs100": 10.6,
+    "fat100": 1.7,
+    "meals": [
+      "加餐"
+    ]
+  },
+  {
+    "name": "苹果配花生酱",
+    "aliases": [
+      "apple slices with peanut butter",
+      "apple and pb"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 214,
+    "kcal100": 132,
+    "protein100": 4,
+    "carbs100": 14.7,
+    "fat100": 7.6,
+    "meals": [
+      "加餐"
+    ]
+  },
+  {
+    "name": "奶酪配苏打饼干和葡萄",
+    "aliases": [
+      "cheese, crackers and grapes",
+      "snack plate"
+    ],
+    "category": "常见一餐",
+    "unit": "顿",
+    "gramsPerUnit": 124,
+    "kcal100": 190,
+    "protein100": 6.8,
+    "carbs100": 21.9,
+    "fat100": 9,
+    "meals": [
+      "加餐"
+    ]
+  }
+]

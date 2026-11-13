@@ -1,0 +1,1330 @@
+{
+  "贝果": {
+    "en": "Bagel (4 in)",
+    "zh_Hant": "貝果"
+  },
+  "全麦贝果": {
+    "en": "Whole wheat bagel",
+    "zh_Hant": "全麥貝果"
+  },
+  "奶油奶酪贝果": {
+    "en": "Bagel with cream cheese",
+    "zh_Hant": "奶油乳酪貝果"
+  },
+  "英式玛芬": {
+    "en": "English muffin",
+    "zh_Hant": "英式瑪芬"
+  },
+  "蛋芝士英式玛芬三明治": {
+    "en": "Breakfast sandwich (egg and cheese)",
+    "zh_Hant": "蛋芝士英式瑪芬三明治"
+  },
+  "燕麦粥（水煮）": {
+    "en": "Oatmeal (cooked with water)",
+    "zh_Hant": "燕麥粥（水煮）"
+  },
+  "隔夜燕麦": {
+    "en": "Overnight oats",
+    "zh_Hant": "隔夜燕麥"
+  },
+  "传统燕麦片（干）": {
+    "en": "Old-fashioned oats (dry)",
+    "zh_Hant": "傳統燕麥片（幹）"
+  },
+  "燕麦圈麦片": {
+    "en": "Oat cereal (toasted)",
+    "zh_Hant": "燕麥圈麥片"
+  },
+  "玉米片麦片": {
+    "en": "Corn flakes",
+    "zh_Hant": "玉米片麥片"
+  },
+  "糖霜麦片": {
+    "en": "Frosted cereal",
+    "zh_Hant": "糖霜麥片"
+  },
+  "格兰诺拉麦片": {
+    "en": "Granola",
+    "zh_Hant": "格蘭諾拉麥片"
+  },
+  "薄煎饼": {
+    "en": "Pancakes",
+    "zh_Hant": "薄煎餅"
+  },
+  "华夫饼": {
+    "en": "Waffle",
+    "zh_Hant": "華夫餅"
+  },
+  "法式吐司": {
+    "en": "French toast",
+    "zh_Hant": "法式吐司"
+  },
+  "枫糖浆": {
+    "en": "Maple syrup",
+    "zh_Hant": "楓糖漿"
+  },
+  "芝士蛋卷": {
+    "en": "Cheese omelet",
+    "zh_Hant": "芝士蛋卷"
+  },
+  "培根（煎熟）": {
+    "en": "Bacon",
+    "zh_Hant": "培根（煎熟）"
+  },
+  "火鸡培根": {
+    "en": "Turkey bacon",
+    "zh_Hant": "火雞培根"
+  },
+  "早餐香肠": {
+    "en": "Breakfast sausage",
+    "zh_Hant": "早餐香腸"
+  },
+  "薯饼": {
+    "en": "Hash browns",
+    "zh_Hant": "薯餅"
+  },
+  "牛油果吐司": {
+    "en": "Avocado toast",
+    "zh_Hant": "牛油果吐司"
+  },
+  "烤吐司（白面包）": {
+    "en": "Toast (white bread)",
+    "zh_Hant": "烤吐司（白麵包）"
+  },
+  "黄油吐司": {
+    "en": "Buttered toast",
+    "zh_Hant": "黃油吐司"
+  },
+  "希腊酸奶（原味，全脂）": {
+    "en": "Greek yogurt, plain (whole milk)",
+    "zh_Hant": "希臘酸奶（原味，全脂）"
+  },
+  "希腊酸奶（原味，脱脂）": {
+    "en": "Greek yogurt, plain (nonfat)",
+    "zh_Hant": "希臘酸奶（原味，脫脂）"
+  },
+  "希腊酸奶（水果味，低脂）": {
+    "en": "Greek yogurt, fruit flavored (low-fat)",
+    "zh_Hant": "希臘酸奶（水果味，低脂）"
+  },
+  "原味酸奶（低脂）": {
+    "en": "Yogurt, plain (low-fat)",
+    "zh_Hant": "原味酸奶（低脂）"
+  },
+  "水果酸奶（低脂）": {
+    "en": "Yogurt, fruit (low-fat)",
+    "zh_Hant": "水果酸奶（低脂）"
+  },
+  "酸奶杯配格兰诺拉": {
+    "en": "Greek yogurt parfait",
+    "zh_Hant": "酸奶杯配格蘭諾拉"
+  },
+  "甜甜圈（糖霜）": {
+    "en": "Glazed donut",
+    "zh_Hant": "甜甜圈（糖霜）"
+  },
+  "蓝莓玛芬": {
+    "en": "Blueberry muffin",
+    "zh_Hant": "藍莓瑪芬"
+  },
+  "肉桂卷": {
+    "en": "Cinnamon roll",
+    "zh_Hant": "肉桂卷"
+  },
+  "牛角包": {
+    "en": "Croissant",
+    "zh_Hant": "牛角包"
+  },
+  "黄油饼（比司吉）": {
+    "en": "Buttermilk biscuit",
+    "zh_Hant": "黃油餅（比司吉）"
+  },
+  "夹心烤饼点心": {
+    "en": "Toaster pastry",
+    "zh_Hant": "夾心烤餅點心"
+  },
+  "全麦面包": {
+    "en": "Whole wheat bread",
+    "zh_Hant": "全麥麵包"
+  },
+  "酸面包": {
+    "en": "Sourdough bread",
+    "zh_Hant": "酸麵包"
+  },
+  "黑麦面包": {
+    "en": "Rye bread",
+    "zh_Hant": "黑麥麵包"
+  },
+  "汉堡面包": {
+    "en": "Hamburger bun",
+    "zh_Hant": "漢堡麵包"
+  },
+  "晚餐小面包": {
+    "en": "Dinner roll",
+    "zh_Hant": "晚餐小麵包"
+  },
+  "玉米面包": {
+    "en": "Cornbread",
+    "zh_Hant": "玉米麵包"
+  },
+  "玉米饼皮": {
+    "en": "Corn tortilla",
+    "zh_Hant": "玉米餅皮"
+  },
+  "面粉饼皮": {
+    "en": "Flour tortilla (8 in)",
+    "zh_Hant": "麵粉餅皮"
+  },
+  "皮塔饼": {
+    "en": "Pita bread",
+    "zh_Hant": "皮塔餅"
+  },
+  "印度烤饼": {
+    "en": "Naan",
+    "zh_Hant": "印度烤餅"
+  },
+  "咸苏打饼干（盐味）": {
+    "en": "Saltine crackers",
+    "zh_Hant": "鹹蘇打餅乾（鹽味）"
+  },
+  "奶酪小饼干": {
+    "en": "Cheese crackers",
+    "zh_Hant": "乳酪小餅乾"
+  },
+  "长粒白米饭": {
+    "en": "White rice (long-grain, cooked)",
+    "zh_Hant": "長粒白米飯"
+  },
+  "长粒糙米饭": {
+    "en": "Brown rice (long-grain, cooked)",
+    "zh_Hant": "長粒糙米飯"
+  },
+  "熟藜麦": {
+    "en": "Quinoa (cooked)",
+    "zh_Hant": "熟藜麥"
+  },
+  "意大利面（煮熟）": {
+    "en": "Pasta (cooked)",
+    "zh_Hant": "義大利麵（煮熟）"
+  },
+  "全麦意面（煮熟）": {
+    "en": "Whole wheat pasta (cooked)",
+    "zh_Hant": "全麥意麵（煮熟）"
+  },
+  "库斯库斯（煮熟）": {
+    "en": "Couscous (cooked)",
+    "zh_Hant": "庫斯庫斯（煮熟）"
+  },
+  "烤土豆（带皮）": {
+    "en": "Baked potato",
+    "zh_Hant": "烤土豆（帶皮）"
+  },
+  "烤红薯（带皮）": {
+    "en": "Baked sweet potato",
+    "zh_Hant": "烤紅薯（帶皮）"
+  },
+  "土豆泥": {
+    "en": "Mashed potatoes",
+    "zh_Hant": "土豆泥"
+  },
+  "炸薯条（快餐）": {
+    "en": "French fries (fast food)",
+    "zh_Hant": "炸薯條（快餐）"
+  },
+  "薯球": {
+    "en": "Tater tots",
+    "zh_Hant": "薯球"
+  },
+  "水煮蛋": {
+    "en": "Egg, hard-boiled",
+    "zh_Hant": "水煮蛋"
+  },
+  "炒蛋": {
+    "en": "Egg, scrambled",
+    "zh_Hant": "炒蛋"
+  },
+  "煎蛋": {
+    "en": "Egg, fried",
+    "zh_Hant": "煎蛋"
+  },
+  "水波蛋": {
+    "en": "Egg, poached",
+    "zh_Hant": "水波蛋"
+  },
+  "烤鸡胸肉": {
+    "en": "Chicken breast, grilled",
+    "zh_Hant": "烤雞胸肉"
+  },
+  "烤鸡腿肉（去皮）": {
+    "en": "Chicken thigh, roasted (skinless)",
+    "zh_Hant": "烤雞腿肉（去皮）"
+  },
+  "烤全鸡（带皮）": {
+    "en": "Rotisserie chicken (meat and skin)",
+    "zh_Hant": "烤全雞（帶皮）"
+  },
+  "炸鸡块（带骨）": {
+    "en": "Fried chicken",
+    "zh_Hant": "炸雞塊（帶骨）"
+  },
+  "烤鸡翅（带骨）": {
+    "en": "Chicken wings (roasted)",
+    "zh_Hant": "烤雞翅（帶骨）"
+  },
+  "水牛城辣鸡翅": {
+    "en": "Buffalo wings",
+    "zh_Hant": "水牛城辣雞翅"
+  },
+  "炸鸡块（快餐）": {
+    "en": "Chicken nuggets",
+    "zh_Hant": "炸雞塊（快餐）"
+  },
+  "火鸡碎肉（93%瘦）": {
+    "en": "Ground turkey (93% lean, cooked)",
+    "zh_Hant": "火雞碎肉（93%瘦）"
+  },
+  "烤火鸡胸肉": {
+    "en": "Turkey breast, roasted",
+    "zh_Hant": "烤火雞胸肉"
+  },
+  "火腿片（熟食）": {
+    "en": "Deli ham",
+    "zh_Hant": "火腿片（熟食）"
+  },
+  "烤牛肉片（熟食）": {
+    "en": "Deli roast beef",
+    "zh_Hant": "烤牛肉片（熟食）"
+  },
+  "烤火腿": {
+    "en": "Baked ham",
+    "zh_Hant": "烤火腿"
+  },
+  "意大利辣香肠": {
+    "en": "Pepperoni",
+    "zh_Hant": "義大利辣香腸"
+  },
+  "牛肉糜（85%瘦，煎熟）": {
+    "en": "Ground beef (85% lean, cooked)",
+    "zh_Hant": "牛肉糜（85%瘦，煎熟）"
+  },
+  "牛肉糜（93%瘦，煎熟）": {
+    "en": "Ground beef (93% lean, cooked)",
+    "zh_Hant": "牛肉糜（93%瘦，煎熟）"
+  },
+  "牛肉饼（80%瘦，煎熟）": {
+    "en": "Beef burger patty (cooked)",
+    "zh_Hant": "牛肉餅（80%瘦，煎熟）"
+  },
+  "肋眼牛排（烤）": {
+    "en": "Ribeye steak (grilled)",
+    "zh_Hant": "肋眼牛排（烤）"
+  },
+  "西冷牛排（烤）": {
+    "en": "Sirloin steak (grilled)",
+    "zh_Hant": "西冷牛排（烤）"
+  },
+  "烤猪排（去骨）": {
+    "en": "Pork chop (boneless, grilled)",
+    "zh_Hant": "烤豬排（去骨）"
+  },
+  "手撕猪肉（烧烤酱）": {
+    "en": "Pulled pork (BBQ sauce)",
+    "zh_Hant": "手撕豬肉（燒烤醬）"
+  },
+  "热狗肠": {
+    "en": "Frankfurter (no bun)",
+    "zh_Hant": "熱狗腸"
+  },
+  "植物肉汉堡饼": {
+    "en": "Plant-based burger patty",
+    "zh_Hant": "植物肉漢堡餅"
+  },
+  "炸鸡柳": {
+    "en": "Chicken tenders",
+    "zh_Hant": "炸雞柳"
+  },
+  "牛肉丸（意式）": {
+    "en": "Meatballs (beef)",
+    "zh_Hant": "牛肉丸（意式）"
+  },
+  "烤三文鱼（养殖）": {
+    "en": "Salmon, baked (farmed)",
+    "zh_Hant": "烤三文魚（養殖）"
+  },
+  "野生三文鱼（烤）": {
+    "en": "Salmon, wild (cooked)",
+    "zh_Hant": "野生三文魚（烤）"
+  },
+  "烟熏三文鱼": {
+    "en": "Smoked salmon",
+    "zh_Hant": "煙燻三文魚"
+  },
+  "烤金枪鱼排": {
+    "en": "Tuna steak (grilled)",
+    "zh_Hant": "烤金槍魚排"
+  },
+  "煮虾": {
+    "en": "Shrimp (cooked)",
+    "zh_Hant": "煮蝦"
+  },
+  "炸虾（面包糠）": {
+    "en": "Breaded fried shrimp",
+    "zh_Hant": "炸蝦（麵包糠）"
+  },
+  "炸鱼条": {
+    "en": "Fish sticks",
+    "zh_Hant": "炸魚條"
+  },
+  "烤鳕鱼": {
+    "en": "Cod, baked",
+    "zh_Hant": "烤鱈魚"
+  },
+  "烤罗非鱼": {
+    "en": "Tilapia, baked",
+    "zh_Hant": "烤羅非魚"
+  },
+  "炸鲶鱼": {
+    "en": "Catfish, breaded and fried",
+    "zh_Hant": "炸鯰魚"
+  },
+  "油浸沙丁鱼罐头": {
+    "en": "Sardines (canned in oil)",
+    "zh_Hant": "油浸沙丁魚罐頭"
+  },
+  "蟹肉（熟）": {
+    "en": "Crab meat (cooked)",
+    "zh_Hant": "蟹肉（熟）"
+  },
+  "蒸龙虾肉": {
+    "en": "Lobster (steamed)",
+    "zh_Hant": "蒸龍蝦肉"
+  },
+  "2%低脂牛奶": {
+    "en": "Milk (2% reduced fat)",
+    "zh_Hant": "2%低脂牛奶"
+  },
+  "1%低脂牛奶": {
+    "en": "Milk (1% low-fat)",
+    "zh_Hant": "1%低脂牛奶"
+  },
+  "巧克力牛奶（低脂）": {
+    "en": "Chocolate milk (reduced fat)",
+    "zh_Hant": "巧克力牛奶（低脂）"
+  },
+  "无糖杏仁奶": {
+    "en": "Almond milk (unsweetened)",
+    "zh_Hant": "無糖杏仁奶"
+  },
+  "燕麦奶": {
+    "en": "Oat milk",
+    "zh_Hant": "燕麥奶"
+  },
+  "奶油牛奶各半": {
+    "en": "Half-and-half",
+    "zh_Hant": "奶油牛奶各半"
+  },
+  "淡奶油（高脂）": {
+    "en": "Heavy cream",
+    "zh_Hant": "淡奶油（高脂）"
+  },
+  "咖啡奶精（调味）": {
+    "en": "Coffee creamer (flavored)",
+    "zh_Hant": "咖啡奶精（調味）"
+  },
+  "黄油（加盐）": {
+    "en": "Butter (salted)",
+    "zh_Hant": "黃油（加鹽）"
+  },
+  "奶油奶酪": {
+    "en": "Cream cheese",
+    "zh_Hant": "奶油乳酪"
+  },
+  "酸奶油": {
+    "en": "Sour cream",
+    "zh_Hant": "酸奶油"
+  },
+  "喷射奶油": {
+    "en": "Whipped cream",
+    "zh_Hant": "噴射奶油"
+  },
+  "切片奶酪（美国芝士）": {
+    "en": "American cheese",
+    "zh_Hant": "切片乳酪（美國芝士）"
+  },
+  "瑞士奶酪": {
+    "en": "Swiss cheese",
+    "zh_Hant": "瑞士乳酪"
+  },
+  "波罗伏洛奶酪": {
+    "en": "Provolone cheese",
+    "zh_Hant": "波羅伏洛乳酪"
+  },
+  "低脂马苏里拉（奶酪棒）": {
+    "en": "Mozzarella, part-skim (string cheese)",
+    "zh_Hant": "低脂馬蘇裡拉（乳酪棒）"
+  },
+  "帕玛森奶酪（碎）": {
+    "en": "Parmesan cheese (grated)",
+    "zh_Hant": "帕瑪森乳酪（碎）"
+  },
+  "菲达奶酪": {
+    "en": "Feta cheese",
+    "zh_Hant": "菲達乳酪"
+  },
+  "瑞可塔奶酪（半脱脂）": {
+    "en": "Ricotta cheese (part-skim)",
+    "zh_Hant": "瑞可塔乳酪（半脫脂）"
+  },
+  "羽衣甘蓝（生）": {
+    "en": "Kale (raw)",
+    "zh_Hant": "羽衣甘藍（生）"
+  },
+  "罗马生菜（生）": {
+    "en": "Romaine lettuce",
+    "zh_Hant": "羅馬生菜（生）"
+  },
+  "什锦嫩叶沙拉菜": {
+    "en": "Mixed salad greens",
+    "zh_Hant": "什錦嫩葉沙拉菜"
+  },
+  "芝麻菜（生）": {
+    "en": "Arugula",
+    "zh_Hant": "芝麻菜（生）"
+  },
+  "蒸西兰花": {
+    "en": "Broccoli (steamed)",
+    "zh_Hant": "蒸西蘭花"
+  },
+  "球芽甘蓝（煮）": {
+    "en": "Brussels sprouts (cooked)",
+    "zh_Hant": "球芽甘藍（煮）"
+  },
+  "甜玉米粒（煮）": {
+    "en": "Sweet corn (cooked kernels)",
+    "zh_Hant": "甜玉米粒（煮）"
+  },
+  "青豌豆（煮）": {
+    "en": "Green peas (cooked)",
+    "zh_Hant": "青豌豆（煮）"
+  },
+  "卷心菜（生）": {
+    "en": "Cabbage (raw)",
+    "zh_Hant": "捲心菜（生）"
+  },
+  "莳萝酸黄瓜": {
+    "en": "Dill pickles",
+    "zh_Hant": "蒔蘿酸黃瓜"
+  },
+  "黑橄榄": {
+    "en": "Olives (ripe, canned)",
+    "zh_Hant": "黑橄欖"
+  },
+  "黑莓": {
+    "en": "Blackberries",
+    "zh_Hant": "黑莓"
+  },
+  "蜜瓜": {
+    "en": "Honeydew melon",
+    "zh_Hant": "蜜瓜"
+  },
+  "椰枣（大）": {
+    "en": "Dates (medjool)",
+    "zh_Hant": "椰棗（大）"
+  },
+  "无糖苹果酱": {
+    "en": "Applesauce (unsweetened)",
+    "zh_Hant": "無糖蘋果醬"
+  },
+  "蔬菜沙拉（配油醋汁）": {
+    "en": "Garden salad with vinaigrette",
+    "zh_Hant": "蔬菜沙拉（配油醋汁）"
+  },
+  "黑豆（煮）": {
+    "en": "Black beans (cooked)",
+    "zh_Hant": "黑豆（煮）"
+  },
+  "斑豆（煮）": {
+    "en": "Pinto beans (cooked)",
+    "zh_Hant": "斑豆（煮）"
+  },
+  "芸豆（煮）": {
+    "en": "Kidney beans (cooked)",
+    "zh_Hant": "芸豆（煮）"
+  },
+  "小扁豆（煮）": {
+    "en": "Lentils (cooked)",
+    "zh_Hant": "小扁豆（煮）"
+  },
+  "墨西哥豆泥": {
+    "en": "Refried beans",
+    "zh_Hant": "墨西哥豆泥"
+  },
+  "焗豆（罐头）": {
+    "en": "Baked beans (canned)",
+    "zh_Hant": "焗豆（罐頭）"
+  },
+  "鹰嘴豆泥": {
+    "en": "Hummus",
+    "zh_Hant": "鷹嘴豆泥"
+  },
+  "花生酱（经典，含糖）": {
+    "en": "Peanut butter (creamy)",
+    "zh_Hant": "花生醬（經典，含糖）"
+  },
+  "杏仁酱": {
+    "en": "Almond butter",
+    "zh_Hant": "杏仁醬"
+  },
+  "什锦坚果（烤）": {
+    "en": "Mixed nuts (roasted)",
+    "zh_Hant": "什錦堅果（烤）"
+  },
+  "奇亚籽": {
+    "en": "Chia seeds",
+    "zh_Hant": "奇亞籽"
+  },
+  "亚麻籽（磨粉）": {
+    "en": "Ground flaxseed",
+    "zh_Hant": "亞麻籽（磨粉）"
+  },
+  "芝士通心粉": {
+    "en": "Mac and cheese",
+    "zh_Hant": "芝士通心粉"
+  },
+  "意式番茄肉酱面": {
+    "en": "Spaghetti with meat sauce",
+    "zh_Hant": "意式番茄肉醬面"
+  },
+  "白酱意面": {
+    "en": "Fettuccine alfredo",
+    "zh_Hant": "白醬意麵"
+  },
+  "意大利千层面": {
+    "en": "Lasagna",
+    "zh_Hant": "義大利千層麵"
+  },
+  "牛肉辣豆汤": {
+    "en": "Chili (beef and beans)",
+    "zh_Hant": "牛肉辣豆湯"
+  },
+  "花生酱香蕉吐司": {
+    "en": "Peanut butter banana toast",
+    "zh_Hant": "花生醬香蕉吐司"
+  },
+  "鸡肉卷饼": {
+    "en": "Chicken burrito",
+    "zh_Hant": "雞肉捲餅"
+  },
+  "豆泥芝士卷饼": {
+    "en": "Bean and cheese burrito",
+    "zh_Hant": "豆泥芝士捲餅"
+  },
+  "早餐卷饼（鸡蛋香肠芝士）": {
+    "en": "Breakfast burrito",
+    "zh_Hant": "早餐捲餅（雞蛋香腸芝士）"
+  },
+  "鸡肉卷饼碗（无饼皮）": {
+    "en": "Chicken burrito bowl",
+    "zh_Hant": "雞肉捲餅碗（無餅皮）"
+  },
+  "牛肉卷饼碗": {
+    "en": "Steak burrito bowl",
+    "zh_Hant": "牛肉捲餅碗"
+  },
+  "墨西哥脆壳牛肉塔可": {
+    "en": "Beef tacos (hard shell)",
+    "zh_Hant": "墨西哥脆殼牛肉塔可"
+  },
+  "软饼鸡肉塔可": {
+    "en": "Chicken tacos (soft)",
+    "zh_Hant": "軟餅雞肉塔可"
+  },
+  "墨西哥芝士薄饼": {
+    "en": "Cheese quesadilla",
+    "zh_Hant": "墨西哥芝士薄餅"
+  },
+  "墨西哥玉米片配芝士": {
+    "en": "Nachos with cheese",
+    "zh_Hant": "墨西哥玉米片配芝士"
+  },
+  "芝士汉堡（快餐单层）": {
+    "en": "Cheeseburger",
+    "zh_Hant": "芝士漢堡（快餐單層）"
+  },
+  "汉堡（快餐单层）": {
+    "en": "Hamburger",
+    "zh_Hant": "漢堡（快餐單層）"
+  },
+  "双层芝士汉堡": {
+    "en": "Double cheeseburger",
+    "zh_Hant": "雙層芝士漢堡"
+  },
+  "餐厅培根芝士汉堡": {
+    "en": "Restaurant bacon cheeseburger",
+    "zh_Hant": "餐廳培根芝士漢堡"
+  },
+  "炸鸡三明治": {
+    "en": "Fried chicken sandwich",
+    "zh_Hant": "炸雞三明治"
+  },
+  "烤鸡三明治": {
+    "en": "Grilled chicken sandwich",
+    "zh_Hant": "烤雞三明治"
+  },
+  "热狗（含面包）": {
+    "en": "Hot dog with bun",
+    "zh_Hant": "熱狗（含麵包）"
+  },
+  "芝士披萨块（大片）": {
+    "en": "Pizza slice (cheese, large)",
+    "zh_Hant": "芝士披薩塊（大片）"
+  },
+  "意式辣香肠披萨块": {
+    "en": "Pepperoni pizza slice",
+    "zh_Hant": "意式辣香腸披薩塊"
+  },
+  "火鸡三明治": {
+    "en": "Turkey sandwich",
+    "zh_Hant": "火雞三明治"
+  },
+  "火腿芝士三明治": {
+    "en": "Ham and cheese sandwich",
+    "zh_Hant": "火腿芝士三明治"
+  },
+  "花生酱果酱三明治": {
+    "en": "Peanut butter and jelly sandwich",
+    "zh_Hant": "花生醬果醬三明治"
+  },
+  "培根生菜番茄三明治": {
+    "en": "BLT sandwich",
+    "zh_Hant": "培根生菜番茄三明治"
+  },
+  "烤芝士三明治": {
+    "en": "Grilled cheese sandwich",
+    "zh_Hant": "烤芝士三明治"
+  },
+  "潜艇三明治（15 厘米）": {
+    "en": "Sub sandwich (6 in)",
+    "zh_Hant": "潛艇三明治（15 釐米）"
+  },
+  "费城牛肉芝士三明治": {
+    "en": "Philly cheesesteak",
+    "zh_Hant": "費城牛肉芝士三明治"
+  },
+  "鸡肉凯撒卷": {
+    "en": "Chicken Caesar wrap",
+    "zh_Hant": "雞肉凱撒卷"
+  },
+  "烤鸡肉沙拉": {
+    "en": "Salad with grilled chicken",
+    "zh_Hant": "烤雞肉沙拉"
+  },
+  "凯撒沙拉（加鸡肉）": {
+    "en": "Chicken Caesar salad",
+    "zh_Hant": "凱撒沙拉（加雞肉）"
+  },
+  "科布沙拉": {
+    "en": "Cobb salad",
+    "zh_Hant": "科布沙拉"
+  },
+  "希腊沙拉": {
+    "en": "Greek salad",
+    "zh_Hant": "希臘沙拉"
+  },
+  "烤鸡胸配米饭和西兰花": {
+    "en": "Chicken, rice and broccoli",
+    "zh_Hant": "烤雞胸配米飯和西蘭花"
+  },
+  "照烧鸡肉饭": {
+    "en": "Teriyaki chicken with rice",
+    "zh_Hant": "照燒雞肉飯"
+  },
+  "橙汁鸡配炒饭": {
+    "en": "Orange chicken with fried rice",
+    "zh_Hant": "橙汁雞配炒飯"
+  },
+  "中式外卖炒饭": {
+    "en": "Fried rice (takeout)",
+    "zh_Hant": "中式外賣炒飯"
+  },
+  "中式外卖炒面": {
+    "en": "Lo mein",
+    "zh_Hant": "中式外賣炒麵"
+  },
+  "泰式炒河粉": {
+    "en": "Pad thai",
+    "zh_Hant": "泰式炒河粉"
+  },
+  "日式拉面": {
+    "en": "Ramen bowl (restaurant)",
+    "zh_Hant": "日式拉麵"
+  },
+  "方便面（煮好，含汤）": {
+    "en": "Instant ramen (prepared)",
+    "zh_Hant": "泡麵（煮好，含湯）"
+  },
+  "越南牛肉河粉": {
+    "en": "Pho",
+    "zh_Hant": "越南牛肉河粉"
+  },
+  "加州卷（8块）": {
+    "en": "California roll (8 pieces)",
+    "zh_Hant": "加州卷（8塊）"
+  },
+  "辣金枪鱼卷（6块）": {
+    "en": "Spicy tuna roll (6 pieces)",
+    "zh_Hant": "辣金槍魚卷（6塊）"
+  },
+  "三文鱼握寿司（2贯）": {
+    "en": "Salmon nigiri (2 pieces)",
+    "zh_Hant": "三文魚握壽司（2貫）"
+  },
+  "炸鱼薯条": {
+    "en": "Fish and chips",
+    "zh_Hant": "炸魚薯條"
+  },
+  "手撕猪肉三明治": {
+    "en": "BBQ pulled pork sandwich",
+    "zh_Hant": "手撕豬肉三明治"
+  },
+  "鸡肉派": {
+    "en": "Chicken pot pie",
+    "zh_Hant": "雞肉派"
+  },
+  "肉饼配土豆泥": {
+    "en": "Meatloaf with mashed potatoes",
+    "zh_Hant": "肉餅配土豆泥"
+  },
+  "鸡汤面": {
+    "en": "Chicken noodle soup",
+    "zh_Hant": "雞湯麵"
+  },
+  "番茄汤": {
+    "en": "Tomato soup",
+    "zh_Hant": "番茄湯"
+  },
+  "蛤蜊浓汤（新英格兰）": {
+    "en": "Clam chowder (New England)",
+    "zh_Hant": "蛤蜊濃湯（新英格蘭）"
+  },
+  "炸鸡配土豆泥玉米": {
+    "en": "Fried chicken dinner",
+    "zh_Hant": "炸雞配土豆泥玉米"
+  },
+  "蛋沙拉三明治": {
+    "en": "Egg salad sandwich",
+    "zh_Hant": "蛋沙拉三明治"
+  },
+  "金枪鱼三明治": {
+    "en": "Tuna sandwich",
+    "zh_Hant": "金槍魚三明治"
+  },
+  "蔬菜鹰嘴豆泥卷": {
+    "en": "Veggie hummus wrap",
+    "zh_Hant": "蔬菜鷹嘴豆泥卷"
+  },
+  "铁板鸡肉法士达": {
+    "en": "Chicken fajitas",
+    "zh_Hant": "鐵板雞肉法士達"
+  },
+  "玉米热狗": {
+    "en": "Corn dog",
+    "zh_Hant": "玉米熱狗"
+  },
+  "冰淇淋（香草）": {
+    "en": "Ice cream (vanilla)",
+    "zh_Hant": "冰淇淋（香草）"
+  },
+  "冷冻酸奶": {
+    "en": "Frozen yogurt",
+    "zh_Hant": "冷凍酸奶"
+  },
+  "墨西哥玉米片": {
+    "en": "Tortilla chips",
+    "zh_Hant": "墨西哥玉米片"
+  },
+  "爆米花（空气爆）": {
+    "en": "Popcorn (air-popped)",
+    "zh_Hant": "爆米花（空氣爆）"
+  },
+  "爆米花（微波黄油味）": {
+    "en": "Popcorn (microwave butter)",
+    "zh_Hant": "爆米花（微波黃油味）"
+  },
+  "硬脆椒盐卷饼": {
+    "en": "Pretzels (hard)",
+    "zh_Hant": "硬脆椒鹽捲餅"
+  },
+  "软椒盐卷饼": {
+    "en": "Soft pretzel",
+    "zh_Hant": "軟椒鹽捲餅"
+  },
+  "糙米饼": {
+    "en": "Rice cake (puffed)",
+    "zh_Hant": "糙米餅"
+  },
+  "格兰诺拉棒": {
+    "en": "Granola bar",
+    "zh_Hant": "格蘭諾拉棒"
+  },
+  "能量棒": {
+    "en": "Energy bar",
+    "zh_Hant": "能量棒"
+  },
+  "巧克力曲奇": {
+    "en": "Chocolate chip cookie",
+    "zh_Hant": "巧克力曲奇"
+  },
+  "奶油夹心巧克力饼干": {
+    "en": "Chocolate sandwich cookie",
+    "zh_Hant": "奶油夾心巧克力餅乾"
+  },
+  "布朗尼": {
+    "en": "Brownie",
+    "zh_Hant": "布朗尼"
+  },
+  "巧克力蛋糕（带糖霜）": {
+    "en": "Chocolate cake with frosting",
+    "zh_Hant": "巧克力蛋糕（帶糖霜）"
+  },
+  "纽约芝士蛋糕": {
+    "en": "Cheesecake",
+    "zh_Hant": "紐約芝士蛋糕"
+  },
+  "苹果派": {
+    "en": "Apple pie",
+    "zh_Hant": "蘋果派"
+  },
+  "牛奶巧克力棒": {
+    "en": "Milk chocolate bar",
+    "zh_Hant": "牛奶巧克力棒"
+  },
+  "深色巧克力（70-85%）": {
+    "en": "Dark chocolate (70-85%)",
+    "zh_Hant": "深色巧克力（70-85%）"
+  },
+  "花生焦糖巧克力棒": {
+    "en": "Chocolate caramel peanut bar",
+    "zh_Hant": "花生焦糖巧克力棒"
+  },
+  "软糖": {
+    "en": "Gummy candy",
+    "zh_Hant": "軟糖"
+  },
+  "什锦果仁干果": {
+    "en": "Trail mix",
+    "zh_Hant": "什錦果仁乾果"
+  },
+  "葡萄干（小盒）": {
+    "en": "Raisins (small box)",
+    "zh_Hant": "葡萄乾（小盒）"
+  },
+  "香草奶昔": {
+    "en": "Milkshake (vanilla)",
+    "zh_Hant": "香草奶昔"
+  },
+  "柠檬青柠汽水": {
+    "en": "Lemon-lime soda",
+    "zh_Hant": "檸檬青檸汽水"
+  },
+  "根汁汽水": {
+    "en": "Root beer",
+    "zh_Hant": "根汁汽水"
+  },
+  "姜汁汽水": {
+    "en": "Ginger ale",
+    "zh_Hant": "薑汁汽水"
+  },
+  "无糖汽水": {
+    "en": "Diet soda",
+    "zh_Hant": "無糖汽水"
+  },
+  "苹果汁": {
+    "en": "Apple juice",
+    "zh_Hant": "蘋果汁"
+  },
+  "蔓越莓果汁饮料": {
+    "en": "Cranberry juice cocktail",
+    "zh_Hant": "蔓越莓果汁飲料"
+  },
+  "柠檬水": {
+    "en": "Lemonade",
+    "zh_Hant": "檸檬水"
+  },
+  "甜冰茶": {
+    "en": "Sweet tea",
+    "zh_Hant": "甜冰茶"
+  },
+  "无糖冰茶": {
+    "en": "Unsweetened iced tea",
+    "zh_Hant": "無糖冰茶"
+  },
+  "能量饮料": {
+    "en": "Energy drink",
+    "zh_Hant": "能量飲料"
+  },
+  "拿铁（2%奶，12 盎司）": {
+    "en": "Latte (2% milk, 12 oz)",
+    "zh_Hant": "拿鐵（2%奶，12 盎司）"
+  },
+  "香草拿铁（2%奶，12 盎司）": {
+    "en": "Vanilla latte (2% milk, 12 oz)",
+    "zh_Hant": "香草拿鐵（2%奶，12 盎司）"
+  },
+  "卡布奇诺（2%奶，12 盎司）": {
+    "en": "Cappuccino (2% milk, 12 oz)",
+    "zh_Hant": "卡布奇諾（2%奶，12 盎司）"
+  },
+  "热巧克力（牛奶）": {
+    "en": "Hot chocolate (with milk)",
+    "zh_Hant": "熱巧克力（牛奶）"
+  },
+  "水果奶昔": {
+    "en": "Fruit smoothie",
+    "zh_Hant": "水果奶昔"
+  },
+  "花生酱香蕉蛋白奶昔": {
+    "en": "Peanut butter banana protein smoothie",
+    "zh_Hant": "花生醬香蕉蛋白奶昔"
+  },
+  "啤酒（普通）": {
+    "en": "Beer (regular)",
+    "zh_Hant": "啤酒（普通）"
+  },
+  "淡啤酒": {
+    "en": "Light beer",
+    "zh_Hant": "淡啤酒"
+  },
+  "红葡萄酒": {
+    "en": "Red wine",
+    "zh_Hant": "紅葡萄酒"
+  },
+  "白葡萄酒": {
+    "en": "White wine",
+    "zh_Hant": "白葡萄酒"
+  },
+  "烈酒（40度）": {
+    "en": "Spirits (80 proof)",
+    "zh_Hant": "烈酒（40度）"
+  },
+  "硬苏打气泡酒": {
+    "en": "Hard seltzer",
+    "zh_Hant": "硬蘇打氣泡酒"
+  },
+  "液体蛋白": {
+    "en": "Liquid egg whites",
+    "zh_Hant": "液體蛋白"
+  },
+  "火鸡肉片（熟食）": {
+    "en": "Deli turkey",
+    "zh_Hant": "火雞肉片（熟食）"
+  },
+  "牛肉干": {
+    "en": "Beef jerky",
+    "zh_Hant": "牛肉乾"
+  },
+  "金枪鱼沙拉（蛋黄酱）": {
+    "en": "Tuna salad",
+    "zh_Hant": "金槍魚沙拉（蛋黃醬）"
+  },
+  "水浸金枪鱼罐头（白肉）": {
+    "en": "Canned tuna, albacore (in water)",
+    "zh_Hant": "水浸金槍魚罐頭（白肉）"
+  },
+  "水浸金枪鱼罐头（淡味）": {
+    "en": "Canned tuna, light (in water)",
+    "zh_Hant": "水浸金槍魚罐頭（淡味）"
+  },
+  "低脂茅屋奶酪（2%）": {
+    "en": "Cottage cheese (2% low-fat)",
+    "zh_Hant": "低脂茅屋乳酪（2%）"
+  },
+  "即饮蛋白奶昔": {
+    "en": "Protein shake (ready-to-drink)",
+    "zh_Hant": "即飲蛋白奶昔"
+  },
+  "蛋白粉加牛奶奶昔": {
+    "en": "Protein shake (whey and 2% milk)",
+    "zh_Hant": "蛋白粉加牛奶奶昔"
+  },
+  "蛋白棒": {
+    "en": "Protein bar",
+    "zh_Hant": "蛋白棒"
+  },
+  "高蛋白酸奶杯": {
+    "en": "High-protein yogurt cup",
+    "zh_Hant": "高蛋白酸奶杯"
+  },
+  "冰岛酸奶（原味）": {
+    "en": "Skyr (plain)",
+    "zh_Hant": "冰島酸奶（原味）"
+  },
+  "特级初榨橄榄油": {
+    "en": "Olive oil (extra virgin)",
+    "zh_Hant": "特級初榨橄欖油"
+  },
+  "蛋黄酱": {
+    "en": "Mayonnaise",
+    "zh_Hant": "蛋黃醬"
+  },
+  "番茄酱": {
+    "en": "Ketchup",
+    "zh_Hant": "番茄醬"
+  },
+  "黄芥末酱": {
+    "en": "Yellow mustard",
+    "zh_Hant": "黃芥末醬"
+  },
+  "烧烤酱": {
+    "en": "BBQ sauce",
+    "zh_Hant": "燒烤醬"
+  },
+  "田园沙拉酱": {
+    "en": "Ranch dressing",
+    "zh_Hant": "田園沙拉醬"
+  },
+  "凯撒沙拉酱": {
+    "en": "Caesar dressing",
+    "zh_Hant": "凱撒沙拉醬"
+  },
+  "油醋汁": {
+    "en": "Vinaigrette dressing",
+    "zh_Hant": "油醋汁"
+  },
+  "墨西哥番茄莎莎酱": {
+    "en": "Salsa",
+    "zh_Hant": "墨西哥番茄莎莎醬"
+  },
+  "牛油果酱": {
+    "en": "Guacamole",
+    "zh_Hant": "牛油果醬"
+  },
+  "意式番茄红酱": {
+    "en": "Marinara sauce",
+    "zh_Hant": "意式番茄紅醬"
+  },
+  "榛子可可酱": {
+    "en": "Chocolate hazelnut spread",
+    "zh_Hant": "榛子可可醬"
+  },
+  "草莓果酱": {
+    "en": "Jam or jelly",
+    "zh_Hant": "草莓果醬"
+  },
+  "鸡蛋培根吐司早餐": {
+    "en": "Eggs, bacon and toast breakfast",
+    "zh_Hant": "雞蛋培根吐司早餐"
+  },
+  "燕麦配香蕉花生酱": {
+    "en": "Oatmeal with banana and peanut butter",
+    "zh_Hant": "燕麥配香蕉花生醬"
+  },
+  "贝果配奶油奶酪和咖啡": {
+    "en": "Bagel with cream cheese and coffee",
+    "zh_Hant": "貝果配奶油乳酪和咖啡"
+  },
+  "希腊酸奶配莓果和格兰诺拉": {
+    "en": "Greek yogurt with berries and granola",
+    "zh_Hant": "希臘酸奶配莓果和格蘭諾拉"
+  },
+  "火鸡三明治配薯片": {
+    "en": "Turkey sandwich with chips",
+    "zh_Hant": "火雞三明治配薯片"
+  },
+  "芝士汉堡薯条套餐": {
+    "en": "Cheeseburger and fries",
+    "zh_Hant": "芝士漢堡薯條套餐"
+  },
+  "意大利肉酱面配蔬菜": {
+    "en": "Spaghetti with meat sauce and salad",
+    "zh_Hant": "義大利肉醬面配蔬菜"
+  },
+  "烤鸡配土豆和豆角": {
+    "en": "Roast chicken, potato and green beans",
+    "zh_Hant": "烤雞配土豆和豆角"
+  },
+  "三文鱼米饭西兰花": {
+    "en": "Salmon, rice and broccoli",
+    "zh_Hant": "三文魚米飯西蘭花"
+  },
+  "牛排配烤土豆和蔬菜": {
+    "en": "Steak, baked potato and vegetables",
+    "zh_Hant": "牛排配烤土豆和蔬菜"
+  },
+  "塔可三个配米饭豆子": {
+    "en": "Three tacos with rice and beans",
+    "zh_Hant": "塔可三個配米飯豆子"
+  },
+  "意式辣香肠披萨两片": {
+    "en": "Pepperoni pizza (2 slices)",
+    "zh_Hant": "意式辣香腸披薩兩片"
+  },
+  "蛋白奶昔配香蕉": {
+    "en": "Protein shake with a banana",
+    "zh_Hant": "蛋白奶昔配香蕉"
+  },
+  "苹果配花生酱": {
+    "en": "Apple slices with peanut butter",
+    "zh_Hant": "蘋果配花生醬"
+  },
+  "奶酪配苏打饼干和葡萄": {
+    "en": "Cheese, crackers and grapes",
+    "zh_Hant": "乳酪配蘇打餅乾和葡萄"
+  },
+  "美式早餐": {
+    "en": "Breakfast",
+    "zh_Hant": "美式早餐"
+  },
+  "美式主食面包": {
+    "en": "Bread & grains",
+    "zh_Hant": "美式主食麵包"
+  },
+  "美式肉禽蛋": {
+    "en": "Meat & eggs",
+    "zh_Hant": "美式肉禽蛋"
+  },
+  "美式海鲜": {
+    "en": "Seafood",
+    "zh_Hant": "美式海鮮"
+  },
+  "美式奶制品": {
+    "en": "Dairy",
+    "zh_Hant": "美式奶製品"
+  },
+  "美式蔬果": {
+    "en": "Fruits & veggies",
+    "zh_Hant": "美式蔬果"
+  },
+  "美式豆类坚果": {
+    "en": "Beans & nuts",
+    "zh_Hant": "美式豆類堅果"
+  },
+  "美式整餐外食": {
+    "en": "Meals & takeout",
+    "zh_Hant": "美式整餐外食"
+  },
+  "美式零食甜点": {
+    "en": "Snacks & sweets",
+    "zh_Hant": "美式零食甜點"
+  },
+  "美式饮品": {
+    "en": "Drinks",
+    "zh_Hant": "美式飲品"
+  },
+  "美式高蛋白": {
+    "en": "High protein",
+    "zh_Hant": "美式高蛋白"
+  },
+  "美式酱料油脂": {
+    "en": "Sauces & oils",
+    "zh_Hant": "美式醬料油脂"
+  },
+  "常见一餐": {
+    "en": "Typical meals",
+    "zh_Hant": "常見一餐"
+  },
+  "汤匙": {
+    "en": "tbsp",
+    "zh_Hant": "湯匙"
+  },
+  "再记一次": {
+    "en": "Log again",
+    "zh_Hant": "再記一次"
+  },
+  "我的食物": {
+    "en": "My foods",
+    "zh_Hant": "我的食物"
+  },
+  "记下": {
+    "en": "Log it",
+    "zh_Hant": "記下"
+  },
+  "存为常吃整餐": {
+    "en": "Save as usual meal",
+    "zh_Hant": "存為常吃整餐"
+  },
+  "已存为常吃整餐": {
+    "en": "Saved as a usual meal",
+    "zh_Hant": "已存為常吃整餐"
+  },
+  "保存到我的食物": {
+    "en": "Save to My foods",
+    "zh_Hant": "儲存到我的食物"
+  },
+  "已保存到我的食物": {
+    "en": "Saved to My foods",
+    "zh_Hant": "已儲存到我的食物"
+  },
+  "和昨天的早餐一样": {
+    "en": "Same as yesterday",
+    "zh_Hant": "和昨天的早餐一樣"
+  },
+  "和昨天的午餐一样": {
+    "en": "Same as yesterday",
+    "zh_Hant": "和昨天的午餐一樣"
+  },
+  "和昨天的晚餐一样": {
+    "en": "Same as yesterday",
+    "zh_Hant": "和昨天的晚餐一樣"
+  },
+  "和昨天的加餐一样": {
+    "en": "Same as yesterday",
+    "zh_Hant": "和昨天的加餐一樣"
+  },
+  "{p0} 种食物": {
+    "en": "{p0} foods",
+    "zh_Hant": "{p0} 種食物"
+  },
+  "1 份": {
+    "en": "1 serving",
+    "zh_Hant": "1 份"
+  },
+  "约{p0}份": {
+    "en": "About {p0} serving",
+    "zh_Hant": "約{p0}份"
+  },
+  "编辑 {p0}": {
+    "en": "Edit {p0}",
+    "zh_Hant": "編輯 {p0}"
+  },
+  "编辑常吃整餐": {
+    "en": "Edit usual meal",
+    "zh_Hant": "編輯常吃整餐"
+  },
+  "编辑我的食物": {
+    "en": "Edit my food",
+    "zh_Hant": "編輯我的食物"
+  },
+  "删除这个常吃整餐？": {
+    "en": "Delete this usual meal?",
+    "zh_Hant": "刪除這個常吃整餐？"
+  },
+  "删除这个食物？": {
+    "en": "Delete this food?",
+    "zh_Hant": "刪除這個食物？"
+  },
+  "已经记下的饮食不受影响。": {
+    "en": "Meals you already logged are not affected.",
+    "zh_Hant": "已經記下的飲食不受影響。"
+  },
+  "名称不能为空，最多 60 个字": {
+    "en": "Enter a name (up to 60 characters).",
+    "zh_Hant": "名稱不能為空，最多 60 個字"
+  },
+  "我的食物最多 200 个": {
+    "en": "My foods is limited to 200 items.",
+    "zh_Hant": "我的食物最多 200 個"
+  },
+  "常吃整餐最多 50 个": {
+    "en": "Usual meals are limited to 50.",
+    "zh_Hant": "常吃整餐最多 50 個"
+  },
+  "整餐至少要有两种食物": {
+    "en": "A usual meal needs at least two foods.",
+    "zh_Hant": "整餐至少要有兩種食物"
+  },
+  "约{p0}{p1}（{p2}g）": {
+    "en": "About {p0} {p1} ({p2} g)",
+    "zh_Hant": "約{p0}{p1}（{p2}g）"
+  }
+}

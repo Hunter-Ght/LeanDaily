@@ -14,11 +14,13 @@ import '../../domain/records.dart' as records;
 import '../../domain/format.dart' hide shiftDate;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
+import '../kit/form.dart' show FormSwitch;
 import '../kit/menu.dart';
 import '../kit/pressable.dart';
 import '../kit/segments.dart';
 import '../kit/sheet.dart';
 import 'food/food_controls.dart';
+import 'food/my_food_panel.dart';
 import 'food/portion_panel.dart';
 import 'food/nutrition_summary.dart';
 
@@ -46,6 +48,10 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
   String get _shownMeal => _mealFilter.isEmpty ? _meal : _mealFilter;
   String _name = '', _kcal = '', _protein = '', _carbs = '', _fat = '';
   bool _more = false, _saving = false, _initialized = false;
+
+  /// 分类浏览选中的分类（空 = 不筛）；“我的食物”是否在编辑；手动输入是否同时存入“我的食物”。
+  String _category = '';
+  bool _editMine = false, _saveMine = false;
   late String _date;
 
   @override
@@ -162,11 +168,92 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
       for (final (i, k) in ['kcal', 'protein', 'carbs', 'fat'].indexed)
         k: nums[i],
     });
+    if (_saveMine) {
+      final app = context.app;
+      app
+          .saveMyFood(
+            name: _name,
+            kcal: nums[0]!,
+            protein: nums[1]!,
+            carbs: nums[2]!,
+            fat: nums[3]!,
+          )
+          .then(
+            (_) => app.toast.show('已保存到我的食物'),
+            onError: (Object e) => app.toast.show(AppController.message(e)),
+          );
+    }
     setState(() {
       _name = _kcal = _protein = _carbs = _fat = '';
     });
     FocusManager.instance.primaryFocus?.unfocus();
   }
+
+  bool get _en => AppMessages.of(context).code == 'en';
+
+  /// 昨天同一餐次最值得再记一次的一条（有食物明细、时间最晚的）。
+  Map<String, dynamic>? _yesterday() {
+    final rows = jsonRows(context.app.repo.meals(shiftDate(_date, -1))['meals'])
+        .where((m) => m['meal'] == _meal && jsonRows(m['items']).isNotEmpty);
+    if (rows.isEmpty) return null;
+    return rows.reduce(
+      (a, b) => '${a['time']}'.compareTo('${b['time']}') > 0 ? a : b,
+    );
+  }
+
+  /// 整餐一下记完（购物篮里已有食物时改为加进购物篮）。
+  Future<void> _logMeal(List items) async {
+    if (_saving) return;
+    if (_items.isNotEmpty) {
+      setState(() {
+        for (final item in records.cleanItems(items)) {
+          if (_items.length < 40) _items.add(item);
+        }
+      });
+      context.app.haptics.selection();
+      return;
+    }
+    final ctl = SheetController.of(context);
+    setState(() => _saving = true);
+    final id = await context.app.logItems(
+      date: _date,
+      meal: _meal,
+      items: items,
+      time: _time,
+    );
+    if (!mounted) return;
+    if (id != null) {
+      ctl.close();
+    } else {
+      setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _saveCartAsMeal() async {
+    if (_saving || _items.length < 2) return;
+    final app = context.app;
+    try {
+      await app.saveMyMeal(_items);
+      app.toast.show('已存为常吃整餐');
+    } on Object catch (e) {
+      app.toast.show(AppController.message(e));
+    }
+  }
+
+  Future<void> _editMineRow(Map<String, dynamic> entry) async {
+    if (_saving) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    await showSheetPanel<bool>(context, (_) => MyFoodPanel(entry: entry));
+  }
+
+  /// 「我的食物」里的单个食物，转成和内置食物一样的结构（营养按一份算）。
+  Map<String, dynamic> _mineFood(Map<String, dynamic> row) => {
+    'name': row['name'],
+    'unit': '份',
+    'gramsPerUnit': 100,
+    'mine': true,
+    for (final k in ['kcal', 'protein', 'carbs', 'fat']) '${k}100': row[k],
+  };
 
   List<Map<String, dynamic>> _frequent(Foods foods) {
     final counts = <String, int>{};
@@ -220,24 +307,34 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
 
   List<Map<String, dynamic>> _search(Foods foods) {
     final messages = AppMessages.of(context);
-    return {
-      for (final food in [
-        ...foods.search(_query).where((f) => !isProteinPowder(f['name'])),
-        ...messages.foodSearch([
-          _powder,
-          ...foods.items.where((f) => !isProteinPowder(f['name'])),
-        ], _query),
-      ])
-        food['name']: food,
-    }.values.toList();
+    final q = _query.trim().toLowerCase();
+    final found = <String, Map<String, dynamic>>{};
+    // 我的食物排在最前，同名的内置食物不再重复列出。
+    for (final row in context.app.myFoods.foods) {
+      if ('${row['name']}'.toLowerCase().contains(q)) {
+        found.putIfAbsent('${row['name']}', () => _mineFood(row));
+      }
+    }
+    for (final food in [
+      ...foods
+          .search(_query, usFirst: _en, localName: messages.text, limit: 40)
+          .where((f) => !isProteinPowder(f['name'])),
+      ...messages.foodSearch([_powder], _query),
+    ]) {
+      found.putIfAbsent('${food['name']}', () => food);
+    }
+    return found.values.toList();
   }
 
-  Widget _food(Map<String, dynamic> food) {
+  /// 一行食物：名称 + 一句份量，右边是热量和蛋白，最右一个操作。
+  Widget _row({
+    required String title,
+    required String subtitle,
+    required Map<String, dynamic> serving,
+    required Widget action,
+    bool localize = true,
+  }) {
     final p = context.pal;
-    final serving = entryFor(food, units: 1);
-    final portion = food['recent'] == true
-        ? '1 份（上次份量）'
-        : '1 ${food['unit']}（${fmt(food['gramsPerUnit'])} g）';
     return Container(
       constraints: const BoxConstraints(minHeight: 64),
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -251,7 +348,10 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 LText(
-                  '${food['name']}',
+                  title,
+                  localize: localize,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -260,7 +360,9 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                 ),
                 const SizedBox(height: 4),
                 LText(
-                  portion,
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 13, color: p.secondary),
                 ),
               ],
@@ -309,12 +411,152 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
             ],
           ),
           const SizedBox(width: 10),
-          Semantics(
-            label: AppMessages.of(context).text('选择 ${food['name']}'),
-            button: true,
-            child: FoodButton('＋', () => _portion(food)),
-          ),
+          action,
         ],
+      ),
+    );
+  }
+
+  Widget _food(Map<String, dynamic> food, {String? editId}) {
+    final serving = entryFor(food, units: 1);
+    final mine = food['mine'] == true;
+    final portion = mine
+        ? '1 份'
+        : food['recent'] == true
+        ? '1 份（上次份量）'
+        : '1 ${food['unit']}（${fmt(food['gramsPerUnit'])} g）';
+    return _row(
+      title: '${food['name']}',
+      localize: !mine,
+      subtitle: portion,
+      serving: serving,
+      action: editId != null
+          ? Semantics(
+              label: AppMessages.of(context).text('编辑 ${food['name']}'),
+              button: true,
+              child: _roundIcon('edit', () => _editMineRow(_mineRow(editId))),
+            )
+          : Semantics(
+              label: AppMessages.of(context).text('选择 ${food['name']}'),
+              button: true,
+              child: FoodButton('＋', () => _portion(food)),
+            ),
+    );
+  }
+
+  Map<String, dynamic> _mineRow(String id) => [
+    ...context.app.myFoods.foods,
+    ...context.app.myFoods.meals,
+  ].firstWhere((r) => r['id'] == id);
+
+  Widget _roundIcon(String icon, VoidCallback onTap) => Pressable(
+    onTap: onTap,
+    child: Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: context.pal.fill2,
+        shape: BoxShape.circle,
+      ),
+      child: Center(child: AppIcon(icon, size: 18, color: context.pal.text)),
+    ),
+  );
+
+  /// 常吃整餐 / 昨天同一餐：一行，点右边的按钮一下记完。
+  Widget _mealRow({
+    required String title,
+    required List items,
+    required String subtitle,
+    bool localize = true,
+    String? editId,
+  }) {
+    final total = records.sumItems(items);
+    final label = _items.isEmpty ? '记下' : '加入';
+    return _row(
+      title: title,
+      localize: localize,
+      subtitle: subtitle,
+      serving: total,
+      action: editId != null
+          ? Semantics(
+              label: AppMessages.of(context).text('编辑 $title'),
+              button: true,
+              child: _roundIcon('edit', () => _editMineRow(_mineRow(editId))),
+            )
+          : FoodButton(label, _saving ? null : () => _logMeal(items)),
+    );
+  }
+
+  String _names(List items) {
+    final messages = AppMessages.of(context);
+    return jsonRows(items)
+        .map((i) => messages.text('${i['name']}'))
+        .join(_en ? ', ' : '、');
+  }
+
+  /// 顶部一行：和昨天的这一餐一样。
+  Widget _yesterdayRow() {
+    final m = _yesterday();
+    if (m == null || _items.isNotEmpty) return const SizedBox.shrink();
+    return _mealRow(
+      title: '和昨天的$_meal一样',
+      items: m['items'] as List,
+      subtitle: _names(m['items'] as List),
+    );
+  }
+
+  /// “我的食物”：整餐在前，平时只留最近 5 条，编辑时全部列出。
+  List<Widget> _mine() {
+    final mine = context.app.myFoods;
+    if (mine.isEmpty) return const [];
+    final rows = [
+      for (final m in mine.meals) (m, true),
+      for (final f in mine.foods) (f, false),
+    ];
+    final shown = _editMine ? rows : rows.take(5).toList();
+    return [
+      _heading(
+        '我的食物',
+        trailing: FoodChip(
+          _editMine ? '完成' : '编辑',
+          () => setState(() => _editMine = !_editMine),
+          selected: _editMine,
+        ),
+      ),
+      for (final (row, isMeal) in shown)
+        isMeal
+            ? _mealRow(
+                title: '${row['name']}',
+                localize: false,
+                items: row['items'] as List,
+                subtitle: '${(row['items'] as List).length} 种食物',
+                editId: _editMine ? '${row['id']}' : null,
+              )
+            : _food(_mineFood(row), editId: _editMine ? '${row['id']}' : null),
+    ];
+  }
+
+  /// 搜索框下面的分类：英文界面是美式分类，中文界面保持原有分类。
+  Widget _categories(Foods foods) {
+    final cats = foods.categories(us: _en);
+    return SizedBox(
+      height: 60,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const ClampingScrollPhysics(),
+        child: Row(
+          children: [
+            for (final c in cats)
+              Padding(
+                padding: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
+                child: FoodChip(
+                  c,
+                  () => setState(() => _category = _category == c ? '' : c),
+                  selected: _category == c,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -441,14 +683,24 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          LText(
-                            '已选 ${_items.length}',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.pal.secondary,
-                            ),
+                          Row(
+                            children: [
+                              LText(
+                                '已选 ${_items.length}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: context.pal.secondary,
+                                ),
+                              ),
+                              if (_items.length >= 2)
+                                FoodButton(
+                                  '存为常吃整餐',
+                                  _saving ? null : _saveCartAsMeal,
+                                  link: true,
+                                ),
+                            ],
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 2),
                           NutritionSummary(
                             kcal: total('kcal'),
                             protein: total('protein'),
@@ -523,52 +775,63 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                       ),
                       if (foods == null)
                         _heading('食物库加载中…')
-                      else if (_query.trim().isNotEmpty) ...[
-                        _heading('搜索结果'),
-                        if (_search(foods).isEmpty)
-                          LText(
-                            '没有找到，试试手动输入',
-                            style: TextStyle(color: context.pal.secondary),
-                          ),
-                        for (final food in _search(foods)) _food(food),
-                      ] else ...[
-                        _heading('常吃'),
-                        if (frequent.isEmpty && !_hasPowder)
-                          LText(
-                            '最近 14 天还没有记录常吃的食物',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: context.pal.secondary,
+                      else ...[
+                        _categories(foods),
+                        if (_query.trim().isNotEmpty) ...[
+                          _heading('搜索结果'),
+                          if (_search(foods).isEmpty)
+                            LText(
+                              '没有找到，试试手动输入',
+                              style: TextStyle(color: context.pal.secondary),
+                            ),
+                          for (final food in _search(foods)) _food(food),
+                        ] else if (_category.isNotEmpty) ...[
+                          _heading(_category),
+                          for (final food in foods.inCategory(_category))
+                            _food(food),
+                        ] else ...[
+                          _yesterdayRow(),
+                          ..._mine(),
+                          _heading('常吃'),
+                          if (frequent.isEmpty && !_hasPowder)
+                            LText(
+                              '最近 14 天还没有记录常吃的食物',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: context.pal.secondary,
+                              ),
+                            ),
+                          if (_hasPowder) _food(_powder),
+                          // 蛋白粉已单独列在最前；常吃只留最常记的 4 项，
+                          // 把屏幕留给下面的“常见一餐”。
+                          for (final food
+                              in frequent
+                                  .where(
+                                    (f) =>
+                                        !_hasPowder ||
+                                        !isProteinPowder(f['name']),
+                                  )
+                                  .take(4))
+                            _food(food),
+                          _heading(
+                            '常见一餐',
+                            trailing: FoodChip(
+                              '全部',
+                              () => setState(
+                                () => _mealFilter = _mealFilter == '全部'
+                                    ? ''
+                                    : '全部',
+                              ),
+                              selected: _mealFilter == '全部',
                             ),
                           ),
-                        if (_hasPowder) _food(_powder),
-                        // 蛋白粉已单独列在最前；常吃只留最常记的 4 项，
-                        // 把屏幕留给下面的“常见一餐”。
-                        for (final food
-                            in frequent
-                                .where(
-                                  (f) =>
-                                      !_hasPowder ||
-                                      !isProteinPowder(f['name']),
-                                )
-                                .take(4))
-                          _food(food),
-                        _heading(
-                          '常见一餐',
-                          trailing: FoodChip(
-                            '全部',
-                            () => setState(
-                              () =>
-                                  _mealFilter = _mealFilter == '全部' ? '' : '全部',
-                            ),
-                            selected: _mealFilter == '全部',
-                          ),
-                        ),
-                        for (final food in foods.typicalMeals(
-                          _shownMeal == '全部' ? _meal : _shownMeal,
-                          onlyThisMeal: _shownMeal != '全部',
-                        ))
-                          _food(food),
+                          for (final food in foods.typicalMeals(
+                            _shownMeal == '全部' ? _meal : _shownMeal,
+                            onlyThisMeal: _shownMeal != '全部',
+                            us: _en,
+                          ))
+                            _food(food),
+                        ],
                       ],
                     ] else if (_tab == '手动输入') ...[
                       FoodField('名称', _name, (v) => setState(() => _name = v)),
@@ -630,7 +893,26 @@ class _QuickFoodSheetState extends State<QuickFoodSheet> {
                               )
                             : const SizedBox.shrink(),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: LText(
+                              '保存到我的食物',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: context.pal.text,
+                              ),
+                            ),
+                          ),
+                          FormSwitch(
+                            label: '保存到我的食物',
+                            value: _saveMine,
+                            onChanged: (v) => setState(() => _saveMine = v),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
                       FoodButton('加入', _manual),
                     ],
                   ],

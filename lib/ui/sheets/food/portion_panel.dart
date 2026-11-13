@@ -23,7 +23,10 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
   late bool _grams = widget.food['unit'] == '100g';
   late String _quantity = _grams ? '100' : '1';
   num get _perUnit => widget.food['gramsPerUnit'] as num;
-  bool get _recent => widget.food['recent'] == true;
+  bool get _mine => widget.food['mine'] == true;
+
+  /// 上次份量和“我的食物”都只按份数加减，营养就是一份的量。
+  bool get _recent => widget.food['recent'] == true || _mine;
 
   /// 克数模式一次加减 10 g，份数模式一次加减半份。
   num get _step => _grams ? 10 : .5;
@@ -64,7 +67,7 @@ class _FoodPortionPanelState extends State<FoodPortionPanel> {
         units: _grams ? null : n,
       );
       if (_recent) {
-        entry['portion'] = '约${fmt(n)}份（上次份量）';
+        entry['portion'] = _mine ? '约${fmt(n)}份' : '约${fmt(n)}份（上次份量）';
       }
       return entry;
     } on ArgumentError {

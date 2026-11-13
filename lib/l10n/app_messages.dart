@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show SynchronousFuture;
+import 'package:flutter/foundation.dart'
+    show SynchronousFuture, visibleForTesting;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
@@ -33,6 +34,24 @@ class AppMessages {
       ) as Map;
       final catalog = Map<String, String>.from(raw);
       _catalogs[code] = catalog;
+      _templates[code] = [
+        for (final e in catalog.entries)
+          if (e.key.contains(RegExp(r'\{p\d+\}'))) _Template(e.key, e.value),
+      ]..sort((a, b) => b.specificity.compareTo(a.specificity));
+    }
+  }
+
+  /// Test hook: merge not-yet-imported translations (the `pending/*.json`
+  /// shape: `{"中文":{"en":..,"zh_Hant":..}}`) so tests see the final catalog.
+  @visibleForTesting
+  static Future<void> debugMerge(Map<String, dynamic> pending) async {
+    await initialize();
+    for (final code in ['en', 'zh_Hant']) {
+      final catalog = _catalogs[code]!;
+      for (final e in pending.entries) {
+        final text = (e.value as Map)[code];
+        if (text is String) catalog[e.key] = text;
+      }
       _templates[code] = [
         for (final e in catalog.entries)
           if (e.key.contains(RegExp(r'\{p\d+\}'))) _Template(e.key, e.value),
