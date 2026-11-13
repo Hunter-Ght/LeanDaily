@@ -150,37 +150,20 @@ Map<String, dynamic> defaultRecipe(
   'stage': targets['stage'],
 });
 
-/// 依次试几组贪心参数，取硬指标缺口最小的那份；缺口为 0 就不再试。
-_Generator _generate(Map<String, dynamic> r) {
-  _Generator? best;
-  var bestGap = double.infinity;
-  for (final v in _variants) {
-    final gen = _Generator(r, v)..run();
-    final gap = gen.shortfall();
-    if (gap < bestGap) {
-      best = gen;
-      bestGap = gap;
-    }
-    if (gap == 0) break;
-  }
-  return best!;
-}
-
 /// 按配方生成完整方案。返回值已经过 normalizePlan，并带 `recipe` 字段。
 ///
-/// 生成规则（纯函数，同样的配方永远得到同样的方案）：
-/// 1. 按排法定出每个训练日的类型（全身、上肢、下肢、推、拉、腿）；
-/// 2. 每天由「动作位」组成（水平推、垂直推、水平拉、垂直拉、蹲、髋主导、
-///    侧平举、后束、核心、手臂……），按场地给每个动作位挑动作；
-/// 3. 用贪心法逐个添加动作位：先补每周最缺的部位，再补重点方向，直到这一天的
-///    估算时长用满所选时长，居家版和健身房版同时满足；
+/// 生成规则（纯函数，同样的配方永远得到同样的方案），骨架优先：
+/// 1. 按排法定出每个训练日（全身 A～D、上肢 A/B、下肢 A/B、推、拉、腿、补强日）；
+/// 2. 每种训练日是一张按优先级排好的「动作位」清单（带 * 的是主项），
+///    时长档决定取前几个：每加一个动作都要在居家版和健身房版里放得下；
+/// 3. 重点只能在骨架里微调：重点部位的位提前、该位多 1 组、时间有富余时在最后加 1 个；
 /// 4. 不方便的部位直接把对应动作从候选里去掉，把说明写进 `recipeNotes`。
 Map<String, dynamic> buildRecipePlan(
   Map<String, dynamic> recipe, {
   String startDate = '',
 }) {
   final r = normalizeRecipe(recipe);
-  final gen = _generate(r);
+  final gen = _Generator(r)..run();
   final plan = plans.defaultPlan(startDate);
   final workouts = <String, dynamic>{};
   final usedLadders = <String>{};
@@ -254,178 +237,200 @@ Map<String, dynamic> buildRecipePlan(
 }
 
 // ---------------------------------------------------------------------------
-// 动作位和候选动作
+// 骨架：每种训练日是一张按优先级排好的动作位清单
 // ---------------------------------------------------------------------------
+//
+// 动作位：hpush 水平推、ipush 上斜推、hpush2 第二个推、fly 夹胸、vpush 垂直推（肩推）、
+// hpull 水平拉、hpull2 第二个水平拉、vpull 垂直拉、squat 蹲、lunge 分腿蹲、
+// quad_iso 腿屈伸、hinge 髋主导、glute 臀、ham 腘绳、lateral 侧平举、rear 后束、
+// bi 二头、tri 三头、core 腹、core2 第二个腹（只有腹部重点才用）、calf 小腿。
+// 写法：`a|b` 是备选（前一个没有就用后一个）；末尾 `*` 是主项。
 
-/// 主项（核心动作）的动作位；其余是辅助动作。
-const _mainSlots = {'hpush', 'vpush', 'hpull', 'vpull', 'squat', 'hinge'};
-
-/// 一天里动作的排列顺序：先主项，后辅助，核心放最后。
-const _slotOrder = [
-  'hpush',
-  'vpush',
-  'hpull',
-  'vpull',
-  'squat',
-  'hinge',
-  'hpush2',
-  'squat2',
-  'fly',
-  'glute',
-  'ham',
-  'quad_iso',
-  'lateral',
-  'rear',
-  'arms_bi',
-  'arms_tri',
-  'core',
-  'core2',
-  'calf',
-];
-
-/// 动作位属于哪一块：同一天同一块排太多会被降权，让一天里推、拉、腿都有。
-const _slotRegion = {
-  'hpush': 'push',
-  'vpush': 'push',
-  'fly': 'push',
-  'hpush2': 'push',
-  'squat2': 'lower',
-  'arms_tri': 'push',
-  'hpull': 'pull',
-  'vpull': 'pull',
-  'rear': 'pull',
-  'arms_bi': 'pull',
-  'squat': 'lower',
-  'hinge': 'lower',
-  'glute': 'lower',
-  'ham': 'lower',
-  'quad_iso': 'lower',
-  'calf': 'lower',
-  'lateral': 'delt',
-  'core': 'core',
-  'core2': 'core',
-};
-
-/// 各类训练日允许放的动作位。
-const _daySlots = <String, List<String>>{
-  'full': _slotOrder,
-  'upper': [
-    'hpush',
-    'vpush',
-    'hpull',
+const _skeletons = <String, List<String>>{
+  'fullA': [
+    'hpush*',
+    'hpull*',
+    'squat|hinge*',
+    'lateral',
+    'core',
+    'rear',
+    'glute|hinge',
+    'bi|tri',
+  ],
+  'fullB': [
+    'hinge*',
+    'vpush|ipush|hpush*',
+    'vpull|hpull*',
+    'core',
+    'lateral',
+    'lunge',
+    'rear',
+    'tri|bi',
+  ],
+  'fullC': [
+    'squat|hinge*',
+    'hpush*',
+    'hpull*',
+    'lateral',
+    'rear',
+    'core',
+    'glute',
+    'bi|tri',
+  ],
+  'upperA': [
+    'hpush*',
+    'hpull*',
+    'vpush*',
     'vpull',
-    'hpush2',
-    'fly',
     'lateral',
     'rear',
-    'arms_bi',
-    'arms_tri',
-    'core',
+    'bi',
+    'tri',
   ],
-  'lower': [
-    'squat',
-    'hinge',
-    'squat2',
-    'glute',
-    'ham',
-    'quad_iso',
+  'upperB': [
+    'ipush*',
+    'vpull|hpull*',
+    'hpull*',
+    'lateral',
+    'rear',
+    'hpush2|fly',
+    'tri',
+    'bi',
+  ],
+  'lowerA': [
+    'squat*',
+    'hinge*',
+    'ham|glute',
+    'core',
     'calf',
-    'core',
-    'core2',
+    'lunge|quad_iso',
+    'glute',
   ],
-  'push': [
-    'hpush',
-    'vpush',
-    'hpush2',
-    'fly',
-    'lateral',
-    'rear',
-    'arms_tri',
+  'lowerB': [
+    'hinge*',
+    'squat*',
+    'glute',
     'core',
-    'core2',
+    'quad_iso|lunge',
+    'calf',
+    'ham',
   ],
-  'pull': ['hpull', 'vpull', 'rear', 'lateral', 'arms_bi', 'core', 'core2'],
+  'push': ['hpush*', 'vpush*', 'ipush|hpush2', 'lateral', 'tri', 'fly'],
+  'pull': ['vpull|hpull*', 'hpull*', 'rear', 'core', 'bi', 'hpull2'],
   'legs': [
-    'squat',
-    'hinge',
-    'squat2',
-    'glute',
-    'ham',
-    'quad_iso',
-    'calf',
-    'lateral',
-    'rear',
+    'squat*',
+    'hinge*',
+    'lunge|quad_iso',
     'core',
-    'core2',
+    'ham',
+    'glute',
+    'calf',
   ],
+  'boost': ['hpush*', 'vpull|hpull*', 'squat|hinge*'],
 };
 
-/// 各类训练日必须覆盖的区域（用主项覆盖）。
-const _dayRegions = <String, List<String>>{
-  'full': ['push', 'pull', 'lower'],
-  'upper': ['push', 'pull'],
-  'lower': ['lower'],
-  'push': ['push'],
-  'pull': ['pull'],
-  'legs': ['lower'],
+/// 重点方向：骨架里属于这些动作位的辅助动作提前、多 1 组，最后还可以再加 1 个。
+const _focusSlots = <String, List<String>>{
+  'balanced': ['lateral', 'rear', 'core'],
+  'shoulders_back': ['lateral', 'rear', 'vpull', 'hpull2'],
+  'chest_shoulders': ['lateral', 'hpush2', 'fly'],
+  'glutes_legs': ['glute', 'ham', 'lunge', 'quad_iso'],
+  'core': ['core'],
+  'posture': ['rear', 'hpull2', 'vpull', 'core'],
 };
+
+/// 动作位练的是哪个部位：重点部位的辅助动作才能多 1 组。
+const _slotGroup = {
+  'hpush2': 'chest',
+  'ipush': 'chest',
+  'fly': 'chest',
+  'lateral': 'shoulders',
+  'rear': 'shoulders',
+  'vpull': 'back',
+  'hpull2': 'back',
+  'glute': 'glutes',
+  'lunge': 'quads',
+  'quad_iso': 'quads',
+  'ham': 'hamstrings',
+  'core': 'abs',
+  'core2': 'abs',
+};
+
+/// 动作的近亲：同一天同一类最多放一个（腹部重点时腹最多两个）。
+String? _family(String name) {
+  const bridge = {'臀桥', '单腿臀桥'};
+  const core = {'卷腹', '反向卷腹', '卷腹机', '绳索卷腹', '死虫式', '平板支撑', '侧平板支撑', '俄罗斯转体'};
+  const lateral = {'轻重量侧平举', '轻哑铃侧平举', '拉力器单臂侧平举'};
+  const rear = {'俯身哑铃反向飞鸟', '绳索面拉', '反向蝴蝶机'};
+  if (bridge.contains(name)) return 'bridge';
+  if (core.contains(name)) return 'core';
+  if (lateral.contains(name)) return 'lateral';
+  if (rear.contains(name)) return 'rear';
+  return null;
+}
 
 const _coreList = ['反向卷腹', '死虫式', '卷腹', '平板支撑', '侧平板支撑', '俄罗斯转体'];
 
-/// 居家无器械。
+/// 居家无器械。没有的位（垂直推、垂直拉、二头……）整个跳过，或由骨架里的备选顶上。
 const _bwSlots = <String, List<String>>{
   'hpush': ['高位俯卧撑'],
+  'ipush': ['高位俯卧撑'],
   'hpull': ['反向划船'],
   'squat': ['深蹲', '分腿蹲'],
-  'squat2': ['分腿蹲', '深蹲'],
+  'lunge': ['分腿蹲'],
   'hinge': ['臀桥', '单腿臀桥'],
   'glute': ['单腿臀桥', '臀桥'],
-  'ham': ['单腿臀桥', '臀桥'],
   'lateral': ['轻重量侧平举'],
   'rear': ['俯身哑铃反向飞鸟'],
-  'arms_tri': ['椅子臂屈伸'],
+  'tri': ['椅子臂屈伸'],
   'core': _coreList,
+  'core2': _coreList,
   'calf': ['站姿提踵'],
 };
 
 /// 居家哑铃。
 const _dbSlots = <String, List<String>>{
   'hpush': ['哑铃地板卧推', '高位俯卧撑'],
+  'ipush': ['高位俯卧撑', '哑铃地板卧推'],
   'hpush2': ['高位俯卧撑', '哑铃地板卧推'],
   'vpush': ['哑铃肩推'],
   'hpull': ['单臂哑铃划船', '弯腰双臂哑铃划船', '反向划船'],
-  'squat': ['高脚杯深蹲', '分腿蹲', '深蹲'],
-  'squat2': ['分腿蹲', '深蹲', '高脚杯深蹲'],
+  'hpull2': ['弯腰双臂哑铃划船', '反向划船', '单臂哑铃划船'],
+  'squat': ['高脚杯深蹲', '分腿蹲'],
+  'lunge': ['分腿蹲'],
   'hinge': ['轻哑铃罗马尼亚硬拉'],
   'glute': ['臀桥', '单腿臀桥'],
-  'ham': ['轻哑铃罗马尼亚硬拉'],
   'lateral': ['轻重量侧平举'],
   'rear': ['俯身哑铃反向飞鸟'],
-  'arms_bi': ['哑铃弯举', '锤式弯举'],
-  'arms_tri': ['站姿哑铃臂屈伸', '哑铃臂后屈伸', '椅子臂屈伸'],
+  'bi': ['哑铃弯举', '锤式弯举'],
+  'tri': ['站姿哑铃臂屈伸', '哑铃臂后屈伸', '椅子臂屈伸'],
   'core': _coreList,
+  'core2': _coreList,
   'calf': ['站姿提踵'],
 };
 
 /// 健身房。
 const _gymSlots = <String, List<String>>{
-  'hpush': ['上斜哑铃卧推', '哑铃平板卧推', '上斜推胸机', '坐姿推胸机'],
-  'hpush2': ['坐姿推胸机', '上斜推胸机', '哑铃平板卧推', '上斜哑铃卧推'],
-  'vpush': ['坐姿肩推机', '轻哑铃坐姿肩推'],
+  'hpush': ['哑铃平板卧推', '坐姿推胸机'],
+  'ipush': ['上斜哑铃卧推', '上斜推胸机'],
+  'hpush2': ['坐姿推胸机', '哑铃平板卧推', '上斜推胸机'],
   'fly': ['蝴蝶机夹胸', '拉力器高位向下夹胸'],
+  'vpush': ['坐姿肩推机', '轻哑铃坐姿肩推'],
   'hpull': ['坐姿划船机', '单臂哑铃划船', '弯腰双臂哑铃划船'],
+  'hpull2': ['单臂哑铃划船', '弯腰双臂哑铃划船', '坐姿划船机'],
   'vpull': ['高位下拉', '辅助引体向上机', '直臂下拉'],
-  'squat': ['腿举机', '高脚杯深蹲', '深蹲', '分腿蹲'],
-  'squat2': ['分腿蹲', '高脚杯深蹲', '深蹲', '腿举机'],
+  'squat': ['腿举机', '高脚杯深蹲', '分腿蹲', '深蹲'],
+  'lunge': ['分腿蹲', '高脚杯深蹲'],
   'quad_iso': ['腿屈伸机'],
   'hinge': ['轻哑铃罗马尼亚硬拉'],
-  'ham': ['坐姿腿弯举'],
   'glute': ['臀桥', '单腿臀桥'],
+  'ham': ['坐姿腿弯举'],
   'lateral': ['轻哑铃侧平举', '拉力器单臂侧平举'],
   'rear': ['绳索面拉', '反向蝴蝶机', '俯身哑铃反向飞鸟'],
-  'arms_bi': ['哑铃弯举', '二头弯举机', '锤式弯举'],
-  'arms_tri': ['绳索下压', '站姿哑铃臂屈伸', '哑铃臂后屈伸'],
+  'bi': ['哑铃弯举', '二头弯举机', '锤式弯举'],
+  'tri': ['绳索下压', '站姿哑铃臂屈伸', '哑铃臂后屈伸'],
   'core': ['绳索卷腹', '卷腹机', '死虫式', '反向卷腹', '平板支撑', '卷腹'],
+  'core2': ['卷腹机', '死虫式', '反向卷腹', '平板支撑', '卷腹', '绳索卷腹'],
   'calf': ['坐姿提踵机', '站姿提踵'],
 };
 
@@ -443,26 +448,23 @@ const _bottleGear = {
   '俯身哑铃反向飞鸟': '装满水的水瓶，或装了书的小背包拎在手里（按 2 kg 记）',
 };
 
-/// 一天最多放几个主项（时间有限，主项每个要 3 组、休息 2 分钟）。
-const _maxMains = {20: 3, 35: 2, 50: 3};
-
 /// 一天最多放几个动作。
 const _maxExercises = {20: 4, 35: 6, 50: 8};
 
-/// 任何部位每周的组数上限。
+/// 任何部位每周的组数上限；腹和手臂（不是重点时）更低。
 const _weeklyCap = 16.0;
-
-/// 要求每周至少出现在两个不同训练日的部位。
-const _spreadGroups = ['shoulders', 'chest', 'back', 'abs', 'glutes', 'quads'];
+const _softCap = 10.0;
 
 const _fullNames = ['全身 A', '全身 B', '全身 C', '全身 D'];
 
 class _DayDef {
-  const _DayDef(this.name, this.short, this.tag, this.type, this.v);
+  const _DayDef(this.name, this.short, this.tag, this.skeleton, this.v);
   final String name;
   final String short;
   final String tag;
-  final String type;
+
+  /// 用哪张骨架（`_skeletons` 的键）。
+  final String skeleton;
 
   /// 变式序号：同一类型的 A/B/C 日用不同序号，挑出不同的动作。
   final int v;
@@ -474,55 +476,38 @@ class _Pick {
   final String? ladder;
 }
 
+class _Entry {
+  const _Entry(this.slots, this.main);
+  final List<String> slots;
+  final bool main;
+
+  factory _Entry.parse(String s) {
+    final main = s.endsWith('*');
+    return _Entry((main ? s.substring(0, s.length - 1) : s).split('|'), main);
+  }
+
+  bool inPool(Iterable<String> pool) => slots.any(pool.contains);
+}
+
 class _Item {
-  _Item(this.slot, this.sets, this.rest, this.picks);
-  final String slot;
+  _Item(this.main, this.sets, this.rest, this.picks, this.slots);
+
+  /// 骨架里是不是主项（带 *）。
+  final bool main;
   int sets;
   final int rest;
 
   /// 居家版和健身房版各挑什么动作；某个版本没有合适的动作就是 null。
   final List<_Pick?> picks;
-  bool get main => _mainSlots.contains(slot);
+
+  /// 居家版和健身房版各用了哪个动作位（备选可能不同）。
+  final List<String?> slots;
 }
 
 class _Day {
   _Day(this.def);
   final _DayDef def;
   final items = <_Item>[];
-  bool has(String slot) => items.any((i) => i.slot == slot);
-}
-
-class _Goal {
-  _Goal(
-    this.group,
-    this.key,
-    this.goal,
-    this.weight,
-    this.hard, [
-    this.bumpOk = false,
-  ]) : muscles = group ? _groupMuscles[key]! : [key];
-
-  /// true：按部位（取其下最高的一块肌肉）；false：按单块肌肉。
-  final bool group;
-  final String key;
-  final double goal;
-  final double weight;
-  final bool hard;
-
-  /// 加组（同一个动作多做一组）时是否算这个目标：硬指标和重点部位才加组。
-  final bool bumpOk;
-
-  /// 这个目标由哪几块肌肉决定（取最高的一块）。
-  final List<String> muscles;
-}
-
-class _Cand {
-  const _Cand(this.day, this.slot, this.item, this.bump, this.score);
-  final int day;
-  final String slot;
-  final _Item? item;
-  final bool bump;
-  final double score;
 }
 
 final _specCache = <String, Map<String, dynamic>>{};
@@ -537,52 +522,6 @@ Map<String, double> _muscles(String name) => _muscleCache.putIfAbsent(name, () {
   };
 });
 
-/// 动作主要练到哪些部位（肌肉参与度 ≥ 0.6）。
-final _presenceCache = <String, Set<String>>{};
-Set<String> _presence(String name) => _presenceCache.putIfAbsent(name, () {
-  final m = _muscles(name);
-  return {
-    for (final g in _spreadGroups)
-      if (_groupMuscles[g]!.any((x) => (m[x] ?? 0) >= 0.6)) g,
-  };
-});
-
-/// 贪心的几组参数。先用第一组；硬指标没达到就换下一组，取缺口最小的。
-class _Variant {
-  const _Variant(
-    this.bump,
-    this.mainBoost,
-    this.costExp,
-    this.spread,
-    this.region20,
-  );
-
-  /// 加组的折扣（加组不如加动作）。
-  final double bump;
-
-  /// 一天里还没有的区域（推、拉、腿），主项的加成。
-  final double mainBoost;
-
-  /// 按「增量 / 时间的几次方」排序：1 偏爱省时间的小动作，0 偏爱增量大的动作。
-  final double costExp;
-
-  /// 每周两天出现的加成倍数。
-  final double spread;
-
-  /// 每次 20 分钟时也按区域加成。
-  final bool region20;
-}
-
-const _variants = [
-  _Variant(0.5, 2.8, 1, 1, false),
-  _Variant(0.5, 2.8, 0.5, 1, false),
-  _Variant(1, 1, 1, 0.3, false),
-  _Variant(0.5, 2.8, 0, 1, false),
-  _Variant(1, 2.8, 0.5, 2, true),
-  _Variant(0.25, 1, 0, 0, false),
-  _Variant(0.5, 4, 0.7, 1.5, true),
-];
-
 final _warmups = (
   (plans.defaultPlan()['warmup']['minutes'] as num).toInt(),
   (plans.defaultPlan()['gymWarmup']['minutes'] as num).toInt(),
@@ -592,53 +531,37 @@ final _pushupSteps =
     (plans.defaultPlan()['ladders']['pushup']['steps'] as List).first as Map;
 
 class _Generator {
-  _Generator(this.r, this.v)
+  _Generator(this.r)
     : dayCount = r['days'] as int,
       minutes = r['minutes'] as int,
       focus = r['focus'] as String,
       split = r['split'] as String,
       venue = r['venue'] as String,
       exp = r['experience'] as String,
-      female = r['sex'] == 'female',
       stage = r['stage'] as String?,
       limits = {for (final l in r['limits'] as List) '$l'} {
-    high = dayCount >= 3 && minutes >= 35;
     cut = stage == 'cut';
     bwHome = venue == 'bodyweight';
-    _homeWarm = _warmups.$1;
-    _gymWarm = _warmups.$2;
     cands = [_buildCands(0), _buildCands(1)];
-    defs = _buildDefs();
-    days = [for (final d in defs) _Day(d)];
-    pres = [
-      [for (final _ in defs) <String>{}],
-      [for (final _ in defs) <String>{}],
-    ];
-    _buildGoals();
+    days = [for (final d in _buildDefs()) _Day(d)];
   }
 
   final Map<String, dynamic> r;
-  final _Variant v;
   final int dayCount;
   final int minutes;
   final String focus;
   final String split;
   final String venue;
   final String exp;
-  final bool female;
   final String? stage;
   final Set<String> limits;
-  late final bool high;
   late final bool cut;
   late final bool bwHome;
-  late final int _homeWarm;
-  late final int _gymWarm;
   late final List<Map<String, List<String>>> cands;
-  late final List<_DayDef> defs;
   late final List<_Day> days;
-  late final List<List<Set<String>>> pres;
+
+  /// 每周已经排了多少组（按肌肉折算），居家版、健身房版各一份。
   final vol = <Map<String, double>>[{}, {}];
-  final goals = <_Goal>[];
 
   // ---- 限制与候选 ----------------------------------------------------------
 
@@ -661,6 +584,9 @@ class _Generator {
         list.insert(1, '引体向上');
       }
       if (tier == 1 && e.key == 'hinge' && exp == 'trained') list.add('硬拉');
+      if (tier == 0 && e.key == 'ipush' && bwHome && exp == 'trained') {
+        list.add('脚抬高俯卧撑');
+      }
       var ok = [
         for (final n in list)
           if (allowed(n)) n,
@@ -673,17 +599,29 @@ class _Generator {
       }
       out[e.key] = ok;
     }
-    out['core2'] = out['core']!;
     return out;
   }
 
-  _Pick? _pick(String slot, int tier, int v, Set<String> used) {
+  /// 给动作位挑动作：按变式序号轮换起点，跳过当天已有的动作和近亲。
+  _Pick? _pick(
+    String slot,
+    int tier,
+    int v,
+    Set<String> used,
+    Map<String, int> families,
+  ) {
     final list = cands[tier][slot] ?? const <String>[];
     if (list.isEmpty) return null;
-    final start = (slot == 'core2' ? v + 3 : v) % list.length;
+    // 垂直拉不轮换：高位下拉最适合做主项，其他变式留给引体向上（老手）。
+    final start = slot == 'vpull' ? 0 : v % list.length;
     for (var i = 0; i < list.length; i++) {
       final n = list[(start + i) % list.length];
       if (used.contains(n)) continue;
+      final fam = _family(n);
+      if (fam != null) {
+        final most = fam == 'core' && focus == 'core' ? 2 : 1;
+        if ((families[fam] ?? 0) >= most) continue;
+      }
       // 只有居家版的自重动作带进阶阶梯（俯卧撑、深蹲、反向划船、臀桥、腹肌）。
       final ladder = tier == 1
           ? null
@@ -695,7 +633,7 @@ class _Generator {
     return null;
   }
 
-  // ---- 训练日骨架 ----------------------------------------------------------
+  // ---- 训练日 ---------------------------------------------------------------
 
   List<_DayDef> _buildDefs() {
     const full = '全身练';
@@ -708,136 +646,83 @@ class _Generator {
           const _DayDef('拉 · 背与后束', '拉', '背和肩后束为主', 'pull', 0),
           const _DayDef('腿 · 臀腿与核心', '腿', '臀腿和核心为主', 'legs', 0),
           if (dayCount >= 5) ...const [
-            _DayDef('上肢', '上', upper, 'upper', 1),
-            _DayDef('下肢', '下', lower, 'lower', 1),
+            _DayDef('上肢', '上', upper, 'upperB', 1),
+            _DayDef('下肢', '下', lower, 'lowerB', 1),
           ],
         ];
       case 'ul':
         return [
-          const _DayDef('上肢 A', '上', upper, 'upper', 0),
-          const _DayDef('下肢 A', '下', lower, 'lower', 0),
-          const _DayDef('上肢 B', '上', upper, 'upper', 1),
-          const _DayDef('下肢 B', '下', lower, 'lower', 1),
-          if (dayCount >= 5) const _DayDef('全身 · 补强', '全', '补强日', 'full', 2),
+          const _DayDef('上肢 A', '上', upper, 'upperA', 0),
+          const _DayDef('下肢 A', '下', lower, 'lowerA', 0),
+          const _DayDef('上肢 B', '上', upper, 'upperB', 1),
+          const _DayDef('下肢 B', '下', lower, 'lowerB', 1),
+          if (dayCount >= 5) const _DayDef('全身 · 补强', '全', '补强日', 'boost', 2),
         ];
       default:
+        const skeletons = ['fullA', 'fullB', 'fullC', 'fullB'];
         return [
           for (var i = 0; i < dayCount; i++)
-            _DayDef(_fullNames[i], '全', full, 'full', i),
+            _DayDef(_fullNames[i], '全', full, skeletons[i], i),
         ];
     }
   }
 
-  // ---- 目标 ---------------------------------------------------------------
-
-  late final Map<String, int> hardGoals = _hardGoals();
-
-  Map<String, int> _hardGoals() {
-    final focusSet = focusGroups[focus]!;
-    final out = <String, int>{};
-    for (final g in recipeGroups) {
-      out[g] = focusSet.contains(g)
-          ? (high ? 8 : 5)
-          : (g == 'arms' || g == 'hamstrings')
-          ? (high ? 3 : 2)
-          : (high ? 4 : 3);
+  /// 这一天的动作位清单：骨架 + 重点的微调（重点部位的辅助位提前）。
+  List<_Entry> _entries(_DayDef def) {
+    var list = [for (final s in _skeletons[def.skeleton]!) _Entry.parse(s)];
+    if (def.skeleton == 'boost') {
+      // 补强日：三个主项之后，按重点再加 2～3 个辅助。
+      list = [
+        ...list,
+        for (final s in _focusSlots[focus]!.take(3)) _Entry.parse(s),
+      ];
     }
-    if (limits.contains('膝')) out['quads'] = 0;
-    if (limits.contains('腕') && venue == 'bodyweight') out['chest'] = 0;
-    return out;
+    final pool = _focusSlots[focus]!;
+    if (focus != 'balanced') {
+      final mains = [
+        for (final e in list)
+          if (e.main) e,
+      ];
+      final rest = [
+        for (final e in list)
+          if (!e.main) e,
+      ];
+      // 腹不被重点挤掉：它在辅助动作里的位置不变，重点动作补到其他位置的前面。
+      final found = rest.indexWhere((e) => e.slots.contains('core'));
+      final coreAt = focus == 'core' ? 0 : found; // 腹部重点：腹提到第一个辅助
+      final core = found >= 0 ? rest[found] : null;
+      final movable = [
+        for (final e in rest)
+          if (e != core) e,
+      ];
+      final ordered = [
+        ...movable.where((e) => e.inPool(pool)),
+        ...movable.where((e) => !e.inPool(pool)),
+      ];
+      if (core != null) ordered.insert(math.min(coreAt, ordered.length), core);
+      list = [...mains, ...ordered];
+    }
+    if (focus == 'core') {
+      // 腹部重点：腹一天最多两个，第二个紧跟在第一个后面。
+      final i = list.indexWhere((e) => e.slots.contains('core'));
+      if (i >= 0) list.insert(i + 1, _Entry.parse('core2'));
+    }
+    return list;
   }
 
-  void _buildGoals() {
-    final focusSet = focusGroups[focus]!;
-    hardGoals.forEach((g, n) {
-      if (n > 0) goals.add(_Goal(true, g, n.toDouble(), 4, true, true));
-    });
-    double softLevel(String g) {
-      if (focusSet.contains(g)) return high ? 10 : 6;
-      var base = (g == 'arms' || g == 'hamstrings')
-          ? (high ? 4.0 : 3.0)
-          : (high ? 6.0 : 4.0);
-      if (focus == 'balanced' &&
-          const ['shoulders', 'back', 'abs'].contains(g)) {
-        base = high ? 8 : 5;
-      }
-      if (focus == 'posture' && g == 'abs') base = high ? 6 : 4;
-      if (female && g == 'glutes') base = high ? 8 : 5;
-      return base;
-    }
-
-    for (final g in recipeGroups) {
-      goals.add(
-        _Goal(
-          true,
-          g,
-          softLevel(g),
-          focusSet.contains(g) ? 1.5 : 1,
-          false,
-          focusSet.contains(g),
-        ),
-      );
-      goals.add(_Goal(true, g, high ? 8 : 6, 0.3, false));
-    }
-    // 背：后束飞鸟也会算进「背」，所以另外要求背阔肌有真正的拉类动作。
-    goals.add(
-      _Goal(
-        false,
-        'lats',
-        focus == 'posture' || focus == 'shoulders_back' ? 4 : 3,
-        3,
-        true,
-      ),
-    );
-    final shoulderLove = focus == 'balanced' || focusSet.contains('shoulders');
-    goals.add(
-      _Goal(
-        false,
-        'delt_side',
-        shoulderLove && high
-            ? 6
-            : high
-            ? 4
-            : 3,
-        1.2,
-        false,
-      ),
-    );
-    goals.add(
-      _Goal(
-        false,
-        'delt_rear',
-        focus == 'posture' || focus == 'shoulders_back'
-            ? (high ? 6 : 4)
-            : (high ? 4 : 3),
-        1.2,
-        false,
-      ),
-    );
-    if (focus == 'posture') {
-      goals.add(_Goal(false, 'mid_back', high ? 6 : 4, 1.2, false));
-      goals.add(_Goal(false, 'lats', high ? 4 : 3, 1.2, false));
-    }
-    if (high && (focus == 'balanced' || focus == 'chest_shoulders')) {
-      goals.add(_Goal(false, 'chest_up', 3, 0.8, false));
-    }
-    if (high && minutes >= 50) {
-      goals.add(_Goal(false, 'calves', 3, 0.25, false));
-    }
+  bool _isFocusEntry(_Entry e) {
+    final groups = focusGroups[focus]!;
+    return e.slots.any((s) => groups.contains(_slotGroup[s]));
   }
 
-  // ---- 贪心 ---------------------------------------------------------------
+  int _sets(_Entry e) {
+    if (e.main) return 3;
+    final base = cut || exp == 'new' ? 2 : 3;
+    // 重点部位的辅助动作多 1 组（减脂路线辅助一律 2 组）。
+    return !cut && _isFocusEntry(e) ? base + 1 : base;
+  }
 
-  int _sets(String slot) =>
-      _mainSlots.contains(slot) ? 3 : (cut || exp == 'new' ? 2 : 3);
-  int _rest(String slot) =>
-      _mainSlots.contains(slot) ? (minutes == 20 ? 90 : 120) : 60;
-  int get _maxSets => cut ? 2 : (exp == 'new' ? 3 : 4);
-
-  Set<String> _used(int d, int tier) => {
-    for (final i in days[d].items)
-      if (i.picks[tier] != null) i.picks[tier]!.name,
-  };
+  int _rest(_Entry e) => e.main ? (minutes == 20 ? 60 : 120) : 60;
 
   /// 一天在某个版本（0 居家、1 健身房）里的估算时长，口径同 plans.estimateMinutes：
   /// 含热身，每组按「休息 + 50 秒」算，取整到 5 分钟。
@@ -849,319 +734,200 @@ class _Generator {
     if (extra != null && extra.picks[tier] != null) {
       sec += extra.sets * (extra.rest + 50);
     }
-    return (((tier == 0 ? _homeWarm : _gymWarm) + sec / 60) / 5 + 0.5).floor() *
-        5;
+    final warm = tier == 0 ? _warmups.$1 : _warmups.$2;
+    return ((warm + sec / 60) / 5 + 0.5).floor() * 5;
   }
 
-  Map<String, double> _delta(_Pick pick, int sets) => {
-    for (final e in _muscles(pick.name).entries) e.key: e.value * sets,
-  };
-
-  /// 居家版和健身房版各自加上 [deltas]（null 表示这个版本没有这个动作）之后，
-  /// 达成目标的增量；两个版本都要达标，所以每个目标取两个版本里较差的那个。
-  /// 任何部位超过每周上限就返回 null。
-  double? _gain(
-    List<Map<String, double>?> deltas,
-    bool hardOnly, [
-    bool bump = false,
-    bool soft = false,
-  ]) {
-    for (final t in [0, 1]) {
-      final delta = deltas[t];
-      if (delta == null) continue;
-      final v = vol[t];
-      for (final g in recipeGroups) {
-        var touched = false;
-        var best = 0.0;
-        for (final m in _groupMuscles[g]!) {
-          final d = delta[m];
-          if (d != null) touched = true;
-          best = math.max(best, (v[m] ?? 0) + (d ?? 0));
-        }
-        // 补细节的阶段不把一个部位推过参考范围的上限；硬指标和兜底最多到 16 组。
-        final top = soft
-            ? _reference(g, focusGroups[focus]!.contains(g), high).$2
-            : _weeklyCap;
-        if (touched && best > top) return null;
-      }
-    }
-    var s = 0.0;
-    for (final g in goals) {
-      if (hardOnly && !g.hard) continue;
-      if (bump && !g.bumpOk) continue;
-      var before = double.infinity;
-      var after = double.infinity;
-      var touched = false;
-      for (final t in [0, 1]) {
-        final delta = deltas[t];
-        final v = vol[t];
-        var now = 0.0;
-        var next = 0.0;
-        for (final m in g.muscles) {
-          final d = delta?[m];
-          if (d != null) touched = true;
-          final x = v[m] ?? 0;
-          now = math.max(now, x);
-          next = math.max(next, x + (d ?? 0));
-        }
-        before = math.min(before, math.min(now, g.goal));
-        after = math.min(after, math.min(next, g.goal));
-      }
-      if (touched) s += g.weight * (after - before);
-    }
-    return s;
-  }
-
-  int _daysWith(int tier, String group) =>
-      pres[tier].where((s) => s.contains(group)).length;
-
-  int _regionCount(int d, String region) =>
-      days[d].items.where((i) => _slotRegion[i.slot] == region).length;
-
-  bool _regionCovered(int d, String region) =>
-      days[d].items.any((i) => i.main && _slotRegion[i.slot] == region);
-
-  /// 每周两个训练日都出现：ppl 三天本来就不要求。
-  bool _spreadWanted(String g) =>
-      !(split == 'ppl' && dayCount == 3) && hardGoals[g]! > 0;
-
-  /// 兜底补时间时优先补本周组数少的部位：动作练到的肌肉本周已经有多少组。
-  double _crowding(List<_Pick?> picks) {
-    var total = 0.0;
-    for (final t in [0, 1]) {
-      final pick = picks[t];
-      if (pick == null) continue;
-      for (final m in _muscles(pick.name).keys) {
-        total += (vol[t][m] ?? 0) * 0.02;
-      }
-    }
-    return total;
-  }
-
-  /// 这一天所有版本都放得下 [items]（不超过 [cap]）吗？
-  bool _fits(List<_Item> items, int cap, [_Item? extra]) =>
-      _estTier(items, 0, extra) <= cap && _estTier(items, 1, extra) <= cap;
-
-  _Cand? _evalAdd(
-    int d,
-    String slot,
-    int cap,
-    bool hardOnly, [
-    bool fill = false,
-  ]) {
-    final day = days[d];
-    if (day.has(slot)) return null;
-    final picks = [
-      for (final t in [0, 1]) _pick(slot, t, day.def.v, _used(d, t)),
-    ];
-    if (picks[0] == null && picks[1] == null) return null;
-    final isMain = _mainSlots.contains(slot);
-    for (final t in [0, 1]) {
-      if (picks[t] == null) continue;
-      var count = 0, mains = 0;
-      for (final i in day.items) {
-        if (i.picks[t] == null) continue;
-        count++;
-        if (i.main) mains++;
-      }
-      if (count >= (_maxExercises[minutes] ?? 6)) return null;
-      if (isMain && mains >= (_maxMains[minutes] ?? 2)) return null;
-    }
-    final item = _Item(slot, _sets(slot), _rest(slot), picks);
-    if (!_fits(day.items, cap, item)) return null;
-    final gain = _gain(
-      [
-        for (final t in [0, 1])
-          picks[t] == null ? null : _delta(picks[t]!, item.sets),
-      ],
-      hardOnly,
-      false,
-      !hardOnly && !fill,
-    );
-    if (gain == null) return null;
-    var spread = 0.0;
-    for (final t in [0, 1]) {
-      final pick = picks[t];
-      if (pick == null) continue;
-      for (final g in _presence(pick.name)) {
-        if (!pres[t][d].contains(g) &&
-            _daysWith(t, g) < 2 &&
-            _spreadWanted(g)) {
-          spread += (minutes == 20 ? 1.5 : 5) * v.spread;
-        }
-      }
-    }
-    var score = gain + spread;
-    final region = _slotRegion[slot]!;
-    score /= 1 + 0.6 * _regionCount(d, region);
-    // 每次 20 分钟只有 3 个动作，推、拉、腿不强求每天都有，按每周缺什么补什么。
-    if ((minutes > 20 || v.region20) &&
-        (_dayRegions[day.def.type] ?? const []).contains(region) &&
-        !_regionCovered(d, region)) {
-      score *= item.main ? v.mainBoost : 1;
-    }
-    if (focus == 'posture' && slot == 'vpush') score *= 0.3;
-    final cost = item.sets * (item.rest + 50) / 60;
-    if (fill) score -= _crowding(picks);
-    return _Cand(d, slot, item, false, score / math.pow(cost, v.costExp));
-  }
-
-  _Cand? _evalBump(
-    int d,
-    _Item item,
-    int cap,
-    bool hardOnly, [
-    bool fill = false,
-  ]) {
-    if (item.main) return null;
-    if (item.sets >= (fill && !cut ? 4 : _maxSets)) return null;
-    final day = days[d];
-    item.sets += 1;
-    final fits = _fits(day.items, cap);
-    item.sets -= 1;
-    if (!fits) return null;
-    final gain = _gain(
-      [
-        for (final t in [0, 1])
-          item.picks[t] == null ? null : _delta(item.picks[t]!, 1),
-      ],
-      hardOnly,
-      !fill,
-    );
-    if (gain == null) return null;
-    // 加组不如加动作：多一个动作覆盖面更广。
-    final score = v.bump * gain - (fill ? _crowding(item.picks) : 0);
-    return _Cand(
-      d,
-      item.slot,
-      item,
-      true,
-      score / math.pow((item.rest + 50) / 60, v.costExp),
-    );
-  }
-
-  void _apply(_Cand c) {
-    final item = c.item!;
-    for (final t in [0, 1]) {
-      final pick = item.picks[t];
-      if (pick == null) continue;
-      _delta(
-        pick,
-        c.bump ? 1 : item.sets,
-      ).forEach((k, x) => vol[t][k] = (vol[t][k] ?? 0) + x);
-      if (!c.bump) pres[t][c.day].addAll(_presence(pick.name));
-    }
-    if (c.bump) {
-      item.sets += 1;
-    } else {
-      days[c.day].items.add(item);
-    }
-  }
-
-  _Cand? _best(int cap, bool hardOnly) {
-    _Cand? best;
-    for (var d = 0; d < days.length; d++) {
-      for (final slot in _slotOrder) {
-        if (!_daySlots[days[d].def.type]!.contains(slot)) continue;
-        final c = _evalAdd(d, slot, cap, hardOnly);
-        if (c != null && (best == null || c.score > best.score)) best = c;
-      }
-      for (final item in days[d].items) {
-        final c = _evalBump(d, item, cap, hardOnly);
-        if (c != null && (best == null || c.score > best.score)) best = c;
-      }
+  double _group(Map<String, double> v, String g) {
+    var best = 0.0;
+    for (final m in _groupMuscles[g]!) {
+      best = math.max(best, v[m] ?? 0);
     }
     return best;
   }
 
-  void run() {
-    // 先补硬指标（每个部位的最低组数、每周出现的天数），按所选时长排；
-    // 还缺的话最多放宽 5 分钟；然后在所选时长内补重点和细节。
-    for (final (cap, hardOnly) in [
-      (minutes, true),
-      (minutes + 5, true),
-      (minutes == 20 ? 25 : minutes, false),
-    ]) {
-      while (true) {
-        final best = _best(cap, hardOnly);
-        if (best == null || best.score <= 1e-9) break;
-        _apply(best);
-      }
-    }
-    // 兜底：某个版本的估算时长太短就继续补动作，补不动再给辅助动作加组。
-    final floor = minutes == 20 ? 15 : minutes - 10;
-    for (var d = 0; d < days.length; d++) {
-      while (true) {
-        final short = [
-          for (final t in [0, 1])
-            if (_estTier(days[d].items, t) < floor) t,
-        ];
-        if (short.isEmpty) break;
-        _Cand? best;
-        bool helps(_Item i) => short.any((t) => i.picks[t] != null);
-        for (final slot in _slotOrder) {
-          if (!_daySlots[days[d].def.type]!.contains(slot)) continue;
-          final c = _evalAdd(d, slot, minutes + 5, false, true);
-          if (c != null &&
-              helps(c.item!) &&
-              (best == null || c.score > best.score)) {
-            best = c;
-          }
-        }
-        if (best == null) {
-          for (final item in days[d].items.where(helps)) {
-            final c = _evalBump(d, item, minutes + 5, false, true);
-            if (c != null && (best == null || c.score > best.score)) best = c;
-          }
-        }
-        if (best == null) {
-          // 限制多的时候这一类训练日的动作位不够，放宽到任何动作位，总比一天只有两三个动作强。
-          for (final slot in _slotOrder) {
-            final c = _evalAdd(d, slot, minutes + 5, false, true);
-            if (c != null &&
-                helps(c.item!) &&
-                (best == null || c.score > best.score)) {
-              best = c;
-            }
-          }
-        }
-        if (best == null) break;
-        _apply(best);
-      }
-      days[d].items.sort(
-        (a, b) =>
-            _slotOrder.indexOf(a.slot).compareTo(_slotOrder.indexOf(b.slot)),
-      );
-    }
-  }
-
-  /// 硬指标的缺口：各部位组数不足的总和，加上每周出现天数不够、时长不在范围内的惩罚。
-  double shortfall() {
-    var gap = 0.0;
-    final floor = minutes == 20 ? 15 : minutes - 10;
+  /// 试着把一个动作位清单项放进 [day]；放不下（没有动作、重复、超时、超周上限）就返回 false。
+  bool _tryAdd(
+    _Day day,
+    _Entry e, {
+    required List<Set<String>> present,
+    required List<Set<String>> used,
+    required List<Map<String, int>> families,
+    required int cap,
+    required int maxCount,
+  }) {
+    final picks = <_Pick?>[null, null];
+    final slots = <String?>[null, null];
     for (final t in [0, 1]) {
-      for (final g in recipeGroups) {
-        var best = 0.0;
-        for (final m in _groupMuscles[g]!) {
-          best = math.max(best, vol[t][m] ?? 0);
+      for (final slot in e.slots) {
+        if (present[t].contains(slot)) continue;
+        final pick = _pick(slot, t, day.def.v, used[t], families[t]);
+        if (pick != null) {
+          picks[t] = pick;
+          slots[t] = slot;
+          break;
         }
-        gap += math.max(0, hardGoals[g]! - best);
-      }
-      if (minutes > 20) {
-        for (final g in _spreadGroups) {
-          if (_spreadWanted(g)) gap += math.max(0, 2 - _daysWith(t, g));
-        }
-      }
-      for (final day in days) {
-        final est = _estTier(day.items, t);
-        if (est < floor) gap += 5;
-        if (est > minutes + 5) gap += 5;
       }
     }
-    return gap;
+    if (picks[0] == null && picks[1] == null) return false;
+    // 先按完整组数试；放不下就退回基础组数。每个版本各自判断放不放得下，
+    // 放不下的版本这一项就跳过，另一个版本照常排。
+    final fullSets = _sets(e);
+    final baseSets = e.main ? 3 : (cut || exp == 'new' ? 2 : 3);
+    _Item? best;
+    for (final sets in {fullSets, baseSets}) {
+      final fit = <_Pick?>[null, null];
+      final item = _Item(e.main, sets, _rest(e), fit, slots);
+      for (final t in [0, 1]) {
+        final pick = picks[t];
+        if (pick == null) continue;
+        final count = day.items.where((i) => i.picks[t] != null).length;
+        if (count >= maxCount) continue;
+        fit[t] = pick;
+        if (_estTier(day.items, t, item) > cap) {
+          fit[t] = null;
+          continue;
+        }
+        // 腹和手臂每周不超过 10 组（腹部重点时腹不限）；主项是骨架的核心，不受限制。
+        if (e.main) continue;
+        final after = {...vol[t]};
+        _muscles(pick.name)
+            .forEach((k, x) => after[k] = (after[k] ?? 0) + x * sets);
+        if (recipeGroups.any((g) => _group(after, g) > _weeklyCap) ||
+            (focus != 'core' && _group(after, 'abs') > _softCap) ||
+            _group(after, 'arms') > _softCap) {
+          fit[t] = null;
+        }
+      }
+      final n = fit.where((p) => p != null).length;
+      final bestN = best?.picks.where((p) => p != null).length ?? 0;
+      if (n > bestN) best = item;
+    }
+    if (best == null) return false;
+    final item = best;
+    for (final t in [0, 1]) {
+      if (item.picks[t] == null) item.slots[t] = null;
+    }
+    for (final t in [0, 1]) {
+      final pick = item.picks[t];
+      if (pick == null) continue;
+      present[t].add(item.slots[t]!);
+      used[t].add(pick.name);
+      final fam = _family(pick.name);
+      if (fam != null) families[t][fam] = (families[t][fam] ?? 0) + 1;
+      _muscles(pick.name)
+          .forEach((k, x) => vol[t][k] = (vol[t][k] ?? 0) + x * item.sets);
+    }
+    day.items.add(item);
+    return true;
   }
 
-  // ---- 输出 ---------------------------------------------------------------
+  void run() {
+    final cap = minutes + 5;
+    final maxCount = _maxExercises[minutes] ?? 6;
+    for (final day in days) {
+      final present = [<String>{}, <String>{}];
+      final used = [<String>{}, <String>{}];
+      final families = [<String, int>{}, <String, int>{}];
+      void add(_Entry e, int limit) => _tryAdd(
+        day,
+        e,
+        present: present,
+        used: used,
+        families: families,
+        cap: cap,
+        maxCount: limit,
+      );
+      final entries = _entries(day.def);
+      for (final e in entries) {
+        add(e, maxCount);
+      }
+      // 重点部位：时间有富余时，在最后再加 1 个重点辅助（骨架里没有的位）。
+      if (focus != 'balanced' && focus != 'core') {
+        for (final slot in _focusSlots[focus]!) {
+          final n = day.items.length;
+          add(_Entry([slot], false), maxCount + 1);
+          if (day.items.length > n) break;
+        }
+      }
+      // 排序：主项在前，腹、小腿放最后。
+      int rank(_Item i) {
+        if (i.main) return 0;
+        final s = i.slots[0] ?? i.slots[1]!;
+        return s == 'calf'
+            ? 3
+            : (s == 'core' || s == 'core2')
+            ? 2
+            : 1;
+      }
+
+      final indexed = day.items.indexed.toList()
+        ..sort((a, b) {
+          final c = rank(a.$2).compareTo(rank(b.$2));
+          return c != 0 ? c : a.$1.compareTo(b.$1);
+        });
+      day.items
+        ..clear()
+        ..addAll(indexed.map((e) => e.$2));
+    }
+    _trim();
+  }
+
+  /// 任何部位每周不超过 16 组（腹和手臂不是重点时不超过 10 组）：超了就从最后几天里
+  /// 去掉对它贡献最大的辅助动作。
+  void _trim() {
+    for (var guard = 0; guard < 40; guard++) {
+      var changed = false;
+      for (final t in [0, 1]) {
+        final v = <String, double>{};
+        for (final day in days) {
+          for (final i in day.items) {
+            final p = i.picks[t];
+            if (p == null) continue;
+            _muscles(p.name).forEach((k, x) => v[k] = (v[k] ?? 0) + x * i.sets);
+          }
+        }
+        for (final g in recipeGroups) {
+          final limit = g == 'arms' || (g == 'abs' && focus != 'core')
+              ? _softCap
+              : _weeklyCap;
+          if (_group(v, g) <= limit + 1e-9) continue;
+          final top = _groupMuscles[g]!.reduce(
+            (a, b) => (v[a] ?? 0) >= (v[b] ?? 0) ? a : b,
+          );
+          for (final day in days.reversed) {
+            final hit = day.items.reversed.where(
+              (i) =>
+                  !i.main &&
+                  i.picks[t] != null &&
+                  (_muscles(i.picks[t]!.name)[top] ?? 0) >= 0.5,
+            );
+            if (hit.isEmpty) continue;
+            final item = hit.first;
+            // 先把重点多出来的那 1 组拿掉；已经是基础组数才去掉这个动作。
+            final base = cut || exp == 'new' ? 2 : 3;
+            if (item.sets > base) {
+              item.sets -= 1;
+              changed = true;
+              break;
+            }
+            // 这个版本里不要这个动作了；两个版本都没有就整个去掉。
+            final slots = item.slots;
+            item.picks[t] = null;
+            slots[t] = null;
+            if (item.picks[0] == null && item.picks[1] == null) {
+              day.items.remove(item);
+            }
+            changed = true;
+            break;
+          }
+          if (changed) break;
+        }
+        if (changed) break;
+      }
+      if (!changed) return;
+    }
+  }
 
   Map<String, dynamic> exerciseJson(
     String id,
