@@ -177,6 +177,12 @@ String? _ladderStartingAt(String name) {
   return null;
 }
 
+/// 按配方生成方案时复用：动作库里的动作，或模板自带的三个（硬拉、引体向上、反向划船）。
+Map<String, dynamic> templateExercise(String name) => _exercise(name);
+
+/// 按配方生成方案时复用：这个动作正好是哪条阶梯的起点。
+String? ladderStartingAt(String name) => _ladderStartingAt(name);
+
 Map<String, dynamic> _exercise(String name) {
   final spec = catalog()[name];
   if (spec != null) {
