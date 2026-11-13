@@ -3,12 +3,14 @@ import '../../../l10n/localized_text.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../app/app_controller.dart';
+import '../../../domain/plan_recipe.dart';
 import '../../../theme/theme.dart';
 import '../../kit/form.dart';
 import '../../onboarding/plan_step.dart';
+import '../../plan/recipe_draft.dart';
 
-/// Reuses onboarding's plan list with existing-plan protection. The assessment
-/// is already saved, so choosing a template only adds it to the library.
+/// Reuses onboarding's plan step with existing-plan protection. The assessment
+/// is already saved, so a generated plan is only added to the library.
 class ProfilePlanSelection extends StatefulWidget {
   const ProfilePlanSelection({super.key});
   @override
@@ -16,7 +18,8 @@ class ProfilePlanSelection extends StatefulWidget {
 }
 
 class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
-  String? _selected;
+  final _draft = RecipeDraft();
+  bool _keep = true;
   bool _busy = false;
   String _error = '';
   Future<void> _confirm() async {
@@ -27,9 +30,7 @@ class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
       _error = '';
     });
     try {
-      if (_selected != null) {
-        await app.addTemplatePlan(_selected!, activate: false);
-      }
+      if (!_keep) await app.addRecipePlan(_recipe, activate: false);
       if (mounted) Navigator.of(context).pop();
     } on Object catch (e) {
       if (mounted) setState(() => _error = AppController.message(e));
@@ -37,6 +38,13 @@ class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
       if (mounted) setState(() => _busy = false);
     }
   }
+
+  Map<String, dynamic> get _base {
+    final profile = context.app.profile!;
+    return defaultRecipe(profile, context.app.targets ?? const {});
+  }
+
+  Map<String, dynamic> get _recipe => _draft.resolve(_base);
 
   @override
   Widget build(BuildContext context) => PopScope(
@@ -71,11 +79,12 @@ class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
               child: AbsorbPointer(
                 absorbing: _busy,
                 child: PlanStep(
-                  profile: context.app.profile!,
                   upgrade: true,
-                  selected: _selected,
-                  onSelected: (id) => setState(() => _selected = id),
-                  onConfirm: _confirm,
+                  recipe: _recipe,
+                  onRecipeChanged: (next) =>
+                      setState(() => _draft.update(_base, next)),
+                  keepExisting: _keep,
+                  onKeepChanged: (v) => setState(() => _keep = v),
                 ),
               ),
             ),
@@ -86,7 +95,7 @@ class _ProfilePlanSelectionState extends State<ProfilePlanSelection> {
                 child: FormButton(
                   _busy
                       ? '正在保存…'
-                      : _selected == null
+                      : _keep
                       ? '保留我现有的计划'
                       : '另外添加这个计划',
                   filled: true,

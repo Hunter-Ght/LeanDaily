@@ -226,10 +226,7 @@ class _ConditionsStepState extends State<ConditionsStep> {
               label: entry.value,
               compact: true,
               selected: '${widget.profile[field]}' == entry.key,
-              onTap: () => widget.onChanged(
-                field,
-                field == 'daysPerWeek' ? int.parse(entry.key) : entry.key,
-              ),
+              onTap: () => widget.onChanged(field, entry.key),
             ),
           ),
         ],
@@ -354,6 +351,43 @@ class _ConditionsStepState extends State<ConditionsStep> {
     );
   }
 
+  Widget _limits(BuildContext context) {
+    final limits = (widget.profile['limits'] as List).cast<String>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LText('不方便的部位', style: AppText.hint(context.pal)),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            for (final part in ['膝', '腰', '肩', '腕', '无'])
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 58),
+                child: OnboardingButton(
+                  label: part,
+                  toggleable: part != '无',
+                  selected: part == '无'
+                      ? limits.isEmpty
+                      : limits.contains(part),
+                  onTap: () {
+                    final next = [...limits];
+                    if (part == '无') {
+                      next.clear();
+                    } else if (!next.remove(part)) {
+                      next.add(part);
+                    }
+                    widget.onChanged('limits', next);
+                  },
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) => OnboardingPage(
     embedded: widget.embedded,
@@ -362,18 +396,12 @@ class _ConditionsStepState extends State<ConditionsStep> {
     subtitle: '能坚持的安排，就是好的开始。',
     children: [
       _venueChoices(context),
-      _choices(context, '每周几天', 'daysPerWeek', const {
-        '2': '2 天',
-        '3': '3 天',
-        '4': '4 天',
-        '5': '5 天',
-        '6': '6 天',
-      }),
       _choices(context, '经验', 'experience', const {
         'new': '新手',
         'some': '练过一阵',
         'trained': '规律训练',
       }),
+      _limits(context),
       OnboardingButton(
         label: _more ? '收起更多设置' : '更多设置 ›',
         textOnly: true,
@@ -382,53 +410,11 @@ class _ConditionsStepState extends State<ConditionsStep> {
       Reveal(
         visible: _more,
         child: _more
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _choices(context, '活动量', 'activity', const {
-                    'sedentary': '久坐',
-                    'light': '轻度',
-                    'active': '常走动',
-                  }),
-                  LText('不方便的部位', style: AppText.hint(context.pal)),
-                  Row(
-                    children: [
-                      for (final (i, part) in [
-                        '膝',
-                        '腰',
-                        '肩',
-                        '腕',
-                        '无',
-                      ].indexed) ...[
-                        if (i > 0) const SizedBox(width: 6),
-                        Expanded(
-                          child: OnboardingButton(
-                            label: part,
-                            toggleable: part != '无',
-                            compact: true,
-                            selected: part == '无'
-                                ? (widget.profile['limits'] as List).isEmpty
-                                : (widget.profile['limits'] as List).contains(
-                                    part,
-                                  ),
-                            onTap: () {
-                              final limits = List<String>.from(
-                                widget.profile['limits'] as List,
-                              );
-                              if (part == '无') {
-                                limits.clear();
-                              } else if (!limits.remove(part)) {
-                                limits.add(part);
-                              }
-                              widget.onChanged('limits', limits);
-                            },
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              )
+            ? _choices(context, '活动量', 'activity', const {
+                'sedentary': '久坐',
+                'light': '轻度',
+                'active': '常走动',
+              })
             : const SizedBox.shrink(),
       ),
     ],

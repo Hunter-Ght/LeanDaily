@@ -191,25 +191,14 @@ void main() {
         );
         await next(tester);
         expect(find.text('活动量'), findsNothing);
-        expect(find.text('不方便的部位'), findsNothing);
-        final days = [
-          for (var n = 2; n <= 6; n++) find.bySemanticsLabel('$n 天'),
-        ];
-        final dayRects = [for (final day in days) tester.getRect(day)];
-        for (final rect in dayRects) {
-          expect(rect.height, greaterThanOrEqualTo(44));
-          expect(rect.width, greaterThanOrEqualTo(44));
-          expect(rect.width, closeTo(dayRects.first.width, .01));
-          expect(rect.top, dayRects.first.top);
-        }
-        final card = find.descendant(
-          of: find.byType(PlanStep),
-          matching: find.byWidgetPredicate(
-            (w) => w is PlanCard && w.size == PlanCardSize.large,
-          ),
-        );
+        // 每周几天由一周圆点承担，这里不再问。
+        expect(find.text('每周几天'), findsNothing);
+        final start = tester.getRect(find.bySemanticsLabel('开始'));
+        expect(find.bySemanticsLabel('稍后再选，先用推荐的'), findsNothing);
+        expect(find.bySemanticsLabel('选这个方案'), findsNothing);
+        final headline = find.byKey(const ValueKey('plan-headline'));
         await tester.scrollUntilVisible(
-          card,
+          headline,
           100,
           scrollable: find
               .descendant(
@@ -219,21 +208,17 @@ void main() {
               .first,
         );
         await settle(tester);
-        final start = tester.getRect(find.bySemanticsLabel('开始'));
-        final skip = tester.getRect(find.bySemanticsLabel('稍后再选，先用推荐的'));
-        expect(skip.top - start.bottom, greaterThanOrEqualTo(10));
-        expect(tester.getRect(card).bottom, lessThanOrEqualTo(start.top - 12));
-        expect(tester.getRect(card).top, greaterThanOrEqualTo(60));
+        expect(tester.getRect(headline).bottom, lessThanOrEqualTo(start.top));
+        expect(tester.getRect(headline).top, greaterThanOrEqualTo(60));
         await h.shot(tester, 'r-onb-4-$dimensions-$scheme');
         await showPlanItem(tester, '更多设置 ›', delta: -100);
         await tester.tap(find.bySemanticsLabel('更多设置 ›'));
         await settle(tester);
-        await showPlanItem(tester, '肩', delta: 100);
+        expect(find.text('活动量'), findsOneWidget);
+        await showPlanItem(tester, '肩', delta: -100);
         await tester.tap(find.bySemanticsLabel('肩'));
         await settle(tester);
-        expect(find.text('活动量'), findsOneWidget);
-        expect(find.text('不方便的部位'), findsOneWidget);
-        await showPlanItem(tester, '收起更多设置', delta: -100);
+        await showPlanItem(tester, '收起更多设置', delta: 100);
         await tester.tap(find.bySemanticsLabel('收起更多设置'));
         await settle(tester);
         await tester.tap(find.bySemanticsLabel('开始'));
@@ -379,7 +364,7 @@ void main() {
       await settle(tester);
       expect(find.text('训练安排'), findsOneWidget);
       expect(h.native.docs['fw-onboarded-v1'], isNull);
-      await tester.tap(find.bySemanticsLabel('稍后再选，先用推荐的'));
+      await tester.tap(find.bySemanticsLabel('开始'));
       await settle(tester);
       final p = jsonDecode(h.native.docs['fw-profile-v1']!) as Map;
       expect(p['sex'], 'male');
@@ -446,8 +431,8 @@ void main() {
     }
     await tester.tap(find.bySemanticsLabel('两边都会去'));
     await settle(tester);
-    await showPlanItem(tester, '选这个方案');
-    await tester.tap(find.bySemanticsLabel('选这个方案'));
+    await showPlanItem(tester, '按现在的情况生成新方案');
+    await tester.tap(find.bySemanticsLabel('按现在的情况生成新方案'));
     await settle(tester);
     await tester.tap(find.bySemanticsLabel('另外添加，完成评估'));
     await settle(tester);
@@ -570,7 +555,7 @@ void main() {
     expect(p['neckCm'], 34);
   });
 
-  testWidgets('picker stores the selected band and preview switches venues', (
+  testWidgets('picker stores the selected band and finishes with a plan', (
     tester,
   ) async {
     final h = await Harness.pump(tester, newUser: true);
@@ -595,17 +580,6 @@ void main() {
       await next(tester);
     }
     await tester.tap(find.bySemanticsLabel('两边都会去'));
-    await settle(tester);
-    await showPlanItem(tester, '选这个方案');
-    await tester.tap(find.bySemanticsLabel('选这个方案'));
-    await settle(tester);
-    await tester.tap(find.bySemanticsLabel('预览每天练什么'));
-    await settle(tester);
-    await tester.ensureVisible(find.text('健身房版'));
-    await tester.tap(find.text('健身房版'));
-    await settle(tester);
-    expect(find.textContaining('上斜哑铃卧推'), findsWidgets);
-    await tester.tap(find.bySemanticsLabel('使用这个方案'));
     await settle(tester);
     await tester.tap(find.bySemanticsLabel('开始').last);
     await settle(tester);

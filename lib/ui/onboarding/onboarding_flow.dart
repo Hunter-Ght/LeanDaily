@@ -10,13 +10,14 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../data/backup.dart' as backup;
 import '../../domain/body.dart';
-import '../../domain/templates.dart';
+import '../../domain/plan_recipe.dart';
 import '../../domain/units.dart';
 import '../kit/units_scope.dart';
 import '../../theme/theme.dart';
 import 'body_fat_step.dart';
 import 'diagnosis_step.dart';
 import 'onboarding_widgets.dart';
+import '../plan/recipe_draft.dart';
 import 'plan_step.dart';
 import '../stats/muscle/body_map.dart' show BodySexScope;
 import 'profile_steps.dart';
@@ -42,7 +43,10 @@ class _OnboardingFlowState extends State<OnboardingFlow>
     vsync: this,
     duration: const Duration(milliseconds: 240),
   );
-  String? _selected;
+  final _draft = RecipeDraft();
+
+  /// 升级的老用户：默认保留现有的计划，不生成新方案。
+  bool _keep = true;
   bool _saving = false;
   bool _restoring = false;
   bool _initialized = false;
@@ -133,9 +137,16 @@ class _OnboardingFlowState extends State<OnboardingFlow>
     _touched.add(field);
     setState(() {
       _profile = {..._profile, field: value};
-      _selected = null;
     });
   }
+
+  /// 按当前资料算出的默认配方（场地没选时按居家无器械）。
+  Map<String, dynamic> get _baseRecipe {
+    final profile = {..._profile, 'venue': _profile['venue'] ?? 'bodyweight'};
+    return defaultRecipe(profile, buildTargets(profile));
+  }
+
+  Map<String, dynamic> get _recipe => _draft.resolve(_baseRecipe);
 
   void _go(int step) {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -195,26 +206,27 @@ class _OnboardingFlowState extends State<OnboardingFlow>
           'venue': null,
         };
         _applyUnitDefaults(context.units);
-        _selected = null;
+        _draft.clear();
       });
       _go(3);
     }
   }
 
-  Future<void> _finish({bool recommended = false}) async {
+  /// [useDefaults]：「用默认设置，直接开始」，不看用户在方案里改过什么。
+  Future<void> _finish({bool useDefaults = false}) async {
     if (_saving || !_valid) return;
     final app = context.app;
     final effectiveProfile = {
       ..._profile,
       'venue': _profile['venue'] ?? 'bodyweight',
     };
-    final id = recommended || (!widget.upgrade && _selected == null)
-        ? recommend(
-                effectiveProfile,
-                buildTargets(effectiveProfile),
-              ).first['templateId']
-              as String
-        : _selected;
+    // 老用户默认保留现有计划（不建新方案）；选了生成新方案才传配方，控制器只添加不替换。
+    final recipe = widget.upgrade && (_keep || useDefaults)
+        ? null
+        : useDefaults
+        ? _baseRecipe
+        : _recipe;
+    if (recipe != null) effectiveProfile['daysPerWeek'] = recipe['days'];
     setState(() => _saving = true);
     FocusManager.instance.primaryFocus?.unfocus();
     try {
@@ -226,11 +238,11 @@ class _OnboardingFlowState extends State<OnboardingFlow>
       final targets = buildTargets(effectiveProfile);
       await app.completeOnboarding(
         profile: effectiveProfile,
-        templateId: id,
+        recipe: recipe,
         goalBodyFat: targets['goalBodyFat'] as num,
       );
       app.toast.show(
-        widget.upgrade ? (id == null ? '目标已更新' : '计划已添加') : '计划已建好',
+        widget.upgrade ? (recipe == null ? '目标已更新' : '计划已添加') : '计划已建好',
       );
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
@@ -396,26 +408,16 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                               BodySexScope(
                                 female: _profile['sex'] == 'female',
                                 child: PlanStep(
-                                  onProfileChanged: _change,
                                   profile: _profile,
+                                  onProfileChanged: _change,
                                   upgrade: widget.upgrade,
-                                  selected:
-                                      _selected ??
-                                      (widget.upgrade
-                                          ? null
-                                          : recommend(
-                                                  {
-                                                    ..._profile,
-                                                    'venue':
-                                                        _profile['venue'] ??
-                                                        'bodyweight',
-                                                  },
-                                                  buildTargets(_profile),
-                                                ).first['templateId']
-                                                as String),
-                                  onSelected: (id) =>
-                                      setState(() => _selected = id),
-                                  onConfirm: _finish,
+                                  recipe: _recipe,
+                                  onRecipeChanged: (next) => setState(
+                                    () => _draft.update(_baseRecipe, next),
+                                  ),
+                                  keepExisting: _keep,
+                                  onKeepChanged: (v) =>
+                                      setState(() => _keep = v),
                                 ),
                               ),
                             ],
@@ -449,9 +451,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                                   ? '正在保存…'
                                   : _step == 3
                                   ? (widget.upgrade
-                                        ? (_selected == null
-                                              ? '保留计划，完成评估'
-                                              : '另外添加，完成评估')
+                                        ? (_keep ? '保留计划，完成评估' : '另外添加，完成评估')
                                         : '开始')
                                   : '继续',
                               primary: true,
@@ -466,17 +466,8 @@ class _OnboardingFlowState extends State<OnboardingFlow>
                               OnboardingButton(
                                 label: '用默认设置，直接开始',
                                 onTap: _canContinue && !_saving
-                                    ? () =>
-                                          _finish(recommended: !widget.upgrade)
+                                    ? () => _finish(useDefaults: true)
                                     : null,
-                              ),
-                            ],
-                            if (_step == 3 && !widget.upgrade) ...[
-                              const SizedBox(height: 10),
-                              OnboardingButton(
-                                label: '稍后再选，先用推荐的',
-                                textOnly: true,
-                                onTap: () => _finish(recommended: true),
                               ),
                             ],
                           ],

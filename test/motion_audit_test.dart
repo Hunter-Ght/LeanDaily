@@ -8,13 +8,13 @@ import 'package:leandaily/app/shell.dart';
 import 'package:leandaily/domain/body.dart';
 import 'package:leandaily/domain/catalog.dart';
 import 'package:leandaily/domain/format.dart';
+import 'package:leandaily/domain/plan_recipe.dart';
 import 'package:leandaily/theme/theme.dart';
 import 'package:leandaily/ui/kit/sheet.dart';
 import 'package:leandaily/ui/kit/form.dart';
 import 'package:leandaily/ui/onboarding/diagnosis_step.dart';
 import 'package:leandaily/ui/onboarding/profile_steps.dart';
 import 'package:leandaily/ui/onboarding/plan_step.dart';
-import 'package:leandaily/ui/kit/plan_widgets.dart';
 import 'package:leandaily/ui/stats/stats_page.dart';
 import 'package:leandaily/ui/training/training_mode.dart';
 
@@ -206,11 +206,9 @@ void main() {
                 onGoalChanged: (_) {},
               ),
               _ => PlanStep(
-                profile: profile,
                 upgrade: false,
-                selected: null,
-                onSelected: (_) {},
-                onConfirm: () {},
+                recipe: defaultRecipe(profile),
+                onRecipeChanged: (_) {},
               ),
             },
           ),
@@ -218,19 +216,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       if (kind == 'plan') {
-        final preview = find.bySemanticsLabel('预览每天练什么');
-        await tester.ensureVisible(preview);
-        await tester.pumpAndSettle();
-        await tester.tap(preview);
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 80));
-        final intermediateY = tester.getTopLeft(find.byType(PlanPreview)).dy;
-        await tester.pumpAndSettle();
-        expect(
-          tester.getTopLeft(find.byType(PlanPreview)).dy,
-          lessThan(intermediateY),
-          reason: '预览弹层在 80ms 后仍应继续进入',
-        );
+        // 方案视图里没有额外的过渡：直接能看到标题句和一周圆点。
+        expect(find.byKey(const ValueKey('plan-headline')), findsOneWidget);
       } else {
         await tapMotion(
           tester,

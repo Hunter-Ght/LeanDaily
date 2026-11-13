@@ -11,6 +11,7 @@ import '../ui/sheets/guide_sheet.dart';
 import '../ui/sheets/meal_sheet.dart';
 import '../ui/sheets/my_gym_sheet.dart';
 import '../ui/sheets/muscle_exercises_sheet.dart';
+import '../ui/sheets/my_plan_sheet.dart';
 import '../ui/sheets/plan_editor_sheet.dart';
 import '../ui/onboarding/onboarding_flow.dart';
 import '../ui/sheets/preview_sheet.dart';
@@ -44,6 +45,10 @@ Future<void> openAndroidSettings(BuildContext context) =>
 /// AI 拍照识别设置（服务商、接口、API Key）。
 Future<void> openAiSettings(BuildContext context) =>
     showAppSheet<void>(context, (_) => const AiSettingsSheet());
+
+/// 我的方案：按配方生成的方案直接在这里调整；方案库在底部。
+Future<void> openMyPlan(BuildContext context) =>
+    showAppSheet<void>(context, (_) => const MyPlanSheet());
 Future<void> openPlanEditor(BuildContext context) =>
     showAppSheet<void>(context, (_) => const PlanEditorSheet());
 
