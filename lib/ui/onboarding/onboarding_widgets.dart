@@ -6,15 +6,22 @@ import 'package:flutter/widgets.dart';
 
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 
 class OnboardingCard extends StatelessWidget {
-  const OnboardingCard({super.key, required this.child, this.selected = false});
+  const OnboardingCard({
+    super.key,
+    required this.child,
+    this.selected = false,
+    this.padding = 16,
+  });
   final Widget child;
   final bool selected;
+  final double padding;
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
+    padding: EdgeInsets.all(padding),
     decoration: BoxDecoration(
       color: context.pal.card,
       borderRadius: BorderRadius.circular(22),
@@ -115,7 +122,15 @@ class OnboardingPage extends StatelessWidget {
     required this.children,
     this.embedded = false,
     this.dense = false,
+    this.showSubtitle = true,
+    this.titleTrailing,
   });
+
+  /// 矮屏幕上隐藏副标题，把首屏留给内容。
+  final bool showSubtitle;
+
+  /// 标题行右侧的小控件，不增加高度。
+  final Widget? titleTrailing;
   final String title;
   final String subtitle;
   final List<Widget> children;
@@ -136,9 +151,21 @@ class OnboardingPage extends StatelessWidget {
       : ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
-            LText(title, style: AppText.navDay(context.pal)),
-            const SizedBox(height: 12),
-            LText(subtitle, style: AppText.navWeek(context.pal)),
+            if (titleTrailing == null)
+              LText(title, style: AppText.navDay(context.pal))
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: LText(title, style: AppText.navDay(context.pal)),
+                  ),
+                  titleTrailing!,
+                ],
+              ),
+            if (showSubtitle) ...[
+              const SizedBox(height: 12),
+              LText(subtitle, style: AppText.navWeek(context.pal)),
+            ],
             SizedBox(height: dense ? 16 : 24),
             for (final child in children) ...[
               child,
@@ -156,10 +183,14 @@ class OnboardingNumber extends StatefulWidget {
     required this.value,
     required this.onChanged,
     this.suffix = 'cm',
+    this.length = false,
   });
   final String label;
   final num? value;
   final String suffix;
+
+  /// 围度（腰围、颈围、臀围）：值按 cm 存储，英制下以 in 显示和输入。
+  final bool length;
   final ValueChanged<num?> onChanged;
 
   @override
@@ -168,7 +199,11 @@ class OnboardingNumber extends StatefulWidget {
 
 class _OnboardingNumberState extends State<OnboardingNumber> {
   late final _text = TextEditingController(
-    text: widget.value?.toString() ?? '',
+    text: widget.value == null
+        ? ''
+        : widget.length && context.units.isImperial
+        ? context.units.length(widget.value!)
+        : widget.value.toString(),
   );
   final _focus = FocusNode();
   @override
@@ -205,18 +240,26 @@ class _OnboardingNumberState extends State<OnboardingNumber> {
                     decimal: true,
                   ),
                   textAlign: TextAlign.right,
-                  onChanged: (text) => widget.onChanged(
-                    text.trim().isEmpty
+                  onChanged: (text) {
+                    final n = text.trim().isEmpty
                         ? null
-                        : num.tryParse(text) ?? double.nan,
-                  ),
+                        : num.tryParse(text) ?? double.nan;
+                    widget.onChanged(
+                      n != null && widget.length
+                          ? context.units.lengthToCm(n)
+                          : n,
+                    );
+                  },
                 ),
               ),
             ),
           ),
         ),
         const SizedBox(width: 8),
-        LText(widget.suffix, style: AppText.hint(context.pal)),
+        LText(
+          widget.length ? context.units.lengthUnit : widget.suffix,
+          style: AppText.hint(context.pal),
+        ),
       ],
     ),
   );

@@ -13,6 +13,7 @@ import '../../app/app_controller.dart';
 import '../../data/state_doc.dart' show mark;
 import '../../domain/format.dart' show fmt, jsNumber, jsTruthy;
 import '../../domain/catalog.dart';
+import '../../domain/units.dart';
 import '../../theme/theme.dart';
 import '../../theme/tokens.dart' show AppPalette;
 import '../kit/pressable.dart';
@@ -30,7 +31,13 @@ class EditSetSheet extends StatefulWidget {
 }
 
 class _EditSetSheetState extends State<EditSetSheet> {
-  late final weight = TextEditingController(text: fmt(widget.set['w'] ?? ''));
+  /// 单位在这张弹层打开期间不会变，直接读控制器当前值。
+  Units get units => context.app.units;
+  late final weight = TextEditingController(
+    text: units.isImperial && widget.set['w'] is num
+        ? units.load(widget.set['w'] as num)
+        : fmt(widget.set['w'] ?? ''),
+  );
   late final reps = TextEditingController(text: fmt(widget.set['reps'] ?? ''));
   final weightFocus = FocusNode(), repsFocus = FocusNode();
   late String type = '${widget.set['type'] ?? '正式'}';
@@ -57,7 +64,13 @@ class _EditSetSheetState extends State<EditSetSheet> {
     final step = isWeight && base >= 20 ? 2.5 : 1;
     final next = math.max(
       isWeight ? 0 : 1,
-      ((base + delta * step) * 10).round() / 10,
+      isWeight && units.isImperial
+          ? units.stepLoad(
+              catalog()['${widget.set['ex']}'] ?? {'name': widget.set['ex']},
+              base,
+              up: delta > 0,
+            )
+          : ((base + delta * step) * 10).round() / 10,
     );
     if (next == value) return;
     HapticScope.of(context)?.selection();
@@ -71,7 +84,8 @@ class _EditSetSheetState extends State<EditSetSheet> {
         !(w >= 0) ||
         !r.isFinite ||
         r != r.roundToDouble() ||
-        r < 1) {
+        r < 1 ||
+        (units.isImperial && w > units.loadValue(1000))) {
       setState(() => error = '重量或次数不对');
       return;
     }
@@ -89,7 +103,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
           throw StateError('记录不存在');
         }
         row.addAll(<String, dynamic>{
-          'w': w,
+          'w': units.isImperial ? units.loadToKg(w) : w,
           'reps': r,
           'type': type,
           'rpe': feedbackChanged
@@ -126,7 +140,9 @@ class _EditSetSheetState extends State<EditSetSheet> {
         !jsTruthy(exercise['machine']) &&
         jsNumber(exercise['weight']) == 0;
     final fieldLabel = isWeight
-        ? (bodyweight ? '附加负重 kg（0 = 只用自重）' : '重量 kg（自重动作填 0）')
+        ? (bodyweight
+              ? '附加负重 ${units.weightUnit}（0 = 只用自重）'
+              : '重量 ${units.weightUnit}（自重动作填 0）')
         : '次数';
     Widget button(int delta) => Semantics(
       button: true,
@@ -185,7 +201,7 @@ class _EditSetSheetState extends State<EditSetSheet> {
                       ),
                     ),
                     LText(
-                      isWeight ? 'kg' : '次',
+                      isWeight ? units.weightUnit : '次',
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,

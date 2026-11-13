@@ -18,6 +18,7 @@ import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import '../sheets/train/controls.dart' show SheetButton;
 import 'set_display.dart';
+import '../kit/units_scope.dart';
 
 /// 一天的记录：当天小结 + 按时间排序的时间线（训练块与饮食块混排）。
 class DayTimeline extends StatelessWidget {
@@ -647,7 +648,10 @@ class _ExerciseRow extends StatelessWidget {
     final picked = await showActionMenu(
       c,
       title: '${s['ex']} · 第 ${s['no']} 组',
-      message: [setDisplay(s), if (feedback.isNotEmpty) feedback].join('\n'),
+      message: [
+        setDisplay(s, c.units),
+        if (feedback.isNotEmpty) feedback,
+      ].join('\n'),
       actions: const [
         MenuAction(id: 'edit', label: '修改这组', icon: 'edit'),
         MenuAction(id: 'delete', label: '删除这组', icon: 'trash', danger: true),
@@ -667,7 +671,7 @@ class _ExerciseRow extends StatelessWidget {
     if (!await showConfirm(
       c,
       title: '${s['ex']} · 第 ${s['no']} 组',
-      message: setDisplay(s),
+      message: setDisplay(s, c.units),
       confirm: '删除',
       danger: true,
     )) {
@@ -720,7 +724,7 @@ class _ExerciseRow extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (setChipWeight(s) == '自重')
+                if (setChipWeight(s, c.units) == '自重')
                   LText(
                     '自重',
                     style: AppText.hint(p).copyWith(
@@ -730,7 +734,7 @@ class _ExerciseRow extends StatelessWidget {
                     ),
                   )
                 else
-                  Text(setChipWeight(s), style: style),
+                  Text(setChipWeight(s, c.units), style: style),
                 Text('×', style: style.copyWith(color: p.secondary)),
                 Text(f.fmt(s['reps']), style: style),
                 if (s['type'] == '递减')

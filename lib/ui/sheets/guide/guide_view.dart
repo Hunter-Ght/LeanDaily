@@ -18,6 +18,7 @@ import '../../kit/pressable.dart';
 import '../../kit/transitions.dart';
 import '../train/exercise_info.dart';
 import '../train/muscle_focus.dart';
+import '../../kit/units_scope.dart';
 
 /// 动作要点的全部内容：示范、动作名与处方、练哪里、怎么做、常见错误、搜视频。
 /// 手机弹层（SheetGuideBody）与宽屏常驻栏（GuideBody）共用，版式一致。
@@ -74,7 +75,10 @@ class GuideView extends StatelessWidget {
               children: [
                 if (hasRx) _Prescription(exercise: e),
                 if (hasRx && weight > 0)
-                  _Stat(value: fmt(weight), unit: const Text('kg')),
+                  _Stat(
+                    value: context.units.suggested(weight),
+                    unit: Text(context.units.weightUnit),
+                  ),
                 if (info.ready != null) RecoveryTag(info, large: true),
               ],
             ),
@@ -313,7 +317,7 @@ class _LastSets extends StatelessWidget {
                 heightFactor: 1,
                 child: Text(
                   jsNumber(s['w']) > 0
-                      ? '${fmt(s['w'])}×${s['reps']}'
+                      ? '${context.units.load(jsNumber(s['w']))}×${s['reps']}'
                       : '${s['reps']}',
                   style: style,
                 ),

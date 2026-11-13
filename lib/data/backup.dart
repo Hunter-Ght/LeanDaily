@@ -287,7 +287,7 @@ Future<void> restoreBackup(
     );
   }
   final config = Map<String, dynamic>.of(defaults);
-  for (final k in ['tz', 'model', 'baseUrl', 'protocol']) {
+  for (final k in ['tz', 'model', 'baseUrl', 'protocol', 'units']) {
     if (b['settings']?[k] is String) config[k] = b['settings'][k];
   }
   await native.put('android-settings', jsonEncode(config));

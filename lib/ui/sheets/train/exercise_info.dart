@@ -8,6 +8,7 @@ import '../../../app/app_controller.dart';
 import '../../../domain/format.dart';
 import '../../../domain/movements.dart';
 import '../../../domain/muscles.dart';
+import '../../../domain/units.dart';
 import '../../../theme/theme.dart';
 
 /// 一个动作的主练肌肉和恢复状态，器械弹层与记组页头部共用。
@@ -114,9 +115,11 @@ String daysLeftText(num left) =>
     left < .75 ? '不到 1 天恢复' : '约 ${fmt((left * 2).round() / 2)} 天恢复';
 
 /// “上次 08/12 · 40×10  45×8”；没记录返回空。
-String lastLineOf(Map? last) {
+String lastLineOf(Map? last, [Units units = Units.metric]) {
   if (last == null) return '';
-  String f(Object? v) => '$v'.replaceFirst(RegExp(r'\.0$'), '');
+  String f(Object? v) => units.isImperial
+      ? units.load(jsNumber(v))
+      : '$v'.replaceFirst(RegExp(r'\.0$'), '');
   final sets = ((last['sets'] as List?) ?? []).cast<Map>();
   final desc = sets
       .map(

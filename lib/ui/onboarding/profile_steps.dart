@@ -6,10 +6,13 @@ import 'package:flutter/widgets.dart';
 
 import '../kit/transitions.dart';
 
+import '../../app/app_controller.dart';
 import '../../domain/body.dart';
 import '../../app/routes.dart';
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
+import '../../domain/units.dart';
 import '../kit/app_icon.dart';
 import 'onboarding_widgets.dart';
 import 'ruler.dart';
@@ -49,9 +52,25 @@ class IdentityStep extends StatelessWidget {
   final Profile profile;
   final ProfileChange onChanged;
   @override
-  Widget build(BuildContext context) => OnboardingPage(
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      // 矮屏幕（小机型、系统安全区占掉不少高度）：压紧间距和刻度条，
+      // 更矮时再收起副标题，保证隐私政策那一行在首屏。
+      final compact = box.maxHeight < 700, tiny = box.maxHeight < 560;
+      return _page(context, compact: compact, tiny: tiny);
+    },
+  );
+
+  Widget _page(
+    BuildContext context, {
+    required bool compact,
+    required bool tiny,
+  }) => OnboardingPage(
     title: '基本信息',
     subtitle: '从你的身体情况开始，找到适合你的节奏。',
+    dense: compact,
+    showSubtitle: !tiny,
+    titleTrailing: const UnitSwitch(),
     children: [
       Row(
         children: [
@@ -71,8 +90,9 @@ class IdentityStep extends StatelessWidget {
                     curve: Curves.easeOutBack,
                     child: OnboardingCard(
                       selected: profile['sex'] == entry.key,
+                      padding: compact ? 8 : 16,
                       child: SizedBox(
-                        height: 44,
+                        height: compact ? 36 : 44,
                         child: Center(
                           child: LText(
                             entry.value,
@@ -90,25 +110,81 @@ class IdentityStep extends StatelessWidget {
         ],
       ),
       OnboardingCard(
+        padding: compact ? 12 : 16,
         child: Column(
           children: [
-            for (final field in const [
-              ('age', '年龄', '岁', 10.0, 90.0, 1.0),
-              ('heightCm', '身高', 'cm', 120.0, 230.0, 1.0),
-              ('weightKg', '体重', 'kg', 30.0, 250.0, .1),
-            ]) ...[
+            ProfileRuler(
+              key: const ValueKey('age'),
+              compact: compact,
+              label: '年龄',
+              unit: '岁',
+              value: (profile['age'] as num).toDouble(),
+              min: 10,
+              max: 90,
+              step: 1,
+              onChanged: (v) => onChanged('age', v),
+            ),
+            SizedBox(height: compact ? 4 : 8),
+            if (context.units.isImperial)
               ProfileRuler(
-                key: ValueKey(field.$1),
-                label: field.$2,
-                unit: field.$3,
-                value: (profile[field.$1] as num).toDouble(),
-                min: field.$4,
-                max: field.$5,
-                step: field.$6,
-                onChanged: (v) => onChanged(field.$1, v),
+                key: const ValueKey('heightCm-imperial'),
+                compact: compact,
+                label: '身高',
+                unit: 'in',
+                value: context.units
+                    .heightInches(profile['heightCm'] as num)
+                    .clamp(48, 90)
+                    .toDouble(),
+                min: 48,
+                max: 90,
+                step: 1,
+                majorEvery: 12,
+                format: (v) =>
+                    context.units.heightText(context.units.heightFromInches(v)),
+                onChanged: (v) =>
+                    onChanged('heightCm', context.units.heightFromInches(v)),
+              )
+            else
+              ProfileRuler(
+                key: const ValueKey('heightCm'),
+                compact: compact,
+                label: '身高',
+                unit: 'cm',
+                value: (profile['heightCm'] as num).toDouble(),
+                min: 120,
+                max: 230,
+                step: 1,
+                onChanged: (v) => onChanged('heightCm', v),
               ),
-              if (field.$1 != 'weightKg') const SizedBox(height: 8),
-            ],
+            SizedBox(height: compact ? 4 : 8),
+            if (context.units.isImperial)
+              ProfileRuler(
+                key: const ValueKey('weightKg-imperial'),
+                compact: compact,
+                label: '体重',
+                unit: 'lb',
+                value: context.units
+                    .bodyWeightValue(profile['weightKg'] as num)
+                    .clamp(67, 551)
+                    .toDouble(),
+                min: 67,
+                max: 551,
+                step: .1,
+                onChanged: (v) =>
+                    onChanged('weightKg', context.units.bodyWeightToKg(v)),
+              )
+            else
+              ProfileRuler(
+                key: const ValueKey('weightKg'),
+                compact: compact,
+                label: '体重',
+                unit: 'kg',
+                value: (profile['weightKg'] as num).toDouble(),
+                min: 30,
+                max: 250,
+                step: .1,
+                onChanged: (v) => onChanged('weightKg', v),
+              ),
           ],
         ),
       ),
@@ -357,4 +433,57 @@ class _ConditionsStepState extends State<ConditionsStep> {
       ),
     ],
   );
+}
+
+/// 引导第一步里的小分段：公制 / 英制。选择立即生效并存进设置。
+/// 放在「年龄」标题行右侧，不单独占行。
+class UnitSwitch extends StatelessWidget {
+  const UnitSwitch({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final p = context.pal, imperial = context.units.isImperial;
+    Widget option(String label, bool selected, Units units) => Semantics(
+      button: true,
+      selected: selected,
+      label: AppMessages.of(context).text(label),
+      excludeSemantics: true,
+      child: Pressable(
+        haptic: !selected,
+        onTap: selected ? null : () => context.app.setUnits(units),
+        child: Container(
+          height: 28,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: selected ? p.primary : p.fill2.withValues(alpha: 0),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: LText(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: selected ? p.onPrimary : p.secondary,
+            ),
+          ),
+        ),
+      ),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: p.fill2,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            option('kg · cm', !imperial, Units.metric),
+            option('lb · ft in', imperial, Units.imperial),
+          ],
+        ),
+      ),
+    );
+  }
 }

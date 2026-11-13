@@ -14,6 +14,8 @@ import '../../app/routes.dart';
 import '../../config/ai_provider.dart';
 import '../../theme/theme.dart';
 import '../kit/grouped.dart';
+import '../kit/units_scope.dart';
+import '../../domain/units.dart';
 import '../kit/wordmark.dart';
 import 'me_row.dart';
 import 'profile_card.dart';
@@ -23,7 +25,7 @@ class MePage extends StatelessWidget {
   final bool wide;
   @override
   Widget build(BuildContext context) {
-    final app = context.app, p = context.pal;
+    final app = context.app, p = context.pal, units = context.units;
     final latest = app.bodyEntries.lastOrNull;
     final plan = app.plans
         .where((e) => e['id'] == app.activePlanId)
@@ -69,7 +71,10 @@ class MePage extends StatelessWidget {
                     label: '记体重和腰围',
                     value: latest == null
                         ? null
-                        : '${(latest['weightKg'] as num).toStringAsFixed(1)} kg',
+                        : units.bodyWeightText(
+                            latest['weightKg'] as num,
+                            fixed: true,
+                          ),
                     icon: 'chart',
                     onTap: () => openBodyLog(context),
                   ),
@@ -87,6 +92,28 @@ class MePage extends StatelessWidget {
                     label: '每日目标与休息',
                     icon: 'note',
                     onTap: () => openGoals(context),
+                  ),
+                  MeRow(
+                    label: '单位',
+                    icon: 'weight',
+                    value: unitSystemLabel(units),
+                    onTap: () async {
+                      final selected = await showActionMenu(
+                        context,
+                        title: '单位',
+                        actions: [
+                          for (final u in [Units.metric, Units.imperial])
+                            MenuAction(
+                              id: u.id,
+                              label: unitSystemLabel(u),
+                              selected: u == units,
+                            ),
+                        ],
+                      );
+                      if (selected != null) {
+                        await app.setUnits(Units.byId(selected.id));
+                      }
+                    },
                   ),
                   MeRow(
                     label: '语言',
@@ -201,3 +228,7 @@ class MePage extends StatelessWidget {
     );
   }
 }
+
+/// 「单位」设置的选项文字。
+String unitSystemLabel(Units u) =>
+    u.isImperial ? '英制（lb · ft in）' : '公制（kg · cm）';

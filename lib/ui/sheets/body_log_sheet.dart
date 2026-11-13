@@ -11,12 +11,14 @@ import '../kit/transitions.dart';
 
 import '../../app/app_controller.dart';
 import '../../domain/calendar.dart' as calendar;
+import '../../domain/units.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
 import '../kit/grouped.dart';
 import '../kit/number_field.dart';
 import '../kit/pressable.dart';
 import '../kit/sheet.dart';
+import '../kit/units_scope.dart';
 
 Future<void> openBodyLog(BuildContext context) =>
     showAppSheet<void>(context, (_) => const BodyLogSheet());
@@ -38,16 +40,22 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_weight != null) return;
-    final app = context.app;
+    final app = context.app, units = context.units;
     final recent = app.bodyEntries.lastOrNull;
-    _weight = ((recent?['weightKg'] ?? app.profile?['weightKg'] ?? 70) as num)
-        .toStringAsFixed(1);
+    _weight = units.bodyWeight(
+      (recent?['weightKg'] ?? app.profile?['weightKg'] ?? 70) as num,
+      fixed: true,
+    );
     final waist =
         app.bodyEntries.reversed
             .where((e) => e['waistCm'] != null)
             .firstOrNull?['waistCm'] ??
         app.profile?['waistCm'];
-    _waist = waist == null ? '' : '$waist';
+    _waist = waist == null
+        ? ''
+        : units.isImperial
+        ? units.length(waist as num)
+        : '$waist';
   }
 
   @override
@@ -57,9 +65,12 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
   }
 
   void _step(int direction) {
-    final next = ((double.tryParse(_weight!) ?? 70) + direction * .1)
-        .clamp(30, 250)
-        .toStringAsFixed(1);
+    final units = context.units;
+    final next =
+        ((double.tryParse(_weight!) ?? units.bodyWeightValue(70)) +
+                direction * .1)
+            .clamp(units.isImperial ? 67 : 30, units.isImperial ? 551 : 250)
+            .toStringAsFixed(1);
     if (next == _weight) return;
     HapticScope.of(context)?.tick();
     setState(() => _weight = next);
@@ -107,27 +118,33 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
       _error = '';
     });
     try {
+      final units = context.units;
       final weight = double.tryParse(_weight!) ?? double.nan;
       final waist = _waistOpen && _waist.isNotEmpty
           ? double.tryParse(_waist) ?? double.nan
           : null;
       // 先在这里核对输入：只有体重/腰围真的超出范围，才显示范围提示。
+      final waistCm = waist == null ? null : units.lengthToCm(waist);
       if (!weight.isFinite ||
-          weight < 30 ||
-          weight > 250 ||
-          (waist != null && (!waist.isFinite || waist < 20 || waist > 200))) {
-        throw const FormatException('请输入 30–250 kg 的体重，腰围为 20–200 cm');
+          !units.bodyWeightInRange(weight) ||
+          (waistCm != null &&
+              (!waistCm.isFinite || waistCm < 20 || waistCm > 200))) {
+        throw FormatException(
+          units.isImperial
+              ? '请输入 ${units.bodyWeightRangeText} 的体重，腰围为 ${units.lengthRangeText}'
+              : '请输入 30–250 kg 的体重，腰围为 20–200 cm',
+        );
       }
       final app = context.app;
       await app.recordBody(
-        weightKg: weight,
-        waistCm: waist,
+        weightKg: units.bodyWeightToKg(weight),
+        waistCm: waistCm,
         date: calendar.shiftDate(app.today, -_day),
         updateProfile: _update,
       );
       if (!mounted) return;
       app.haptics.saved();
-      app.toast.show('已记录 ${weight.toStringAsFixed(1)} kg');
+      app.toast.show('已记录 ${weight.toStringAsFixed(1)} ${units.weightUnit}');
       SheetController.of(context).close();
     } catch (error) {
       if (mounted) {
@@ -144,7 +161,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final app = context.app, p = context.pal;
+    final app = context.app, p = context.pal, units = context.units;
     final entries = app.bodyEntries;
     return AppSheet(
       title: '记体重',
@@ -176,7 +193,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                             child: SheetInput(
                               value: _weight!,
                               onChanged: (v) => _weight = v,
-                              label: '体重 kg',
+                              label: '体重 ${units.weightUnit}',
                               numeric: true,
                               size: 60,
                               weight: FontWeight.w700,
@@ -187,7 +204,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                       ),
                       const SizedBox(width: 4),
                       LText(
-                        'kg',
+                        units.weightUnit,
                         style: TextStyle(fontSize: 17, color: p.secondary),
                       ),
                     ],
@@ -209,13 +226,13 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                 visible: _waistOpen,
                 child: _waistOpen
                     ? GroupRow(
-                        label: '腰围 cm',
+                        label: '腰围 ${units.lengthUnit}',
                         trailing: SizedBox(
                           width: 110,
                           child: SheetInput(
                             value: _waist,
                             onChanged: (v) => _waist = v,
-                            label: '腰围 cm',
+                            label: '腰围 ${units.lengthUnit}',
                             numeric: true,
                             align: TextAlign.right,
                           ),
@@ -238,8 +255,11 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                           onTap: () => setState(() => _day = i),
                           child: Container(
                             alignment: Alignment.center,
-                            width: 64,
-                            height: 44,
+                            constraints: const BoxConstraints(
+                              minWidth: 64,
+                              minHeight: 44,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
                               color: _day == i ? p.primary : p.fill2,
                               borderRadius: BorderRadius.circular(10),
@@ -294,16 +314,16 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        (e['weightKg'] as num).toStringAsFixed(1),
+                        units.bodyWeight(e['weightKg'] as num, fixed: true),
                         style: AppText.num(p, 22),
                       ),
                       Text(
-                        ' kg',
+                        ' ${units.weightUnit}',
                         style: TextStyle(fontSize: 13, color: p.secondary),
                       ),
                     ],
                   ),
-                  sub: _delta(entries, e),
+                  sub: _delta(units, entries, e),
                 ),
             ],
           ),
@@ -313,6 +333,7 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
   }
 
   String? _delta(
+    Units units,
     List<Map<String, dynamic>> entries,
     Map<String, dynamic> entry,
   ) {
@@ -322,6 +343,6 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
         (entry['weightKg'] as num) - (entries[index - 1]['weightKg'] as num);
     return delta == 0
         ? '较前一次 持平'
-        : '较前一次 ${delta > 0 ? '↑' : '↓'}${delta.abs().toStringAsFixed(1)} kg';
+        : '较前一次 ${delta > 0 ? '↑' : '↓'}${units.bodyWeightDelta(delta, fixed: true)} ${units.weightUnit}';
   }
 }

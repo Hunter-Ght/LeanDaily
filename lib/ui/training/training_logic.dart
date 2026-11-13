@@ -2,6 +2,7 @@ import '../../app/app_controller.dart';
 import '../../data/state_doc.dart' show mark;
 import '../../domain/format.dart';
 import '../../domain/movements.dart' show musclesOf;
+import '../../domain/units.dart';
 import '../today/today_model.dart';
 
 /// Uses the same row schema and defaults as the former inline recorder.
@@ -13,11 +14,18 @@ num trainingReps(
 num trainingWeight(
   Map<String, dynamic> e,
   Map<String, dynamic> target,
-  List<Map<String, dynamic>> sets,
-) => jsNumber(
-  sets.lastOrNull?['w'] ??
-      (jsTruthy(target['weight']) ? target['weight'] : e['weight']),
-);
+  List<Map<String, dynamic>> sets, [
+  Units units = Units.metric,
+]) {
+  final recorded = sets.lastOrNull?['w'];
+  if (recorded != null) return jsNumber(recorded);
+  final w = jsNumber(
+    jsTruthy(target['weight']) ? target['weight'] : e['weight'],
+  );
+  // 有练过的记录：如实用记录里的重量；没有：计划的建议重量，英制吸附到整档。
+  return jsTruthy(target['last']) ? w : units.suggestedLoad(w);
+}
+
 bool trainingHasLoad(Map<String, dynamic> e, List<Map<String, dynamic>> sets) =>
     musclesOf(e['name'], '${e['part']}')?['kind'] != 'bw' &&
     (jsTruthy(e['machine']) ||

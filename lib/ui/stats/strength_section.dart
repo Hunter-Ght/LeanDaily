@@ -16,6 +16,8 @@ import '../kit/app_icon.dart';
 import '../kit/form.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
+import '../kit/units_scope.dart';
+import '../../domain/units.dart';
 import 'progress_sections.dart' show rangeEyebrow;
 import 'stat_widgets.dart';
 
@@ -129,12 +131,12 @@ class _StrengthRowView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 3),
-                          _caption(p),
+                          _caption(p, context.units),
                         ],
                       ),
                     ),
                     const SizedBox(width: 12),
-                    _best(p),
+                    _best(p, context.units),
                     const SizedBox(width: 6),
                     Transform.rotate(
                       angle: open ? -math.pi / 2 : math.pi / 2,
@@ -155,7 +157,7 @@ class _StrengthRowView extends StatelessWidget {
   }
 
   /// 最佳成绩：大数字 + 小号单位。
-  Widget _best(AppPalette p) {
+  Widget _best(AppPalette p, Units units) {
     final unit = TextStyle(fontSize: 13, color: p.secondary);
     final b = row.best;
     return Row(
@@ -169,8 +171,8 @@ class _StrengthRowView extends StatelessWidget {
               LText(' 次', style: unit),
             ]
           : [
-              Text(fmt(b['heavy']), style: AppText.num(p, 26)),
-              LText(' kg', style: unit),
+              Text(units.load(jsNumber(b['heavy'])), style: AppText.num(p, 26)),
+              LText(' ${units.weightUnit}', style: unit),
               Text(' × ', style: unit),
               Text(fmt(b['heavyReps']), style: AppText.num(p, 26)),
             ],
@@ -178,7 +180,7 @@ class _StrengthRowView extends StatelessWidget {
   }
 
   /// 与范围起点相比的变化：进步用发力橙，其余用次要色。
-  Widget _caption(AppPalette p) {
+  Widget _caption(AppPalette p, Units units) {
     final secondary = TextStyle(fontSize: 13, height: 1.3, color: p.secondary);
     final base = row.base == StrengthBase.firstRecord
         ? '第一次记录'
@@ -187,7 +189,7 @@ class _StrengthRowView extends StatelessWidget {
             StatsRange.weeks12 => '12 周前',
             StatsRange.all => '第一次记录',
           };
-    final v = fmt(row.delta);
+    final v = units.loadDelta(row.delta);
     // 变化按估算极限（自重动作按次数）算，文案里写明口径和对比基准。
     final text = switch (row.change) {
       StrengthChange.first => '首次记录',
@@ -197,9 +199,13 @@ class _StrengthRowView extends StatelessWidget {
       },
       StrengthChange.flat => row.bodyweight ? '次数持平（比$base）' : '估算极限持平（比$base）',
       StrengthChange.up =>
-        row.bodyweight ? '↑ 次数 +$v（比$base）' : '↑ 估算极限 +$v kg（比$base）',
+        row.bodyweight
+            ? '↑ 次数 +$v（比$base）'
+            : '↑ 估算极限 +$v ${units.weightUnit}（比$base）',
       StrengthChange.down =>
-        row.bodyweight ? '次数 −$v（比$base）' : '估算极限 −$v kg（比$base）',
+        row.bodyweight
+            ? '次数 −$v（比$base）'
+            : '估算极限 −$v ${units.weightUnit}（比$base）',
     };
     return LText(
       text,
@@ -217,7 +223,7 @@ class _Curve extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = context.pal;
+    final p = context.pal, units = context.units;
     final points = row.points;
     final body = row.bodyweight;
     final last = points.last;
@@ -245,11 +251,11 @@ class _Curve extends StatelessWidget {
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                body ? fmt(last['reps']) : fmt(last['e1']),
+                body ? fmt(last['reps']) : units.load(jsNumber(last['e1'])),
                 style: AppText.num(p, 36),
               ),
               LText(
-                body ? ' 次' : ' kg',
+                body ? ' 次' : ' ${units.weightUnit}',
                 style: TextStyle(fontSize: 15, color: p.secondary),
               ),
             ],
@@ -258,7 +264,7 @@ class _Curve extends StatelessWidget {
           LText(
             body
                 ? '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 次'
-                : '最近一次估算极限 · ${shortDate(last['iso'])} · ${fmt(last['weight'])}×${fmt(last['reps'])}',
+                : '最近一次估算极限 · ${shortDate(last['iso'])} · ${units.load(jsNumber(last['weight']))}×${fmt(last['reps'])}',
             style: AppText.hint(p),
           ),
           // 估算极限在 12 次以内才比较准；次数多时照常显示，但标明仅供参考。

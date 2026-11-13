@@ -22,7 +22,19 @@ class ProfileRuler extends StatefulWidget {
     required this.max,
     required this.step,
     required this.onChanged,
+    this.format,
+    this.majorEvery = 10,
+    this.compact = false,
   });
+
+  /// 矮屏幕：标题和读数合成一行，刻度条也矮一些。
+  final bool compact;
+
+  /// 读数文字；默认是「数值 + 单位」。身高英制要写成「5 ft 9 in」。
+  final String Function(double value)? format;
+
+  /// 每隔多少格画一根长刻度（公制 10；英寸身高 12，正好是一英尺）。
+  final int majorEvery;
   final String label;
   final String unit;
   final double value;
@@ -30,6 +42,8 @@ class ProfileRuler extends StatefulWidget {
   final double max;
   final double step;
   final ValueChanged<double> onChanged;
+  String text(double value) =>
+      format?.call(value) ?? '${value.toStringAsFixed(step < 1 ? 1 : 0)} $unit';
   @override
   State<ProfileRuler> createState() => _ProfileRulerState();
 }
@@ -117,12 +131,12 @@ class _ProfileRulerState extends State<ProfileRuler> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      LText(widget.label, style: AppText.h2(context.pal)),
+      if (!widget.compact) LText(widget.label, style: AppText.h2(context.pal)),
       ValueListenableBuilder<double>(
         valueListenable: _value,
         builder: (context, value, _) => Semantics(
           label: AppMessages.of(context).text(widget.label),
-          value: AppMessages.of(context).text('$value ${widget.unit}'),
+          value: AppMessages.of(context).text(widget.text(value)),
           increasedValue: AppMessages.of(context)
               .text('${(value + widget.step).clamp(widget.min, widget.max)}'),
           decreasedValue: AppMessages.of(context)
@@ -141,17 +155,33 @@ class _ProfileRulerState extends State<ProfileRuler> {
                 curve: Curves.easeOut,
               )
               .then((_) => _queueCommit()),
-          child: Center(
-            child: LText(
-              '${value.toStringAsFixed(widget.step < 1 ? 1 : 0)} ${widget.unit}',
-              style: AppText.navDay(context.pal).copyWith(fontSize: 28),
-            ),
-          ),
+          child: widget.compact
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: LText(
+                        widget.label,
+                        style: AppText.h2(context.pal),
+                        maxLines: 1,
+                      ),
+                    ),
+                    LText(
+                      widget.text(value),
+                      style: AppText.navDay(context.pal).copyWith(fontSize: 22),
+                    ),
+                  ],
+                )
+              : Center(
+                  child: LText(
+                    widget.text(value),
+                    style: AppText.navDay(context.pal).copyWith(fontSize: 28),
+                  ),
+                ),
         ),
       ),
-      const SizedBox(height: 8),
+      SizedBox(height: widget.compact ? 4 : 8),
       SizedBox(
-        height: 48,
+        height: widget.compact ? 36 : 48,
         child: LayoutBuilder(
           builder: (context, constraints) => Stack(
             children: [
@@ -165,10 +195,14 @@ class _ProfileRulerState extends State<ProfileRuler> {
                   scrollDirection: Axis.horizontal,
                   physics: const ClampingScrollPhysics(),
                   child: CustomPaint(
-                    size: Size(count * spacing + constraints.maxWidth, 48),
+                    size: Size(
+                      count * spacing + constraints.maxWidth,
+                      widget.compact ? 36 : 48,
+                    ),
                     painter: _RulerPainter(
                       start: constraints.maxWidth / 2,
                       count: count,
+                      major: widget.majorEvery,
                       color: context.pal.tertiary,
                     ),
                   ),
@@ -202,9 +236,11 @@ class _RulerPainter extends CustomPainter {
     required this.start,
     required this.count,
     required this.color,
+    this.major = 10,
   });
   final double start;
   final int count;
+  final int major;
   final Color color;
   @override
   void paint(Canvas canvas, Size size) {
@@ -220,9 +256,9 @@ class _RulerPainter extends CustomPainter {
         Offset(x, 0),
         Offset(
           x,
-          i % 10 == 0
+          i % major == 0
               ? 26
-              : i % 5 == 0
+              : i % (major ~/ 2) == 0
               ? 19
               : 12,
         ),
@@ -235,5 +271,6 @@ class _RulerPainter extends CustomPainter {
   bool shouldRepaint(_RulerPainter oldDelegate) =>
       start != oldDelegate.start ||
       count != oldDelegate.count ||
+      major != oldDelegate.major ||
       color != oldDelegate.color;
 }

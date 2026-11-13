@@ -7,6 +7,7 @@ import '../../app/routes.dart';
 import '../../domain/body_trend.dart';
 import '../../theme/theme.dart';
 import '../kit/form.dart';
+import '../kit/units_scope.dart';
 import '../me/profile_card.dart';
 import 'stat_widgets.dart';
 import 'progress_sections.dart' show InkButton;
@@ -18,7 +19,7 @@ class BodyRouteCard extends StatelessWidget {
   final bool softAction;
   @override
   Widget build(BuildContext context) {
-    final app = context.app, p = context.pal;
+    final app = context.app, p = context.pal, units = context.units;
     // 起点用评估时记下的体重/体脂，不随“同步体重”变化。
     final base = app.baseline;
     final profile = app.profile == null || base == null
@@ -61,15 +62,21 @@ class BodyRouteCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(mean.toStringAsFixed(1), style: AppText.num(p, 48)),
+              Text(
+                units.bodyWeight(mean, fixed: true),
+                style: AppText.num(p, 48),
+              ),
               const SizedBox(width: 4),
-              LText('kg', style: TextStyle(fontSize: 16, color: p.secondary)),
+              LText(
+                units.weightUnit,
+                style: TextStyle(fontSize: 16, color: p.secondary),
+              ),
               const Spacer(),
               if (change != null) ...[
                 LText(change == 0 ? '本周持平' : '本周', style: AppText.hint(p)),
                 if (change != 0)
                   Text(
-                    ' ${change > 0 ? '+' : '−'}${change.abs().toStringAsFixed(1)} ',
+                    ' ${change > 0 ? '+' : '−'}${units.bodyWeightDelta(change, fixed: true)} ',
                     style: AppText.num(
                       p,
                       20,
@@ -78,7 +85,8 @@ class BodyRouteCard extends StatelessWidget {
                           : p.text,
                     ),
                   ),
-                if (change != 0) LText('kg', style: AppText.hint(p)),
+                if (change != 0)
+                  LText(units.weightUnit, style: AppText.hint(p)),
               ],
             ],
           ),

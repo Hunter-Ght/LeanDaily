@@ -11,6 +11,9 @@ const defaults = <String, dynamic>{
   'protocol': 'chat',
   'haptics': true,
   'autoUpdateCheck': true,
+
+  /// 'metric' | 'imperial'；null = 还没选过（新安装按地区，老用户公制）。
+  'units': null,
 };
 
 class Settings {
@@ -147,7 +150,8 @@ class CustomMusclesStore {
     return {
       if (v is Map)
         for (final e in v.entries)
-          if (e.key is String && e.value is String) e.key as String: e.value as String,
+          if (e.key is String && e.value is String)
+            e.key as String: e.value as String,
     };
   }
 

@@ -16,6 +16,7 @@ import '../kit/pressable.dart';
 import 'train/controls.dart';
 import 'train/exercise_info.dart';
 import 'train/muscle_focus.dart';
+import '../kit/units_scope.dart';
 
 /// 器械详情页（记一组弹层里的一页）：自动播放示范、动作选择片、练哪里、恢复、上次记录、上器械前先调好。
 /// 当前选中的动作由上层持有，返回到这一页时不丢；“记录这个动作”按钮在上层的底部栏。
@@ -38,7 +39,7 @@ class EquipmentDetail extends StatelessWidget {
     final last = (app.repo.recentByExercise()['last'] as Map)[selected] as Map?;
     final part = partOfExercise(selected);
     final info = exerciseInfo(AppMessages.of(context), status, selected, part);
-    final line = lastLineOf(last);
+    final line = lastLineOf(last, context.units);
     final hasGuide = guideFor({'name': selected}) != null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),

@@ -11,6 +11,7 @@ import '../../domain/goals.dart';
 import '../../domain/weekly_review.dart';
 import '../../theme/theme.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 
 Map<String, dynamic>? weeklyReviewFor(AppController app) {
   final days = app.repo.allDays().map((k, v) => MapEntry(k, jsonMap(v)));
@@ -161,11 +162,11 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
           if (r['weightAvg'] != null) ...[
             const SizedBox(height: 12),
             LText(
-              '体重均值 ${fmt(r['weightAvg'])} kg${change == null
+              '体重均值 ${context.units.bodyWeight(r['weightAvg'] as num)} ${context.units.weightUnit}${change == null
                   ? ''
                   : change.abs() < 0.05
                   ? ' · 与前一周持平'
-                  : ' · ${change < 0 ? '↓' : '↑'}${fmt(double.parse(change.abs().toStringAsFixed(1)))} kg'}',
+                  : ' · ${change < 0 ? '↓' : '↑'}${context.units.bodyWeightDelta(change)} ${context.units.weightUnit}'}',
               style: TextStyle(fontSize: 13, color: p.secondary),
             ),
           ],

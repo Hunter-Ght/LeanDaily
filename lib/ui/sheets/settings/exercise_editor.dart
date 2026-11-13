@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 
 import '../../../domain/format.dart';
 import '../../../domain/guide.dart';
+import '../../../domain/units.dart';
 import '../../../theme/theme.dart';
 import '../../kit/form.dart';
+import '../../kit/units_scope.dart';
 
 /// 单个动作的编辑表单。只改传入的草稿，不触碰已保存计划。
 class ExerciseEditor extends StatelessWidget {
@@ -143,7 +145,13 @@ class ExerciseEditor extends StatelessWidget {
                 _number('组数', 'sets'),
                 _number('最少', 'min', enabled: !ladder),
                 _number('最多', 'max', enabled: !ladder),
-                _number('kg', 'weight'),
+                context.units.isImperial
+                    ? _LoadField(
+                        exercise: exercise,
+                        units: context.units,
+                        onChanged: onChanged,
+                      )
+                    : _number('kg', 'weight'),
               ],
             ),
             Row(
@@ -220,4 +228,47 @@ class ExerciseEditor extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 英制下的动作重量：按 lb 输入，存成 kg。敲到一半的原文（如「12.」）先留着，不被换算回写打断。
+class _LoadField extends StatefulWidget {
+  const _LoadField({
+    required this.exercise,
+    required this.units,
+    required this.onChanged,
+  });
+  final Map<String, dynamic> exercise;
+  final Units units;
+  final VoidCallback onChanged;
+  @override
+  State<_LoadField> createState() => _LoadFieldState();
+}
+
+class _LoadFieldState extends State<_LoadField> {
+  String? _draft;
+  @override
+  Widget build(BuildContext context) => Expanded(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LText(widget.units.weightUnit, style: const TextStyle(fontSize: 12)),
+        FormInput(
+          label: '${widget.units.weightUnit}·${widget.exercise['name']}',
+          value:
+              _draft ??
+              widget.units.suggested(jsNumber(widget.exercise['weight'] ?? 0)),
+          numeric: true,
+          filled: true,
+          align: TextAlign.center,
+          onChanged: (s) {
+            final n = jsNumber(s);
+            if (!n.isFinite) return;
+            _draft = s;
+            widget.exercise['weight'] = widget.units.loadToKg(n);
+            widget.onChanged();
+          },
+        ),
+      ],
+    ),
+  );
 }

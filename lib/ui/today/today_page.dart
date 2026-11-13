@@ -15,6 +15,7 @@ import '../stats/weekly_review_card.dart';
 import '../kit/menu.dart';
 import '../kit/grouped.dart';
 import '../kit/pressable.dart';
+import '../kit/units_scope.dart';
 import '../kit/transitions.dart';
 import '../kit/segments.dart';
 import 'guide_body.dart';
@@ -464,18 +465,23 @@ class _TodayPageState extends State<TodayPage> {
                       SizedBox(
                         width: 68,
                         child: TodayInput(
-                          value: fmt(s['step']),
+                          value: context.units.stepText(s['step'] as num),
                           numeric: true,
                           label: '最小一档',
                           onChanged: (v) {
                             final n = num.tryParse(v);
-                            if (n != null && n > 0 && n <= 50) {
-                              app.setStep('${s['ex']}', n);
+                            if (n != null &&
+                                n > 0 &&
+                                n <= context.units.stepMax) {
+                              app.setStep(
+                                '${s['ex']}',
+                                context.units.stepToKg(n),
+                              );
                             }
                           },
                         ),
                       ),
-                      text('kg'),
+                      text(context.units.weightUnit),
                     ],
                   )
                 : null,
