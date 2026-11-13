@@ -432,49 +432,110 @@ void main() {
     expect(counts[50]!.reduce((a, b) => a > b ? a : b) >= 7, true);
   });
 
-  test('打印每周组数表（供检查）', () {
-    String table(Map<String, dynamic> base, List<String> foci) {
-      final out = StringBuffer();
-      out.writeln('配置：${const JsonEncoder().convert(base)}');
-      out.writeln('重点\t\t版本\t${recipeGroups.join('\t')}');
-      for (final focus in foci) {
-        final plan = buildRecipePlan({...base, 'focus': focus});
-        for (final venue in ['home', 'gym']) {
-          final v = weeklyVolume(plan, venue: venue);
-          out.writeln(
-            '${focus.padRight(15)}\t$venue\t'
-            '${v.map((e) => (e['sets'] as num).toStringAsFixed(1)).join('\t')}',
-          );
-        }
-      }
-      return out.toString();
-    }
+  test('结构检查本身有效：故意改坏的方案会被查出来', () {
+    Map<String, dynamic> fresh() => jsonDecode(
+      jsonEncode(
+        buildRecipePlan(
+          makeRecipe(
+            days: 3,
+            minutes: 35,
+            focus: 'balanced',
+            venue: 'gym',
+            experience: 'new',
+          ),
+        ),
+      ),
+    );
+    expect(recipeProblems(fresh()), isEmpty);
+    // 把全身 A 的健身房版推和拉都删掉。
+    var plan = fresh();
+    var list = plan['workouts']['r1']['gym']['exercises'] as List;
+    list.removeRange(0, 2);
+    expect(recipeSkeleton(plan), isNotEmpty);
+    // 在推日式的位置塞两个腹。
+    plan = fresh();
+    list = plan['workouts']['r1']['exercises'] as List;
+    list.add({...list.last as Map, 'id': 'x', 'name': '卷腹'});
+    expect(recipeSkeleton(plan), isNotEmpty);
+    // 主项排到辅助后面。
+    plan = fresh();
+    list = plan['workouts']['r2']['exercises'] as List;
+    list.add(list.removeAt(0));
+    expect(recipeSkeleton(plan), isNotEmpty);
+    // 辅助动作 4 组（非重点）。
+    plan = fresh();
+    list = plan['workouts']['r1']['exercises'] as List;
+    (list.last as Map)['sets'] = 4;
+    expect(recipeStructure(plan), isNotEmpty);
+  });
 
-    // ignore: avoid_print
-    print(
-      table(
-        makeRecipe(
-          days: 3,
-          minutes: 35,
-          focus: 'balanced',
-          venue: 'dumbbell',
-          experience: 'new',
-        ),
-        recipeFocuses,
+  test('打印 8 份方案（供检查编排）', () {
+    final configs = [
+      makeRecipe(
+        days: 3,
+        minutes: 35,
+        focus: 'balanced',
+        venue: 'bodyweight',
+        experience: 'new',
       ),
-    );
-    // ignore: avoid_print
-    print(
-      table(
-        makeRecipe(
-          days: 4,
-          minutes: 50,
-          focus: 'balanced',
-          venue: 'gym',
-          experience: 'some',
-        ),
-        ['balanced'],
+      makeRecipe(
+        days: 3,
+        minutes: 35,
+        focus: 'shoulders_back',
+        venue: 'dumbbell',
+        experience: 'new',
       ),
-    );
+      makeRecipe(
+        days: 3,
+        minutes: 35,
+        focus: 'balanced',
+        venue: 'gym',
+        experience: 'new',
+      ),
+      makeRecipe(
+        days: 3,
+        minutes: 20,
+        focus: 'balanced',
+        venue: 'gym',
+        experience: 'new',
+      ),
+      makeRecipe(
+        days: 4,
+        minutes: 50,
+        focus: 'balanced',
+        venue: 'gym',
+        experience: 'some',
+      ),
+      makeRecipe(
+        days: 3,
+        minutes: 35,
+        focus: 'balanced',
+        venue: 'gym',
+        experience: 'some',
+        split: 'ppl',
+      ),
+      makeRecipe(
+        days: 2,
+        minutes: 35,
+        focus: 'balanced',
+        venue: 'dumbbell',
+        experience: 'new',
+        limits: ['膝'],
+        stage: 'cut',
+      ),
+      makeRecipe(
+        days: 5,
+        minutes: 50,
+        focus: 'glutes_legs',
+        venue: 'gym',
+        experience: 'trained',
+      ),
+    ];
+    for (final c in configs) {
+      final text = recipeDescribe(c);
+      // ignore: avoid_print
+      print(text);
+      expect(recipeProblems(buildRecipePlan(c)), isEmpty, reason: text);
+    }
   });
 }
