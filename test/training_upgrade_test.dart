@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -71,10 +70,6 @@ Future<void> tap(WidgetTester t, String label) async {
 /// 英文截图：把还没导入的 pending 翻译并进目录。
 Future<void> mergePending() async {
   await AppMessages.initialize();
-  await AppMessages.debugMerge(
-    jsonDecode(File('tool/l10n/pending/train.json').readAsStringSync())
-        as Map<String, dynamic>,
-  );
 }
 
 Future<void> tapSoft(WidgetTester t, String label) async {

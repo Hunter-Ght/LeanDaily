@@ -227,34 +227,36 @@ class _CardioSheetState extends State<CardioSheet> {
             ),
           ),
           const SizedBox(height: 12),
-          GroupCard(
-            children: [
-              GroupRow(
-                label: '距离（可选）',
-                chevron: false,
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 90,
-                      child: SheetInput(
-                        value: _distance,
-                        onChanged: (v) => _distance = v,
-                        label: '距离 ${units.distanceUnit}',
-                        placeholder: '0.0',
-                        numeric: true,
-                        align: TextAlign.right,
+          GroupScope(
+            child: GroupCard(
+              children: [
+                GroupRow(
+                  label: '距离（可选）',
+                  chevron: false,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 90,
+                        child: SheetInput(
+                          value: _distance,
+                          onChanged: (v) => _distance = v,
+                          label: '距离 ${units.distanceUnit}',
+                          placeholder: '0.0',
+                          numeric: true,
+                          align: TextAlign.right,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      units.distanceUnit,
-                      style: TextStyle(fontSize: 15, color: p.secondary),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      Text(
+                        units.distanceUnit,
+                        style: TextStyle(fontSize: 15, color: p.secondary),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           LText('吃力程度（可选）', style: AppText.hint(p)),

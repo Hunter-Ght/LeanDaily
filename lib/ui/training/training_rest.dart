@@ -135,16 +135,19 @@ class _TrainingRestViewState extends State<TrainingRestView> {
             color: p.tintSoft,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: LText(
-            '新纪录 · $label',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.3,
-              fontWeight: FontWeight.w700,
-              color: p.tint,
+          // 一行说完；动作名太长时整体缩小，不把「5 kg」拆到两行。
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: LText(
+              '新纪录 · $label',
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.3,
+                fontWeight: FontWeight.w700,
+                color: p.tint,
+              ),
             ),
           ),
         ),
