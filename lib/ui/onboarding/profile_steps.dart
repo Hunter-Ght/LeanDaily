@@ -56,7 +56,7 @@ class IdentityStep extends StatelessWidget {
     builder: (context, box) {
       // 矮屏幕（小机型、系统安全区占掉不少高度）：压紧间距和刻度条，
       // 更矮时再收起副标题，保证隐私政策那一行在首屏。
-      final compact = box.maxHeight < 700, tiny = box.maxHeight < 560;
+      final compact = box.maxHeight < 600, tiny = box.maxHeight < 520;
       return _page(context, compact: compact, tiny: tiny);
     },
   );

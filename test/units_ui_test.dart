@@ -52,6 +52,8 @@ void main() {
       final h = await Harness.pump(t, tab: 3, region: 'US');
       expect(h.controller.units, Units.metric);
       expect(find.text('公制（kg · cm）'), findsOneWidget);
+      await t.ensureVisible(find.text('单位'));
+      await settle(t);
       await t.tap(find.text('单位'));
       await settle(t);
       await t.tap(find.text('英制（lb · ft in）'));
@@ -197,10 +199,11 @@ void main() {
           lessThanOrEqualTo(0.5),
           reason: 'step 1 scrolls',
         );
-        expect(privacy.bottom, lessThanOrEqualTo(page.bottom));
-        expect(card.bottom, lessThan(privacy.top));
+        // 隐私政策行固定在「继续」上方（滚动页之外）：卡片在它上面，它在主按钮上面，都在屏内。
+        expect(card.bottom, lessThanOrEqualTo(page.bottom));
+        expect(page.bottom, lessThanOrEqualTo(privacy.top + 1));
+        expect(privacy.bottom, lessThanOrEqualTo(next.top + 1));
         expect(next.bottom, lessThanOrEqualTo(size.height));
-        expect(next.top, greaterThanOrEqualTo(page.bottom - 1));
         // 顶栏左侧留给「上一步」/ 备份恢复按钮：单位分段不在那里
         final unitSwitch = t.getRect(find.byType(UnitSwitch));
         expect(unitSwitch.top, greaterThan(page.top));

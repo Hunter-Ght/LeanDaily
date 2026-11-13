@@ -3346,7 +3346,7 @@
   "体重 {p0}": "Weight {p0}",
   "体重均值 {p0} {p1}{p2}": "Average weight {p0} {p1}{p2}",
   "动作没变形、还有余力的话，试 {p0}（+{p1}），次数回到 {p2} {p3}。": "If your form held and you had reps in reserve, try {p0} (+{p1}) and go back to {p2} {p3}.",
-  "和昨天的{p0}一样": "Same as yesterday",
+  "和昨天的{p0}一样": "Same as yesterday ({p0})",
   "已记入 {p0}：{p1} 千卡 / 蛋白 {p2} g": "Added to {p0}: {p1} kcal / {p2} g protein",
   "已记录 {p0} {p1}": "Logged {p0} {p1}",
   "常吃整餐最多 {p0} 个": "You can save up to {p0} meals",

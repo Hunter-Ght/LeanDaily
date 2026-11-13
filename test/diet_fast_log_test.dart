@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,7 +6,6 @@ import 'package:leandaily/core/native.dart';
 import 'package:leandaily/data/backup.dart';
 import 'package:leandaily/data/my_foods_store.dart';
 import 'package:leandaily/data/repository.dart';
-import 'package:leandaily/l10n/app_messages.dart';
 import 'package:leandaily/ui/kit/form.dart' show FormSwitch;
 import 'package:leandaily/ui/sheets/food/food_controls.dart';
 import 'package:leandaily/ui/sheets/quick_food_sheet.dart';
@@ -65,15 +63,6 @@ Future<Harness> _pump(
   Locale locale = const Locale('zh', 'CN'),
   void Function(FakeNative)? seed,
 }) async {
-  if (locale.languageCode == 'en') {
-    // 还没导入主翻译表时，用 pending 里的英文模拟导入后的样子。
-    await tester.runAsync(
-      () => AppMessages.debugMerge(
-        jsonDecode(File('tool/l10n/pending/diet.json').readAsStringSync())
-            as Map<String, dynamic>,
-      ),
-    );
-  }
   final h = await Harness.pump(
     tester,
     tab: 1,
