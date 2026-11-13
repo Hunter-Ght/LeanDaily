@@ -32,6 +32,7 @@ import '../domain/calendar.dart' as calendar;
 import '../domain/foods.dart';
 import '../domain/format.dart' show cloneJson;
 import '../domain/plan_library.dart';
+import '../domain/plan_recipe.dart' as recipes;
 import '../domain/templates.dart' as templates;
 import '../domain/plan.dart' as plan_lib;
 import '../domain/progress.dart' as progress_lib;
@@ -1218,6 +1219,70 @@ class AppController extends ChangeNotifier {
     return id;
   }
 
+  /// 当前方案的配方；不是按配方生成的方案返回 null。
+  Map<String, dynamic>? get activeRecipe {
+    final r = plan['recipe'];
+    return r is Map
+        ? recipes.normalizeRecipe(Map<String, dynamic>.from(r))
+        : null;
+  }
+
+  /// 按配方生成的方案：沿用资料里的蛋白目标。
+  Map<String, dynamic> _buildRecipe(Map<String, dynamic> recipe) {
+    final built = recipes.buildRecipePlan(recipe, startDate: today);
+    if (profile != null) (built['protein'] as Map)['goal'] = proteinGoal;
+    return built;
+  }
+
+  /// 按配方新建一份方案，默认直接使用。
+  Future<String> addRecipePlan(
+    Map<String, dynamic> recipe, {
+    bool activate = true,
+  }) async {
+    final id = newId();
+    library = await planStore.add(
+      id: id,
+      name: recipes.recipeName(recipe),
+      plan: _buildRecipe(recipe),
+      source: 'generated',
+    );
+    if (activate) {
+      library = await planStore.setActive(id);
+      await _afterPlanSwitch();
+    } else {
+      notifyListeners();
+    }
+    return id;
+  }
+
+  /// 调整方案：当前方案本来就是按配方生成的，就原地重新生成（保留开始日期、
+  /// 提醒、蛋白设置、器械调节记录和课程进度）；否则另建一份并使用，原方案留在方案库里。
+  Future<void> applyRecipe(Map<String, dynamic> recipe) async {
+    final item = library.items
+        .where((i) => i['id'] == library.activeId)
+        .firstOrNull;
+    if (item == null ||
+        item['source'] != 'generated' ||
+        plan['recipe'] is! Map) {
+      await addRecipePlan(recipe);
+      return;
+    }
+    final built = _buildRecipe(recipe);
+    for (final key in [
+      'startDate',
+      'reminder',
+      'protein',
+      'setups',
+      'course',
+    ]) {
+      if (plan.containsKey(key)) built[key] = plan[key];
+    }
+    final id = item['id'] as String;
+    library = await planStore.update(id, built);
+    library = await planStore.rename(id, recipes.recipeName(recipe));
+    await _afterPlanSwitch();
+  }
+
   Future<void> renamePlan(String id, String name) async {
     library = await planStore.rename(id, name);
     notifyListeners();
@@ -1468,14 +1533,21 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 引导完成：保存资料；全新用户用选中的模板建计划并使用，老用户保留现有计划（[templateId] 为 null）。
+  /// 引导完成：保存资料；全新用户用配方（[recipe]）或选中的模板建计划并使用，
+  /// 老用户保留现有计划（两者都为 null）。
   Future<void> completeOnboarding({
     required Map<String, dynamic> profile,
     String? templateId,
+    Map<String, dynamic>? recipe,
     num? goalBodyFat,
   }) async {
     await setProfile(profile, goalBodyFat: goalBodyFat, resetBaseline: true);
-    if (templateId != null) {
+    if (recipe != null) {
+      // 全新用户直接使用；老用户只添加，不替换正在用的方案。
+      final fresh = _planUnsaved || library.isEmpty;
+      _planUnsaved = false;
+      await addRecipePlan(recipe, activate: fresh);
+    } else if (templateId != null) {
       if (_planUnsaved || library.isEmpty) {
         final built = templates.buildPlan(
           templateId,
