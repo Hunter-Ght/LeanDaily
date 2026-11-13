@@ -1,9 +1,0 @@
-{
-  "单位": {"en": "Units", "zh_Hant": "單位"},
-  "公制（kg · cm）": {"en": "Metric (kg · cm)", "zh_Hant": "公制（kg · cm）"},
-  "英制（lb · ft in）": {"en": "Imperial (lb · ft in)", "zh_Hant": "英制（lb · ft in）"},
-  "身高 ft": {"en": "Height ft", "zh_Hant": "身高 ft"},
-  "身高 in": {"en": "Height in", "zh_Hant": "身高 in"},
-  "腰围 in": {"en": "Waist (in)", "zh_Hant": "腰圍 (in)"},
-  "请输入 67–551 lb 的体重，腰围为 8–78 in": {"en": "Enter a weight of 67–551 lb and a waist of 8–78 in", "zh_Hant": "請輸入 67–551 lb 的體重，腰圍為 8–78 in"}
-}
