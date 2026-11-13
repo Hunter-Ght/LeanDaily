@@ -41,6 +41,7 @@ class StrengthRow {
     required this.base,
     required this.delta,
     required this.lastIso,
+    this.timed = false,
   });
 
   /// stats['bests'] 里这个动作的一项。
@@ -51,6 +52,9 @@ class StrengthRow {
 
   /// 纯自重动作：比较与展示都用次数。
   final bool bodyweight;
+
+  /// 计时动作（平板支撑之类）：记录里的「次数」是秒数，展示按秒。只对自重动作有效。
+  final bool timed;
   final StrengthChange change;
   final StrengthBase base;
 
@@ -66,6 +70,7 @@ List<StrengthRow> strengthRows({
   required List<Map<String, dynamic>> bests,
   required String today,
   required StatsRange range,
+  Set<String> timedNames = const {},
 }) {
   final windowDays = switch (range) {
     StatsRange.weeks4 => 28,
@@ -118,6 +123,7 @@ List<StrengthRow> strengthRows({
         best: b,
         points: points,
         bodyweight: body,
+        timed: body && timedNames.contains('${b['ex']}'),
         change: change,
         base: base,
         delta: delta,

@@ -160,13 +160,13 @@ class BodyPainter extends CustomPainter {
   );
 
   /// 点中的肌肉；小肌肉不好点，落在 10 点以内的最小那块也算。
-  String? muscleAt(Offset point, Size size) {
+  String? muscleAt(Offset point, Size size, {double slopPx = 10}) {
     final scale = _scale(size), origin = _origin(size, scale);
     final p = (point - origin) / scale;
     for (final shape in view.shapes.reversed) {
       if (!shape.neutral && shape.path.contains(p)) return shape.id;
     }
-    final slop = 10 / scale;
+    final slop = slopPx / scale;
     BodyShape? best;
     var bestArea = double.infinity;
     for (final shape in view.shapes) {

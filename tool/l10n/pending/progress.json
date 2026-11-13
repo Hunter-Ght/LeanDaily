@@ -1,0 +1,126 @@
+{
+  "已记录 1 次，再练一次就能看到变化": {
+    "en": "Logged once. Train it again to see your change.",
+    "zh_Hant": "已記錄 1 次，再練一次就能看到變化"
+  },
+  "与上次持平": {
+    "en": "Same as last time",
+    "zh_Hant": "與上次持平"
+  },
+  "↑ 时长 +{p0} 秒（比{p1}）": {
+    "en": "↑ Hold time +{p0} sec (vs {p1})",
+    "zh_Hant": "↑ 時長 +{p0} 秒（比{p1}）"
+  },
+  "时长 −{p0} 秒（比{p1}）": {
+    "en": "Hold time −{p0} sec (vs {p1})",
+    "zh_Hant": "時長 −{p0} 秒（比{p1}）"
+  },
+  "上次标了不舒服，这次先不加量": {
+    "en": "Marked uncomfortable last time. Hold the load this time.",
+    "zh_Hant": "上次標了不舒服，這次先不加量"
+  },
+  "上次动作有点变形，先把动作做标准": {
+    "en": "Form slipped last time. Focus on clean reps.",
+    "zh_Hant": "上次動作有點變形，先把動作做標準"
+  },
+  "上次状态不好，不算进度": {
+    "en": "Off day last time, so it does not count.",
+    "zh_Hant": "上次狀態不好，不算進度"
+  },
+  "目标 {p0} 次，上次做到 {p1} 次": {
+    "en": "Goal {p0} reps, hit {p1} last time",
+    "zh_Hant": "目標 {p0} 次，上次做到 {p1} 次"
+  },
+  "目标 {p0} 秒，上次做到 {p1} 秒": {
+    "en": "Goal {p0} sec, hit {p1} last time",
+    "zh_Hant": "目標 {p0} 秒，上次做到 {p1} 秒"
+  },
+  "已稳定做满 {p0} 次，可以加重量了": {
+    "en": "Solid at {p0} reps. Time to add weight.",
+    "zh_Hant": "已穩定做滿 {p0} 次，可以加重量了"
+  },
+  "已稳定做满 {p0} 次，可以升级难度了": {
+    "en": "Solid at {p0} reps. Time for a harder variation.",
+    "zh_Hant": "已穩定做滿 {p0} 次，可以升級難度了"
+  },
+  "再做满 1 次 {p0} 次就加重量": {
+    "en": "One more session at {p0} reps, then add weight",
+    "zh_Hant": "再做滿 1 次 {p0} 次就加重量"
+  },
+  "再做满 1 次 {p0} 次就升级难度": {
+    "en": "One more session at {p0} reps, then try a harder variation",
+    "zh_Hant": "再做滿 1 次 {p0} 次就升級難度"
+  },
+  "再做满 {p0} 次 {p1} 次就加重量": {
+    "en": "{p0} more sessions at {p1} reps, then add weight",
+    "zh_Hant": "再做滿 {p0} 次 {p1} 次就加重量"
+  },
+  "再做满 {p0} 次 {p1} 次就升级难度": {
+    "en": "{p0} more sessions at {p1} reps, then try a harder variation",
+    "zh_Hant": "再做滿 {p0} 次 {p1} 次就升級難度"
+  },
+  "目标提到了 {p0} 次，下次试试": {
+    "en": "Goal is now {p0} reps. Try it next time.",
+    "zh_Hant": "目標提到了 {p0} 次，下次試試"
+  },
+  "再做到 {p0} 次，目标就提到 {p1} 次": {
+    "en": "Hit {p0} reps once more to raise the goal",
+    "zh_Hant": "再做到 {p0} 次，目標就提到 {p1} 次"
+  },
+  "已稳定做满 {p0} 秒，可以加重量了": {
+    "en": "Solid at {p0} sec. Time to add weight.",
+    "zh_Hant": "已穩定做滿 {p0} 秒，可以加重量了"
+  },
+  "已稳定做满 {p0} 秒，可以升级难度了": {
+    "en": "Solid at {p0} sec. Time for a harder variation.",
+    "zh_Hant": "已穩定做滿 {p0} 秒，可以升級難度了"
+  },
+  "再做满 1 次 {p0} 秒就加重量": {
+    "en": "One more session at {p0} sec, then add weight",
+    "zh_Hant": "再做滿 1 次 {p0} 秒就加重量"
+  },
+  "再做满 1 次 {p0} 秒就升级难度": {
+    "en": "One more session at {p0} sec, then try a harder variation",
+    "zh_Hant": "再做滿 1 次 {p0} 秒就升級難度"
+  },
+  "再做满 {p0} 次 {p1} 秒就加重量": {
+    "en": "{p0} more sessions at {p1} sec, then add weight",
+    "zh_Hant": "再做滿 {p0} 次 {p1} 秒就加重量"
+  },
+  "再做满 {p0} 次 {p1} 秒就升级难度": {
+    "en": "{p0} more sessions at {p1} sec, then try a harder variation",
+    "zh_Hant": "再做滿 {p0} 次 {p1} 秒就升級難度"
+  },
+  "目标提到了 {p0} 秒，下次试试": {
+    "en": "Goal is now {p0} sec. Try it next time.",
+    "zh_Hant": "目標提到了 {p0} 秒，下次試試"
+  },
+  "再做到 {p0} 秒，目标就提到 {p1} 秒": {
+    "en": "Hit {p0} sec once more to raise the goal",
+    "zh_Hant": "再做到 {p0} 秒，目標就提到 {p1} 秒"
+  },
+  "时长": {
+    "en": "Hold time",
+    "zh_Hant": "時長"
+  },
+  "最近一次 · {p0} · 自重 × {p1} 秒": {
+    "en": "Last session · {p0} · Bodyweight × {p1} sec",
+    "zh_Hant": "最近一次 · {p0} · 自重 × {p1} 秒"
+  },
+  "{p0} 的时长": {
+    "en": "{p0} hold time",
+    "zh_Hant": "{p0} 的時長"
+  },
+  "上次练": {
+    "en": "Last trained",
+    "zh_Hant": "上次練"
+  },
+  "最常练": {
+    "en": "Most done",
+    "zh_Hant": "最常練"
+  },
+  "怎么练它": {
+    "en": "How to train it",
+    "zh_Hant": "怎麼練它"
+  }
+}

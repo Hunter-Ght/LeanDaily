@@ -75,7 +75,7 @@ void main() {
     expect(find.text('练 3 次后，这里会出现你的身体热力图和力量变化'), findsNothing);
     expect(find.text('力量'), findsOneWidget);
     expect(find.text('坚持'), findsOneWidget);
-    expect(find.text('首次记录'), findsOneWidget);
+    expect(find.text('已记录 1 次，再练一次就能看到变化'), findsOneWidget);
     // 只有 1 个数据点：点开后不画空坐标，给一句提示。
     await tester.tap(find.text('哑铃卧推'));
     await tester.pumpAndSettle();

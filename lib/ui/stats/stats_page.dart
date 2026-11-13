@@ -10,7 +10,9 @@ import '../../app/app_controller.dart';
 import '../../app/routes.dart';
 import '../../domain/format.dart';
 import '../../domain/goals.dart';
+import '../../domain/muscle_brief.dart';
 import '../../domain/muscles.dart' show muscleStatus;
+import '../../domain/strength_hint.dart';
 import '../../domain/stats.dart';
 import '../kit/menu.dart';
 import '../../domain/stats_range.dart';
@@ -35,6 +37,8 @@ class _StatsPageState extends State<StatsPage> {
   StatsRange? _summaryRange;
   Map<String, dynamic>? bodyPaths;
   Timer? _minute;
+  // 点热力人体后展开的肌肉；点页面别处收起。
+  final _picked = ValueNotifier<String?>(null);
   bool _visible = true;
   Object? _recordsToken;
   String _statsDate = '';
@@ -82,6 +86,7 @@ class _StatsPageState extends State<StatsPage> {
   @override
   void dispose() {
     _minute?.cancel();
+    _picked.dispose();
     super.dispose();
   }
 
@@ -136,6 +141,13 @@ class _StatsPageState extends State<StatsPage> {
                       range: _range,
                       bodyPaths: bodyPaths!,
                       onOpen: (id) => openMuscleExercises(context, id),
+                      selection: _picked,
+                      brief: (id) => muscleBrief(
+                        _muscleDays,
+                        id,
+                        summary.window,
+                        app.today,
+                      ),
                       height: widget.wide ? 360 : 300,
                     ),
             ),
@@ -155,6 +167,16 @@ class _StatsPageState extends State<StatsPage> {
           bests: bests,
           today: app.today,
           range: _range,
+          timedNames: timedExerciseNames(app.plan),
+          stepFor: (name) => strengthStepFor(
+            name,
+            plan: app.plan,
+            days: _days,
+            dayStates: app.dayStates,
+            progress: app.progress,
+            today: app.today,
+            options: app.progressOptions,
+          ),
         );
         final streak = StreakSection(
           summary: summary,
@@ -169,67 +191,72 @@ class _StatsPageState extends State<StatsPage> {
           ],
         ];
         // 五块：热力人体（含建议）→ 体重 → 力量 → 坚持。没有记录时只剩引导 + 体重。
+        // 宽屏分两栏时，体重放左栏：左栏（人体 + 建议）本来比右栏（力量 + 坚持）短一大截。
+        final heroBlock = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: spaced([hero, suggestion], 16),
+        );
         final leftItems = empty
             ? [ProgressEmpty(height: widget.wide ? 300 : 240)]
-            : [hero, suggestion];
+            : [heroBlock, const BodyRouteCard()];
         final rightItems = empty
             ? [const BodyRouteCard(softAction: true)]
-            : [const BodyRouteCard(), strength, streak];
-        return SingleChildScrollView(
-          key: const PageStorageKey('stats-scroll'),
-          padding: EdgeInsets.fromLTRB(
-            16,
-            MediaQuery.paddingOf(context).top + 52,
-            widget.wide ? 24 : 16,
-            widget.wide ? 24 : 104 + MediaQuery.paddingOf(context).bottom,
-          ),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1040),
-              child: LayoutBuilder(
-                builder: (context, box) {
-                  final twoCols = box.maxWidth >= 640;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ProgressHeader(
-                        showRange: !empty,
-                        trainDays: summary.trainDays,
-                        range: _range,
-                        onPickRange: _pickRange,
-                      ),
-                      if (twoCols)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              flex: 5,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: spaced(leftItems, 16),
+            : [strength, streak];
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => _picked.value = null,
+          child: SingleChildScrollView(
+            key: const PageStorageKey('stats-scroll'),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              MediaQuery.paddingOf(context).top + 52,
+              widget.wide ? 24 : 16,
+              widget.wide ? 24 : 104 + MediaQuery.paddingOf(context).bottom,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1040),
+                child: LayoutBuilder(
+                  builder: (context, box) {
+                    final twoCols = box.maxWidth >= 640;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ProgressHeader(
+                          showRange: !empty,
+                          trainDays: summary.trainDays,
+                          range: _range,
+                          onPickRange: _pickRange,
+                        ),
+                        if (twoCols)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                flex: 5,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: spaced(leftItems),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              flex: 6,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: spaced(rightItems),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                flex: 6,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: spaced(rightItems),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      else
-                        ...spaced([
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: spaced(leftItems, 16),
-                          ),
-                          ...rightItems,
-                        ]),
-                    ],
-                  );
-                },
+                            ],
+                          )
+                        else
+                          ...spaced([...leftItems, ...rightItems]),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

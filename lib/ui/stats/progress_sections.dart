@@ -19,6 +19,8 @@ import '../kit/body_figure.dart';
 import '../kit/pressable.dart';
 import '../kit/transitions.dart';
 import '../stats/muscle/body_map.dart';
+import '../../domain/muscle_brief.dart';
+import 'muscle_brief_panel.dart';
 
 /// 进度页的数据投影：只在记录变化或切换时间范围时重算一次。
 class ProgressSummary {
@@ -213,21 +215,32 @@ class ProgressHeader extends StatelessWidget {
   }
 }
 
-/// 所选范围累计热力人体 + 图例。点人体任意肌肉进入详情。
+/// 所选范围累计热力人体 + 图例。点一块肌肉，在下方原地展开它的小结；再点一次或点别处收起。
 class HeatHero extends StatelessWidget {
   const HeatHero({
     super.key,
     required this.heat,
     required this.bodyPaths,
     required this.onOpen,
+    required this.selection,
+    required this.brief,
     this.range = StatsRange.weeks4,
     this.height = 300,
   });
   final StatsRange range;
   final Map<String, double> heat;
   final Map<String, dynamic> bodyPaths;
+
+  /// 「怎么练它」：打开这块肌肉的动作弹层。
   final ValueChanged<String> onOpen;
+
+  /// 当前展开的肌肉 id（null = 收起）。放在外面，页面点别处时可以收起。
+  final ValueNotifier<String?> selection;
+  final MuscleBrief Function(String id) brief;
   final double height;
+
+  /// 点击容差：小肌肉（小腿等）点在边上 16 点内也算。
+  static const slop = 16.0;
 
   @override
   Widget build(BuildContext context) {
@@ -237,6 +250,7 @@ class HeatHero extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 460),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             LayoutBuilder(
               builder: (context, box) {
@@ -252,6 +266,7 @@ class HeatHero extends StatelessWidget {
                   child: Listener(
                     onPointerDown: (e) => point = e.localPosition,
                     child: Pressable(
+                      scale: 1,
                       onTap: () {
                         final back = point.dx >= half.width;
                         final painter = BodyPainter(
@@ -264,10 +279,20 @@ class HeatHero extends StatelessWidget {
                         final id = painter.muscleAt(
                           Offset(point.dx - (back ? half.width : 0), point.dy),
                           half,
+                          slopPx: slop,
                         );
-                        if (id != null) onOpen(id);
+                        selection.value = id == null || id == selection.value
+                            ? null
+                            : id;
                       },
-                      child: BodyFigure(height: height, heat: heat),
+                      child: ValueListenableBuilder<String?>(
+                        valueListenable: selection,
+                        builder: (context, id, _) => BodyFigure(
+                          height: height,
+                          heat: heat,
+                          selected: id ?? '',
+                        ),
+                      ),
                     ),
                   ),
                 );
@@ -290,6 +315,24 @@ class HeatHero extends StatelessWidget {
                 const SizedBox(width: 10),
                 LText('练得多', style: AppText.hint(p)),
               ],
+            ),
+            ValueListenableBuilder<String?>(
+              valueListenable: selection,
+              builder: (context, id, _) => Reveal(
+                visible: id != null,
+                child: id == null
+                    ? const SizedBox.shrink()
+                    : Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: MuscleBriefPanel(
+                          key: ValueKey(id),
+                          muscleId: id,
+                          brief: brief(id),
+                          range: range,
+                          onOpen: () => onOpen(id),
+                        ),
+                      ),
+              ),
             ),
           ],
         ),
