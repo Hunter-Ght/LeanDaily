@@ -9,13 +9,19 @@ import '../kit/pressable.dart';
 import '../kit/units_scope.dart';
 
 class OnboardingCard extends StatelessWidget {
-  const OnboardingCard({super.key, required this.child, this.selected = false});
+  const OnboardingCard({
+    super.key,
+    required this.child,
+    this.selected = false,
+    this.padding = 16,
+  });
   final Widget child;
   final bool selected;
+  final double padding;
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(16),
+    padding: EdgeInsets.all(padding),
     decoration: BoxDecoration(
       color: context.pal.card,
       borderRadius: BorderRadius.circular(22),
@@ -116,7 +122,15 @@ class OnboardingPage extends StatelessWidget {
     required this.children,
     this.embedded = false,
     this.dense = false,
+    this.showSubtitle = true,
+    this.titleTrailing,
   });
+
+  /// 矮屏幕上隐藏副标题，把首屏留给内容。
+  final bool showSubtitle;
+
+  /// 标题行右侧的小控件，不增加高度。
+  final Widget? titleTrailing;
   final String title;
   final String subtitle;
   final List<Widget> children;
@@ -137,9 +151,21 @@ class OnboardingPage extends StatelessWidget {
       : ListView(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
-            LText(title, style: AppText.navDay(context.pal)),
-            const SizedBox(height: 12),
-            LText(subtitle, style: AppText.navWeek(context.pal)),
+            if (titleTrailing == null)
+              LText(title, style: AppText.navDay(context.pal))
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: LText(title, style: AppText.navDay(context.pal)),
+                  ),
+                  titleTrailing!,
+                ],
+              ),
+            if (showSubtitle) ...[
+              const SizedBox(height: 12),
+              LText(subtitle, style: AppText.navWeek(context.pal)),
+            ],
             SizedBox(height: dense ? 16 : 24),
             for (final child in children) ...[
               child,

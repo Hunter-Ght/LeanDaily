@@ -24,7 +24,11 @@ class ProfileRuler extends StatefulWidget {
     required this.onChanged,
     this.format,
     this.majorEvery = 10,
+    this.compact = false,
   });
+
+  /// 矮屏幕：标题和读数合成一行，刻度条也矮一些。
+  final bool compact;
 
   /// 读数文字；默认是「数值 + 单位」。身高英制要写成「5 ft 9 in」。
   final String Function(double value)? format;
@@ -127,7 +131,7 @@ class _ProfileRulerState extends State<ProfileRuler> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      LText(widget.label, style: AppText.h2(context.pal)),
+      if (!widget.compact) LText(widget.label, style: AppText.h2(context.pal)),
       ValueListenableBuilder<double>(
         valueListenable: _value,
         builder: (context, value, _) => Semantics(
@@ -151,17 +155,33 @@ class _ProfileRulerState extends State<ProfileRuler> {
                 curve: Curves.easeOut,
               )
               .then((_) => _queueCommit()),
-          child: Center(
-            child: LText(
-              widget.text(value),
-              style: AppText.navDay(context.pal).copyWith(fontSize: 28),
-            ),
-          ),
+          child: widget.compact
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: LText(
+                        widget.label,
+                        style: AppText.h2(context.pal),
+                        maxLines: 1,
+                      ),
+                    ),
+                    LText(
+                      widget.text(value),
+                      style: AppText.navDay(context.pal).copyWith(fontSize: 22),
+                    ),
+                  ],
+                )
+              : Center(
+                  child: LText(
+                    widget.text(value),
+                    style: AppText.navDay(context.pal).copyWith(fontSize: 28),
+                  ),
+                ),
         ),
       ),
-      const SizedBox(height: 8),
+      SizedBox(height: widget.compact ? 4 : 8),
       SizedBox(
-        height: 48,
+        height: widget.compact ? 36 : 48,
         child: LayoutBuilder(
           builder: (context, constraints) => Stack(
             children: [
@@ -175,7 +195,10 @@ class _ProfileRulerState extends State<ProfileRuler> {
                   scrollDirection: Axis.horizontal,
                   physics: const ClampingScrollPhysics(),
                   child: CustomPaint(
-                    size: Size(count * spacing + constraints.maxWidth, 48),
+                    size: Size(
+                      count * spacing + constraints.maxWidth,
+                      widget.compact ? 36 : 48,
+                    ),
                     painter: _RulerPainter(
                       start: constraints.maxWidth / 2,
                       count: count,

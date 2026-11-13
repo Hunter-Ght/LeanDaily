@@ -330,7 +330,7 @@ class _ExerciseLine extends StatelessWidget {
                     ),
                     if (weight > 0)
                       Text(
-                        context.units.loadText(weight),
+                        context.units.suggestedText(weight),
                         style: TextStyle(fontSize: 13, color: p.secondary),
                       ),
                     if (jsTruthy(e['optional']))

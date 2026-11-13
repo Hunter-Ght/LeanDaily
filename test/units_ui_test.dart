@@ -7,6 +7,7 @@ import 'package:leandaily/core/native.dart';
 import 'package:leandaily/domain/units.dart';
 import 'package:leandaily/ui/kit/number_field.dart';
 import 'package:leandaily/ui/me/me_page.dart';
+import 'package:leandaily/ui/onboarding/profile_steps.dart';
 import 'package:leandaily/ui/onboarding/ruler.dart';
 import 'package:leandaily/ui/today/today_page.dart';
 import 'package:leandaily/ui/training/training_mode.dart';
@@ -99,7 +100,7 @@ void main() {
         dark: dark,
       );
       expect(find.text('5 ft 9 in'), findsOneWidget);
-      expect(find.text('154.3 lb'), findsOneWidget);
+      expect(find.text('155.0 lb'), findsOneWidget);
       await h.shot(t, 'units-onboarding-$name');
       // 切回公制：读数变 cm / kg
       await t.tap(find.text('kg · cm'));
@@ -112,6 +113,105 @@ void main() {
       expect(find.text('5 ft 9 in'), findsOneWidget);
       expect(t.takeException(), isNull);
     });
+  }
+
+  testWidgets(
+    'untouched rulers use whole imperial defaults, touched keep conversion',
+    (t) async {
+      await Harness.pump(t, newUser: true, region: 'US', locale: en);
+      expect(find.text('5 ft 9 in'), findsOneWidget);
+      expect(find.text('155.0 lb'), findsOneWidget);
+      await t.tap(find.text('kg · cm'));
+      await settle(t);
+      expect(find.text('175 cm'), findsOneWidget);
+      expect(find.text('70.0 kg'), findsOneWidget);
+      await t.tap(find.text('lb · ft in'));
+      await settle(t);
+      expect(find.text('155.0 lb'), findsOneWidget);
+      // 动过体重刻度尺后，切到公制按换算值，再切回英制仍是 lb 换算值而不是默认值
+      await t.drag(
+        find.descendant(
+          of: find.byKey(const ValueKey('weightKg-imperial')),
+          matching: find.byType(SingleChildScrollView),
+        ),
+        const Offset(-100, 0),
+      );
+      await settle(t);
+      final moved = t
+          .widgetList<Text>(find.textContaining(' lb'))
+          .map((w) => w.data!)
+          .single;
+      expect(moved, isNot('155.0 lb'));
+      await t.tap(find.text('kg · cm'));
+      await settle(t);
+      await t.tap(find.text('lb · ft in'));
+      await settle(t);
+      expect(find.text(moved), findsOneWidget);
+      // 身高没动过，仍是整数默认值
+      expect(find.text('5 ft 9 in'), findsOneWidget);
+    },
+  );
+
+  for (final (size, locale, units) in [
+    (const Size(393, 850), en, 'imperial'),
+    (const Size(393, 850), en, 'metric'),
+    (const Size(393, 850), const Locale('zh', 'CN'), 'imperial'),
+    (const Size(360, 740), en, 'imperial'),
+    (const Size(360, 740), en, 'metric'),
+    (const Size(360, 740), const Locale('zh', 'CN'), 'imperial'),
+    (const Size(360, 740), const Locale('zh', 'CN'), 'metric'),
+  ]) {
+    testWidgets(
+      'onboarding step 1 fits without scrolling $size ${locale.languageCode} $units',
+      (t) async {
+        final h = await Harness.pump(
+          t,
+          newUser: true,
+          size: size,
+          locale: locale,
+          seed: (n) =>
+              n.docs['android-settings'] = jsonEncode({'units': units}),
+        );
+        final page = t.getRect(find.byType(IdentityStep));
+        final privacy = t.getRect(
+          find.textContaining(
+            locale.languageCode == 'en' ? 'Privacy policy' : '隐私政策',
+          ),
+        );
+        final next = t.getRect(
+          find.bySemanticsLabel(
+            locale.languageCode == 'en' ? 'Continue' : '继续',
+          ),
+        );
+        final card = t.getRect(find.byType(ProfileRuler).last);
+        final scroll = t.state<ScrollableState>(
+          find
+              .descendant(
+                of: find.byType(IdentityStep),
+                matching: find.byType(Scrollable),
+              )
+              .first,
+        );
+        expect(
+          scroll.position.maxScrollExtent,
+          lessThanOrEqualTo(0.5),
+          reason: 'step 1 scrolls',
+        );
+        expect(privacy.bottom, lessThanOrEqualTo(page.bottom));
+        expect(card.bottom, lessThan(privacy.top));
+        expect(next.bottom, lessThanOrEqualTo(size.height));
+        expect(next.top, greaterThanOrEqualTo(page.bottom - 1));
+        // 顶栏左侧留给「上一步」/ 备份恢复按钮：单位分段不在那里
+        final unitSwitch = t.getRect(find.byType(UnitSwitch));
+        expect(unitSwitch.top, greaterThan(page.top));
+        expect(h.controller.units.id, units);
+        await h.shot(
+          t,
+          'units-onboarding-fit-${size.width.toInt()}-${locale.languageCode}-$units',
+        );
+        expect(t.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('ruler stores kg/cm from imperial drags', (t) async {
@@ -202,6 +302,68 @@ void main() {
       await t.pump(const Duration(seconds: 4));
     });
   }
+
+  testWidgets('plan weight 5 kg reads 10 lb everywhere and saves that stage', (
+    t,
+  ) async {
+    final h = await Harness.pump(
+      t,
+      empty: true,
+      locale: en,
+      size: const Size(393, 852),
+      seed: (n) {
+        seedPlan(n);
+        final plan = jsonDecode(n.docs['fw-plan-v1']!) as Map;
+        plan['workouts']['w3']['exercises'][0]['weight'] = 5;
+        n.docs['fw-plan-v1'] = jsonEncode(plan);
+      },
+    );
+    // 今日动作列表
+    expect(find.textContaining('10 lb'), findsWidgets);
+    expect(find.textContaining('11 lb'), findsNothing);
+    openTrainingMode(
+      t.element(find.byType(TodayPage)),
+      exerciseId: 'test-load',
+    );
+    await settle(t);
+    if (find.text('Skip warm-up').evaluate().isNotEmpty) {
+      await t.tap(find.text('Skip warm-up'));
+      await settle(t);
+    }
+    final number = find.byWidgetPredicate(
+      (w) => w is TrainingNumber && w.label == '重量',
+    );
+    expect(
+      t
+          .widget<EditableText>(
+            find.descendant(of: number, matching: find.byType(EditableText)),
+          )
+          .controller
+          .text,
+      '10',
+    );
+    expect(find.textContaining('10 lb'), findsWidgets);
+    expect(find.textContaining('11 lb'), findsNothing);
+    // 动作要点：建议重量也是 10 lb
+    await t.tap(find.textContaining('Key points'));
+    await settle(t);
+    expect(find.text('10'), findsWidgets);
+    expect(find.text('11'), findsNothing);
+    Navigator.of(
+      t.element(find.text('Dumbbell floor press').first),
+      rootNavigator: true,
+    ).pop();
+    await settle(t);
+    await t.tap(find.text('Finish set 1'));
+    await settle(t);
+    final sets = (jsonDecode(h.native.docs['android-state']!)['sets'] as Map)
+        .values
+        .cast<Map>();
+    expect(sets.single['w'], Units.imperial.loadToKg(10));
+    expect(Units.imperial.load(sets.single['w'] as num), '10');
+    h.controller.rest.clear();
+    await t.pump(const Duration(seconds: 4));
+  });
 
   for (final (name, locale) in [('en', en), ('zh', const Locale('zh', 'CN'))]) {
     testWidgets('progress page in lb ($name)', (t) async {

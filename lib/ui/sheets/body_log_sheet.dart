@@ -255,8 +255,11 @@ class _BodyLogSheetState extends State<BodyLogSheet> {
                           onTap: () => setState(() => _day = i),
                           child: Container(
                             alignment: Alignment.center,
-                            width: 64,
-                            height: 44,
+                            constraints: const BoxConstraints(
+                              minWidth: 64,
+                              minHeight: 44,
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
                               color: _day == i ? p.primary : p.fill2,
                               borderRadius: BorderRadius.circular(10),

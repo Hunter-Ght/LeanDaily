@@ -129,7 +129,11 @@ class _TodayActionsState extends State<TodayActions> {
                 final done = jsNumber(item?['done']);
                 final complete = jsTruthy(item?['complete']);
                 final sets = target['sets'] ?? e['sets'];
-                final weight = jsNumber(target['weight'] ?? e['weight']);
+                final weight = last.isNotEmpty
+                    ? jsNumber(target['weight'] ?? e['weight'])
+                    : context.units.suggestedLoad(
+                        jsNumber(target['weight'] ?? e['weight']),
+                      );
                 final sec = e['unit'] == 'sec';
                 final lastLine = !skipped && last.isNotEmpty
                     ? '上次 ${jsNumber(last['weight']) > 0 ? context.units.loadText(jsNumber(last['weight'])) : '自重'} × ${fmt(last['minReps'])}${sec ? ' 秒' : ''}'

@@ -10,6 +10,8 @@ import 'package:flutter/widgets.dart';
 import '../../app/app_controller.dart';
 import '../../domain/body.dart';
 import '../../domain/templates.dart';
+import '../../domain/units.dart';
+import '../kit/units_scope.dart';
 import '../../theme/theme.dart';
 import 'body_fat_step.dart';
 import 'diagnosis_step.dart';
@@ -67,12 +69,45 @@ class _OnboardingFlowState extends State<OnboardingFlow>
     return true;
   }
 
+  /// 引导里用户亲手拖过的字段；没拖过的身高体重，默认值跟着单位走。
+  final _touched = <String>{};
+  late final Profile _defaults;
+  Units? _units;
+
+  /// 全新用户第一次看到的默认值：公制 175 cm / 70 kg，英制取整数 5 ft 9 in / 155 lb。
+  /// 用户切换单位时，没动过刻度尺的字段换成对应单位的整数默认值；动过的保持原值。
+  void _applyUnitDefaults(Units units) {
+    if (context.app.profile != null) return;
+    final next = {..._profile};
+    if (!_touched.contains('weightKg')) {
+      next['weightKg'] = units.isImperial
+          ? units.bodyWeightToKg(155)
+          : _defaults['weightKg'];
+    }
+    if (!_touched.contains('heightCm')) {
+      next['heightCm'] = units.isImperial
+          ? units.heightFromInches(69)
+          : _defaults['heightCm'];
+    }
+    _profile = next;
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_initialized) return;
+    final units = context.units;
+    if (_initialized) {
+      if (_units != units) {
+        _units = units;
+        _applyUnitDefaults(units);
+      }
+      return;
+    }
     _initialized = true;
+    _units = units;
     _profile = normalizeProfile(context.app.profile)['profile'] as Profile;
+    _defaults = {..._profile};
+    _applyUnitDefaults(units);
     if (context.app.profile == null) _profile['venue'] = null;
     final savedGoal = context.app.targetPrefs['goalBodyFat'];
     if (savedGoal is num) _profile['goalBodyFatPct'] = savedGoal;
@@ -93,6 +128,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
   }
 
   void _change(String field, Object? value) {
+    _touched.add(field);
     setState(() {
       _profile = {..._profile, field: value};
       _selected = null;
@@ -139,6 +175,7 @@ class _OnboardingFlowState extends State<OnboardingFlow>
           ...normalizeProfile(null)['profile'] as Profile,
           'venue': null,
         };
+        _applyUnitDefaults(context.units);
         _selected = null;
       });
       _go(3);

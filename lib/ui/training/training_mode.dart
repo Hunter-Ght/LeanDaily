@@ -288,7 +288,7 @@ class _TrainingModeState extends State<_TrainingBody>
     final m = model;
     final r = _reps ?? trainingReps(e, target, sets);
     final w = trainingHasLoad(e, sets)
-        ? _weight ?? trainingWeight(e, target, sets)
+        ? _weight ?? trainingWeight(e, target, sets, context.units)
         : 0;
     try {
       final pb = progress.isPersonalBest(
@@ -1049,7 +1049,7 @@ class _TrainingModeState extends State<_TrainingBody>
     final loaded = trainingHasLoad(e, sets);
     final sec = e['unit'] == 'sec';
     final r = _reps ?? trainingReps(e, target, sets),
-        w = _weight ?? trainingWeight(e, target, sets);
+        w = _weight ?? trainingWeight(e, target, sets, context.units);
     final total = jsNumber(e['target']).toInt();
     final hasNextSet = sets.length < total;
     final index = m.items.indexWhere((i) => i['ex']['id'] == e['id']);
@@ -1105,7 +1105,7 @@ class _TrainingModeState extends State<_TrainingBody>
   ) {
     final p = context.pal, units = context.units;
     final r = _reps ?? trainingReps(e, target, sets),
-        w = _weight ?? trainingWeight(e, target, sets);
+        w = _weight ?? trainingWeight(e, target, sets, context.units);
     final loaded = trainingHasLoad(e, sets);
     final sec = e['unit'] == 'sec';
     final reason = sets.length >= jsNumber(e['target'])

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/domain/progress.dart' as p;
 import 'package:leandaily/domain/progress_options.dart';
 import 'package:leandaily/domain/units.dart';
+import 'package:leandaily/ui/training/training_logic.dart';
 
 void main() {
   const lb = Units.imperial, kg = Units.metric;
@@ -169,6 +170,68 @@ void main() {
     expect(imperial['body'], isNot(contains('kg')));
     expect(lb.loadValue(imperial['accept']['weight'] as num), 93);
   });
+
+  test(
+    'plan-suggested weights snap to usable lb stages, records stay exact',
+    () {
+      expect(lb.suggested(5), '10');
+      expect(lb.suggested(10), '20');
+      expect(lb.suggested(20), '45');
+      expect(lb.suggested(2), '5');
+      expect(lb.suggested(1), '2.5');
+      expect(lb.suggested(30), '65');
+      expect(lb.suggestedText(5), '10 lb');
+      expect(lb.suggestedLoad(0), 0);
+      // 存下的就是整档对应的 kg，再吸附一次不变
+      for (final kgValue in [0.5, 1, 2, 5, 8, 10, 12.5, 20, 40, 60, 100]) {
+        final once = lb.suggestedLoad(kgValue);
+        expect(lb.suggestedLoad(once), once);
+        expect((lb.loadValue(once) / 2.5) % 1, 0);
+      }
+      expect(kg.suggestedLoad(5), 5);
+      expect(kg.suggestedText(5), '5 kg');
+      // 用户记过的重量如实换算（0.5 lb）
+      expect(lb.load(5), '11');
+      expect(lb.load(lb.loadToKg(37.5)), '37.5');
+    },
+  );
+
+  test(
+    'training default weight: plan weight snaps, recorded weight does not',
+    () {
+      final ex = {'name': '哑铃卧推', 'weight': 5};
+      // 没有练过：计划的 5 kg 在英制下是 10 lb 对应的 kg
+      expect(trainingWeight(ex, {'weight': 5}, [], lb), lb.loadToKg(10));
+      expect(trainingWeight(ex, {}, [], lb), lb.loadToKg(10));
+      // 练过（target.last 有值）：如实用记录/进阶后的重量
+      expect(
+        trainingWeight(
+          ex,
+          {
+            'weight': 5,
+            'last': {'w': 5},
+          },
+          [],
+          lb,
+        ),
+        5,
+      );
+      // 今天已经记了一组：用那一组
+      expect(
+        trainingWeight(
+          ex,
+          {'weight': 5},
+          [
+            {'w': 5.5},
+          ],
+          lb,
+        ),
+        5.5,
+      );
+      // 公制不变
+      expect(trainingWeight(ex, {'weight': 5}, []), 5);
+    },
+  );
 
   test('region default and ids', () {
     expect(Units.forRegion('US'), Units.imperial);

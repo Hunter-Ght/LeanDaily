@@ -67,6 +67,23 @@ class Units {
       ? fmt(double.parse(kgToLb(kgDelta).toStringAsFixed(1)))
       : fmt(kgDelta);
 
+  /// 计划/模板给的建议重量（不是用户记过的）：英制吸附到最近的可用档位——
+  /// 20 lb 以下 2.5 lb 一档，其余 5 lb 一档，如 5 kg → 10 lb、10 kg → 20 lb、
+  /// 20 kg → 45 lb。返回的 kg 对应这个整档，新用户照着练完存下的就是它。
+  /// 用户实际记过的重量不要走这里，直接 [loadValue] 如实换算。公制原样。
+  num suggestedLoad(num kg) {
+    if (!isImperial || !(kg > 0)) return kg;
+    final lb = kgToLb(kg);
+    final snapped = lb < 20 ? _nearest(lb, 2.5) : _nearest(lb, 5);
+    return loadToKg(snapped < 2.5 ? 2.5 : snapped);
+  }
+
+  String suggested(num kg) => load(suggestedLoad(kg));
+  String suggestedText(num kg) => loadText(suggestedLoad(kg));
+
+  static double _nearest(num v, num step) =>
+      (v / step).round() * step.toDouble();
+
   /// 把 kg 对齐到英制的 0.5 lb 档（公制原样），用于进阶建议写入的新重量。
   num snapLoad(num kg) => isImperial ? loadToKg(loadValue(kg)) : kg;
 
@@ -203,7 +220,7 @@ class Units {
               ? _round(lb, 2)
               : lb < 10
               ? _round(lb, 1)
-              : _round(lb, .2),
+              : _nearest(lb, 5),
         );
       }
 

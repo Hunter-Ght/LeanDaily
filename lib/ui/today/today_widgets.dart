@@ -60,7 +60,7 @@ class TodayExerciseRow extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       LText(
-                        '${plan.prescription(exercise)}${jsNumber(exercise['weight']) > 0 ? ' · ${context.units.loadText(jsNumber(exercise['weight']))}' : ''}',
+                        '${plan.prescription(exercise)}${jsNumber(exercise['weight']) > 0 ? ' · ${context.units.suggestedText(jsNumber(exercise['weight']))}' : ''}',
                         style: TextStyle(fontSize: 14, color: p.secondary),
                       ),
                       if (skipped || jsTruthy(exercise['optional']))

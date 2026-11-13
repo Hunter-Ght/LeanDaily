@@ -256,7 +256,7 @@ class _LoadFieldState extends State<_LoadField> {
           label: '${widget.units.weightUnit}·${widget.exercise['name']}',
           value:
               _draft ??
-              widget.units.load(jsNumber(widget.exercise['weight'] ?? 0)),
+              widget.units.suggested(jsNumber(widget.exercise['weight'] ?? 0)),
           numeric: true,
           filled: true,
           align: TextAlign.center,

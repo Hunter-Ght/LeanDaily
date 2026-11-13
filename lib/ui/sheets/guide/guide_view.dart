@@ -76,7 +76,7 @@ class GuideView extends StatelessWidget {
                 if (hasRx) _Prescription(exercise: e),
                 if (hasRx && weight > 0)
                   _Stat(
-                    value: context.units.load(weight),
+                    value: context.units.suggested(weight),
                     unit: Text(context.units.weightUnit),
                   ),
                 if (info.ready != null) RecoveryTag(info, large: true),
