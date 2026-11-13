@@ -143,10 +143,6 @@ void main() {
   setUpAll(() async {
     await Harness.setUpAll();
     await AppMessages.initialize();
-    final pending = jsonDecode(
-      File('tool/l10n/pending/course.json').readAsStringSync(),
-    ) as Map<String, dynamic>;
-    await AppMessages.debugMerge(pending);
   });
 
   group('今日页：课程行、阶段指引、组数一致', () {

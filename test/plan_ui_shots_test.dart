@@ -1,11 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/app/routes.dart';
 import 'package:leandaily/domain/plan_recipe.dart';
-import 'package:leandaily/l10n/app_messages.dart';
 import 'package:leandaily/ui/kit/plan_widgets.dart';
 import 'package:leandaily/ui/onboarding/plan_step.dart';
 
@@ -13,15 +10,10 @@ import 'support/harness.dart';
 import 'onboarding_test.dart' show settle;
 
 /// 截图：引导最后一步、「我的方案」两种状态。浅色 / 深色 / 英文，393×852 与 360×640。
-/// 英文会合并尚未导入的 pending 翻译，截图里才是最终文案。
 void main() {
   setUpAll(() async {
     await Harness.setUpAll();
     await MiniBody.load();
-    await AppMessages.debugMerge(
-      jsonDecode(File('tool/l10n/pending/plan_ui.json').readAsStringSync())
-          as Map<String, dynamic>,
-    );
   });
   final variants = [
     ('light', false, const Locale('zh', 'CN')),

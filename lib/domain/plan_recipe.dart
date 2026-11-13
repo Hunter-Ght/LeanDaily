@@ -1088,6 +1088,9 @@ Map<String, dynamic>? alternateRecipe(Map<String, dynamic> recipe) {
   final others = splitsFor(
     r['days'] as int,
     r['experience'] as String,
-  ).where((s) => s != r['split']);
+  ).where(
+    // 居家无器械时推、拉分开练动作太少，不提供这种排法。
+    (s) => s != r['split'] && !(s == 'ppl' && r['venue'] == 'bodyweight'),
+  );
   return others.isEmpty ? null : {...r, 'split': others.first};
 }
