@@ -90,7 +90,7 @@ void main() {
   });
 
   group('第几周按练了的周算', () {
-    test('开始日所在周永远是第 1 周，当周的训练不计', () {
+    test('开始日所在周是第 1 周，这周练了，下周就是第 2 周', () {
       final days = {'2026-10-22': day('2026-10-22')};
       for (final d in ['2026-10-21', '2026-10-22', '2026-10-25']) {
         final s = stateOn(days, d)!;
@@ -99,6 +99,8 @@ void main() {
         expect(s.done, false);
         expect(s.weekStart, start);
       }
+      expect(stateOn(days, '2026-10-26')!.week, 2);
+      expect(stateOn(const {}, '2026-10-26')!.week, 1);
       // 开始日以前没有课程。
       expect(stateOn(days, '2026-10-20'), isNull);
     });
@@ -454,8 +456,8 @@ void main() {
       expect(ask(null), isNotNull);
       // 开始日在 13 周前：已有 12 个练了的整周，课程完成，不受影响。
       expect(ask(newCourse(calendar.shiftDate(monday, -7 * 14))), isNotNull);
-      // 开始日在 12 周前的周一：之后有 11 个练了的整周，现在是第 12 周。
-      final c12 = newCourse(calendar.shiftDate(monday, -7 * 12));
+      // 开始日在 11 周前的周一：连开始那周共 11 个练了的整周，现在是第 12 周。
+      final c12 = newCourse(calendar.shiftDate(monday, -7 * 11));
       expect(
         courseState(c12, trainedWeeksOf(days), today)!.phase,
         CoursePhase.retest,

@@ -57,11 +57,6 @@ class MePage extends StatelessWidget {
                     icon: 'calendar',
                     onTap: () => openMyPlan(context),
                   ),
-                  MeRow(
-                    label: '浏览训练模板',
-                    icon: 'train',
-                    onTap: () => openTemplateBrowser(context),
-                  ),
                 ],
               ),
               const GroupHeader('身体'),

@@ -8,7 +8,6 @@ import 'package:leandaily/ui/sheets/body_log_sheet.dart';
 import 'package:leandaily/ui/sheets/profile_sheet.dart';
 import 'package:leandaily/ui/sheets/my_plan_sheet.dart';
 import 'package:leandaily/ui/sheets/plan_editor_sheet.dart';
-import 'package:leandaily/ui/sheets/template_browser_sheet.dart';
 import 'package:leandaily/ui/sheets/goals_sheet.dart';
 import 'package:leandaily/ui/sheets/ai_settings_sheet.dart';
 import 'package:leandaily/ui/sheets/android_settings_sheet.dart';
@@ -48,7 +47,6 @@ void main() {
   }
   for (final row in [
     ('我的方案', MyPlanSheet),
-    ('浏览训练模板', TemplateBrowserSheet),
     ('记体重和腰围', BodyLogSheet),
     ('我的资料与目标', ProfileSheet),
     ('每日目标与休息', GoalsSheet),

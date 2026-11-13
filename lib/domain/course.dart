@@ -3,7 +3,7 @@
 /// 纯函数。方案带 `plan['course'] = {'v': 1, 'start': 'YYYY-MM-DD', 'weeks': 12}`
 /// 才有课程；没有这个字段的方案（所有老方案）完全不受影响。
 ///
-/// 第几周按「练了的周」算，不按日历：课程周 = 1 + 开始日所在周之后、本周之前、
+/// 第几周按「练了的周」算，不按日历：课程周 = 1 + 从开始日所在周起、本周之前、
 /// 至少有一天正式训练（非热身组）的整周数，封顶 12。中途停一两周不会白白耗掉课程。
 /// 已有 12 个练了的整周，课程完成。
 library;
@@ -117,7 +117,7 @@ class CourseState {
   /// 当前课程周（1–12）。
   final int week;
 
-  /// 开始日所在周之后、当天所在周之前，练了的整周数（可以超过 12）。
+  /// 从开始日所在周起、当天所在周之前，练了的周数（可以超过 12）。
   final int completedWeeks;
 
   /// 当前课程周是从哪天开始的（第 1 周是开始日，之后是前一个练了的周的下周一）。
@@ -143,7 +143,7 @@ CourseState? courseState(
   final weeks =
       trainedWeeks
           .where(
-            (w) => w.compareTo(startMonday) > 0 && w.compareTo(dateMonday) < 0,
+            (w) => w.compareTo(startMonday) >= 0 && w.compareTo(dateMonday) < 0,
           )
           .toList()
         ..sort();
@@ -170,7 +170,7 @@ num courseSetsCut(num planned, CoursePhase? phase) =>
 // ------------------------------------------------------------------ 总结
 
 String _dateEnd(Set<String> weeks, String start) {
-  final list = weeks.where((w) => w.compareTo(mondayOf(start)) > 0).toList()
+  final list = weeks.where((w) => w.compareTo(mondayOf(start)) >= 0).toList()
     ..sort();
   return list.length >= courseWeeks
       ? shiftDate(list[courseWeeks - 1], 6)
