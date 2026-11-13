@@ -256,11 +256,9 @@ void main() {
       await settle(t);
       expect(find.text('选择计划'), findsOneWidget);
       expect(h.native.docs['fw-plan-v1'], original);
-      final preview = find.bySemanticsLabel(RegExp('^预览')).first;
-      await reveal(t, preview);
-      await t.tap(preview);
-      await settle(t);
-      await t.tap(find.bySemanticsLabel('使用这个方案'));
+      final generate = find.bySemanticsLabel('按现在的情况生成新方案');
+      await reveal(t, generate);
+      await t.tap(generate);
       await settle(t);
       await t.tap(find.text('另外添加这个计划').last);
       await settle(t);

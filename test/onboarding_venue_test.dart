@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leandaily/app/routes.dart';
 import 'package:leandaily/domain/body.dart';
-import 'package:leandaily/domain/templates.dart';
 import 'package:leandaily/ui/kit/pressable.dart';
 
 import 'support/harness.dart';
@@ -64,7 +63,7 @@ void main() {
       expect(h.controller.profile!['venue'], 'bodyweight');
     });
   }
-  testWidgets('empty venue starts with bodyweight recommendation', (t) async {
+  testWidgets('empty venue starts with a bodyweight recipe', (t) async {
     final h = await Harness.pump(t, newUser: true);
     for (var i = 0; i < 3; i++) {
       await next(t);
@@ -73,8 +72,8 @@ void main() {
     await settle(t);
     final p = h.controller.profile!;
     expect(p['venue'], 'bodyweight');
-    final id = recommend(p, buildTargets(p)).first['templateId'];
-    expect(h.controller.library.items.single['templateId'], id);
+    expect(h.controller.library.items.single['source'], 'generated');
+    expect(h.controller.activeRecipe!['venue'], 'bodyweight');
   });
   for (final venue in ['bodyweight', 'dumbbell', 'gym', 'both']) {
     testWidgets('reassessment preselects $venue', (t) async {

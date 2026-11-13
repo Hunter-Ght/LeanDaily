@@ -52,10 +52,10 @@ class MePage extends StatelessWidget {
               GroupCard(
                 children: [
                   MeRow(
-                    label: '当前计划',
-                    value: '${plan?['name'] ?? app.plan['name'] ?? '我的计划'}',
+                    label: '我的方案',
+                    sub: '${plan?['name'] ?? app.plan['name'] ?? '我的计划'}',
                     icon: 'calendar',
-                    onTap: () => openPlanEditor(context),
+                    onTap: () => openMyPlan(context),
                   ),
                   MeRow(
                     label: '浏览训练模板',
