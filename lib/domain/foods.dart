@@ -4,6 +4,9 @@ import 'dart:convert';
 /// portions are approximate; packaged foods should use their nutrition label.
 /// Loading the asset is the caller's responsibility; this library is pure Dart.
 const typicalMealCategory = '常见一餐';
+
+/// 美式食物包里每个条目的 `region` 值。
+const usRegion = 'us';
 const mealNames = ['早餐', '午餐', '晚餐', '加餐'];
 
 class Foods {
@@ -12,11 +15,24 @@ class Foods {
   /// Read-only JSON-shaped entries, including read-only alias lists.
   final List<Map<String, dynamic>> items;
 
-  factory Foods.parse(String source) {
-    final decoded = jsonDecode(source);
-    if (decoded is! List) throw const FormatException('食物库应为数组');
+  /// [usSource] 是美式食物包（`assets/foods_us.json`），条目带 `region: us`，
+  /// 与主食物库共用同一套字段，名称不得与主库重复。
+  factory Foods.parse(String source, {String? usSource}) {
     final names = <String>{};
     final items = <Map<String, dynamic>>[];
+    _parseInto(source, names, items, region: null);
+    if (usSource != null) _parseInto(usSource, names, items, region: usRegion);
+    return Foods._(List<Map<String, dynamic>>.unmodifiable(items));
+  }
+
+  static void _parseInto(
+    String source,
+    Set<String> names,
+    List<Map<String, dynamic>> items, {
+    required String? region,
+  }) {
+    final decoded = jsonDecode(source);
+    if (decoded is! List) throw const FormatException('食物库应为数组');
     for (final raw in decoded) {
       if (raw is! Map<String, dynamic>) {
         throw const FormatException('食物条目应为对象');
@@ -62,7 +78,9 @@ class Foods {
         Map<String, dynamic>.unmodifiable({
           'name': name,
           'aliases': List<String>.unmodifiable(aliases.cast<String>()),
-          if (meals != null) 'meals': List<String>.unmodifiable(meals.cast<String>()),
+          if (meals != null)
+            'meals': List<String>.unmodifiable(meals.cast<String>()),
+          'region': ?region,
           'category': text('category'),
           'unit': text('unit'),
           'gramsPerUnit': number('gramsPerUnit', positive: true),
@@ -71,16 +89,22 @@ class Foods {
         }),
       );
     }
-    return Foods._(List<Map<String, dynamic>>.unmodifiable(items));
   }
 
+  /// 是否来自美式食物包。
+  static bool isUs(Map<String, dynamic> food) => food['region'] == usRegion;
+
   /// “常见一餐”：一顿饭整体的热量和蛋白，按餐次排序（适合 [meal] 的在前，保持资源顺序）。
-  /// [onlyThisMeal] 为 true 时只返回适合该餐的。
+  /// [onlyThisMeal] 为 true 时只返回适合该餐的。[us] 为 true 时给美式整餐，
+  /// 否则保持原有的中式列表，两套互不混入。
   List<Map<String, dynamic>> typicalMeals(
     String meal, {
     bool onlyThisMeal = true,
+    bool us = false,
   }) {
-    final all = items.where((f) => f['category'] == typicalMealCategory);
+    final all = items.where(
+      (f) => f['category'] == typicalMealCategory && isUs(f) == us,
+    );
     bool fits(Map<String, dynamic> f) =>
         (f['meals'] as List?)?.contains(meal) ?? false;
     return [
@@ -89,15 +113,38 @@ class Foods {
     ];
   }
 
-  /// Exact name > name prefix > name substring > alias > pinyin initials.
-  /// Ties retain asset order. Empty queries mix familiar staples and protein
-  /// recommendations. [limit] <= 0 returns an empty list.
-  List<Map<String, dynamic>> search(String query, {int limit = 30}) {
+  /// 分类浏览用的分类名（不含“常见一餐”），按资源里出现的先后。
+  /// [us] 为 true 时是美式分类，否则是原有分类。
+  List<String> categories({bool us = false}) => {
+    for (final f in items)
+      if (isUs(f) == us && f['category'] != typicalMealCategory)
+        f['category'] as String,
+  }.toList();
+
+  /// 某个分类下的全部食物，保持资源顺序。
+  List<Map<String, dynamic>> inCategory(String category) => [
+    for (final f in items)
+      if (f['category'] == category) f,
+  ];
+
+  /// Exact name > name prefix > name substring > alias exact > alias prefix >
+  /// alias substring > pinyin initials > every word found somewhere. Matching
+  /// is case-insensitive and tolerates English plurals (egg/eggs).
+  /// [localName] adds the displayed (translated) name as another name, so a
+  /// food is findable by what the user sees. With [usFirst], American foods
+  /// win ties. Ties otherwise retain asset order. Empty queries mix familiar
+  /// staples and protein recommendations. [limit] <= 0 returns an empty list.
+  List<Map<String, dynamic>> search(
+    String query, {
+    int limit = 30,
+    bool usFirst = false,
+    String Function(String name)? localName,
+  }) {
     if (limit <= 0) return [];
     final q = query.trim().toLowerCase();
     if (q.isEmpty) {
       final recommended = <Map<String, dynamic>>[];
-      for (final name in _commonNames) {
+      for (final name in [if (usFirst) ..._commonUsNames, ..._commonNames]) {
         recommended.addAll(items.where((food) => food['name'] == name));
       }
       final seen = recommended.map((food) => food['name']).toSet();
@@ -109,30 +156,76 @@ class Foods {
       }
       return recommended.take(limit).toList();
     }
-    final matches = <({int rank, int index})>[];
+    final variants = _queryVariants(q);
+    final tokens = q.split(RegExp(r'\s+'));
+    final latin = RegExp(r'^[a-z]+$').hasMatch(q);
+    final matches = <({int rank, int us, int index})>[];
     for (var index = 0; index < items.length; index++) {
       final food = items[index];
       final name = (food['name'] as String).toLowerCase();
-      final aliases = food['aliases'] as List<String>;
-      final rank = name == q
-          ? 0
-          : name.startsWith(q)
-          ? 1
-          : name.contains(q)
-          ? 2
-          : aliases.any((alias) => alias.toLowerCase().contains(q))
-          ? 3
-          : RegExp(r'^[a-z]+$').hasMatch(q) &&
-                [name, ...aliases].any((text) => _initials(text).contains(q))
-          ? 4
-          : -1;
-      if (rank >= 0) matches.add((rank: rank, index: index));
+      final shown = localName?.call(food['name'] as String).toLowerCase();
+      final names = [name, if (shown != null && shown != name) shown];
+      final aliases = [
+        for (final a in food['aliases'] as List<String>) a.toLowerCase(),
+      ];
+      int rank = -1;
+      for (final v in variants) {
+        final r = names.any((n) => n == v)
+            ? 0
+            : names.any((n) => n.startsWith(v))
+            ? 1
+            : names.any((n) => n.contains(v))
+            ? 2
+            : aliases.any((a) => a == v)
+            ? 3
+            : aliases.any((a) => a.startsWith(v))
+            ? 4
+            : aliases.any((a) => a.contains(v))
+            ? 5
+            : latin && [name, ...aliases].any((t) => _initials(t).contains(v))
+            ? 6
+            : -1;
+        if (r >= 0 && (rank < 0 || r < rank)) rank = r;
+      }
+      if (rank < 0 && tokens.length > 1) {
+        final texts = [...names, ...aliases];
+        if (tokens.every((t) => texts.any((x) => x.contains(t)))) rank = 7;
+      }
+      if (rank >= 0) {
+        matches.add((
+          rank: rank,
+          us: isUs(food) == usFirst ? 0 : 1,
+          index: index,
+        ));
+      }
     }
     matches.sort((a, b) {
+      // 中文界面：中式条目整体在前，保持原来的顺序，美式食物排在后面仍可搜到。
+      // 英文界面：先按匹配程度，同等匹配时美式食物在前。
+      if (!usFirst) {
+        final us = a.us.compareTo(b.us);
+        if (us != 0) return us;
+      }
       final rank = a.rank.compareTo(b.rank);
-      return rank != 0 ? rank : a.index.compareTo(b.index);
+      if (rank != 0) return rank;
+      final us = a.us.compareTo(b.us);
+      return us != 0 ? us : a.index.compareTo(b.index);
     });
     return matches.take(limit).map((m) => items[m.index]).toList();
+  }
+
+  /// The query itself plus its English singular forms (eggs -> egg,
+  /// berries -> berry, tomatoes -> tomato).
+  static List<String> _queryVariants(String q) {
+    final out = [q];
+    if (q.length >= 4 && RegExp(r'^[a-z ]+$').hasMatch(q)) {
+      if (q.endsWith('ies')) out.add('${q.substring(0, q.length - 3)}y');
+      if (q.endsWith('es')) out.add(q.substring(0, q.length - 2));
+      if (q.endsWith('s') && !q.endsWith('ss')) {
+        out.add(q.substring(0, q.length - 1));
+      }
+    }
+    return out;
   }
 
   /// Descending protein grams per 100 kcal, excluding zero-energy entries.
@@ -201,6 +294,18 @@ Map<String, dynamic> _entryFor(
   if (portion.length > 40) throw ArgumentError('食物份量文字过长');
   return entry;
 }
+
+const _commonUsNames = [
+  '烤鸡胸肉',
+  '水煮蛋',
+  '炒蛋',
+  '燕麦粥（水煮）',
+  '希腊酸奶（原味，脱脂）',
+  '牛油果吐司',
+  '花生酱（经典，含糖）',
+  '蛋白棒',
+  '2%低脂牛奶',
+];
 
 const _commonNames = [
   '米饭',

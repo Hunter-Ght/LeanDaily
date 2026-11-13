@@ -993,6 +993,23 @@ class _MealCard extends StatelessWidget {
                     _stat(c, f.fmt(m['protein']), '蛋白', color: p.protein),
                     _stat(c, f.fmt(m['carbs']), '碳水'),
                     _stat(c, f.fmt(m['fat']), '脂肪'),
+                    if (items.isNotEmpty)
+                      _tap(
+                        c,
+                        '再记一次',
+                        () => c.app.repeatMeal(m, date: iso),
+                        SizedBox(
+                          height: 44,
+                          child: Center(
+                            widthFactor: 1,
+                            child: LText(
+                              '再记一次',
+                              style: AppText.body(p)
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                   if (records.needsAfterPhoto(m)) ...[
                     _tap(

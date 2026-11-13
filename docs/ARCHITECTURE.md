@@ -41,6 +41,7 @@ SQLite 里一张 `documents(key, value)` 表，一个键一份 JSON 文档：
 | `fw-progress-v1` | 进阶状态：锚点、升阶、已拒绝建议、减载记录 |
 | `fw-profile-v1` / `fw-targets-v1` | 个人资料；目标体脂/热量/蛋白覆盖与评估起点 |
 | `fw-body-v1` | 体重与腰围记录 |
+| `fw-my-foods-v1` | 「我的食物」（手动输入时保存的单个食物）与「常吃整餐」，随备份导出；没有这份文档的旧备份照常导入 |
 | `fw-goals-v1` / `fw-rest-v1` | 每日目标；休息计时偏好 |
 | `fw-review-v1` / `fw-hints-v1` | 周回顾已处理的周；各类一次性提示（场地、体重提醒、更新检查） |
 | `fw-onboarded-v1` / `fw-plan-legacy-v1` | 是否完成引导；升级前计划快照 |

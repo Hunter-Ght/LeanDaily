@@ -14,6 +14,7 @@ export '../data/update_check.dart' show UpdateStatus;
 import '../core/haptics.dart';
 import 'diagnostics.dart';
 import '../data/body_log_store.dart';
+import '../data/my_foods_store.dart';
 import '../data/plan_store.dart';
 import '../data/prefs.dart';
 import '../data/profile_store.dart';
@@ -165,6 +166,7 @@ class AppController extends ChangeNotifier {
        planStore = PlanStore(native, clock: clock),
        profileStore = ProfileStore(native),
        bodyLog = BodyLogStore(native),
+       myFoodsStore = MyFoodsStore(native),
        reminders = Reminders(native, clock: clock),
        vision = Vision(native) {
     rest = RestTimer(_persistRest, () {
@@ -316,6 +318,10 @@ class AppController extends ChangeNotifier {
   final PlanStore planStore;
   final ProfileStore profileStore;
   final BodyLogStore bodyLog;
+  final MyFoodsStore myFoodsStore;
+
+  /// 「我的食物」与「常吃整餐」（最近保存的在前）。
+  MyFoods myFoods = const MyFoods();
 
   /// 体重/腰围记录，按日期升序；每天最多一条。
   List<Map<String, dynamic>> bodyEntries = [];
@@ -490,6 +496,7 @@ class AppController extends ChangeNotifier {
       } on Object {
         bodyEntries = []; // 体重记录损坏不影响启动
       }
+      await _loadMyFoods();
       final r = await restTimerStore.load();
       rest.restore(
         ((r['until'] ?? 0) as num).toInt(),
@@ -611,6 +618,109 @@ class AppController extends ChangeNotifier {
     }
   }
 
+  Future<void> _loadMyFoods() async {
+    try {
+      myFoods = await myFoodsStore.load();
+    } on Object {
+      myFoods = const MyFoods(); // 文档损坏不影响启动，下次保存时会另存一份再重来
+    }
+  }
+
+  /// 保存一个手动输入的食物到「我的食物」（同名则更新）。
+  Future<void> saveMyFood({
+    String? id,
+    required String name,
+    required num kcal,
+    required num protein,
+    num carbs = 0,
+    num fat = 0,
+  }) async {
+    await myFoodsStore.saveFood(
+      id: id,
+      name: name,
+      kcal: kcal,
+      protein: protein,
+      carbs: carbs,
+      fat: fat,
+    );
+    await _loadMyFoods();
+    notifyListeners();
+  }
+
+  /// 把一餐里的多个食物存成一个常吃整餐。
+  Future<void> saveMyMeal(List items, {String name = ''}) async {
+    await myFoodsStore.saveMeal(name: name, items: items);
+    await _loadMyFoods();
+    notifyListeners();
+  }
+
+  Future<void> renameMyMeal(String id, String name) async {
+    await myFoodsStore.renameMeal(id, name);
+    await _loadMyFoods();
+    notifyListeners();
+  }
+
+  Future<void> deleteMyFood(String id) async {
+    await myFoodsStore.delete(id);
+    await _loadMyFoods();
+    notifyListeners();
+  }
+
+  /// 把一组食物明细记成 [date] 的 [meal]（再记一次、和昨天一样、常吃整餐都走这里），
+  /// 提示里带「撤销」。返回新记录的 id，失败时返回 null 并提示原因。
+  /// [time] 为空时用现在的时间。
+  Future<String?> logItems({
+    required String date,
+    required String meal,
+    required List items,
+    String time = '',
+  }) async {
+    try {
+      final t = clock();
+      final id = await repo.saveMeal(
+        date: date,
+        meal: meal,
+        time: time.isNotEmpty
+            ? time
+            : '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}',
+        source: '手动填写',
+        items: [for (final i in items) Map<String, dynamic>.from(i as Map)],
+      );
+      final saved = repo.state['meals'][id] as Map;
+      haptics.saved();
+      toast.show(
+        '已记入 $meal：${_fmt(saved['kcal'])} 千卡 / 蛋白 ${_fmt(saved['protein'])} g',
+        duration: const Duration(seconds: 6),
+        actionLabel: '撤销',
+        onAction: () async {
+          toast.dismiss();
+          try {
+            await repo.deleteMeal(date, id);
+            toast.show('已撤销');
+          } on Object catch (e) {
+            toast.show(message(e));
+          }
+        },
+      );
+      return id;
+    } on Object catch (e) {
+      toast.show(message(e));
+      return null;
+    }
+  }
+
+  /// 再记一次：把 [meal]（一条饮食记录）的食物明细复制到当前所选日期、同一餐次。
+  /// 记到今天用现在的时间，记到别的日子沿用原来的时间，时间线上位置合理。
+  Future<String?> repeatMeal(Map<String, dynamic> meal, {String? date}) {
+    final target = date ?? _date;
+    return logItems(
+      date: target,
+      meal: '${meal['meal']}',
+      items: meal['items'] as List? ?? const [],
+      time: target == today ? '' : '${meal['time'] ?? ''}',
+    );
+  }
+
   // ---------------------------------------------------------------- 计划 / 进度
 
   static const _progressKey = 'fw-progress-v1';
@@ -663,7 +773,10 @@ class AppController extends ChangeNotifier {
   Future<void> _loadFoods() async {
     if (foods != null) return;
     try {
-      foods = Foods.parse(await rootBundle.loadString('assets/foods.json'));
+      foods = Foods.parse(
+        await rootBundle.loadString('assets/foods.json'),
+        usSource: await rootBundle.loadString('assets/foods_us.json'),
+      );
       notifyListeners();
     } on Object catch (e, st) {
       Diagnostics.error('食物库加载失败：$e', st);
@@ -803,6 +916,7 @@ class AppController extends ChangeNotifier {
     await _loadPlanLibrary();
     progress = await _loadProgress();
     dayStates = await dayStatesStore.load();
+    await _loadMyFoods();
     await _loadProfile();
     rest.clear();
     notifyListeners();

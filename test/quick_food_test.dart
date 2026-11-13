@@ -324,6 +324,9 @@ void main() {
     expect(find.text('黄焖鸡米饭'), findsOneWidget);
     expect(find.text('豆浆油条'), findsNothing);
     // 点“＋”按一顿算，半顿也可以。
+    // 分类 chip 占了一行，这一行可能在底栏下面，先滚进来。
+    await tester.ensureVisible(find.bySemanticsLabel('选择 黄焖鸡米饭'));
+    await settleFood(tester);
     await tester.tap(find.bySemanticsLabel('选择 黄焖鸡米饭'));
     await settleFood(tester);
     expect(find.text('1 顿 ≈ 600 g，共约 600 g'), findsOneWidget);
