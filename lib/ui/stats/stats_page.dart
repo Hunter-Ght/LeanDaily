@@ -17,6 +17,7 @@ import '../../domain/stats.dart';
 import '../kit/menu.dart';
 import '../../domain/stats_range.dart';
 import '../../domain/week_achievement.dart';
+import 'benchmark_section.dart';
 import 'body_route_card.dart';
 import 'weekly_review_card.dart' show weeklyReviewFor;
 import 'strength_section.dart';
@@ -210,9 +211,12 @@ class _StatsPageState extends State<StatsPage> {
         final leftItems = empty
             ? [ProgressEmpty(height: widget.wide ? 300 : 240)]
             : [heroBlock, const BodyRouteCard()];
+        final benchmark = BenchmarkSection.has(app)
+            ? [const BenchmarkSection()]
+            : const <Widget>[];
         final rightItems = empty
-            ? [const BodyRouteCard(softAction: true)]
-            : [strength, streak];
+            ? [const BodyRouteCard(softAction: true), ...benchmark]
+            : [strength, ...benchmark, streak];
         return GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () => _picked.value = null,

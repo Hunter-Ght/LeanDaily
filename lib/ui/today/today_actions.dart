@@ -5,6 +5,7 @@ import '../../l10n/localized_text.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../domain/format.dart';
+import '../course/course_widgets.dart' show CoursePhaseTip;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/exercise_thumb.dart';
@@ -37,7 +38,12 @@ class _TodayActionsState extends State<TodayActions> {
   @override
   Widget build(BuildContext context) {
     final m = widget.model, p = context.pal;
-    final rules = m.workout['rules'] as List? ?? [];
+    final phase = m.course?.phase;
+    // 有课程时，「每组留几次余力」由当前阶段的指引说明，这里不再重复一条旧的。
+    final rules = [
+      for (final r in m.workout['rules'] as List? ?? [])
+        if (phase == null || !'$r'.contains('余力')) r,
+    ];
     final warmItems = (jsonMap(m.workout['warmup'])['items'] as List? ?? [])
         .join('、');
     final warmDone = jsTruthy(m.state['warm']);
@@ -52,6 +58,7 @@ class _TodayActionsState extends State<TodayActions> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _Header(model: m, onAdjust: widget.onAdjust),
+          if (phase != null) CoursePhaseTip(phase: phase),
           Semantics(
             button: true,
             label: AppMessages.of(context)

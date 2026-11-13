@@ -1,4 +1,5 @@
 import '../../app/app_controller.dart';
+import '../../domain/course.dart' show CourseState;
 import '../../domain/format.dart';
 import '../../domain/deload.dart';
 import '../../domain/plan_upgrade.dart';
@@ -152,6 +153,9 @@ class TodayModel {
   late final Map<String, dynamic>? planUpgrade;
   List<Map<String, dynamic>> recovery = [];
   late final Map<String, dynamic>? next, missed;
+
+  /// 今天的课程状态；方案没有课程为 null。
+  CourseState? get course => app.courseStateOn(iso);
   bool get train => slot['kind'] == 'train';
   bool get lite => jsTruthy(state['lite']);
   bool get complete => prog['complete'] == true;

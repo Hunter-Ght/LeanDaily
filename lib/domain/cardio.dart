@@ -1,4 +1,4 @@
-import 'calendar.dart' show shiftDate;
+import 'calendar.dart' show mondayOf, shiftDate;
 import 'records.dart' show DomainError, jsString, number;
 
 /// 有氧记录的类型（存 id，界面显示中文名再翻译）。
@@ -163,4 +163,29 @@ int activeStreak({
     cursor++;
   }
   return streak;
+}
+
+// ------------------------------------------------------------------ 方案里的有氧建议
+
+/// 方案里的有氧建议 `plan['cardio'] = {'perWeek': 2, 'minutes': 20}`（减脂 / 重组路线的方案带）。
+/// 没有这个字段、或数字不合理，返回 null。
+({int perWeek, int minutes})? cardioGoalOf(Map<String, dynamic>? plan) {
+  final c = plan?['cardio'];
+  if (c is! Map) return null;
+  final perWeek = c['perWeek'], minutes = c['minutes'];
+  if (perWeek is! num || perWeek != perWeek.truncate()) return null;
+  if (perWeek < 1 || perWeek > 7) return null;
+  final m = minutes is num && minutes >= 5 && minutes <= cardioMaxMinutes
+      ? minutes.round()
+      : cardioDefaultMinutes;
+  return (perWeek: perWeek.toInt(), minutes: m);
+}
+
+/// [iso] 所在这一周（周一到周日）已记录的有氧次数。
+int cardioSessionsInWeek(Iterable<Map<String, dynamic>> entries, String iso) {
+  final monday = mondayOf(iso), sunday = shiftDate(monday, 6);
+  return entries.where((e) {
+    final d = '${e['date']}';
+    return d.compareTo(monday) >= 0 && d.compareTo(sunday) <= 0;
+  }).length;
 }

@@ -6,11 +6,14 @@ import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/routes.dart';
+import '../../domain/benchmarks.dart' show benchmarksSince;
+import '../../domain/course.dart' show courseWeeks;
 import '../../domain/format.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import 'workout_title.dart';
+import '../course/course_widgets.dart';
 import '../stats/weekly_review_card.dart';
 import '../kit/menu.dart';
 import '../kit/grouped.dart';
@@ -359,6 +362,8 @@ class _TodayPageState extends State<TodayPage> {
               app.plan,
               jsonMap(m.next!['workout']),
               '${m.next!['iso']}',
+              false,
+              app.courseSetsOf('${m.next!['iso']}'),
             )
           : <Map<String, dynamic>>[];
       final focus =
@@ -406,6 +411,29 @@ class _TodayPageState extends State<TodayPage> {
             actions: const [],
             priority: 2,
             content: WeeklyReviewCard(review: review, compact: true),
+          ),
+        if (_courseSummaryVisible(app, m))
+          TodayTipCard(
+            model: m,
+            key: const ValueKey('course-summary'),
+            heading: '12 周课程完成了',
+            body: '',
+            actions: const [],
+            priority: 2,
+            content: const CourseSummaryCard(),
+          ),
+        if (_courseTestVisible(app, m, retest: false) ||
+            _courseTestVisible(app, m, retest: true))
+          TodayTipCard(
+            model: m,
+            key: ValueKey(
+              m.course?.week == 1 ? 'course-test-intro' : 'course-test-retest',
+            ),
+            heading: '小测试',
+            body: '',
+            actions: const [],
+            priority: 3,
+            content: CourseTestCard(retest: m.course?.week != 1),
           ),
         if (m.missed != null)
           TodayTipCard(
@@ -670,7 +698,10 @@ class _TodayPageState extends State<TodayPage> {
                     child: Semantics(
                       header: true,
                       child: LText(
-                        '${dateLabel(m.iso)} · 第 ${plan.weekNumber(app.plan, m.iso)} 周',
+                        // 有课程时，第几周由下面的课程行说明，这里只写日期。
+                        m.course != null
+                            ? dateLabel(m.iso)
+                            : '${dateLabel(m.iso)} · 第 ${plan.weekNumber(app.plan, m.iso)} 周',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -712,6 +743,12 @@ class _TodayPageState extends State<TodayPage> {
                 ],
               ),
             ),
+            if (m.course != null)
+              Padding(
+                key: const ValueKey('course-line'),
+                padding: const EdgeInsets.only(top: 0),
+                child: CourseLine(state: m.course!),
+              ),
             // 只要这一练有健身房版本就给切换，不看引导页选了什么。
             if (m.train && m.workout['hasGym'] == true)
               Padding(
@@ -806,4 +843,27 @@ class _RecoveryPanelState extends State<_RecoveryPanel> {
       Reveal(visible: expanded, child: widget.content),
     ],
   );
+}
+
+/// 课程完成、总结卡还没关掉。
+bool _courseSummaryVisible(AppController app, TodayModel m) =>
+    m.course?.done == true && !app.courseCardDismissed('summary');
+
+/// 第 1 周的「测个底」（本轮还没测过、没点过先不）；第 12 周的「复测」
+/// （本轮测过底、第 12 周开始后还没复测、没点过先不）。
+bool _courseTestVisible(
+  AppController app,
+  TodayModel m, {
+  required bool retest,
+}) {
+  final st = m.course;
+  if (st == null || st.done) return false;
+  final round = benchmarksSince(app.benchmarkEntries, st.start);
+  if (!retest) {
+    return st.week == 1 && round.isEmpty && !app.courseCardDismissed('intro');
+  }
+  return st.week == courseWeeks &&
+      round.isNotEmpty &&
+      '${round.last['date']}'.compareTo(st.weekStart) < 0 &&
+      !app.courseCardDismissed('retest');
 }
