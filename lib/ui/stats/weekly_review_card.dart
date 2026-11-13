@@ -30,6 +30,7 @@ Map<String, dynamic>? weeklyReviewFor(AppController app) {
     ).toInt(),
     kcalFloor: app.profile == null ? 0 : body.kcalFloor(app.profile!),
     done: app.reviewDone,
+    cardio: app.cardioEntries,
   );
 }
 
@@ -159,6 +160,13 @@ class _WeeklyReviewCardState extends State<WeeklyReviewCard> {
               metric('热量在范围', '${r['kcalDays']}', p.kcal),
             ],
           ),
+          if (jsNumber(r['cardioMinutes']) > 0) ...[
+            const SizedBox(height: 12),
+            LText(
+              '有氧 ${r['cardioMinutes']} 分钟',
+              style: TextStyle(fontSize: 13, color: p.secondary),
+            ),
+          ],
           if (r['weightAvg'] != null) ...[
             const SizedBox(height: 12),
             LText(

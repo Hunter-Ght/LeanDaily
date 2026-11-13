@@ -10,6 +10,7 @@ import '../../app/routes.dart';
 import '../../domain/format.dart';
 import '../../domain/plan.dart' as plan;
 import '../../theme/theme.dart';
+import '../../theme/tokens.dart' show AppPalette;
 import '../kit/app_icon.dart';
 import '../kit/pressable.dart';
 import 'today_model.dart';
@@ -64,6 +65,7 @@ class TodayWeekCard extends StatelessWidget {
         ? (adherence.count / adherence.target).toDouble()
         : 0.0;
     final reduce = MediaQuery.disableAnimationsOf(context);
+    final cardioDates = m.app.cardioDates;
     return TodayCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,6 +157,7 @@ class TodayWeekCard extends StatelessWidget {
                               done: jsTruthy(d['done']),
                               train: d['kind'] == 'train',
                               missed: jsTruthy(d['past']),
+                              cardio: cardioDates.contains('${d['iso']}'),
                             ),
                           ],
                         ),
@@ -170,6 +173,12 @@ class TodayWeekCard extends StatelessWidget {
   }
 }
 
+Widget _activityDot(AppPalette p) => Container(
+  width: 10,
+  height: 10,
+  decoration: BoxDecoration(color: p.ok, shape: BoxShape.circle),
+);
+
 /// 一天的状态：已练 = 发力橙实心圆 + 勾；计划训练 = 橙色空心圆（已过去没练的变灰）；休息 = 中性小点。
 /// 部位名称留给点开的那天预览。
 class _DayMark extends StatelessWidget {
@@ -177,8 +186,11 @@ class _DayMark extends StatelessWidget {
     required this.done,
     required this.train,
     required this.missed,
+    this.cardio = false,
   });
-  final bool done, train, missed;
+
+  /// 这天有有氧：算活动日，绿点；不会变成「完成训练」的橙色对勾。
+  final bool done, train, missed, cardio;
   @override
   Widget build(BuildContext context) {
     final p = context.pal;
@@ -209,7 +221,10 @@ class _DayMark extends StatelessWidget {
                     width: 2,
                   ),
                 ),
+                child: cardio ? Center(child: _activityDot(p)) : null,
               )
+            : cardio
+            ? _activityDot(p)
             : Container(
                 width: 6,
                 height: 6,

@@ -75,6 +75,8 @@ class StreakSection extends StatelessWidget {
               total: '/${fmt(trainTarget)}',
               color: p.tint,
               days: [for (final h in hits) h.train],
+              softDays: [for (final h in hits) h.cardio && !h.train],
+              softColor: p.ok,
             ),
             const SizedBox(width: 12),
             _Metric(
@@ -94,6 +96,10 @@ class StreakSection extends StatelessWidget {
             ),
           ],
         ),
+        if (hits.any((h) => h.cardio && !h.train)) ...[
+          const SizedBox(height: 12),
+          LText('有氧日（绿点）算活动日：不断连续天数，但不计入训练天数', style: AppText.hint(p)),
+        ],
         const SizedBox(height: 28),
         StreakGrid(summary: summary),
         const SizedBox(height: 14),
@@ -111,10 +117,16 @@ class _Metric extends StatelessWidget {
     required this.total,
     required this.color,
     required this.days,
+    this.softDays = const [],
+    this.softColor,
   });
   final String label, value, total;
   final Color color;
   final List<bool> days;
+
+  /// 只有有氧的活动日，用另一种颜色，不算进数字。
+  final List<bool> softDays;
+  final Color? softColor;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +167,11 @@ class _Metric extends StatelessWidget {
                       height: 8,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: i < days.length && days[i] ? color : p.fill,
+                        color: i < days.length && days[i]
+                            ? color
+                            : i < softDays.length && softDays[i]
+                            ? softColor
+                            : p.fill,
                       ),
                     ),
                   ],

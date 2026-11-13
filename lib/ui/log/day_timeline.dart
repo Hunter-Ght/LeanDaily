@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../app/app_controller.dart';
 import '../../app/routes.dart';
+import '../../domain/cardio.dart';
 import '../../domain/format.dart' as f;
 import '../../domain/movements.dart' show musclesOf;
 import '../../domain/records.dart' as records;
@@ -77,6 +78,7 @@ class DayTimeline extends StatelessWidget {
       }
     }
     final minutes = _trainMinutes(sets);
+    final cardio = app.cardioOn(iso);
 
     final items =
         <({int minute, int order, Key key, _Row row})>[
@@ -94,6 +96,17 @@ class DayTimeline extends StatelessWidget {
                   sets: sets,
                   minutes: minutes,
                 ),
+              ),
+            ),
+          for (final c in cardio)
+            (
+              minute: _cardioMinute(c),
+              order: 2,
+              key: ValueKey('cardio-${c['id']}'),
+              row: _Row(
+                dot: p.ok,
+                time: _cardioTime(c),
+                child: (_) => _CardioCard(iso: iso, entry: c),
               ),
             ),
           for (final m in meals)
@@ -118,7 +131,7 @@ class DayTimeline extends StatelessWidget {
         key: const ValueKey('day-summary'),
         builder: (c) => Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-          child: _Summary(sets: sets, meals: meals),
+          child: _Summary(sets: sets, meals: meals, cardio: cardio),
         ),
       ),
       if (lastAdd.isNotEmpty)
@@ -173,6 +186,26 @@ class DayTimeline extends StatelessWidget {
       padding: EdgeInsets.only(top: 4, bottom: bottomPadding),
       items: builders,
     );
+  }
+
+  /// 有氧记在哪个时间点：用保存时间；补记到别的日子时没有可靠时间，排在傍晚。
+  static DateTime? _cardioAt(Map<String, dynamic> c) {
+    final ts = c['ts'];
+    if (ts is! num) return null;
+    final t = DateTime.fromMillisecondsSinceEpoch(ts.toInt());
+    final day =
+        '${t.year.toString().padLeft(4, '0')}-${t.month.toString().padLeft(2, '0')}-${t.day.toString().padLeft(2, '0')}';
+    return day == c['date'] ? t : null;
+  }
+
+  static int _cardioMinute(Map<String, dynamic> c) {
+    final t = _cardioAt(c);
+    return t == null ? 18 * 60 + 30 : t.hour * 60 + t.minute;
+  }
+
+  static String _cardioTime(Map<String, dynamic> c) {
+    final t = _cardioAt(c);
+    return t == null ? '' : _hm(t);
   }
 
   /// 训练用时（分钟）：首末组时间戳之差，过短或过长（补记）不显示。
@@ -301,8 +334,12 @@ Widget _stat(
 }
 
 class _Summary extends StatelessWidget {
-  const _Summary({required this.sets, required this.meals});
-  final List<Map<String, dynamic>> sets, meals;
+  const _Summary({
+    required this.sets,
+    required this.meals,
+    this.cardio = const [],
+  });
+  final List<Map<String, dynamic>> sets, meals, cardio;
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +348,10 @@ class _Summary extends StatelessWidget {
     num sum(String k) =>
         meals.fold<num>(0, (v, m) => v + f.jsNumber(m[k]).toDouble());
     final protein = sum('protein'), kcal = sum('kcal');
+    final cardioMin = cardio.fold<int>(
+      0,
+      (v, c) => v + f.jsNumber(c['minutes']).toInt(),
+    );
     // 窄屏（320 宽）也不折行：数字和“/ 目标”在同一行按需缩小，名称单独一行。
     Widget tile(String value, String suffix, Color color, String label) =>
         Expanded(
@@ -359,7 +400,16 @@ class _Summary extends StatelessWidget {
         key: const ValueKey('day-summary-row'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          tile('$work', '', p.tint, '组 · 训练'),
+          // 有氧日也算有活动：只有有氧时显示分钟，和力量一起时挂在后面。
+          if (work == 0 && cardioMin > 0)
+            tile('$cardioMin', '', p.ok, '分钟 · 有氧')
+          else
+            tile(
+              '$work',
+              cardioMin > 0 ? ' + $cardioMin′' : '',
+              p.tint,
+              cardioMin > 0 ? '组 · 训练 + 有氧' : '组 · 训练',
+            ),
           const SizedBox(width: 8),
           tile(
             f.fmt(protein.round()),
@@ -837,6 +887,122 @@ class _ExerciseRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ------------------------------------------------------------------ 有氧块
+
+/// 比训练块小：类型、分钟、可选距离和吃力程度。点开修改，右侧垃圾桶删除（可撤销）。
+class _CardioCard extends StatelessWidget {
+  const _CardioCard({required this.iso, required this.entry});
+  final String iso;
+  final Map<String, dynamic> entry;
+
+  Future<void> _delete(BuildContext c) async {
+    final app = c.app, e = entry;
+    if (!await showConfirm(
+      c,
+      title: '删除这条有氧记录？',
+      confirm: '删除',
+      danger: true,
+    )) {
+      return;
+    }
+    try {
+      await app.deleteCardio('${e['id']}');
+      app.toast.show(
+        '已删除',
+        duration: const Duration(seconds: 6),
+        actionLabel: '撤销',
+        onAction: () async {
+          app.toast.dismiss();
+          try {
+            await app.restoreCardio(e);
+            app.toast.show('已恢复');
+          } on Object catch (err) {
+            app.toast.show(AppController.message(err));
+          }
+        },
+      );
+    } on Object catch (err) {
+      app.toast.show(AppController.message(err));
+    }
+  }
+
+  @override
+  Widget build(BuildContext c) {
+    final p = c.pal, e = entry, units = c.units;
+    final label = cardioTypeLabels['${e['type']}'] ?? '其他';
+    final effort = cardioEffortLabels['${e['effort']}'];
+    return _card(
+      c,
+      key: ValueKey('cardio-card-${e['id']}'),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(14, 6, 4, 6),
+        child: Row(
+          children: [
+            Expanded(
+              child: _tap(
+                c,
+                '修改有氧记录',
+                () => openCardioSheet(c, date: iso, entry: e),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    children: [
+                      ToneBadge(icon: 'cardio', size: 40),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LText(label, style: AppText.title(p)),
+                            const SizedBox(height: 4),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 2,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                _stat(
+                                  c,
+                                  '${f.jsNumber(e['minutes']).toInt()}',
+                                  '分钟',
+                                  size: 16,
+                                ),
+                                if (e['distanceKm'] is num)
+                                  _stat(
+                                    c,
+                                    units.distance(e['distanceKm'] as num),
+                                    units.distanceUnit,
+                                    size: 16,
+                                  ),
+                                if (effort != null)
+                                  LText(effort, style: AppText.hint(p)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            _tap(
+              c,
+              '删除这条有氧',
+              () => _delete(c),
+              SizedBox.square(
+                dimension: 44,
+                child: Center(
+                  child: AppIcon('trash', size: 18, color: p.tertiary),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

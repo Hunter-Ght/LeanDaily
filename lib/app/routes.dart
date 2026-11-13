@@ -21,6 +21,7 @@ import '../ui/sheets/train_sheet.dart';
 import 'app_controller.dart';
 
 export '../ui/sheets/body_log_sheet.dart' show openBodyLog;
+export '../ui/sheets/cardio_sheet.dart' show openCardioSheet;
 export '../ui/training/training_mode.dart' show openTrainingMode;
 
 /// 所有“打开某个页面 / 弹层”的入口都在这里，页面之间只通过它跳转。

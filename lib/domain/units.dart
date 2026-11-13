@@ -5,6 +5,7 @@ enum UnitSystem { metric, imperial }
 
 const double kgPerLb = 0.45359237;
 const double cmPerInch = 2.54;
+const double kmPerMile = 1.609344;
 
 double _round(num v, num scale) {
   final x = v * scale;
@@ -200,6 +201,19 @@ class Units {
 
   /// 围度输入框的合法范围（与存储的 20–200 cm 一致）。
   String get lengthRangeText => isImperial ? '8–78 in' : '20–200 cm';
+
+  // ------------------------------------------------------------ 距离（有氧，0.1）
+
+  String get distanceUnit => isImperial ? 'mi' : 'km';
+
+  /// 存储的公里数转成显示单位，取到 0.1。
+  num distanceValue(num km) => _round(isImperial ? km / kmPerMile : km, 10);
+  String distance(num km) => fmt(distanceValue(km));
+  String distanceText(num km) => '${distance(km)} $distanceUnit';
+
+  /// 用户输入的距离（显示单位）转成存储的 km。英制保留三位小数，mi 往返不漂移。
+  double distanceToKm(num value) =>
+      isImperial ? _round(value * kmPerMile, 1000) : _round(value, 1000);
 
   // ------------------------------------------------------------ 静态文案
 

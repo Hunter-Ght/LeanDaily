@@ -40,7 +40,7 @@ class _StatsPageState extends State<StatsPage> {
   // 点热力人体后展开的肌肉；点页面别处收起。
   final _picked = ValueNotifier<String?>(null);
   bool _visible = true;
-  Object? _recordsToken;
+  Object? _recordsToken, _cardioToken;
   String _statsDate = '';
   Map<String, dynamic> _days = {}, _meals = {}, _stats = {};
   Map<String, Map<String, dynamic>> _muscleDays = {};
@@ -55,11 +55,21 @@ class _StatsPageState extends State<StatsPage> {
       _meals = app.repo.allMeals();
       _muscleDays = _days.map((k, v) => MapEntry(k, jsonMap(v)));
     }
-    if (changed || _statsDate != app.today || _summaryRange != _range) {
+    final cardioChanged = !identical(_cardioToken, app.cardioEntries);
+    _cardioToken = app.cardioEntries;
+    if (changed ||
+        cardioChanged ||
+        _statsDate != app.today ||
+        _summaryRange != _range) {
       _summaryRange = _range;
       _statsDate = app.today;
       _stats = buildStats(app.today, null, null, days: _days, meals: _meals);
-      _summary = ProgressSummary.build(_muscleDays, app.today, _range);
+      _summary = ProgressSummary.build(
+        _muscleDays,
+        app.today,
+        _range,
+        app.cardioDates,
+      );
       _status = muscleStatus(_muscleDays, app.clock().millisecondsSinceEpoch);
     }
   }
@@ -117,6 +127,7 @@ class _StatsPageState extends State<StatsPage> {
           meals: _meals,
           proteinGoal: app.proteinGoal,
           kcalGoal: app.kcalGoal,
+          cardioDates: app.cardioDates,
         );
         final muscleDetail = bodyPaths == null
             ? const SizedBox.shrink()

@@ -21,6 +21,7 @@ class RecordCalendar extends StatefulWidget {
     required this.iso,
     required this.today,
     required this.marks,
+    this.cardio,
     required this.progress,
     required this.persistent,
     required this.onPick,
@@ -34,6 +35,9 @@ class RecordCalendar extends StatefulWidget {
   /// 顶部一行（标题等）与星期标签之间插入的内容。
   final Widget? header;
   final Marks marks;
+
+  /// 这天有有氧记录：另一种颜色（绿）的点，不冒充力量训练的橙点。
+  final bool Function(String iso)? cardio;
   final AnimationController progress;
   final bool persistent;
   final ValueChanged<String> onPick;
@@ -121,7 +125,7 @@ class _RecordCalendarState extends State<RecordCalendar> {
               selected: day.iso == widget.iso,
               enabled: !day.future,
               label: AppMessages.of(context).text(
-                '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${day.meal ? '，蛋白达标' : ''}',
+                '${day.iso}${day.today ? '，今天' : ''}${day.train ? '，有训练' : ''}${widget.cardio?.call(day.iso) == true ? '，有有氧' : ''}${day.meal ? '，蛋白达标' : ''}',
               ),
               child: Pressable(
                 scale: 1,
@@ -171,7 +175,14 @@ class _RecordCalendarState extends State<RecordCalendar> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (day.train) _dot(context.pal.tint),
-                          if (day.train && day.meal)
+                          if (widget.cardio?.call(day.iso) == true) ...[
+                            if (day.train)
+                              const SizedBox(width: Metrics.segmentInset),
+                            _dot(context.pal.ok),
+                          ],
+                          if ((day.train ||
+                                  widget.cardio?.call(day.iso) == true) &&
+                              day.meal)
                             const SizedBox(width: Metrics.segmentInset),
                           if (day.meal) _dot(context.pal.protein),
                         ],

@@ -35,6 +35,13 @@ Future<void> openLogAddMenu(BuildContext context, String date) async {
         effort: true,
       ),
       MenuAction(
+        id: 'cardio',
+        label: '记有氧',
+        detail: '走路、跑步、骑车等，记时长',
+        icon: 'cardio',
+        group: '训练',
+      ),
+      MenuAction(
         id: 'meal',
         label: '拍照记饮食',
         detail: '拍下这一餐，AI 估算营养',
@@ -67,6 +74,8 @@ Future<void> openLogAddMenu(BuildContext context, String date) async {
   switch (picked?.id) {
     case 'train':
       openTrainSheet(context);
+    case 'cardio':
+      openCardioSheet(context, date: date);
     case 'meal':
       openMealSheet(context, preset: {'date': date});
     case 'quick':
