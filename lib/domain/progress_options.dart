@@ -9,11 +9,15 @@ class ProgressOptions {
     this.venue,
     this.units = Units.metric,
     this.deloadActive = false,
+    this.course,
   });
 
   final String? experience, stage, venue;
   final int? age;
   final bool deloadActive;
+
+  /// 方案的 12 周课程设置（`course.dart` 的 `courseOf`）；没有课程为 null，规则完全不变。
+  final Map<String, dynamic>? course;
 
   /// Display units only. Rules compute in kg; imperial just picks 5 / 2.5 lb steps.
   final Units units;
@@ -29,6 +33,7 @@ class ProgressOptions {
     venue: venue,
     units: units,
     deloadActive: active,
+    course: course,
   );
 }
 

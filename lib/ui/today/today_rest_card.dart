@@ -10,6 +10,7 @@ import '../../domain/format.dart';
 import '../../theme/theme.dart';
 import '../kit/app_icon.dart';
 import '../kit/pressable.dart';
+import 'today_cardio_hint.dart';
 import 'today_figure.dart';
 import 'today_model.dart';
 import 'workout_title.dart';
@@ -40,6 +41,7 @@ class TodayRestCard extends StatelessWidget {
             '肌肉是在休息时长出来的。散步、睡够 7～9 小时、蛋白质吃够。',
             style: TextStyle(fontSize: 16, height: 1.45, color: p.secondary),
           ),
+          TodayCardioHint(model: m),
           if (!figure.isEmpty) ...[
             const SizedBox(height: 12),
             TodayFigure(data: figure),

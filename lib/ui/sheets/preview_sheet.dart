@@ -27,9 +27,11 @@ class PreviewSheet extends StatelessWidget {
     final app = context.app;
     final slot = plan.workoutFor(app.plan, iso, jsonMap(app.dayStates[iso]));
     final workout = jsonMap(slot['workout']);
-    final all = plan.exercisesFor(app.plan, workout, iso);
+    // 方案带 12 周课程时，组数按这一天所在的课程阶段调整（和今日页同一套规则）。
+    final setsOf = app.courseSetsOf(iso);
+    final all = plan.exercisesFor(app.plan, workout, iso, false, setsOf);
     final core = plan
-        .exercisesFor(app.plan, workout, iso, true)
+        .exercisesFor(app.plan, workout, iso, true, setsOf)
         .map((e) => e['id'])
         .toSet();
     final need = all.where((e) => !jsTruthy(e['optional'])).toList();

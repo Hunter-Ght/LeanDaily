@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import 'course.dart' show courseOf, courseSets, phaseOfWeek;
 import 'format.dart';
 
 const _defaultJson = r'''
@@ -1049,11 +1050,24 @@ dynamic setupOf(Map<String, dynamic> plan, Map<String, dynamic> ex) {
   return jsTruthy(value) ? value : '';
 }
 
+/// 动作今天的组数。默认就是方案里的组数。
+///
+/// 方案带 12 周课程时，调用方把算好的课程周 [courseWeek]（见 `course.dart` 的
+/// `courseState`）传进来，按阶段少做的组数在这里扣掉；不传，或方案没有课程，
+/// 行为和以前完全一样。
 dynamic setsFor(
   Map<String, dynamic> plan,
   Map<String, dynamic> ex, [
   String? iso,
-]) => ex['sets'];
+  int? courseWeek,
+]) {
+  final sets = ex['sets'];
+  if (courseWeek == null || sets is! num || courseOf(plan) == null) {
+    return sets;
+  }
+  return courseSets(sets, phaseOfWeek(courseWeek));
+}
+
 dynamic venueOf(
   Map<String, dynamic> plan,
   String iso, [
@@ -1337,6 +1351,7 @@ List<Map<String, dynamic>> buildReminders({
   bool todayDone = false,
   bool powderToday = false,
   int days = 14,
+  num Function(Map<String, dynamic> ex, String iso)? setsOf,
 }) {
   final r = jsonMap(plan['reminder']);
   if (!jsTruthy(r['enabled'])) return [];
@@ -1361,7 +1376,13 @@ List<Map<String, dynamic>> buildReminders({
 
     if (w['kind'] == 'train') {
       final workout = jsonMap(w['workout']),
-          list = exercisesFor(plan, jsonMap(w['workout']), iso);
+          list = exercisesFor(
+            plan,
+            jsonMap(w['workout']),
+            iso,
+            false,
+            setsOf == null ? null : (e) => setsOf(e, iso),
+          );
       if (!(i == 0 && todayDone)) {
         final body = list
             .map(

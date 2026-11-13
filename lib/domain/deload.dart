@@ -1,4 +1,5 @@
 import 'calendar.dart' show mondayOf, daysApart;
+import 'course.dart' show CoursePhase, courseState, trainedWeeksOf;
 import 'format.dart';
 import 'plan.dart';
 import 'progress.dart' as progression;
@@ -15,6 +16,13 @@ Map<String, dynamic>? deloadSuggestion({
   ProgressOptions? options,
 }) {
   if (options == null || options.deloadActive) return null;
+  // 课程第 12 周本身就是减量复测周，不再另外建议减量。
+  final course = options.course;
+  if (course != null &&
+      courseState(course, trainedWeeksOf(days), today)?.phase ==
+          CoursePhase.retest) {
+    return null;
+  }
   final last = jsonMap(progress['deload'])['last'];
   if (last is String && daysApart(last, today) < 42) return null;
   final declined = jsonMap(progress['declined'])['deload'];

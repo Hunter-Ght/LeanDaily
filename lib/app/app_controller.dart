@@ -16,8 +16,10 @@ import 'diagnostics.dart';
 import '../data/backup.dart' as backup_io;
 import '../data/backup_status.dart';
 import '../data/body_log_store.dart';
+import '../data/benchmark_store.dart';
 import '../data/cardio_store.dart';
 import '../domain/cardio.dart' as cardio;
+import '../domain/course.dart' as course_lib;
 import '../data/my_foods_store.dart';
 import '../data/plan_store.dart';
 import '../data/prefs.dart';
@@ -30,7 +32,8 @@ import '../domain/backup_reminder.dart' as backup_rules;
 import '../domain/body.dart' as body;
 import '../domain/calendar.dart' as calendar;
 import '../domain/foods.dart';
-import '../domain/format.dart' show cloneJson;
+import '../domain/format.dart' show cloneJson, jsNumber;
+import '../domain/strength_hint.dart' show timedExerciseNames;
 import '../domain/plan_library.dart';
 import '../domain/plan_recipe.dart' as recipes;
 import '../domain/templates.dart' as templates;
@@ -175,6 +178,10 @@ class AppController extends ChangeNotifier {
        profileStore = ProfileStore(native),
        bodyLog = BodyLogStore(native),
        cardioStore = CardioStore(
+         native,
+         now: clock == null ? null : () => clock().millisecondsSinceEpoch,
+       ),
+       benchmarkStore = BenchmarkStore(
          native,
          now: clock == null ? null : () => clock().millisecondsSinceEpoch,
        ),
@@ -440,6 +447,116 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------------------------------------------------------------- 12 周课程与小测试
+
+  /// 小测试记录（独立文档，随备份），按日期升序。
+  final BenchmarkStore benchmarkStore;
+  List<Map<String, dynamic>> benchmarkEntries = [];
+
+  Future<void> _loadBenchmarks() async {
+    try {
+      benchmarkEntries = await benchmarkStore.load();
+    } on Object {
+      benchmarkEntries = []; // 小测试记录损坏不影响启动
+    }
+  }
+
+  Future<void> saveBenchmark({
+    required String date,
+    Object? pushup,
+    bool pushupKnee = false,
+    Object? plank,
+    Object? pullType,
+    Object? pull,
+  }) async {
+    await benchmarkStore.save(
+      date: date,
+      pushup: pushup,
+      pushupKnee: pushupKnee,
+      plank: plank,
+      pullType: pullType,
+      pull: pull,
+    );
+    await _loadBenchmarks();
+    notifyListeners();
+  }
+
+  /// 当前方案的课程设置；没有课程（所有老方案、模板方案、自建方案）为 null。
+  Map<String, dynamic>? get course => course_lib.courseOf(plan);
+
+  Object? _weeksToken;
+  Set<String> _weeksCache = const {};
+
+  /// 练了的周（周一日期）。随训练记录变化才重算。
+  Set<String> get _trainedWeeks {
+    if (!identical(_weeksToken, repo.snapshotToken)) {
+      _weeksToken = repo.snapshotToken;
+      _weeksCache = course_lib.trainedWeeksOf(repo.allDays());
+    }
+    return _weeksCache;
+  }
+
+  /// [iso] 这天的课程状态；没有课程返回 null。
+  course_lib.CourseState? courseStateOn(String iso) {
+    final c = course;
+    return c == null || iso.isEmpty
+        ? null
+        : course_lib.courseState(c, _trainedWeeks, iso);
+  }
+
+  course_lib.CourseState? get courseNow => courseStateOn(today);
+
+  /// 预览、示范、提醒这些不走进阶规则的地方用：按课程阶段调整后的组数。
+  /// 没有课程、或课程已完成，返回 null（沿用方案里的组数）。今日页和训练模式
+  /// 走 `targetFor`，同样按课程调整，两边是同一套规则。
+  num Function(Map<String, dynamic> ex)? courseSetsOf(String iso) {
+    final st = courseStateOn(iso);
+    if (st == null || st.phase == null) return null;
+    return (e) => jsNumber(plan_lib.setsFor(plan, e, iso, st.week));
+  }
+
+  /// 课程完成后的总结数据；还没有课程返回 null。
+  Map<String, dynamic>? courseSummaryNow() {
+    final c = course;
+    if (c == null) return null;
+    return course_lib.courseSummary(
+      course: c,
+      days: repo.allDays(),
+      planDays: jsonMap(plan['schedule']).length,
+      timedNames: timedExerciseNames(plan),
+    );
+  }
+
+  /// 从今天重新开始一轮课程。
+  Future<void> restartCourse() async {
+    if (plan.isEmpty || today.isEmpty) return;
+    await updatePlan({...plan, 'course': course_lib.newCourse(today)});
+  }
+
+  /// 本轮课程里点过「先不 / 关闭」的小卡（`intro` 小测试、`retest` 复测、`summary` 总结）。
+  bool courseCardDismissed(String kind) {
+    final c = course, saved = _hints['courseCards'];
+    return c != null &&
+        saved is Map &&
+        saved['start'] == c['start'] &&
+        saved['kinds'] is List &&
+        (saved['kinds'] as List).contains(kind);
+  }
+
+  Future<void> dismissCourseCard(String kind) async {
+    final c = course;
+    if (c == null) return;
+    final saved = _hints['courseCards'];
+    final kinds = {
+      if (saved is Map && saved['start'] == c['start'])
+        for (final k in saved['kinds'] as List? ?? const []) '$k',
+      kind,
+    };
+    _hints['courseCards'] = {'start': c['start'], 'kinds': kinds.toList()};
+    await _saveHints();
+    notifyListeners();
+  }
+
   final Reminders reminders;
   final Vision vision;
   late final RestTimer rest;
@@ -505,6 +622,7 @@ class AppController extends ChangeNotifier {
     deloadActive:
         today.isNotEmpty &&
         jsonMap(progress['deload'])['week'] == calendar.mondayOf(today),
+    course: course,
   );
 
   /// 当前使用的方案来自哪个模板；自己建的、导入的方案返回 null。
@@ -623,6 +741,7 @@ class AppController extends ChangeNotifier {
         bodyEntries = []; // 体重记录损坏不影响启动
       }
       await _loadCardio();
+      await _loadBenchmarks();
       await _loadMyFoods();
       final r = await restTimerStore.load();
       rest.restore(
@@ -1160,6 +1279,7 @@ class AppController extends ChangeNotifier {
       bodyEntries = [];
     }
     await _loadCardio();
+    await _loadBenchmarks();
     await _loadReview();
     await _loadHints();
     rest.clear();
@@ -1231,6 +1351,8 @@ class AppController extends ChangeNotifier {
   Map<String, dynamic> _buildRecipe(Map<String, dynamic> recipe) {
     final built = recipes.buildRecipePlan(recipe, startDate: today);
     if (profile != null) (built['protein'] as Map)['goal'] = proteinGoal;
+    // 按配方生成的新方案带 12 周课程，从今天开始（模板方案和自建方案没有）。
+    built['course'] = course_lib.newCourse(today);
     return built;
   }
 
@@ -1630,6 +1752,7 @@ class AppController extends ChangeNotifier {
         dayStates: dayStates,
         todayDone: todayDone,
         powderToday: powderToday,
+        setsOf: (e, iso) => courseSetsOf(iso)?.call(e) ?? jsNumber(e['sets']),
       );
       await reminders.applyPlan([
         for (final n in list)

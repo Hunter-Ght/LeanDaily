@@ -17,7 +17,13 @@ class GuideBody extends StatelessWidget {
 Map<String, dynamic> guideExercise(AppController app, String name, String iso) {
   final slot = plan.workoutFor(app.plan, iso, jsonMap(app.dayStates[iso]));
   return plan
-          .exercisesFor(app.plan, jsonMap(slot['workout']), iso)
+          .exercisesFor(
+            app.plan,
+            jsonMap(slot['workout']),
+            iso,
+            false,
+            app.courseSetsOf(iso),
+          )
           .where((e) => e['name'] == name)
           .firstOrNull ??
       {'name': name};

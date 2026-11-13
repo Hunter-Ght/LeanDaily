@@ -8,6 +8,8 @@ import 'progress_options.dart';
 import 'units.dart';
 import 'plan.dart';
 import 'calendar.dart' show mondayOf, daysApart;
+import 'course.dart'
+    show CoursePhase, courseSetsCut, courseState, trainedWeeksOf;
 import 'movements.dart' show musclesOf, GROUPS;
 
 const CFG = {
@@ -134,6 +136,15 @@ Map<String, dynamic> targetFor(
             mondayOf(date),
           ));
   final anch = anchor ?? jsonMap(progress?['anchors'])[ex['name']];
+  // 12 周课程：打底期、复测周这一天少做的组数。没有课程时恒为 0，其余逻辑不变。
+  final course = options?.course;
+  final trainedWeeks = course == null ? const <String>{} : trainedWeeksOf(days);
+  num courseCut(String date) {
+    if (course == null || date.isEmpty) return 0;
+    final phase = courseState(course, trainedWeeks, date)?.phase;
+    return phase == null ? 0 : courseSetsCut(_sets(ex), phase);
+  }
+
   final step = _stepOf(ex), all = sessionsOf(days, ex['name'] as String);
   final seen = all
       .where((s) => (s['date'] as String).compareTo(today) < (include ? 1 : 0))
@@ -163,8 +174,12 @@ Map<String, dynamic> targetFor(
       belowMin = 0;
     }
     prev = date;
+    // 当天按课程少做的组数也算「做完了」，不能被当成没达标。
+    final cut = courseCut(date);
     final ev = evaluate(
-      gap ? {...ex, 'sets': math.max(1, _sets(ex) - 1)} : ex,
+      gap || cut > 0
+          ? {...ex, 'sets': math.max(1, _sets(ex) - (gap ? 1 : 0) - cut)}
+          : ex,
       session,
       target,
       jsonMap(dayStates[date])['ready'],
@@ -302,12 +317,15 @@ Map<String, dynamic> targetFor(
     weight = (weight * .9 / increment).round() * increment;
     reason = '本周减量：每个动作少 1 组、重量降约 10%';
   }
+  final planned = returning || options?.deloadActive == true
+      ? math.max(1, _sets(ex) - 1)
+      : _sets(ex);
+  // 课程少做的组数和减量、断练回归叠加，但最少 1 组。
+  final cutToday = courseCut(today);
   return {
     'reps': target,
     'weight': weight,
-    'sets': returning || options?.deloadActive == true
-        ? math.max(1, _sets(ex) - 1)
-        : _sets(ex),
+    'sets': cutToday > 0 ? math.max(1, planned - cutToday) : planned,
     'streak': streak,
     'cap': cap,
     'stuck': stuck,
@@ -333,6 +351,18 @@ Map<String, dynamic> targetFor(
   final m = ladderMatch(ex);
   if (m == null || jsonMap(plan['ladders']).containsKey(m.id)) return null;
   return m.stage + 1 < ladderPreset(m.id)!.steps.length ? m : null;
+}
+
+/// 课程的打底期和复测周不建议加组：这两段本来就在少做。
+bool _courseHoldsSets(
+  ProgressOptions? options,
+  Map<String, dynamic> days,
+  String today,
+) {
+  final course = options?.course;
+  if (course == null) return false;
+  final phase = courseState(course, trainedWeeksOf(days), today)?.phase;
+  return phase == CoursePhase.base || phase == CoursePhase.retest;
 }
 
 bool _declined(String key, Map<String, dynamic>? progress, String today) {
@@ -700,7 +730,8 @@ Map<String, dynamic>? suggest(
       review != null &&
       jsNumber(t['stuck']) >= CFG['plateauExposures']! &&
       _sets(ex) < CFG['maxAutoSets']! &&
-      week >= CFG['minWeeksForSetUp']!) {
+      week >= CFG['minWeeksForSetUp']! &&
+      !_courseHoldsSets(options, days, today)) {
     final group = mv['group'] as String,
         g = jsonMap(jsonMap(review['groups'])[mv['group']]),
         band = BUDGET[mv['group']]!;

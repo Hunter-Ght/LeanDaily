@@ -26,6 +26,7 @@ const _prefKeys = [
   'fw-hints-v1',
   'fw-my-foods-v1',
   'fw-cardio-v1',
+  'fw-benchmarks-v1',
 ];
 Never _error(String s) => throw DomainError(s);
 Future<Map<String, dynamic>> validateBackup(
