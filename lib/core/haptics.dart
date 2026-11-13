@@ -51,6 +51,9 @@ class AppHaptics {
     _play(HapticFeedback.mediumImpact);
   }
 
+  /// 新纪录：一轻一中两下，比存组更明显但不夸张。
+  void newRecord() => _pair(HapticFeedback.mediumImpact);
+
   void completed() => _pair(HapticFeedback.mediumImpact);
   void restEnded() => _pair(HapticFeedback.lightImpact);
 

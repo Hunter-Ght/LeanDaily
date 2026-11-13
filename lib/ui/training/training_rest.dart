@@ -21,6 +21,8 @@ class TrainingRestView extends StatefulWidget {
     required this.exercise,
     required this.nextSet,
     required this.nextSetDetail,
+    this.record,
+    this.onExtraSet,
     this.nextExercise,
     this.nextExerciseDetail = const TextSpan(),
   });
@@ -34,6 +36,12 @@ class TrainingRestView extends StatefulWidget {
   final InlineSpan nextSetDetail;
   final Map<String, dynamic>? nextExercise;
   final InlineSpan nextExerciseDetail;
+
+  /// 刚破的纪录「动作名 · 数值」；非 null 时在计时环上方显示一行克制的提示。
+  final String? record;
+
+  /// 做满计划组数后的次要入口「再来一组」；null 则不显示。
+  final VoidCallback? onExtraSet;
 
   @override
   State<TrainingRestView> createState() => _TrainingRestViewState();
@@ -77,6 +85,66 @@ class _TrainingRestViewState extends State<TrainingRestView> {
               color: p.text,
               fontSize: 16,
               fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _extra(BuildContext context, VoidCallback tap) {
+    final p = context.pal;
+    return Semantics(
+      button: true,
+      label: AppMessages.of(context).text('再来一组'),
+      excludeSemantics: true,
+      child: Pressable(
+        scale: MediaQuery.disableAnimationsOf(context) ? 1 : .97,
+        onTap: tap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 48),
+          alignment: Alignment.center,
+          child: LText(
+            '再来一组',
+            style: TextStyle(
+              color: p.secondary,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _recordLine(BuildContext context, String label) {
+    final p = context.pal;
+    final reduce = MediaQuery.disableAnimationsOf(context);
+    return Padding(
+      key: const ValueKey('training-record'),
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TweenAnimationBuilder<double>(
+        key: ValueKey(label),
+        tween: Tween(begin: reduce ? 1 : 0, end: 1),
+        duration: Duration(milliseconds: reduce ? 0 : 260),
+        curve: Curves.easeOut,
+        builder: (_, v, child) => Opacity(opacity: v, child: child),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: p.tintSoft,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: LText(
+            '新纪录 · $label',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.3,
+              fontWeight: FontWeight.w700,
+              color: p.tint,
             ),
           ),
         ),
@@ -147,13 +215,17 @@ class _TrainingRestViewState extends State<TrainingRestView> {
       builder: (context, box) {
         final ring = math.min(
           math.min(box.maxWidth * .74, 300.0),
-          math.max(190.0, box.maxHeight * .42),
+          math.max(
+            widget.record == null ? 190.0 : 172.0,
+            box.maxHeight * .42 - (widget.record == null ? 0 : 56),
+          ),
         );
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (widget.record != null) _recordLine(context, widget.record!),
               Center(
                 child: SizedBox.square(
                   dimension: ring,
@@ -224,6 +296,10 @@ class _TrainingRestViewState extends State<TrainingRestView> {
                   '接下来：${next['name']}',
                   widget.nextExerciseDetail,
                 ),
+              ],
+              if (widget.onExtraSet != null) ...[
+                const SizedBox(height: 6),
+                _extra(context, widget.onExtraSet!),
               ],
             ],
           ),

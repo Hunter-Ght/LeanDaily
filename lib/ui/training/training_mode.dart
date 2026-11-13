@@ -32,6 +32,7 @@ import '../today/today_model.dart';
 import '../today/workout_title.dart';
 import 'training_logic.dart';
 import 'training_rest.dart';
+import 'training_warmup.dart';
 
 Future<void> openTrainingMode(
   BuildContext context, {
@@ -139,6 +140,7 @@ class _TrainingModeState extends State<_TrainingBody>
       clearFeedback();
       _page = page;
       _warm = hasWarm && page == 0;
+      if (!_warm) stopFollow(rebuild: false);
       _summary = page == model.items.length + warmOffset;
       if (!_warm && !_summary) {
         _id = '${model.items[page - warmOffset]['ex']['id']}';
@@ -155,6 +157,40 @@ class _TrainingModeState extends State<_TrainingBody>
   bool _warm = false, _summary = false, _saving = false;
   bool _feedbackExpanded = false, _inputFocused = false;
   String? _pbLabel;
+
+  /// 休息页上方的「新纪录」一行；同一动作一次训练只震一次（[_celebrated]）。
+  String? _celebration;
+  final _celebrated = <String>{};
+
+  /// 做满计划组数后用户点了「再来一组」的动作：分段条多出一格，仍不改计划组数。
+  final _extra = <String>{};
+
+  /// 热身「跟着做」，null 表示在看列表。
+  WarmupFollow? _follow;
+  void startFollow(TodayModel m) {
+    _follow?.dispose();
+    final items = (jsonMap(m.workout['warmup'])['items'] as List? ?? []);
+    if (items.isEmpty) return;
+    setState(() {
+      _follow = WarmupFollow(
+        count: items.length,
+        onStep: () => _app!.haptics.selection(),
+        onDone: () {
+          stopFollow();
+          finishWarmup(model);
+        },
+      );
+    });
+  }
+
+  void stopFollow({bool rebuild = true}) {
+    final follow = _follow;
+    if (follow == null) return;
+    _follow = null;
+    // 计时器回调里调用也安全：下一帧再释放。
+    WidgetsBinding.instance.addPostFrameCallback((_) => follow.dispose());
+    if (rebuild && mounted) setState(() {});
+  }
 
   /// 这次练习里破的纪录（同一动作只留最新一条），分享卡上最多列 2 条。
   final _records = <ShareRecord>[];
@@ -205,6 +241,7 @@ class _TrainingModeState extends State<_TrainingBody>
   void dispose() {
     _feedbackTimer?.cancel();
     _advance?.cancel();
+    _follow?.dispose();
     _pages.dispose();
     _dragOrigin.dispose();
     _pulse.dispose();
@@ -281,6 +318,27 @@ class _TrainingModeState extends State<_TrainingBody>
     }
   }
 
+  /// 「跳过热身」：不记热身完成，直接去当前动作。
+  void finishWarmupSkip() => goPage(
+    warmOffset +
+        model.items
+            .indexWhere((i) => i['ex']['id'] == _id)
+            .clamp(0, math.max(0, model.items.length - 1)),
+  );
+
+  /// 「再来一组」：做满计划组数后还想多做。不写记录，只是结束休息、回到记录状态，
+  /// 数字沿用上一组；点「完成第 N 组」才记，计划组数不变。
+  void extraSet(Map<String, dynamic> e) {
+    _advance?.cancel();
+    _app!.haptics.selection();
+    _app!.rest.clear();
+    setState(() {
+      _extra.add('${e['id']}');
+      _reps = null;
+      _weight = null;
+    });
+  }
+
   Future<void> save(
     Map<String, dynamic> e,
     List<Map<String, dynamic>> sets,
@@ -309,9 +367,12 @@ class _TrainingModeState extends State<_TrainingBody>
         _feedbackExpanded = true;
         _remaining = null;
         _flag = null;
+        _extra.remove('${e['id']}');
+        _celebration = null;
         if (pb) {
           _pbLabel =
               '${e['name']} · ${w > 0 ? '${context.units.loadText(w)} × ' : '自重 '}${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
+          _celebration = _pbLabel;
           final detail = '${fmt(r)} ${e['unit'] == 'sec' ? '秒' : '次'}';
           _records
             ..removeWhere((x) => x.name == '${e['name']}')
@@ -324,6 +385,12 @@ class _TrainingModeState extends State<_TrainingBody>
             );
         }
       });
+      // 同一动作一次训练只震一次；减弱动态效果时不震。
+      if (pb &&
+          _celebrated.add('${e['name']}') &&
+          !MediaQuery.disableAnimationsOf(context)) {
+        app.haptics.newRecord();
+      }
       _feedbackMotion.forward(
         from: MediaQuery.disableAnimationsOf(context) ? 1 : 0,
       );
@@ -342,7 +409,8 @@ class _TrainingModeState extends State<_TrainingBody>
           ),
         );
       }
-      if (sets.length + 1 >= jsNumber(e['target'])) {
+      // 计划内最后一组自动翻到下一个动作；计划外多做的组留在原处，方便继续「再来一组」。
+      if (sets.length + 1 == jsNumber(e['target'])) {
         _advance?.cancel();
         _advance = Timer(const Duration(milliseconds: 600), () {
           if (mounted) next();
@@ -694,38 +762,15 @@ class _TrainingModeState extends State<_TrainingBody>
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 20),
+        if (items.isNotEmpty)
+          WarmupSoftButton(label: '跟着做', onTap: () => startFollow(m)),
+        const SizedBox(height: 12),
         for (var i = 0; i < items.length; i++)
-          Container(
-            constraints: const BoxConstraints(minHeight: 64),
-            margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: p.card,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 36,
-                  child: Text(
-                    '${i + 1}',
-                    style: AppText.num(p, 24, color: p.secondary),
-                  ),
-                ),
-                Expanded(
-                  child: LText(
-                    '${items[i]}',
-                    style: TextStyle(
-                      fontSize: 19,
-                      height: 1.25,
-                      fontWeight: FontWeight.w700,
-                      color: p.text,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          WarmupRow(
+            index: i,
+            name: '${items[i]}',
+            onOpen: () => openGuide(context, '${items[i]}', iso: m.iso),
           ),
         if (note.isNotEmpty)
           Padding(
@@ -733,6 +778,18 @@ class _TrainingModeState extends State<_TrainingBody>
             child: LText(note, style: AppText.hint(p)),
           ),
       ],
+    );
+  }
+
+  Widget warmFollowView(TodayModel m) {
+    final items = [
+      for (final i in jsonMap(m.workout['warmup'])['items'] as List? ?? [])
+        '$i',
+    ];
+    return WarmupFollowView(
+      follow: _follow!,
+      items: items,
+      onOpen: (name) => openGuide(context, name, iso: m.iso),
     );
   }
 
@@ -1005,7 +1062,10 @@ class _TrainingModeState extends State<_TrainingBody>
   /// 分段组进度条：每段一组，完成的为发力橙；已完成的段可点开编辑。
   Widget segments(Map<String, dynamic> e, List<Map<String, dynamic>> sets) {
     final p = context.pal;
-    final count = math.max(jsNumber(e['target']).toInt(), sets.length);
+    final count = math.max(
+      jsNumber(e['target']).toInt(),
+      sets.length + (_extra.contains('${e['id']}') ? 1 : 0),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -1100,6 +1160,8 @@ class _TrainingModeState extends State<_TrainingBody>
     return TrainingRestView(
       app: _app!,
       exercise: e,
+      record: _celebration,
+      onExtraSet: hasNextSet ? null : () => extraSet(e),
       nextSet: hasNextSet ? sets.length + 1 : null,
       nextSetDetail: TextSpan(
         children: [
@@ -1301,7 +1363,7 @@ class _TrainingModeState extends State<_TrainingBody>
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: Listenable.merge([_app!, _app!.rest]),
+    listenable: Listenable.merge([_app!, _app!.rest, ?_follow]),
     builder: (context, _) {
       final m = model;
       final item = m.items.where((i) => i['ex']['id'] == _id).firstOrNull;
@@ -1515,7 +1577,9 @@ class _TrainingModeState extends State<_TrainingBody>
                                                     bottom: _summary ? 96 : 12,
                                                   ),
                                                   child: _warm
-                                                      ? warmView(m)
+                                                      ? (_follow != null
+                                                            ? warmFollowView(m)
+                                                            : warmView(m))
                                                       : _summary
                                                       ? summaryView(m)
                                                       : ConstrainedBox(
@@ -1590,7 +1654,30 @@ class _TrainingModeState extends State<_TrainingBody>
                                             () => more(e, sets),
                                             secondary: true,
                                           ),
-                                        if (_warm ||
+                                        if (_warm && _follow != null) ...[
+                                          button(
+                                            _follow!.isLast ? '热身完成' : '下一项',
+                                            _saving ? null : _follow!.next,
+                                            primary: true,
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: button(
+                                                  '退出跟做',
+                                                  stopFollow,
+                                                  secondary: true,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: button('跳过热身', () {
+                                                  stopFollow();
+                                                  finishWarmupSkip();
+                                                }, secondary: true),
+                                              ),
+                                            ],
+                                          ),
+                                        ] else if (_warm ||
                                             _summary ||
                                             !_app!.rest.active)
                                           button(
@@ -1623,26 +1710,10 @@ class _TrainingModeState extends State<_TrainingBody>
                                             () => shareSummary(m),
                                             secondary: true,
                                           ),
-                                        if (_warm)
+                                        if (_warm && _follow == null)
                                           button(
                                             '跳过热身',
-                                            () => goPage(
-                                              warmOffset +
-                                                  model.items
-                                                      .indexWhere(
-                                                        (i) =>
-                                                            i['ex']['id'] ==
-                                                            _id,
-                                                      )
-                                                      .clamp(
-                                                        0,
-                                                        math.max(
-                                                          0,
-                                                          model.items.length -
-                                                              1,
-                                                        ),
-                                                      ),
-                                            ),
+                                            finishWarmupSkip,
                                             secondary: true,
                                           ),
                                       ],

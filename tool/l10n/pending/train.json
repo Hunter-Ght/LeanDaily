@@ -1,0 +1,54 @@
+{
+  "跟着做": {
+    "en": "Follow along",
+    "zh_Hant": "跟著做"
+  },
+  "下一项": {
+    "en": "Next",
+    "zh_Hant": "下一項"
+  },
+  "退出跟做": {
+    "en": "Exit",
+    "zh_Hant": "退出跟做"
+  },
+  "剩余 {p0}": {
+    "en": "{p0} left",
+    "zh_Hant": "剩餘 {p0}"
+  },
+  "{p0} · 动作要点": {
+    "en": "{p0} · Form tips",
+    "zh_Hant": "{p0} · 動作要點"
+  },
+  "再来一组": {
+    "en": "One more set",
+    "zh_Hant": "再來一組"
+  },
+  "自重 {p0} 次": {
+    "en": "Bodyweight {p0} reps",
+    "zh_Hant": "自重 {p0} 次"
+  },
+  "手臂放松，前后各画大圈 10 次": {
+    "en": "Big, slow arm circles, 10 each way",
+    "zh_Hant": "手臂放鬆，前後各畫大圈 10 次"
+  },
+  "肩胛骨向后夹紧再放松，做 10 次": {
+    "en": "Squeeze shoulder blades together, 10 times",
+    "zh_Hant": "肩胛骨向後夾緊再放鬆，做 10 次"
+  },
+  "原地踏步，自然摆臂，身体微热即可": {
+    "en": "March in place until you feel warm",
+    "zh_Hant": "原地踏步，自然擺臂，身體微熱即可"
+  },
+  "坐下去再站起来，慢慢做 10 次": {
+    "en": "Sit down, stand up, 10 slow reps",
+    "zh_Hant": "坐下去再站起來，慢慢做 10 次"
+  },
+  "轻松的速度，微微出汗就行": {
+    "en": "Easy pace, just a light sweat",
+    "zh_Hant": "輕鬆的速度，微微出汗就行"
+  },
+  "扶稳，一条腿前后、左右各摆 10 次": {
+    "en": "Hold on, swing each leg 10 times each way",
+    "zh_Hant": "扶穩，一條腿前後、左右各擺 10 次"
+  }
+}
