@@ -8,6 +8,7 @@ import '../../domain/e1rm.dart' show e1rmReliable;
 import '../../domain/format.dart';
 import '../../domain/stats.dart' show chartPoints;
 import '../../domain/stats_range.dart';
+import '../../domain/strength_hint.dart';
 import '../../domain/strength_rows.dart';
 import '../../l10n/localized_text.dart';
 import '../../theme/theme.dart';
@@ -29,7 +30,15 @@ class StrengthSection extends StatefulWidget {
     required this.bests,
     required this.today,
     this.range = StatsRange.weeks4,
+    this.timedNames = const {},
+    this.stepFor,
   });
+
+  /// 按秒计的动作名（记录里的「次数」是秒数）。
+  final Set<String> timedNames;
+
+  /// 查动作的进阶状态；持平的行用它说离下一步还差什么。
+  final StrengthStep? Function(String name)? stepFor;
   final List<Map<String, dynamic>> exercises, bests;
   final String today;
   final StatsRange range;
@@ -53,6 +62,7 @@ class _StrengthSectionState extends State<StrengthSection> {
       bests: widget.bests,
       today: widget.today,
       range: widget.range,
+      timedNames: widget.timedNames,
     );
     return StatBlock(
       title: '力量',
@@ -65,6 +75,7 @@ class _StrengthSectionState extends State<StrengthSection> {
             child: _StrengthRowView(
               row: r,
               range: widget.range,
+              stepFor: widget.stepFor,
               first: i == 0,
               open: open == r.name,
               onTap: () =>
@@ -86,12 +97,14 @@ class _StrengthRowView extends StatelessWidget {
   const _StrengthRowView({
     required this.row,
     required this.range,
+    required this.stepFor,
     required this.first,
     required this.open,
     required this.onTap,
   });
   final StrengthRow row;
   final StatsRange range;
+  final StrengthStep? Function(String name)? stepFor;
   final bool first, open;
   final VoidCallback onTap;
 
@@ -168,7 +181,7 @@ class _StrengthRowView extends StatelessWidget {
           ? [
               LText('自重 × ', style: unit),
               Text(fmt(b['heavyReps']), style: AppText.num(p, 26)),
-              LText(' 次', style: unit),
+              LText(row.timed ? ' 秒' : ' 次', style: unit),
             ]
           : [
               Text(units.load(jsNumber(b['heavy'])), style: AppText.num(p, 26)),
@@ -179,34 +192,15 @@ class _StrengthRowView extends StatelessWidget {
     );
   }
 
-  /// 与范围起点相比的变化：进步用发力橙，其余用次要色。
+  /// 每行一句话：只记录 1 次、与范围起点相比的变化、或持平时离下一步还差什么。
   Widget _caption(AppPalette p, Units units) {
     final secondary = TextStyle(fontSize: 13, height: 1.3, color: p.secondary);
-    final base = row.base == StrengthBase.firstRecord
-        ? '第一次记录'
-        : switch (range) {
-            StatsRange.weeks4 => '4 周前',
-            StatsRange.weeks12 => '12 周前',
-            StatsRange.all => '第一次记录',
-          };
-    final v = units.loadDelta(row.delta);
-    // 变化按估算极限（自重动作按次数）算，文案里写明口径和对比基准。
-    final text = switch (row.change) {
-      StrengthChange.first => '首次记录',
-      StrengthChange.idle => switch (range) {
-        StatsRange.weeks12 => '近 12 周没练过',
-        _ => '近 4 周没练过',
-      },
-      StrengthChange.flat => row.bodyweight ? '次数持平（比$base）' : '估算极限持平（比$base）',
-      StrengthChange.up =>
-        row.bodyweight
-            ? '↑ 次数 +$v（比$base）'
-            : '↑ 估算极限 +$v ${units.weightUnit}（比$base）',
-      StrengthChange.down =>
-        row.bodyweight
-            ? '次数 −$v（比$base）'
-            : '估算极限 −$v ${units.weightUnit}（比$base）',
-    };
+    final text = strengthCaption(
+      row,
+      range: range,
+      units: units,
+      step: row.change == StrengthChange.flat ? stepFor?.call(row.name) : null,
+    );
     return LText(
       text,
       style: row.change == StrengthChange.up
@@ -244,7 +238,14 @@ class _Curve extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          LText(body ? '次数' : '估算极限', style: AppText.hint(p)),
+          LText(
+            row.timed
+                ? '时长'
+                : body
+                ? '次数'
+                : '估算极限',
+            style: AppText.hint(p),
+          ),
           const SizedBox(height: 2),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -255,7 +256,11 @@ class _Curve extends StatelessWidget {
                 style: AppText.num(p, 36),
               ),
               LText(
-                body ? ' 次' : ' ${units.weightUnit}',
+                row.timed
+                    ? ' 秒'
+                    : body
+                    ? ' 次'
+                    : ' ${units.weightUnit}',
                 style: TextStyle(fontSize: 15, color: p.secondary),
               ),
             ],
@@ -263,7 +268,9 @@ class _Curve extends StatelessWidget {
           const SizedBox(height: 2),
           LText(
             body
-                ? '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 次'
+                ? row.timed
+                      ? '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 秒'
+                      : '最近一次 · ${shortDate(last['iso'])} · 自重 × ${fmt(last['reps'])} 次'
                 : '最近一次估算极限 · ${shortDate(last['iso'])} · ${units.load(jsNumber(last['weight']))}×${fmt(last['reps'])}',
             style: AppText.hint(p),
           ),
@@ -278,8 +285,13 @@ class _Curve extends StatelessWidget {
             LText('再练几次就能看到曲线', style: AppText.body(p).copyWith(fontSize: 15))
           else ...[
             Semantics(
-              label: AppMessages.of(context)
-                  .text('${row.name} 的${body ? '次数' : '估算极限'}'),
+              label: AppMessages.of(context).text(
+                '${row.name} 的${row.timed
+                    ? '时长'
+                    : body
+                    ? '次数'
+                    : '估算极限'}',
+              ),
               image: true,
               child: SizedBox(
                 width: double.infinity,

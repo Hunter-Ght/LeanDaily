@@ -34,8 +34,11 @@ class BodyFigure extends StatefulWidget {
     this.height = 240,
     this.breathe = false,
     this.semanticLabel,
+    this.selected = '',
   });
 
+  /// 选中的肌肉 id：描一圈轮廓，不选传空串。
+  final String selected;
   final Map<String, MuscleTone> tones;
   final Map<String, double> heat;
   final double height;
@@ -146,7 +149,7 @@ class _BodyFigureState extends State<BodyFigure>
                           back: back,
                           colors: colors,
                           palette: p,
-                          selected: '',
+                          selected: widget.selected,
                         ),
                       ),
                     ),
