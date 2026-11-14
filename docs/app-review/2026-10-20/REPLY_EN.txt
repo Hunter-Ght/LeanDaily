@@ -1,0 +1,38 @@
+Hello App Review Team,
+
+Thank you for your message. Below are the details requested under Guideline 2.1.
+
+1. Physical-device recording
+Recording: [VIDEO_URL_OR_ATTACHED_FILENAME]
+Device: [IPHONE_MODEL]; iOS: [IOS_VERSION]; app/build: [VERSION_BUILD].
+
+2. Purpose and audience
+LeanDaily is a free personal fitness journal for individuals who want to follow a workout plan, record exercises, meals and body measurements, and review progress. Training suggestions are generated locally using rules. Nutrition and body estimates are general references, not medical diagnosis or treatment. The publisher/operator is Skylance LLC.
+
+3. Setup and feature access
+No LeanDaily account, registration or login is required. Complete the initial profile/plan setup, then use:
+- Today: view the workout plan and exercise demonstrations; start and record a workout.
+- Log: select a date and record training sets or food manually.
+- Progress: review training, nutrition and body-measurement trends.
+- Me: edit the plan, profile, goals, language and settings; access backup/import/export, privacy and support.
+No sample file is required for the core flow.
+
+Optional AI photo recognition: Me > Backup & advanced > AI photo recognition. Enter the reviewer-only base URL, protocol, model and API key already supplied privately in this submission's App Review Information, then save. Open Log > + > AI photo scan, select a food photo, provide meal details and confirm the data-sharing consent when prompted, then run recognition and review/save the result. Core features remain available without a key. Recognition sends the selected photos, meal context and notes to the configured provider only after consent and a user action.
+
+There is no App account to delete. There is no public user-generated-content feed, messaging or interaction between users; personal entries/photos are private records, not published to other users. There are no in-app purchases, subscriptions or paid unlocks. Optional external API usage may be charged by the provider; LeanDaily does not sell API credits.
+
+4. External services and tools
+Core records, bundled demonstrations and estimated food data work on device without a developer-operated backend. The app uses Flutter and native iOS storage, Keychain, photo/file selection and local notifications. Optional AI examples support OpenAI and Google Gemini; users may configure another compatible HTTPS provider. GitHub Pages hosts the public privacy/support pages. An optional demonstration-video search opens Bilibili in an external browser; it is not required for the bundled demonstrations. No advertising or analytics SDK is integrated.
+
+5. Regional behavior
+The app does not apply region-based feature/content restrictions. Core functionality is consistent across regions; interface languages are English, Simplified Chinese and Traditional Chinese. Third-party AI and external website availability, quotas and terms depend on the selected provider and region.
+
+6. Industry and content documentation
+The app is intended for general fitness recording and education, not diagnosis, treatment or clinical monitoring. Exercise images are bundled from free-exercise-db under the upstream Unlicense. The Chinese wordmark uses a Smiley Sans font subset under SIL OFL 1.1. Source links and license documents are included in the accompanying attribution file. In-app credits: Me > Open source & credits.
+
+Privacy: https://hunter-ght.github.io/LeanDaily/privacy/
+Support: https://hunter-ght.github.io/LeanDaily/support/
+Contact: 2436759690@qq.com
+
+Thank you,
+Skylance LLC

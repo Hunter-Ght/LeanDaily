@@ -113,6 +113,42 @@ final class RunnerTests: XCTestCase {
         XCTAssertEqual(try reopened.all()["android-state"], value)
         XCTAssertEqual(try root.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup, true)
     }
+    func testSystemBackupChoicePersistsAndCoversExistingAndNewPhotos() throws {
+        let bytes = try jpeg()
+        var paths: [String] = []
+        func excluded(_ url: URL) throws -> Bool? {
+            try url.resourceValues(forKeys: [.isExcludedFromBackupKey]).isExcludedFromBackup
+        }
+        do {
+            let store = try LocalStore(root: root, service: service)
+            XCTAssertFalse(store.backupIncluded)
+            try store.put("backup-test", "preserved")
+            paths.append(try store.photoWrite(bytes))
+            XCTAssertEqual(try excluded(root.appendingPathComponent(paths[0])), true)
+            try store.setBackupIncluded(true)
+            XCTAssertTrue(store.backupIncluded)
+            XCTAssertEqual(try excluded(root.appendingPathComponent(paths[0])), false)
+        }
+        do {
+            let store = try LocalStore(root: root, service: service)
+            XCTAssertTrue(store.backupIncluded, "Opt-in must survive reopening the store")
+            paths.append(try store.photoWrite(bytes))
+            for path in paths {
+                XCTAssertEqual(try excluded(root.appendingPathComponent(path)), false)
+            }
+            try store.setBackupIncluded(false)
+        }
+        let reopened = try LocalStore(root: root, service: service)
+        XCTAssertFalse(reopened.backupIncluded, "Opt-out must also survive reopening")
+        paths.append(try reopened.photoWrite(bytes))
+        XCTAssertEqual(try reopened.all()["backup-test"], "preserved")
+        XCTAssertEqual(try excluded(root), true)
+        XCTAssertEqual(try excluded(root.appendingPathComponent("photos")), true)
+        for path in paths {
+            XCTAssertEqual(try excluded(root.appendingPathComponent(path)), true)
+            XCTAssertEqual(try reopened.photoRead(path).0, bytes)
+        }
+    }
     func testFutureSchemaIsRejectedWithoutDowngrading() throws {
         do { _ = try LocalStore(root: root, service: service) }
         var db: OpaquePointer?

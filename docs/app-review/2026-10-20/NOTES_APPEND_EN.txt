@@ -1,0 +1,26 @@
+LeanDaily - review information (append to the existing reviewer-only AI configuration; retain the base URL, protocol, model and API key already supplied).
+
+1. Physical-device recording
+Recording: [VIDEO_URL_OR_ATTACHED_FILENAME]
+Device: [IPHONE_MODEL]; iOS: [IOS_VERSION]; app/build: [VERSION_BUILD].
+
+2. Purpose/audience
+A free personal fitness journal for individuals to follow workout plans, log training/food/body measurements and review progress. Training logic and estimated food data are local. Estimates are general fitness references, not diagnosis, treatment or clinical monitoring. Publisher/operator: Skylance LLC.
+
+3. Access and setup
+No App account/login is required. Complete initial profile/plan setup. Today shows the workout and bundled demonstrations; Log records sets/meals by date; Progress shows trends; Me provides plan/profile/goals/language, backup/import/export and legal/support pages. No sample file is required.
+AI is optional. Go to Me > Backup & advanced > AI photo recognition. Copy the reviewer-only connection fields already provided in this submission and save. Then Log > + > AI photo scan > select a food photo > provide meal details > approve the data-sharing consent > run recognition > review/save. Without AI configuration, manual records and all core training features remain usable. AI requests send selected photos, meal context and notes only after consent and a user action.
+No account registration/deletion flow, public content feed, messaging, user-to-user sharing, in-app purchases, subscriptions or paid unlocks. Private user records/photos are not published to other users. External API usage may be billed by the provider; the app does not sell credits.
+
+4. External services/tools
+Flutter; native iOS local storage/Keychain, photo/file selection and local notifications. Optional user-configured OpenAI, Google Gemini or compatible HTTPS AI endpoint. GitHub Pages for privacy/support. Optional Bilibili video search opens externally; bundled demonstrations work offline. No developer-operated core backend, advertising or analytics SDK.
+
+5. Regions
+No region-based feature restrictions in the app. English, Simplified Chinese and Traditional Chinese are supported. External AI/websites have their own regional availability, terms and quotas.
+
+6. Content/industry documentation
+General fitness education/recording, not a clinical service. Bundled exercise images: free-exercise-db, Unlicense. Chinese wordmark font subset: Smiley Sans, SIL OFL 1.1. See attached attribution/license documents and Me > Open source & credits.
+
+Privacy: https://hunter-ght.github.io/LeanDaily/privacy/
+Support: https://hunter-ght.github.io/LeanDaily/support/
+Contact: 2436759690@qq.com

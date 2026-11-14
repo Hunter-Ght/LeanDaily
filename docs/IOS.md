@@ -39,6 +39,33 @@ python3 tool/build_ios_app_store.py
 
 输出为 `build/ios/ipa/leandaily.ipa`，归档为 `build/ios/archive/Runner.xcarchive`。中间未签名归档本身不能直接发布，以最终经过发行签名的 IPA 为准。上传成功与 App Store 审核仍需另外完成；每次新上传使用尚未使用的 build number。
 
+## 命令行账号读取与 TestFlight 上传
+
+后续发行优先由助手通过命令行完成签名和上传。命令必须能够访问本机 Xcode 账号、钥匙串及 Apple 网络服务；受限沙箱里的账号或证书查询失败不能直接作为未登录的证据。
+
+2026-11-05 排查发现：Xcode 界面已登录 Skylance 且能上传，但 `xcodebuild` 报 `Failed to Use Accounts`。本机 `DVTDeveloperAccountManagerAppleIDLists` 的 `IDE.Identifiers.Prod` 数组为空，`IDEProvisioningTeamByIdentifier` 中仍有该账号及 Skylance 团队的映射。备份原索引后，仅将该映射中已有的账号 identifier 写回索引，命令行便恢复了 Apple 认证和云端发行签名。没有重新登录、删除账号或更换证书。此现象不代表所有同名报错都由索引缺失导致，也未确定索引何时、为何被清空。
+
+再次遇到此类报错时，先只读比较以下两项；不要把其他电脑或其他账号的 identifier 写入本机，也不要清空团队记录或钥匙串：
+
+```sh
+defaults read com.apple.dt.Xcode DVTDeveloperAccountManagerAppleIDLists
+defaults read com.apple.dt.Xcode IDEProvisioningTeamByIdentifier
+```
+
+账号修复后，先用 `destination=export` 的 App Store Connect 导出配置验证。2026-11-05 已用 `2.4.0 (34)` 的带签名归档验证 `EXPORT SUCCEEDED`；导出的 App、App.framework 和 Flutter.framework 均使用 `Cloud Managed Apple Distribution`，描述文件属于 `T695TT4HT9`，且 `get-task-allow=false`。验证产物保存在 `build/ios/ipa-2.4.0-34-cli-verified/`。原账号索引备份位于 `build/ios/xcode-account-index-backup.plist`，仅供本机排查，不提交。
+
+实际上传时使用 `destination=upload` 的配置：
+
+```sh
+xcodebuild -exportArchive \
+  -archivePath <本次带团队签名的.xcarchive> \
+  -exportPath <本次导出目录> \
+  -exportOptionsPlist build/ios/ExportOptions-Upload.plist \
+  -allowProvisioningUpdates
+```
+
+每次新上传须使用尚未上传的 build number。`2.4.0 (34)` 已于 2026-11-05 通过 Xcode 界面上传成功，因此首次账号修复仅验证命令行导出，没有重复上传。随后用户要求发行 `2.4.0 (35)`：2026-11-05 21:57:58（Asia/Shanghai）已通过命令行完成签名和上传，返回 `Upload succeeded`、`Uploaded Runner`、`EXPORT SUCCEEDED`，Apple 已开始 processing，处理完成与安装尚未验证。这次运行前账号索引再次为空，按同样方法备份并恢复后上传成功；索引再次清空的原因尚未确定。本机日志为 `/private/tmp/LeanDaily-2.4.0-35-upload.log`。
+
 ## 原生能力映射
 
 | Native 接口 | iOS 实现 |
